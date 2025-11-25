@@ -1,0 +1,539 @@
+/* 全局重置+首页统一格式 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "微软雅黑", sans-serif;
+}
+body {
+    background-color: #fff;
+    color: #333;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 顶部导航栏（不变） */
+.header {
+    background-color: #FF8C00;
+    color: #fff;
+    padding: 8px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+}
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.logo-img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: #fff; /* 图片占位 */
+}
+.logo-text {
+    font-size: 16px;
+    font-weight: bold;
+}
+.main-nav {
+    display: flex;
+    gap: 15px;
+}
+.nav-item {
+    color: #fff;
+    text-decoration: none;
+    font-size: 14px;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+.nav-item.active {
+    background-color: #fff;
+    color: #FF8C00;
+    font-weight: bold;
+}
+.search-box {
+    flex: 1;
+    max-width: 400px;
+    position: relative;
+}
+.search-input {
+    width: 100%;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    outline: none;
+    font-size: 14px;
+}
+.search-btn {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #999;
+    cursor: pointer;
+}
+.user-functions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.func-item {
+    color: #fff;
+    text-decoration: none;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+.submit-btn {
+    background-color: #fff;
+    color: #FF8C00;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* 主要内容区（不变） */
+.main-content {
+    flex: 1;
+    padding: 15px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+.user-info {
+    background-color: #FFF8DC;
+    border: 1px solid #FFDAB9;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+.avatar-wrapper {
+    width: 60px;
+    height: 60px;
+    border: 1px solid #FF8C00;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #FF8C00; /* 图片占位 */
+}
+.user-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+.username {
+    font-size: 16px;
+    font-weight: bold;
+}
+.identity {
+    font-size: 12px;
+    color: #666;
+}
+.stats {
+    display: flex;
+    gap: 10px;
+    font-size: 12px;
+    color: #666;
+}
+.stats span b {
+    color: #FF8C00;
+}
+.tab-bar {
+    display: flex;
+    gap: 10px;
+    background-color: #FFF8DC;
+    border: 1px solid #FFDAB9;
+    border-radius: 8px;
+    padding: 5px;
+    margin-bottom: 15px;
+}
+.tab {
+    flex: 1;
+    padding: 8px 0;
+    text-align: center;
+    font-size: 14px;
+    border: none;
+    border-radius: 4px;
+    background: none;
+    cursor: pointer;
+}
+.tab.active {
+    background-color: #FF8C00;
+    color: #fff;
+    font-weight: bold;
+}
+.content-block {
+    background-color: #fff;
+    border: 1px solid #FFDAB9;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+.content-title {
+    font-size: 14px;
+    font-weight: bold;
+    color: #FF8C00;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #FFDAB9;
+}
+.channel-cards {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+.channel-card {
+    width: 120px;
+    height: 80px;
+    background-color: #E0FFFF;
+    border: 1px solid #FF8C00;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: bold;
+}
+.subscribe-list {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+.subscribe-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+.subscribe-item .avatar-wrapper {
+    width: 60px;
+    height: 60px;
+}
+.subscribe-item .avatar {
+    width: 50px;
+    height: 50px;
+}
+.subscribe-item span {
+    font-size: 14px;
+    font-weight: bold;
+}
+.message-area {
+    display: flex;
+    gap: 20px;
+}
+.message-list {
+    width: 180px;
+    border: 1px solid #FFDAB9;
+    border-radius: 8px;
+}
+.msg-item {
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid #FFDAB9;
+    cursor: pointer;
+}
+.msg-item .avatar-wrapper {
+    width: 40px;
+    height: 40px;
+}
+.msg-item .avatar {
+    width: 30px;
+    height: 30px;
+}
+.msg-item span {
+    font-size: 14px;
+}
+.chat-window {
+    flex: 1;
+    border: 1px solid #FFDAB9;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+}
+.chat-header {
+    padding: 10px;
+    border-bottom: 1px solid #FFDAB9;
+    background-color: #FFF8DC;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.chat-header .avatar-wrapper {
+    width: 40px;
+    height: 40px;
+}
+.chat-header .avatar {
+    width: 30px;
+    height: 30px;
+}
+.chat-header span {
+    font-size: 14px;
+    font-weight: bold;
+}
+.chat-content {
+    flex: 1;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.chat-message.received {
+    background-color: #E0FFFF;
+    padding: 8px 12px;
+    border-radius: 4px;
+    max-width: 70%;
+    align-self: flex-start;
+    font-size: 14px;
+}
+.chat-message.received .time {
+    font-size: 12px;
+    color: #666;
+    margin-left: 10px;
+}
+.chat-input-area {
+    padding: 10px;
+    border-top: 1px solid #FFDAB9;
+    display: flex;
+    gap: 10px;
+}
+.chat-input-area input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #FF8C00;
+    border-radius: 4px;
+    outline: none;
+    font-size: 14px;
+}
+.chat-input-area button {
+    padding: 8px 16px;
+    background-color: #FF8C00;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+/* 底部播放栏（核心修改：贴合图片的频道封面+倍速+播放列表） */
+.player-bar {
+    background-color: #F5F5F5;
+    border-top: 2px solid #FF8C00;
+    padding: 8px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+}
+.player-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+/* 贴合图片的频道封面（文字样式+背景，无需图片） */
+.channel-cover {
+    width: 40px;
+    height: 40px;
+    border: 2px solid #FF8C00;
+    border-radius: 4px;
+    background-color: #E0FFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: bold;
+    color: #FF8C00;
+}
+.song-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.song-name {
+    font-size: 14px;
+    font-weight: bold;
+}
+.singer {
+    font-size: 12px;
+    color: #666;
+}
+.player-middle {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    max-width: 600px;
+}
+.control-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+.control-btn {
+    background: none;
+    border: none;
+    color: #333;
+    cursor: pointer;
+    font-size: 16px;
+}
+.control-btn.play-btn {
+    color: #FF8C00;
+    font-size: 20px;
+}
+.progress-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.time {
+    font-size: 12px;
+    color: #666;
+    width: 40px;
+    text-align: center;
+}
+.progress-bar {
+    flex: 1;
+    height: 6px;
+    background-color: #CCC;
+    border-radius: 3px;
+    overflow: hidden;
+}
+.progress-fill {
+    height: 100%;
+    background-color: #FF8C00;
+    width: 30%;
+}
+.player-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.volume-bar {
+    width: 80px;
+    height: 6px;
+    background-color: #CCC;
+    border-radius: 3px;
+    overflow: hidden;
+}
+.volume-fill {
+    height: 100%;
+    background-color: #FF8C00;
+    width: 80%;
+}
+
+/* 新增：倍速控制样式 */
+.speed-control {
+    position: relative;
+    margin: 0 10px;
+}
+.speed-btn {
+    background: none;
+    border: none;
+    color: #333;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+.speed-btn:hover {
+    color: #FF8C00;
+}
+.speed-menu {
+    position: absolute;
+    bottom: 30px;
+    left: 0;
+    background-color: #fff;
+    border: 1px solid #FFDAB9;
+    border-radius: 4px;
+    padding: 5px 0;
+    width: 80px;
+    display: none;
+    z-index: 999;
+}
+.speed-menu.active {
+    display: block;
+}
+.speed-option {
+    padding: 5px 10px;
+    font-size: 14px;
+    cursor: pointer;
+}
+.speed-option.active {
+    background-color: #FF8C00;
+    color: #fff;
+}
+.speed-option:hover {
+    background-color: #FFF8DC;
+}
+
+/* 新增：播放列表样式 */
+.playlist-container {
+    position: relative;
+    margin-left: 10px;
+}
+.playlist-btn {
+    background: none;
+    border: none;
+    color: #333;
+    font-size: 16px;
+    cursor: pointer;
+}
+.playlist-btn:hover {
+    color: #FF8C00;
+}
+.playlist-panel {
+    position: absolute;
+    bottom: 30px;
+    right: 0;
+    background-color: #fff;
+    border: 1px solid #FFDAB9;
+    border-radius: 4px;
+    width: 200px;
+    max-height: 200px;
+    overflow-y: auto;
+    display: none;
+    z-index: 999;
+}
+.playlist-panel.active {
+    display: block;
+}
+.playlist-title {
+    padding: 8px 10px;
+    font-size: 14px;
+    font-weight: bold;
+    border-bottom: 1px solid #FFDAB9;
+    color: #FF8C00;
+}
+.playlist-item {
+    padding: 8px 10px;
+    font-size: 14px;
+    cursor: pointer;
+    border-bottom: 1px dashed #FFDAB9;
+}
+.playlist-item:hover {
+    background-color: #FFF8DC;
+}
+.playlist-item.active {
+    color: #FF8C00;
+    font-weight: bold;
+}

@@ -6,6 +6,7 @@
     <title>英语学习中心 - 提升你的英语技能</title>
     <link rel="stylesheet" href="mystyle.css">
     <script src="script.js" defer></script>
+    <script src="router.js" defer></script>
 </head>
 <body>
     <!-- 头部导航 -->
@@ -14,23 +15,23 @@
             <div class="header-content">
                 <!-- Logo -->
                 <div class="logo">
-                    <img src="#" alt="英语学习中心" class="logo-img">
+                    <img src="https://picsum.photos/50/50?random=1" alt="英语学习中心" class="logo-img">
                     <span class="logo-text">英语学习中心</span>
                 </div>
 
                 <!-- 导航菜单 -->
                 <nav class="nav">
                     <ul class="nav-list">
-                        <li class="nav-item active"><a href="#" class="nav-link">首页</a></li>
-                        <li class="nav-item"><a href="#" class="nav-link">分类</a></li>
-                        <li class="nav-item"><a href="channel.html" class="nav-link">频道</a></li>
+                        <li class="nav-item active"><a href="#" data-href="home" class="nav-link">首页</a></li>
+                        <li class="nav-item"><a href="#" data-href="category" class="nav-link">分类</a></li>
+                        <li class="nav-item"><a href="#" data-href="channel" class="nav-link">频道</a></li>
                     </ul>
                 </nav>
 
                 <!-- 搜索框 -->
                 <div class="search-container">
-                    <input type="text" class="search-input" placeholder="Hinted search text">
-                    <button class="search-btn">
+                    <input type="text" class="search-input" placeholder="搜索课程、知识点...">
+                    <button class="search-btn" aria-label="搜索">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="11" cy="11" r="8"></circle>
                             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
@@ -41,7 +42,7 @@
                 <!-- 用户菜单 -->
                 <div class="user-menu">
                     <ul class="user-menu-list">
-                        <li class="user-menu-item"><a href="#" class="user-menu-link">
+                        <li class="user-menu-item"><a href="#" class="user-menu-link" aria-label="用户中心">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                                 <circle cx="12" cy="7" r="4"></circle>
@@ -63,32 +64,32 @@
         <div class="container">
             <!-- 精选课程区域 -->
             <section class="recommend-section">
-                <div class="large-recommend">
+                <div class="large-recommend" style="background: url('https://picsum.photos/800/300?random=2') center/cover no-repeat; border-radius: 8px; padding: 2rem;">
                     <div class="recommend-content">
                         <h2>精选课程</h2>
                         <p>提升英语听说读写全面能力</p>
                     </div>
                 </div>
                 <div class="small-recommend-grid">
-                    <div class="small-recommend">
+                    <div class="small-recommend" style="background: url('https://picsum.photos/400/200?random=3') center/cover no-repeat; border-radius: 8px; padding: 1rem;">
                         <div class="recommend-info">
                             <h3>精选</h3>
                             <p>商务英语</p>
                         </div>
                     </div>
-                    <div class="small-recommend">
+                    <div class="small-recommend" style="background: url('https://picsum.photos/400/200?random=4') center/cover no-repeat; border-radius: 8px; padding: 1rem;">
                         <div class="recommend-info">
                             <h3>精选</h3>
                             <p>日常对话</p>
                         </div>
                     </div>
-                    <div class="small-recommend">
+                    <div class="small-recommend" style="background: url('https://picsum.photos/400/200?random=5') center/cover no-repeat; border-radius: 8px; padding: 1rem;">
                         <div class="recommend-info">
                             <h3>精选</h3>
                             <p>听力训练</p>
                         </div>
                     </div>
-                    <div class="small-recommend">
+                    <div class="small-recommend" style="background: url('https://picsum.photos/400/200?random=6') center/cover no-repeat; border-radius: 8px; padding: 1rem;">
                         <div class="recommend-info">
                             <h3>精选</h3>
                             <p>阅读理解</p>
@@ -99,146 +100,146 @@
 
             <!-- 每日一句 -->
             <section class="daily-quote-section">
-                <div class="daily-quote">
+                <div class="daily-quote" style="border: 1px solid #eee; border-radius: 8px; padding: 1.5rem; margin: 2rem 0;">
                     <div class="quote-content">
                         <span>每日一句</span>
                         <p class="quote-text">The way to learn a language is to practice speaking it as often as possible. - Paul Pimsleur</p>
                         <p style="margin-top: 8px; font-size: 14px; color: #666;">学习一门语言的方法是尽可能多地练习说它。 - 保罗·皮姆斯勒</p>
                     </div>
-                    <button class="copy-btn">朗读</button>
+                    <button class="copy-btn" onclick="readQuote()">朗读</button>
                 </div>
             </section>
 
             <!-- 学习排行榜区域 -->
-    <section class="rank-section">
-        <div class="container">
-            <div class="rank-container">
-                <div class="rank-item">
-                    <div class="rank-header">
-                        <h3>热门课程</h3>
-                        <span class="rank-icon">🔥</span>
-                    </div>
-                    <div class="rank-content">
-                        <div class="rank-item-list">
-                            <div class="rank-song">
-                                <span class="rank-num">1</span>
-                                <span class="rank-title">零基础英语入门</span>
+            <section class="rank-section">
+                <div class="container">
+                    <div class="rank-container" style="display: flex; gap: 1rem; margin: 2rem 0;">
+                        <div class="rank-item" style="flex: 1; border: 1px solid #eee; border-radius: 8px; padding: 1rem;">
+                            <div class="rank-header">
+                                <h3>热门课程</h3>
+                                <span class="rank-icon">🔥</span>
                             </div>
-                            <div class="rank-song">
-                                <span class="rank-num">2</span>
-                                <span class="rank-title">商务英语进阶</span>
+                            <div class="rank-content">
+                                <div class="rank-item-list">
+                                    <div class="rank-song" style="padding: 0.5rem 0; border-bottom: 1px dashed #eee;">
+                                        <span class="rank-num" style="display: inline-block; width: 24px; text-align: center;">1</span>
+                                        <span class="rank-title">零基础英语入门</span>
+                                    </div>
+                                    <div class="rank-song" style="padding: 0.5rem 0; border-bottom: 1px dashed #eee;">
+                                        <span class="rank-num" style="display: inline-block; width: 24px; text-align: center;">2</span>
+                                        <span class="rank-title">商务英语进阶</span>
+                                    </div>
+                                    <div class="rank-song" style="padding: 0.5rem 0;">
+                                        <span class="rank-num" style="display: inline-block; width: 24px; text-align: center;">3</span>
+                                        <span class="rank-title">日常口语300句</span>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="rank-song">
-                                <span class="rank-num">3</span>
-                                <span class="rank-title">日常口语300句</span>
+                        </div>
+                        <div class="rank-item" style="flex: 1; border: 1px solid #eee; border-radius: 8px; padding: 1rem;">
+                            <div class="rank-header">
+                                <h3>学习达人</h3>
+                                <span class="rank-icon">⭐</span>
+                            </div>
+                            <div class="rank-content">
+                                <div class="rank-item-list">
+                                    <div class="rank-song" style="padding: 0.5rem 0; border-bottom: 1px dashed #eee;">
+                                        <span class="rank-num" style="display: inline-block; width: 24px; text-align: center;">1</span>
+                                        <span class="rank-title">学习者 A</span>
+                                    </div>
+                                    <div class="rank-song" style="padding: 0.5rem 0; border-bottom: 1px dashed #eee;">
+                                        <span class="rank-num" style="display: inline-block; width: 24px; text-align: center;">2</span>
+                                        <span class="rank-title">学习者 B</span>
+                                    </div>
+                                    <div class="rank-song" style="padding: 0.5rem 0;">
+                                        <span class="rank-num" style="display: inline-block; width: 24px; text-align: center;">3</span>
+                                        <span class="rank-title">学习者 C</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="rank-item" style="flex: 1; border: 1px solid #eee; border-radius: 8px; padding: 1rem;">
+                            <div class="rank-header">
+                                <h3>最新上线</h3>
+                                <span class="rank-icon">✨</span>
+                            </div>
+                            <div class="rank-content">
+                                <div class="rank-item-list">
+                                    <div class="rank-song" style="padding: 0.5rem 0; border-bottom: 1px dashed #eee;">
+                                        <span class="rank-num" style="display: inline-block; width: 24px; text-align: center;">1</span>
+                                        <span class="rank-title">英语听力技巧课</span>
+                                    </div>
+                                    <div class="rank-song" style="padding: 0.5rem 0; border-bottom: 1px dashed #eee;">
+                                        <span class="rank-num" style="display: inline-block; width: 24px; text-align: center;">2</span>
+                                        <span class="rank-title">英文写作提升</span>
+                                    </div>
+                                    <div class="rank-song" style="padding: 0.5rem 0;">
+                                        <span class="rank-num" style="display: inline-block; width: 24px; text-align: center;">3</span>
+                                        <span class="rank-title">英语发音纠正</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="rank-item">
-                    <div class="rank-header">
-                        <h3>学习达人</h3>
-                        <span class="rank-icon">⭐</span>
-                    </div>
-                    <div class="rank-content">
-                        <div class="rank-item-list">
-                            <div class="rank-song">
-                                <span class="rank-num">1</span>
-                                <span class="rank-title">学习者 A</span>
-                            </div>
-                            <div class="rank-song">
-                                <span class="rank-num">2</span>
-                                <span class="rank-title">学习者 B</span>
-                            </div>
-                            <div class="rank-song">
-                                <span class="rank-num">3</span>
-                                <span class="rank-title">学习者 C</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="rank-item">
-                    <div class="rank-header">
-                        <h3>最新上线</h3>
-                        <span class="rank-icon">✨</span>
-                    </div>
-                    <div class="rank-content">
-                        <div class="rank-item-list">
-                            <div class="rank-song">
-                                <span class="rank-num">1</span>
-                                <span class="rank-title">英语听力技巧课</span>
-                            </div>
-                            <div class="rank-song">
-                                <span class="rank-num">2</span>
-                                <span class="rank-title">英文写作提升</span>
-                            </div>
-                            <div class="rank-song">
-                                <span class="rank-num">3</span>
-                                <span class="rank-title">英语发音纠正</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+            </section>
 
             <!-- 学习资源分类区域 -->
-    <section class="channels-section">
-        <div class="container">
-            <div class="channels-header">
-                <h2>学习资源分类</h2>
-                <a href="#" class="view-more">查看更多 →</a>
-            </div>
-            <div class="channels-grid">
-                <div class="channel-item">
-                    <div class="channel-icon">🗣️</div>
-                    <div class="channel-info">
-                        <h3 class="channel-title">口语练习</h3>
-                        <p class="channel-desc">提升口语表达能力</p>
+            <section class="channels-section">
+                <div class="container">
+                    <div class="channels-header" style="display: flex; justify-content: space-between; align-items: center; margin: 1rem 0;">
+                        <h2>学习资源分类</h2>
+                        <a href="#" class="view-more">查看更多 →</a>
+                    </div>
+                    <div class="channels-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem;">
+                        <div class="channel-item" style="border: 1px solid #eee; border-radius: 8px; padding: 1.5rem; text-align: center;">
+                            <div class="channel-icon" style="font-size: 2rem; margin-bottom: 0.5rem;">🗣️</div>
+                            <div class="channel-info">
+                                <h3 class="channel-title">口语练习</h3>
+                                <p class="channel-desc">提升口语表达能力</p>
+                            </div>
+                        </div>
+                        <div class="channel-item" style="border: 1px solid #eee; border-radius: 8px; padding: 1.5rem; text-align: center;">
+                            <div class="channel-icon" style="font-size: 2rem; margin-bottom: 0.5rem;">👂</div>
+                            <div class="channel-info">
+                                <h3 class="channel-title">听力训练</h3>
+                                <p class="channel-desc">提高听力理解水平</p>
+                            </div>
+                        </div>
+                        <div class="channel-item" style="border: 1px solid #eee; border-radius: 8px; padding: 1.5rem; text-align: center;">
+                            <div class="channel-icon" style="font-size: 2rem; margin-bottom: 0.5rem;">📖</div>
+                            <div class="channel-info">
+                                <h3 class="channel-title">阅读理解</h3>
+                                <p class="channel-desc">增强阅读能力</p>
+                            </div>
+                        </div>
+                        <div class="channel-item" style="border: 1px solid #eee; border-radius: 8px; padding: 1.5rem; text-align: center;">
+                            <div class="channel-icon" style="font-size: 2rem; margin-bottom: 0.5rem;">✍️</div>
+                            <div class="channel-info">
+                                <h3 class="channel-title">写作提升</h3>
+                                <p class="channel-desc">提升英文写作水平</p>
+                            </div>
+                        </div>
+                        <div class="channel-item" style="border: 1px solid #eee; border-radius: 8px; padding: 1.5rem; text-align: center;">
+                            <div class="channel-icon" style="font-size: 2rem; margin-bottom: 0.5rem;">🏢</div>
+                            <div class="channel-info">
+                                <h3 class="channel-title">商务英语</h3>
+                                <p class="channel-desc">职场英语技巧</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="channel-item">
-                    <div class="channel-icon">👂</div>
-                    <div class="channel-info">
-                        <h3 class="channel-title">听力训练</h3>
-                        <p class="channel-desc">提高听力理解水平</p>
-                    </div>
-                </div>
-                <div class="channel-item">
-                    <div class="channel-icon">📖</div>
-                    <div class="channel-info">
-                        <h3 class="channel-title">阅读理解</h3>
-                        <p class="channel-desc">增强阅读能力</p>
-                    </div>
-                </div>
-                <div class="channel-item">
-                    <div class="channel-icon">✍️</div>
-                    <div class="channel-info">
-                        <h3 class="channel-title">写作提升</h3>
-                        <p class="channel-desc">提升英文写作水平</p>
-                    </div>
-                </div>
-                <div class="channel-item">
-                    <div class="channel-icon">🏢</div>
-                    <div class="channel-info">
-                        <h3 class="channel-title">商务英语</h3>
-                        <p class="channel-desc">职场英语技巧</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+            </section>
         </div>
     </main>
 
     <!-- 播放器 -->
-    <footer class="player">
+    <footer class="player" style="border-top: 1px solid #eee; padding: 1rem 0; margin-top: 2rem;">
         <div class="container">
             <div class="player-content">
                 <!-- 学习音频信息 -->
-                <div class="play-info">
-                    <img src="#" alt="课程封面" class="song-cover">
+                <div class="play-info" style="display: flex; align-items: center; gap: 1rem;">
+                    <img src="https://picsum.photos/60/60?random=7" alt="课程封面" class="song-cover">
                     <div class="song-info">
                         <h4 class="song-title">English Daily Conversation</h4>
                         <p class="song-artist">英语日常对话课程</p>
@@ -246,30 +247,30 @@
                 </div>
 
                 <!-- 播放控制 -->
-                <div class="play-controls">
-                    <div class="control-buttons">
-                        <button class="control-btn">
+                <div class="play-controls" style="flex: 1; padding: 0 1rem;">
+                    <div class="control-buttons" style="display: flex; gap: 1rem; justify-content: center; margin-bottom: 0.5rem;">
+                        <button class="control-btn" aria-label="上一曲">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
                                 <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
                             </svg>
                         </button>
-                        <button class="control-btn">
+                        <button class="control-btn" aria-label="后退">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <polygon points="5 3 19 12 5 21 5 3"></polygon>
                             </svg>
                         </button>
-                        <button class="control-btn play-btn">
+                        <button class="control-btn play-btn" aria-label="播放">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <polygon points="5 3 19 12 5 21 5 3"></polygon>
                             </svg>
                         </button>
-                        <button class="control-btn">
+                        <button class="control-btn" aria-label="前进">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <polygon points="5 3 19 12 5 21 5 3"></polygon>
                             </svg>
                         </button>
-                        <button class="control-btn">
+                        <button class="control-btn" aria-label="下一曲">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
                             </svg>
@@ -277,30 +278,41 @@
                     </div>
 
                     <!-- 进度条 -->
-                    <div class="progress-container">
+                    <div class="progress-container" style="display: flex; align-items: center; gap: 0.5rem;">
                         <span class="current-time">00:00</span>
-                        <div class="progress-bar">
-                            <div class="progress-fill"></div>
+                        <div class="progress-bar" style="flex: 1; height: 4px; background: #eee; border-radius: 2px; cursor: pointer;">
+                            <div class="progress-fill" style="width: 30%; height: 100%; background: #ff7e36;"></div>
                         </div>
-                        <span class="total-time">00:00</span>
+                        <span class="total-time">05:20</span>
                     </div>
                 </div>
 
                 <!-- 音量控制 -->
-                <div class="volume-control">
-                    <button class="volume-btn">
+                <div class="volume-control" style="display: flex; align-items: center; gap: 0.5rem; width: 120px;">
+                    <button class="volume-btn" aria-label="音量">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
                             <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
                             <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
                         </svg>
                     </button>
-                    <div class="volume-bar">
-                        <div class="volume-fill"></div>
+                    <div class="volume-bar" style="flex: 1; height: 4px; background: #eee; border-radius: 2px;">
+                        <div class="volume-fill" style="width: 70%; height: 100%; background: #666;"></div>
                     </div>
                 </div>
             </div>
         </div>
     </footer>
+
+    <script>
+        // 每日一句朗读功能
+        function readQuote() {
+            const quoteText = document.querySelector('.quote-text').textContent;
+            // 使用浏览器语音合成API
+            const speech = new SpeechSynthesisUtterance(quoteText);
+            speech.lang = 'en-US'; // 设置为英语发音
+            window.speechSynthesis.speak(speech);
+        }
+    </script>
 </body>
 </html>

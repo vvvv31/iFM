@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学习群组 - 英语学习中心</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="channel2.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <!-- 头部导航 -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <!-- Logo -->
+                <div class="logo">
+                    <img src="#" alt="英语学习中心" class="logo-img">
+                    <span class="logo-text">英语学习中心</span>
+                </div>
+                
+                <!-- 导航菜单 -->
+                <nav class="nav">
+                    <ul class="nav-list">
+                        <li class="nav-item"><a href="index.html" class="nav-link">首页</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link">分类</a></li>
+                        <li class="nav-item active"><a href="channel2.html" class="nav-link">频道</a></li>
+                    </ul>
+                </nav>
+                
+                <!-- 搜索框 -->
+                <div class="search-container">
+                    <input type="text" class="search-input" placeholder="Hinted search text">
+                    <button class="search-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- 用户菜单 -->
+                <div class="user-menu">
+                    <ul class="user-menu-list">
+                        <li class="user-menu-item"><a href="#" class="user-menu-link">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                        </a></li>
+                        <li class="user-menu-item"><a href="#" class="user-menu-link">我的学习</a></li>
+                        <li class="user-menu-item"><a href="#" class="user-menu-link">收藏课程</a></li>
+                        <li class="user-menu-item"><a href="#" class="user-menu-link">学习历史</a></li>
+                        <li class="user-menu-item"><a href="#" class="user-menu-link">学习计划</a></li>
+                        <li class="user-menu-item"><a href="#" class="user-menu-link btn-orange">开始学习</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- 主要内容区域 -->
+    <main class="main channel-main">
+        <div class="container">
+            <div class="channel-layout">
+                <!-- 左侧频道导航 -->
+                <aside class="channel-sidebar">
+                    <div class="channel-search">
+                        <div class="back-btn">
+                            <i class="fas fa-arrow-left"></i>
+                        </div>
+                        <input type="text" class="channel-search-input" placeholder="输入频道名">
+                    </div>
+                    <button class="create-group-btn">创建群组</button>
+                    
+                    <!-- 群组列表 -->
+                    <div class="group-list-mobile">
+                        <div class="group-item active">
+                            <img src="images/group1.png" alt="群组头像">
+                            <div class="group-info">
+                                <h4>学习交流群</h4>
+                                <p>欢迎新人</p>
+                            </div>
+                            <span class="message-count">3</span>
+                            <span class="message-time">10:23</span>
+                        </div>
+                        <div class="group-item">
+                            <img src="images/group2.png" alt="群组头像">
+                            <div class="group-info">
+                                <h4>技术讨论组</h4>
+                                <p>最近在学什么？</p>
+                            </div>
+                            <span class="message-time">昨天</span>
+                        </div>
+                        <div class="group-item">
+                            <img src="images/group3.png" alt="群组头像">
+                            <div class="group-info">
+                                <h4>项目合作群</h4>
+                                <p>明天开始新项目</p>
+                            </div>
+                            <span class="message-time">周一</span>
+                        </div>
+                        <div class="group-item">
+                            <img src="images/group4.png" alt="群组头像">
+                            <div class="group-info">
+                                <h4>兴趣爱好群</h4>
+                                <p>周末有活动吗？</p>
+                            </div>
+                            <span class="message-time">上周</span>
+                        </div>
+                        <div class="group-item">
+                            <img src="images/group5.png" alt="群组头像">
+                            <div class="group-info">
+                                <h4>求职交流群</h4>
+                                <p>分享面试经验</p>
+                            </div>
+                            <span class="message-count">5</span>
+                            <span class="message-time">09:15</span>
+                        </div>
+                    </div>
+                </aside>
+                
+                <!-- 中间群组列表 -->
+                <section class="group-list">
+                    <div class="group-header">
+                        <h2>群组名</h2>
+                        <div class="group-stats">x在线/n用户</div>
+                    </div>
+                    <div class="group-welcome">
+                        <div class="welcome-bubble">
+                            欢迎来到xx群组
+                        </div>
+                    </div>
+                    <div class="chat-messages">
+                        <div class="chat-message">
+                            <img src="#" alt="用户头像" class="user-avatar">
+                            <div class="message-content">
+                                <div class="message-text">欢迎新人</div>
+                                <div class="message-time">2025.11.23 17:59</div>
+                            </div>
+                        </div>
+                        <div class="chat-message">
+                            <img src="#" alt="用户头像" class="user-avatar">
+                            <div class="message-content">
+                                <div class="message-text">欢迎新人</div>
+                                <div class="message-time">2025.11.23 18:23</div>
+                            </div>
+                        </div>
+                        <!-- 可以添加更多聊天消息 -->
+                    </div>
+                    <div class="message-input-area">
+                        <div class="message-input-controls">
+                            <button class="voice-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                                    <line x1="12" y1="19" x2="12" y2="23"></line>
+                                    <line x1="8" y1="23" x2="16" y2="23"></line>
+                                </svg>
+                            </button>
+                            <button class="emoji-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="8" y1="14" x2="16" y2="14"></line>
+                                    <line x1="9" y1="9" x2="9.01" y2="9"></line>
+                                    <line x1="15" y1="9" x2="15.01" y2="9"></line>
+                                </svg>
+                            </button>
+                        </div>
+                        <input type="text" class="message-input" placeholder="输入消息...">
+                    </div>
+                </section>
+                
+                <!-- 右侧群组信息 -->
+                <aside class="group-info-sidebar">
+                    <div class="group-info-header">
+                        <button class="group-search-btn">搜索</button>
+                        <button class="group-files-btn">群文件</button>
+                    </div>
+                    <div class="group-info-content">
+                        <div class="info-section">
+                            <h3>群组信息：</h3>
+                            <div class="info-item">
+                                <h4>群组简介</h4>
+                                <p>这是一个英语学习交流群组，欢迎大家一起学习和交流。</p>
+                            </div>
+                        </div>
+                        <div class="info-section">
+                            <h3>在线成员：</h3>
+                            <div class="member-list">
+                                <!-- 在线成员列表 -->
+                            </div>
+                        </div>
+                        <div class="info-section">
+                            <h3>所有成员：</h3>
+                            <div class="member-list">
+                                <!-- 所有成员列表 -->
+                            </div>
+                        </div>
+                        <div class="invite-code-section">
+                            <div class="invite-code">邀请码</div>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </main>
+    
+    <!-- 移动端切换按钮 -->
+    <button class="mobile-toggle" id="mobileToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <script>
+        // 移动端切换按钮功能
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileToggle = document.getElementById('mobileToggle');
+            const channelSidebar = document.querySelector('.channel-sidebar');
+            const groupInfoSidebar = document.querySelector('.group-info-sidebar');
+            const groupList = document.querySelector('.group-list');
+            let toggleState = 0; // 0: 显示主内容, 1: 显示左侧边栏, 2: 显示右侧边栏
+            
+            mobileToggle.addEventListener('click', function() {
+                toggleState = (toggleState + 1) % 3;
+                
+                if (toggleState === 0) {
+                    // 显示主内容
+                    channelSidebar.style.display = 'none';
+                    groupInfoSidebar.style.display = 'none';
+                    groupList.style.display = 'block';
+                    mobileToggle.innerHTML = '<i class="fas fa-bars"></i>';
+                } else if (toggleState === 1) {
+                    // 显示左侧边栏
+                    channelSidebar.style.display = 'block';
+                    groupInfoSidebar.style.display = 'none';
+                    groupList.style.display = 'none';
+                    mobileToggle.innerHTML = '<i class="fas fa-comments"></i>';
+                } else {
+                    // 显示右侧边栏
+                    channelSidebar.style.display = 'none';
+                    groupInfoSidebar.style.display = 'block';
+                    groupList.style.display = 'none';
+                    mobileToggle.innerHTML = '<i class="fas fa-user-friends"></i>';
+                }
+            });
+        });
+    </script>
+    
+    <!-- 播放器 -->
+    <footer class="player">
+        <div class="container">
+            <div class="player-content">
+                <!-- 学习音频信息 -->
+                <div class="play-info">
+                    <img src="#" alt="课程封面" class="song-cover">
+                    <div class="song-info">
+                        <h4 class="song-title">English Daily Conversation</h4>
+                        <p class="song-artist">英语日常对话课程</p>
+                    </div>
+                </div>
+                
+                <!-- 播放控制 -->
+                <div class="play-controls">
+                    <div class="control-buttons">
+                        <button class="control-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                                <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                            </svg>
+                        </button>
+                        <button class="control-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                            </svg>
+                        </button>
+                        <button class="control-btn play-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                            </svg>
+                        </button>
+                        <button class="control-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                            </svg>
+                        </button>
+                        <button class="control-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <!-- 进度条 -->
+                    <div class="progress-container">
+                        <span class="current-time">00:00</span>
+                        <div class="progress-bar">
+                            <div class="progress-fill"></div>
+                        </div>
+                        <span class="total-time">00:00</span>
+                    </div>
+                </div>
+                
+                <!-- 音量控制 -->
+                <div class="volume-control">
+                    <button class="volume-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                            <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+                        </svg>
+                    </button>
+                    <div class="volume-bar">
+                        <div class="volume-fill"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>分类页面 - 英语学习中心</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="category.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <!-- 头部导航 -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <!-- Logo -->
+                <div class="logo">
+                    <img src="#" alt="英语学习中心" class="logo-img">
+                    <span class="logo-text">英语学习中心</span>
+                </div>
+                
+                <!-- 导航菜单 -->
+                <nav class="nav">
+                    <ul class="nav-list">
+                        <li class="nav-item"><a href="index.html" class="nav-link">首页</a></li>
+                        <li class="nav-item active"><a href="category.html" class="nav-link">分类</a></li>
+                        <li class="nav-item"><a href="channel.html" class="nav-link">频道</a></li>
+                    </ul>
+                </nav>
+                
+                <!-- 搜索框 -->
+                <div class="search-container">
+                    <input type="text" class="search-input" placeholder="Hinted search text">
+                    <button class="search-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- 用户菜单 -->
+                <div class="user-menu">
+                    <ul class="user-menu-list">
+                        <li class="user-menu-item"><a href="#" class="user-menu-link">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                        </a></li>
+                        <li class="user-menu-item"><a href="#" class="user-menu-link">我的学习</a></li>
+                        <li class="user-menu-item"><a href="#" class="user-menu-link">收藏课程</a></li>
+                        <li class="user-menu-item"><a href="#" class="user-menu-link">学习历史</a></li>
+                        <li class="user-menu-item"><a href="#" class="user-menu-link">学习计划</a></li>
+                        <li class="user-menu-item"><a href="#" class="user-menu-link btn-orange">开始学习</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- 主要内容区域 -->
+    <main class="main">
+        <div class="container">
+            <!-- 分类页面标题 -->
+            <div class="category-header">
+                <h1>课程分类</h1>
+                <p>选择适合你的英语学习资源</p>
+            </div>
+            
+            <!-- 分类过滤选项 -->
+            <div class="filter-section">
+                <!-- 类型过滤 -->
+                <div class="filter-group">
+                    <span class="filter-label">类型：</span>
+                    <div class="filter-options">
+                        <button class="filter-option active">频道</button>
+                        <button class="filter-option">直播</button>
+                    </div>
+                </div>
+                
+                <!-- 种类过滤 -->
+                <div class="filter-group">
+                    <span class="filter-label">种类：</span>
+                    <div class="filter-options">
+                        <button class="filter-option active">电影</button>
+                        <button class="filter-option">小说</button>
+                        <button class="filter-option">学习资料</button>
+                        <button class="filter-option">音乐</button>
+                        <button class="filter-option">演讲</button>
+                    </div>
+                </div>
+                
+                <!-- 排序选项 -->
+                <div class="filter-group">
+                    <span class="filter-label">排序：</span>
+                    <div class="filter-options">
+                        <button class="filter-option active">默认</button>
+                        <button class="filter-option">热度</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 频道网格展示 -->
+            <div class="channels-grid">
+                <!-- 频道卡片 1 -->
+                <div class="channel-card">
+                    <div class="channel-thumbnail">
+                        <div class="thumbnail-overlay">
+                            <span class="play-icon">▶</span>
+                            <span class="video-duration">12:30</span>
+                        </div>
+                    </div>
+                    <div class="channel-info">
+                        <h3 class="channel-title">商务英语会话技巧</h3>
+                        <div class="channel-meta">
+                            <span class="views-count">2.3万次学习</span>
+                            <span class="rating">⭐⭐⭐⭐⭐</span>
+                        </div>
+                        <div class="teacher-info">
+                            <img src="#" alt="老师头像" class="teacher-avatar">
+                            <span class="teacher-name">李老师</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 频道卡片 2 -->
+                <div class="channel-card">
+                    <div class="channel-thumbnail">
+                        <div class="thumbnail-overlay">
+                            <span class="play-icon">▶</span>
+                            <span class="video-duration">15:45</span>
+                        </div>
+                    </div>
+                    <div class="channel-info">
+                        <h3 class="channel-title">日常英语口语800句</h3>
+                        <div class="channel-meta">
+                            <span class="views-count">5.6万次学习</span>
+                            <span class="rating">⭐⭐⭐⭐</span>
+                        </div>
+                        <div class="teacher-info">
+                            <img src="#" alt="老师头像" class="teacher-avatar">
+                            <span class="teacher-name">王老师</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 频道卡片 3 -->
+                <div class="channel-card">
+                    <div class="channel-thumbnail">
+                        <div class="thumbnail-overlay">
+                            <span class="play-icon">▶</span>
+                            <span class="video-duration">18:20</span>
+                        </div>
+                    </div>
+                    <div class="channel-info">
+                        <h3 class="channel-title">英语听力进阶训练</h3>
+                        <div class="channel-meta">
+                            <span class="views-count">3.4万次学习</span>
+                            <span class="rating">⭐⭐⭐⭐⭐</span>
+                        </div>
+                        <div class="teacher-info">
+                            <img src="#" alt="老师头像" class="teacher-avatar">
+                            <span class="teacher-name">张老师</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 频道卡片 4 -->
+                <div class="channel-card">
+                    <div class="channel-thumbnail">
+                        <div class="thumbnail-overlay">
+                            <span class="play-icon">▶</span>
+                            <span class="video-duration">22:10</span>
+                        </div>
+                    </div>
+                    <div class="channel-info">
+                        <h3 class="channel-title">英语写作技巧提升</h3>
+                        <div class="channel-meta">
+                            <span class="views-count">1.9万次学习</span>
+                            <span class="rating">⭐⭐⭐⭐</span>
+                        </div>
+                        <div class="teacher-info">
+                            <img src="#" alt="老师头像" class="teacher-avatar">
+                            <span class="teacher-name">陈老师</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 频道卡片 5 -->
+                <div class="channel-card">
+                    <div class="channel-thumbnail">
+                        <div class="thumbnail-overlay">
+                            <span class="play-icon">▶</span>
+                            <span class="video-duration">10:55</span>
+                        </div>
+                    </div>
+                    <div class="channel-info">
+                        <h3 class="channel-title">零基础英语入门</h3>
+                        <div class="channel-meta">
+                            <span class="views-count">8.2万次学习</span>
+                            <span class="rating">⭐⭐⭐⭐⭐</span>
+                        </div>
+                        <div class="teacher-info">
+                            <img src="#" alt="老师头像" class="teacher-avatar">
+                            <span class="teacher-name">刘老师</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 频道卡片 6 -->
+                <div class="channel-card">
+                    <div class="channel-thumbnail">
+                        <div class="thumbnail-overlay">
+                            <span class="play-icon">▶</span>
+                            <span class="video-duration">16:30</span>
+                        </div>
+                    </div>
+                    <div class="channel-info">
+                        <h3 class="channel-title">英语语法精讲</h3>
+                        <div class="channel-meta">
+                            <span class="views-count">4.1万次学习</span>
+                            <span class="rating">⭐⭐⭐⭐</span>
+                        </div>
+                        <div class="teacher-info">
+                            <img src="#" alt="老师头像" class="teacher-avatar">
+                            <span class="teacher-name">赵老师</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 频道卡片 7 -->
+                <div class="channel-card">
+                    <div class="channel-thumbnail">
+                        <div class="thumbnail-overlay">
+                            <span class="play-icon">▶</span>
+                            <span class="video-duration">14:25</span>
+                        </div>
+                    </div>
+                    <div class="channel-info">
+                        <h3 class="channel-title">旅游英语口语</h3>
+                        <div class="channel-meta">
+                            <span class="views-count">3.7万次学习</span>
+                            <span class="rating">⭐⭐⭐⭐</span>
+                        </div>
+                        <div class="teacher-info">
+                            <img src="#" alt="老师头像" class="teacher-avatar">
+                            <span class="teacher-name">孙老师</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 频道卡片 8 -->
+                <div class="channel-card">
+                    <div class="channel-thumbnail">
+                        <div class="thumbnail-overlay">
+                            <span class="play-icon">▶</span>
+                            <span class="video-duration">19:40</span>
+                        </div>
+                    </div>
+                    <div class="channel-info">
+                        <h3 class="channel-title">英语发音纠正</h3>
+                        <div class="channel-meta">
+                            <span class="views-count">2.8万次学习</span>
+                            <span class="rating">⭐⭐⭐⭐⭐</span>
+                        </div>
+                        <div class="teacher-info">
+                            <img src="#" alt="老师头像" class="teacher-avatar">
+                            <span class="teacher-name">周老师</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 频道卡片 9 -->
+                <div class="channel-card">
+                    <div class="channel-thumbnail">
+                        <div class="thumbnail-overlay">
+                            <span class="play-icon">▶</span>
+                            <span class="video-duration">21:15</span>
+                        </div>
+                    </div>
+                    <div class="channel-info">
+                        <h3 class="channel-title">英语面试技巧</h3>
+                        <div class="channel-meta">
+                            <span class="views-count">3.2万次学习</span>
+                            <span class="rating">⭐⭐⭐⭐</span>
+                        </div>
+                        <div class="teacher-info">
+                            <img src="#" alt="老师头像" class="teacher-avatar">
+                            <span class="teacher-name">吴老师</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 分页控制 -->
+            <div class="pagination">
+                <button class="page-btn prev-btn">上一页</button>
+                <button class="page-btn active">1</button>
+                <button class="page-btn">2</button>
+                <button class="page-btn">3</button>
+                <span class="page-ellipsis">...</span>
+                <button class="page-btn">10</button>
+                <button class="page-btn next-btn">下一页</button>
+            </div>
+        </div>
+    </main>
+    
+    <!-- 底部播放器 -->
+    <footer class="player">
+        <div class="container">
+            <div class="player-content">
+                <!-- 播放信息 -->
+                <div class="play-info">
+                    <div class="course-cover">
+                        <img src="#" alt="课程封面">
+                    </div>
+                    <div class="song-info">
+                        <h4 class="song-title">English Daily Conversation</h4>
+                        <p class="song-description">英语日常对话练习</p>
+                    </div>
+                </div>
+                
+                <!-- 播放控制 -->
+                <div class="play-controls">
+                    <div class="control-buttons">
+                        <button class="control-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 18V6M18 12l-6-6-6 6"></path>
+                            </svg>
+                        </button>
+                        <button class="control-btn play-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                            </svg>
+                        </button>
+                        <button class="control-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 6v12M6 12l6 6 6-6"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="progress-container">
+                        <span class="time-display">00:00</span>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 45%;"></div>
+                        </div>
+                        <span class="time-display">00:00</span>
+                    </div>
+                </div>
+                
+                <!-- 音量控制 -->
+                <div class="volume-control">
+                    <button class="volume-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                        </svg>
+                    </button>
+                    <div class="volume-slider">
+                        <div class="volume-progress" style="width: 45%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

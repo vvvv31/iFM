@@ -17,7 +17,6 @@ const routes = {
     'live': 'live.html',
     'live-streaming': 'live-streaming.html',
     'player': 'player.html',
-    'yinpinluzhi': 'yinpinluzhi.html'
 };
 
 function navigateTo(path) {

@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="channel.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="script.js" defer></script>
-    <script src="router.js" defer></script>
     <style>
         /* 新增样式：确保内容不被底部播放栏遮挡 */
         .main.channel-main {
@@ -34,40 +33,32 @@
         您的浏览器不支持音频播放
     </audio>
 
-    <!-- 头部导航 - 与其他页面统一 -->
+    <!-- 顶部导航栏 -->
     <header class="header">
         <div class="logo">
-            <img src="#" alt="星之声" class="logo-img">
+            <div class="logo-img"></div>
             <span class="logo-text">星之声</span>
         </div>
-
         <nav class="main-nav">
-            <a href="index.html" class="nav-item">首页</a>
-            <a href="#" class="nav-item">分类</a>
-            <a href="channel.html" class="nav-item active">频道</a>
+            <a href="index.html" class="nav-item">首页</a>                     
+            <a href="category.html" class="nav-item">分类</a>
+            <a href="channel.html" class="nav-item active">频道</a>                     
         </nav>
-
         <div class="search-box">
-            <input type="text" class="search-input" placeholder="Hinted search text">
-            <button class="search-btn">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                </svg>
-            </button>
+            <input type="text" placeholder="Hinted search text" class="search-input">
+            <button class="search-btn"><i class="fas fa-search"></i></button>
         </div>
-
         <div class="user-functions">
-            <a href="#" class="func-item">
+            <a href="my-recent.html" class="func-item">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                     <circle cx="12" cy="7" r="4"></circle>
                 </svg>
             </a>
-            <a href="#" class="func-item">消息</a>
-            <a href="#" class="func-item">收藏</a>
-            <a href="#" class="func-item">历史</a>
-            <a href="#" class="func-item">创作中心</a>
+            <a href="#" class="func-item"><i class="fas fa-bell"></i> 消息</a>
+            <a href="#" class="func-item"><i class="fas fa-star"></i> 收藏</a>
+            <a href="#" class="func-item"><i class="fas fa-history"></i> 历史</a>
+            <a href="#" class="func-item"><i class="fas fa-pen"></i> 创作中心</a>
             <button class="submit-btn">投稿</button>
         </div>
     </header>

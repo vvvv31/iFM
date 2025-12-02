@@ -4,229 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>我的-创作者中心 - 星之声</title>
+    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="router.js" defer></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background-color: #f5f5f5;
-            color: #333;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
-        .header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 15px 5%;
-            background-color: #ff7b25;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-        }
-
-        .logo-img {
-            width: 40px;
-            height: 40px;
-            background-color: white;
-            border-radius: 50%;
-            margin-right: 10px;
-        }
-
-        .logo-text {
-            font-size: 22px;
-            font-weight: bold;
-            color: white;
-        }
-
-        .main-nav {
-            display: flex;
-            gap: 30px;
-        }
-
-        .nav-item {
-            text-decoration: none;
-            color: white;
-            font-weight: 500;
-            transition: color 0.3s;
-        }
-
-        .nav-item:hover {
-            color: #ffe6d6;
-        }
-
-        .search-box {
-            display: flex;
-            align-items: center;
-            background-color: rgba(255, 255, 255, 0.9);
-            border-radius: 20px;
-            padding: 5px 15px;
-            width: 250px;
-        }
-
-        .search-input {
-            border: none;
-            background: transparent;
-            outline: none;
-            width: 100%;
-            padding: 8px 0;
-        }
-
-        .search-input::placeholder {
-            color: #999;
-        }
-
-        .search-btn {
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            color: #ff7b25;
-        }
-
-        .user-functions {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .func-item {
-            text-decoration: none;
-            color: white;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .func-item.active {
-            color: #ffe6d6;
-            font-weight: 600;
-        }
-
-        .submit-btn {
-            background-color: white;
-            color: #ff7b25;
-            border: none;
-            padding: 8px 20px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: background-color 0.3s;
-        }
-
-        .submit-btn:hover {
-            background-color: #ffe6d6;
-        }
-
-        .main-content {
-            flex: 1;
-            padding: 30px 5%;
-            max-width: 1200px;
-            margin: 0 auto;
-            width: 100%;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            margin-bottom: 30px;
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-        }
-
-        .avatar-wrapper {
-            margin-right: 20px;
-        }
-
-        .avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background-color: #ddd;
-        }
-
-        .user-detail {
-            flex: 1;
-        }
-
-        .username {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .identity {
-            color: #666;
-            margin-bottom: 15px;
-        }
-
-        .stats {
-            display: flex;
-            gap: 20px;
-        }
-
-        .stats span {
-            color: #666;
-        }
-
-        .stats b {
-            color: #ff7b25;
-        }
-
-        .tab-bar {
-            display: flex;
-            gap: 0;
-            margin-bottom: 30px;
-            background-color: white;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-        }
-
-        .tab {
-            flex: 1;
-            padding: 15px 0;
-            border: none;
-            background-color: white;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s;
-        }
-
-        .tab.active {
-            background-color: #ff7b25;
-            color: white;
-        }
-
-        .tab:hover:not(.active) {
-            background-color: #f0f2f5;
-        }
-
-        .content-block {
-            background-color: white;
-            border-radius: 10px;
-            padding: 25px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            margin-bottom: 30px;
-        }
-
-        /* 创作者中心特有样式 */
+        /* 创作者中心特有样式 - 补充 style.css */
+        
+        /* 创作者统计卡片 */
         .creator-stats {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -236,16 +19,22 @@
 
         .stat-card {
             background-color: white;
-            border-radius: 10px;
+            border: 1px solid #FFDAB9;
+            border-radius: 8px;
             padding: 25px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
             text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(255, 140, 0, 0.1);
         }
 
         .stat-value {
             font-size: 32px;
             font-weight: bold;
-            color: #ff7b25;
+            color: #FF8C00;
             margin-bottom: 10px;
         }
 
@@ -254,6 +43,7 @@
             font-size: 16px;
         }
 
+        /* 创作者操作卡片 */
         .creator-actions {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -263,477 +53,379 @@
 
         .action-card {
             background-color: white;
-            border-radius: 10px;
+            border: 1px solid #FFDAB9;
+            border-radius: 8px;
             padding: 25px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
             cursor: pointer;
-            transition: transform 0.3s;
+            transition: all 0.3s ease;
         }
 
         .action-card:hover {
+            background-color: #FFF8DC;
             transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(255, 140, 0, 0.1);
         }
 
         .action-icon {
             font-size: 36px;
-            color: #ff7b25;
+            color: #FF8C00;
             margin-bottom: 15px;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #FFF8DC;
+            border-radius: 50%;
         }
 
         .action-title {
             font-size: 18px;
             font-weight: bold;
             margin-bottom: 10px;
+            color: #333;
         }
 
         .action-desc {
             color: #666;
             font-size: 14px;
+            line-height: 1.4;
         }
 
-        /* 播放栏样式 */
-        .player-bar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 15px 5%;
-            background-color: white;
-            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-            position: sticky;
-            bottom: 0;
-            z-index: 100;
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .creator-stats {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .creator-actions {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .stat-card, .action-card {
+                padding: 20px;
+            }
+            
+            .stat-value {
+                font-size: 28px;
+            }
+            
+            .action-icon {
+                font-size: 32px;
+                width: 50px;
+                height: 50px;
+            }
         }
 
-        .player-left {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            width: 25%;
-        }
-
-        .channel-cover {
-            width: 50px;
-            height: 50px;
-            border-radius: 8px;
-            background-color: #ddd;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #666;
-            font-size: 12px;
-        }
-
-        .song-info p {
-            margin: 0;
-        }
-
-        .song-name {
-            font-weight: bold;
-        }
-
-        .singer {
-            font-size: 12px;
-            color: #666;
-        }
-
-        .player-middle {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 50%;
-        }
-
-        .control-buttons {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 10px;
-        }
-
-        .control-btn {
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            font-size: 18px;
-            color: #666;
-            transition: color 0.3s;
-        }
-
-        .control-btn:hover {
-            color: #ff7b25;
-        }
-
-        .play-btn {
-            font-size: 28px;
-        }
-
-        .speed-control {
-            position: relative;
-        }
-
-        .speed-btn {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            font-size: 14px;
-            color: #666;
-            padding: 5px 10px;
-            border-radius: 5px;
-            transition: background-color 0.3s;
-        }
-
-        .speed-btn:hover {
-            background-color: #f0f2f5;
-        }
-
-        .speed-menu {
-            position: absolute;
-            bottom: 100%;
-            left: 0;
-            background-color: white;
-            border-radius: 5px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            padding: 5px 0;
-            display: none;
-            z-index: 10;
-        }
-
-        .speed-menu.active {
-            display: block;
-        }
-
-        .speed-option {
-            padding: 8px 15px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .speed-option:hover, .speed-option.active {
-            background-color: #f0f2f5;
-        }
-
-        .progress-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            width: 100%;
-        }
-
-        .progress-bar {
-            flex: 1;
-            height: 4px;
-            background-color: #e4e6e9;
-            border-radius: 2px;
-            position: relative;
-            cursor: pointer;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background-color: #ff7b25;
-            border-radius: 2px;
-            width: 30%;
-        }
-
-        .time {
-            font-size: 12px;
-            color: #666;
-            min-width: 40px;
-        }
-
-        .player-right {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            width: 25%;
-            justify-content: flex-end;
-        }
-
-        .volume-bar {
-            width: 80px;
-            height: 4px;
-            background-color: #e4e6e9;
-            border-radius: 2px;
-            position: relative;
-            cursor: pointer;
-        }
-
-        .volume-fill {
-            height: 100%;
-            background-color: #ff7b25;
-            border-radius: 2px;
-            width: 70%;
-        }
-
-        .playlist-container {
-            position: relative;
-        }
-
-        .playlist-panel {
-            position: absolute;
-            bottom: 100%;
-            right: 0;
-            background-color: white;
-            border-radius: 5px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            padding: 10px;
-            width: 200px;
-            display: none;
-            z-index: 10;
-        }
-
-        .playlist-panel.active {
-            display: block;
-        }
-
-        .playlist-title {
-            font-weight: bold;
-            margin-bottom: 10px;
-            padding-bottom: 5px;
-            border-bottom: 1px solid #eee;
-        }
-
-        .playlist-item {
-            padding: 8px 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .playlist-item:hover, .playlist-item.active {
-            background-color: #f0f2f5;
+        @media (max-width: 480px) {
+            .creator-stats, .creator-actions {
+                gap: 10px;
+            }
+            
+            .stat-card, .action-card {
+                padding: 15px;
+            }
+            
+            .stat-value {
+                font-size: 24px;
+            }
+            
+            .action-title {
+                font-size: 16px;
+            }
         }
     </style>
 </head>
 <body>
-<!-- 音频元素 -->
-<audio id="audioPlayer" controls style="display: none;">
-    <source src="" type="audio/mpeg">
-    您的浏览器不支持音频播放
-</audio>
+    <!-- 音频元素 -->
+    <audio id="audioPlayer" controls style="display: none;">
+        <source src="" type="audio/mpeg">
+        您的浏览器不支持音频播放
+    </audio>
 
-<!-- 顶部导航栏 -->
-<header class="header">
-    <div class="logo">
-        <div class="logo-img"></div>
-        <span class="logo-text">星之声</span>
-    </div>
-    <nav class="main-nav">
-        <a href="#" class="nav-item">首页</a>
-        <a href="#" class="nav-item">分类</a>
-        <a href="#" class="nav-item">频道</a>
-    </nav>
-    <div class="search-box">
-        <input type="text" placeholder="Hinted search text" class="search-input">
-        <button class="search-btn"><i class="fas fa-search"></i></button>
-    </div>
-    <div class="user-functions">
-        <a href="#" class="func-item"><i class="fas fa-bell"></i> 消息</a>
-        <a href="#" class="func-item"><i class="fas fa-star"></i> 收藏</a>
-        <a href="#" class="func-item"><i class="fas fa-history"></i> 历史</a>
-        <a href="#" class="func-item active"><i class="fas fa-pen"></i> 创作中心</a>
-        <button class="submit-btn">投稿</button>
-    </div>
-</header>
-
-<!-- 主要内容区 -->
-<main class="main-content">
-    <section class="user-info">
-        <div class="avatar-wrapper">
-            <div class="avatar"></div>
+    <!-- 顶部导航栏 -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-img"></div>
+            <span class="logo-text">星之声</span>
         </div>
-        <div class="user-detail">
-            <div class="username">创作者用户名</div>
-            <div class="identity">认证创作者</div>
-            <div class="stats">
-                <span>关注 <b>23</b></span>
-                <span>粉丝 <b>1,256</b></span>
-                <span>收听时长 <b>4,502</b> 小时</span>
-            </div>
+        <nav class="main-nav">
+            <a href="index.html" class="nav-item">首页</a>                           
+            <a href="category.html" class="nav-item">分类</a>
+            <a href="channel.html" class="nav-item">频道</a>                
+        </nav>
+        <div class="search-box">
+            <input type="text" placeholder="Hinted search text" class="search-input">
+            <button class="search-btn"><i class="fas fa-search"></i></button>
         </div>
-    </section>
-
-    <section class="tab-bar">
-        <button class="tab">最近收听</button>
-        <button class="tab">收藏</button>
-        <button class="tab">订阅</button>
-        <button class="tab">私信</button>
-        <button class="tab active">创作者中心</button>
-    </section>
-
-    <!-- 创作者中心特有内容 -->
-    <section class="content-block">
-        <div class="creator-stats">
-            <div class="stat-card">
-                <div class="stat-value">4,502</div>
-                <div class="stat-label">总收听</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value">23</div>
-                <div class="stat-label">粉丝数</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value">1.5</div>
-                <div class="stat-label">收益</div>
-            </div>
+        <div class="user-functions">
+            <a href="my-recent.html" class="func-item">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+            </a>
+            <a href="#" class="func-item"><i class="fas fa-bell"></i> 消息</a>
+            <a href="#" class="func-item"><i class="fas fa-star"></i> 收藏</a>
+            <a href="#" class="func-item"><i class="fas fa-history"></i> 历史</a>
+            <a href="#" class="func-item"><i class="fas fa-pen"></i> 创作中心</a>
+            <button class="submit-btn">投稿</button>
         </div>
+    </header>
 
-        <div class="creator-actions">
-            <div class="action-card">
-                <div class="action-icon">
-                    <i class="fas fa-microphone"></i>
-                </div>
-                <div class="action-title">开始直播</div>
-                <div class="action-desc">开启音频直播与粉丝互动</div>
+    <!-- 主要内容区 -->
+    <main class="main-content">
+        <section class="user-info">
+            <div class="avatar-wrapper">
+                <div class="avatar"></div>
             </div>
-            <div class="action-card">
-                <div class="action-icon">
-                    <i class="fas fa-sliders-h"></i>
-                </div>
-                <div class="action-title">频道管理</div>
-                <div class="action-desc">管理您创建的所有频道</div>
-            </div>
-            <div class="action-card">
-                <div class="action-icon">
-                    <i class="fas fa-chart-line"></i>
-                </div>
-                <div class="action-title">数据分析</div>
-                <div class="action-desc">查看频道表现和听众数据</div>
-            </div>
-            <div class="action-card">
-                <div class="action-icon">
-                    <i class="fas fa-wallet"></i>
-                </div>
-                <div class="action-title">收益管理</div>
-                <div class="action-desc">查看收益和提现记录</div>
-            </div>
-        </div>
-    </section>
-</main>
-
-<!-- 底部播放栏 -->
-<footer class="player-bar">
-    <div class="player-left">
-        <div class="channel-cover">频道</div>
-        <div class="song-info">
-            <p class="song-name">Seasons in</p>
-            <p class="singer">James</p>
-        </div>
-    </div>
-    <div class="player-middle">
-        <div class="control-buttons">
-            <button class="control-btn"><i class="fas fa-step-backward"></i></button>
-            <button class="control-btn play-btn"><i class="fas fa-play-circle"></i></button>
-            <button class="control-btn"><i class="fas fa-step-forward"></i></button>
-            <button class="control-btn"><i class="fas fa-random"></i></button>
-            <div class="speed-control">
-                <button class="speed-btn">
-                    <i class="fas fa-tachometer-alt"></i>
-                    <span id="currentSpeed">1x</span>
-                </button>
-                <div class="speed-menu">
-                    <div class="speed-option" data-rate="0.5">0.5x</div>
-                    <div class="speed-option active" data-rate="1">1x</div>
-                    <div class="speed-option" data-rate="1.5">1.5x</div>
-                    <div class="speed-option" data-rate="2">2x</div>
-                    <div class="speed-option" data-rate="3">3x</div>
+            <div class="user-detail">
+                <div class="username">创作者用户名</div>
+                <div class="identity">认证创作者</div>
+                <div class="stats">
+                    <span>关注 <b>23</b></span>
+                    <span>粉丝 <b>1,256</b></span>
+                    <span>收听时长 <b>4,502</b> 小时</span>
                 </div>
             </div>
-        </div>
-        <div class="progress-container">
-            <span class="time current">00:00</span>
-            <div class="progress-bar">
-                <div class="progress-fill"></div>
+        </section>
+
+        <section class="tab-bar">
+            <button class="tab" onclick="window.location.href='my-recent.html'">最近收听</button>
+            <button class="tab" onclick="window.location.href='my-collect.html'">收藏</button>
+            <button class="tab" onclick="window.location.href='my-subscribe.html'">订阅</button>
+            <button class="tab" onclick="window.location.href='my-message.html'">私信</button>
+            <button class="tab active" onclick="window.location.href='my-creator_center.html'">创作者中心</button>
+        </section>
+
+        <!-- 创作者中心特有内容 -->
+        <section class="content-block">
+            <h3 class="content-title">创作者数据概览</h3>
+            <div class="creator-stats">
+                <div class="stat-card">
+                    <div class="stat-value">4,502</div>
+                    <div class="stat-label">总收听</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">1,256</div>
+                    <div class="stat-label">粉丝数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">1.5万</div>
+                    <div class="stat-label">累计收益</div>
+                </div>
             </div>
-            <span class="time total">00:00</span>
-        </div>
-    </div>
-    <div class="player-right">
-        <button class="control-btn"><i class="fas fa-volume-up"></i></button>
-        <div class="volume-bar">
-            <div class="volume-fill"></div>
-        </div>
-        <div class="playlist-container">
-            <button class="playlist-btn"><i class="fas fa-list"></i></button>
-            <div class="playlist-panel">
-                <div class="playlist-title">收藏频道列表</div>
-                <div class="playlist-item active">1. Seasons in</div>
-                <div class="playlist-item">2. 经典民谣</div>
-                <div class="playlist-item">3. 流行金曲</div>
+
+            <h3 class="content-title">创作工具</h3>
+            <div class="creator-actions">
+                <div class="action-card" onclick="alert('开始直播功能')">
+                    <div class="action-icon">
+                        <i class="fas fa-microphone"></i>
+                    </div>
+                    <div class="action-title">开始直播</div>
+                    <div class="action-desc">开启音频直播与粉丝互动</div>
+                </div>
+                <div class="action-card" onclick="window.location.href='group-management.html'">
+                    <div class="action-icon">
+                        <i class="fas fa-sliders-h"></i>
+                    </div>
+                    <div class="action-title">频道管理</div>
+                    <div class="action-desc">管理您创建的所有频道</div>
+                </div>
+                <div class="action-card" onclick="alert('数据分析功能')">
+                    <div class="action-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="action-title">数据分析</div>
+                    <div class="action-desc">查看频道表现和听众数据</div>
+                </div>
+                <div class="action-card" onclick="alert('收益管理功能')">
+                    <div class="action-icon">
+                        <i class="fas fa-wallet"></i>
+                    </div>
+                    <div class="action-title">收益管理</div>
+                    <div class="action-desc">查看收益和提现记录</div>
+                </div>
+            </div>
+            
+            <h3 class="content-title">我的频道</h3>
+            <div class="channel-cards">
+                <div class="channel-card">英语口语</div>
+                <div class="channel-card">经典音乐</div>
+                <div class="channel-card">有声小说</div>
+                <div class="channel-card">生活分享</div>
+                <div class="channel-card">知识科普</div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 底部播放栏 -->
+    <footer class="player-bar">
+        <div class="player-left">
+            <div class="channel-cover">创</div>
+            <div class="song-info">
+                <p class="song-name">创作者访谈</p>
+                <p class="singer">主播：星之声团队</p>
             </div>
         </div>
-    </div>
-</footer>
+        <div class="player-middle">
+            <div class="control-buttons">
+                <button class="control-btn"><i class="fas fa-step-backward"></i></button>
+                <button class="control-btn play-btn"><i class="fas fa-play-circle"></i></button>
+                <button class="control-btn"><i class="fas fa-step-forward"></i></button>
+                <button class="control-btn"><i class="fas fa-random"></i></button>
+                <div class="speed-control">
+                    <button class="speed-btn">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span id="currentSpeed">1x</span>
+                    </button>
+                    <div class="speed-menu">
+                        <div class="speed-option" data-rate="0.5">0.5x</div>
+                        <div class="speed-option active" data-rate="1">1x</div>
+                        <div class="speed-option" data-rate="1.5">1.5x</div>
+                        <div class="speed-option" data-rate="2">2x</div>
+                        <div class="speed-option" data-rate="3">3x</div>
+                    </div>
+                </div>
+            </div>
+            <div class="progress-container">
+                <span class="time current">00:00</span>
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+                <span class="time total">04:32</span>
+            </div>
+        </div>
+        <div class="player-right">
+            <button class="control-btn"><i class="fas fa-volume-up"></i></button>
+            <div class="volume-bar">
+                <div class="volume-fill"></div>
+            </div>
+            <div class="playlist-container">
+                <button class="playlist-btn"><i class="fas fa-list"></i></button>
+                <div class="playlist-panel">
+                    <div class="playlist-title">创作内容列表</div>
+                    <div class="playlist-item active">1. 创作者访谈</div>
+                    <div class="playlist-item">2. 创作技巧分享</div>
+                    <div class="playlist-item">3. 优秀作品赏析</div>
+                </div>
+            </div>
+        </div>
+    </footer>
 
-<!-- 功能JavaScript -->
-<script>
-    const audioPlayer = document.getElementById('audioPlayer');
-    const playBtn = document.querySelector('.play-btn');
-    const speedBtn = document.querySelector('.speed-btn');
-    const speedMenu = document.querySelector('.speed-menu');
-    const speedOptions = document.querySelectorAll('.speed-option');
-    const currentSpeed = document.getElementById('currentSpeed');
-    const playlistBtn = document.querySelector('.playlist-btn');
-    const playlistPanel = document.querySelector('.playlist-panel');
-    const playlistItems = document.querySelectorAll('.playlist-item');
-    const progressFill = document.querySelector('.progress-fill');
-    const currentTime = document.querySelector('.time.current');
+    <!-- 功能JavaScript -->
+    <script>
+        const audioPlayer = document.getElementById('audioPlayer');
+        const playBtn = document.querySelector('.play-btn');
+        const speedBtn = document.querySelector('.speed-btn');
+        const speedMenu = document.querySelector('.speed-menu');
+        const speedOptions = document.querySelectorAll('.speed-option');
+        const currentSpeed = document.getElementById('currentSpeed');
+        const playlistBtn = document.querySelector('.playlist-btn');
+        const playlistPanel = document.querySelector('.playlist-panel');
+        const playlistItems = document.querySelectorAll('.playlist-item');
+        const progressFill = document.querySelector('.progress-fill');
+        const currentTime = document.querySelector('.time.current');
+        const totalTime = document.querySelector('.time.total');
 
-    playBtn.addEventListener('click', () => {
-        if (audioPlayer.paused) {
-            audioPlayer.play();
-            playBtn.innerHTML = '<i class="fas fa-pause-circle"></i>';
-        } else {
-            audioPlayer.pause();
-            playBtn.innerHTML = '<i class="fas fa-play-circle"></i>';
-        }
-    });
+        // 播放/暂停控制
+        playBtn.addEventListener('click', () => {
+            if (audioPlayer.paused) {
+                audioPlayer.play();
+                playBtn.innerHTML = '<i class="fas fa-pause-circle"></i>';
+            } else {
+                audioPlayer.pause();
+                playBtn.innerHTML = '<i class="fas fa-play-circle"></i>';
+            }
+        });
 
-    speedBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        speedMenu.classList.toggle('active');
-    });
-    speedOptions.forEach(option => {
-        option.addEventListener('click', () => {
-            const rate = parseFloat(option.getAttribute('data-rate'));
-            audioPlayer.playbackRate = rate;
-            currentSpeed.textContent = `${rate}x`;
-            speedOptions.forEach(opt => opt.classList.remove('active'));
-            option.classList.add('active');
+        // 倍速控制
+        speedBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            speedMenu.classList.toggle('active');
+        });
+        speedOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                const rate = parseFloat(option.getAttribute('data-rate'));
+                audioPlayer.playbackRate = rate;
+                currentSpeed.textContent = `${rate}x`;
+                speedOptions.forEach(opt => opt.classList.remove('active'));
+                option.classList.add('active');
+                speedMenu.classList.remove('active');
+            });
+        });
+
+        // 播放列表控制
+        playlistBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            playlistPanel.classList.toggle('active');
+        });
+        playlistItems.forEach(item => {
+            item.addEventListener('click', () => {
+                playlistItems.forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                
+                // 更新播放信息
+                const songName = document.querySelector('.song-name');
+                const singer = document.querySelector('.singer');
+                
+                if (item.textContent.includes('创作者访谈')) {
+                    songName.textContent = '创作者访谈';
+                    singer.textContent = '主播：星之声团队';
+                } else if (item.textContent.includes('创作技巧分享')) {
+                    songName.textContent = '创作技巧分享';
+                    singer.textContent = '主播：李老师';
+                } else if (item.textContent.includes('优秀作品赏析')) {
+                    songName.textContent = '优秀作品赏析';
+                    singer.textContent = '主播：王老师';
+                }
+                
+                // 这里可以添加实际的播放逻辑
+                alert(`正在播放：${item.textContent}`);
+            });
+        });
+
+        // 进度条更新
+        audioPlayer.addEventListener('timeupdate', () => {
+            const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+            progressFill.style.width = `${progress}%`;
+            const minutes = Math.floor(audioPlayer.currentTime / 60);
+            const seconds = Math.floor(audioPlayer.currentTime % 60);
+            currentTime.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        });
+
+        // 设置总时长
+        audioPlayer.addEventListener('loadedmetadata', () => {
+            const minutes = Math.floor(audioPlayer.duration / 60);
+            const seconds = Math.floor(audioPlayer.duration % 60);
+            totalTime.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        });
+
+        // 点击其他地方关闭菜单
+        document.addEventListener('click', () => {
             speedMenu.classList.remove('active');
+            playlistPanel.classList.remove('active');
         });
-    });
 
-    playlistBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        playlistPanel.classList.toggle('active');
-    });
-    playlistItems.forEach(item => {
-        item.addEventListener('click', () => {
-            playlistItems.forEach(i => i.classList.remove('active'));
-            item.classList.add('active');
-            alert(`正在播放：${item.textContent}`);
+        // 操作卡片点击事件
+        document.querySelectorAll('.action-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const title = this.querySelector('.action-title').textContent;
+                this.style.backgroundColor = '#FFF8DC';
+                this.style.transform = 'translateY(-2px)';
+                
+                setTimeout(() => {
+                    this.style.backgroundColor = '';
+                    this.style.transform = '';
+                }, 300);
+            });
         });
-    });
-
-    audioPlayer.addEventListener('timeupdate', () => {
-        const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
-        progressFill.style.width = `${progress}%`;
-        const minutes = Math.floor(audioPlayer.currentTime / 60);
-        const seconds = Math.floor(audioPlayer.currentTime % 60);
-        currentTime.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-    });
-
-    document.addEventListener('click', () => {
-        speedMenu.classList.remove('active');
-        playlistPanel.classList.remove('active');
-    });
-</script>
+    </script>
 </body>
 </html>

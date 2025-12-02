@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="category.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="script.js" defer></script>
-    <script src="router.js" defer></script>
     <style>
         /* 新增样式：确保内容不被底部播放栏遮挡 */
         .main-content {
@@ -24,6 +23,11 @@
             z-index: 1000;
             background-color: white;
             border-top: 1px solid #FFDAB9;
+        }
+        
+        /* 紧凑模式下的额外样式 */
+        .teacher-avatar {
+            font-family: "微软雅黑", sans-serif;
         }
     </style>
 </head>
@@ -41,17 +45,23 @@
             <span class="logo-text">星之声</span>
         </div>
         <nav class="main-nav">
-            <a href="index.html" class="nav-item">首页</a>
+            <a href="index.html" class="nav-item">首页</a>                           
             <a href="category.html" class="nav-item active">分类</a>
-            <a href="channel.html" class="nav-item">频道</a>
+            <a href="channel.html" class="nav-item">频道</a>                
         </nav>
         <div class="search-box">
             <input type="text" placeholder="Hinted search text" class="search-input">
             <button class="search-btn"><i class="fas fa-search"></i></button>
         </div>
         <div class="user-functions">
+            <a href="my-recent.html" class="func-item">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+            </a>
             <a href="#" class="func-item"><i class="fas fa-bell"></i> 消息</a>
-            <a href="my-collect.html" class="func-item"><i class="fas fa-star"></i> 收藏</a>
+            <a href="#" class="func-item"><i class="fas fa-star"></i> 收藏</a>
             <a href="#" class="func-item"><i class="fas fa-history"></i> 历史</a>
             <a href="#" class="func-item"><i class="fas fa-pen"></i> 创作中心</a>
             <button class="submit-btn">投稿</button>
@@ -63,7 +73,7 @@
         <!-- 分类页面标题 -->
         <div class="category-header">
             <h1>课程分类</h1>
-            <p>选择适合你的英语学习资源</p>
+            <p>选择适合的英语学习资源</p>
         </div>
 
         <!-- 分类过滤选项 -->
@@ -81,9 +91,9 @@
             <div class="filter-group">
                 <span class="filter-label">种类：</span>
                 <div class="filter-options">
-                    <button class="filter-option active">电影</button>
+                    <button class="filter-option">电影</button>
                     <button class="filter-option">小说</button>
-                    <button class="filter-option">学习资料</button>
+                    <button class="filter-option active">学习资料</button>
                     <button class="filter-option">音乐</button>
                     <button class="filter-option">演讲</button>
                 </div>
@@ -106,17 +116,17 @@
                 <div class="channel-thumbnail">
                     <div class="thumbnail-overlay">
                         <span class="play-icon">▶</span>
-                        <span class="video-duration">12:30</span>
+                        <span class="video-duration">45:30</span>
                     </div>
                 </div>
                 <div class="channel-info">
                     <h3 class="channel-title">商务英语会话技巧</h3>
                     <div class="channel-meta">
-                        <span class="views-count">2.3万次学习</span>
-                        <span class="rating">⭐⭐⭐⭐⭐</span>
+                        <span class="views-count">2.5万次学习</span>
+                        <span class="rating">★★★★★</span>
                     </div>
                     <div class="teacher-info">
-                        <img src="#" alt="老师头像" class="teacher-avatar">
+                        <div class="teacher-avatar">李</div>
                         <span class="teacher-name">李老师</span>
                     </div>
                 </div>
@@ -127,17 +137,17 @@
                 <div class="channel-thumbnail">
                     <div class="thumbnail-overlay">
                         <span class="play-icon">▶</span>
-                        <span class="video-duration">15:45</span>
+                        <span class="video-duration">60:15</span>
                     </div>
                 </div>
                 <div class="channel-info">
-                    <h3 class="channel-title">日常英语口语800句</h3>
+                    <h3 class="channel-title">日常英语口语600句</h3>
                     <div class="channel-meta">
-                        <span class="views-count">5.6万次学习</span>
-                        <span class="rating">⭐⭐⭐⭐</span>
+                        <span class="views-count">5.0万次学习</span>
+                        <span class="rating">★★★★★</span>
                     </div>
                     <div class="teacher-info">
-                        <img src="#" alt="老师头像" class="teacher-avatar">
+                        <div class="teacher-avatar">王</div>
                         <span class="teacher-name">王老师</span>
                     </div>
                 </div>
@@ -148,17 +158,17 @@
                 <div class="channel-thumbnail">
                     <div class="thumbnail-overlay">
                         <span class="play-icon">▶</span>
-                        <span class="video-duration">18:20</span>
+                        <span class="video-duration">38:20</span>
                     </div>
                 </div>
                 <div class="channel-info">
                     <h3 class="channel-title">英语听力进阶训练</h3>
                     <div class="channel-meta">
-                        <span class="views-count">3.4万次学习</span>
-                        <span class="rating">⭐⭐⭐⭐⭐</span>
+                        <span class="views-count">1.4万次学习</span>
+                        <span class="rating">★★★★★</span>
                     </div>
                     <div class="teacher-info">
-                        <img src="#" alt="老师头像" class="teacher-avatar">
+                        <div class="teacher-avatar">张</div>
                         <span class="teacher-name">张老师</span>
                     </div>
                 </div>
@@ -169,18 +179,18 @@
                 <div class="channel-thumbnail">
                     <div class="thumbnail-overlay">
                         <span class="play-icon">▶</span>
-                        <span class="video-duration">22:10</span>
+                        <span class="video-duration">52:10</span>
                     </div>
                 </div>
                 <div class="channel-info">
                     <h3 class="channel-title">英语写作技巧提升</h3>
                     <div class="channel-meta">
-                        <span class="views-count">1.9万次学习</span>
-                        <span class="rating">⭐⭐⭐⭐</span>
+                        <span class="views-count">10万次学习</span>
+                        <span class="rating">★★★★★</span>
                     </div>
                     <div class="teacher-info">
-                        <img src="#" alt="老师头像" class="teacher-avatar">
-                        <span class="teacher-name">陈老师</span>
+                        <div class="teacher-avatar">张</div>
+                        <span class="teacher-name">张老师</span>
                     </div>
                 </div>
             </div>
@@ -190,17 +200,17 @@
                 <div class="channel-thumbnail">
                     <div class="thumbnail-overlay">
                         <span class="play-icon">▶</span>
-                        <span class="video-duration">10:55</span>
+                        <span class="video-duration">28:55</span>
                     </div>
                 </div>
                 <div class="channel-info">
                     <h3 class="channel-title">零基础英语入门</h3>
                     <div class="channel-meta">
                         <span class="views-count">8.2万次学习</span>
-                        <span class="rating">⭐⭐⭐⭐⭐</span>
+                        <span class="rating">★★★★★</span>
                     </div>
                     <div class="teacher-info">
-                        <img src="#" alt="老师头像" class="teacher-avatar">
+                        <div class="teacher-avatar">刘</div>
                         <span class="teacher-name">刘老师</span>
                     </div>
                 </div>
@@ -211,17 +221,17 @@
                 <div class="channel-thumbnail">
                     <div class="thumbnail-overlay">
                         <span class="play-icon">▶</span>
-                        <span class="video-duration">16:30</span>
+                        <span class="video-duration">36:30</span>
                     </div>
                 </div>
                 <div class="channel-info">
                     <h3 class="channel-title">英语语法精讲</h3>
                     <div class="channel-meta">
-                        <span class="views-count">4.1万次学习</span>
-                        <span class="rating">⭐⭐⭐⭐</span>
+                        <span class="views-count">4.3万次学习</span>
+                        <span class="rating">★★★★★</span>
                     </div>
                     <div class="teacher-info">
-                        <img src="#" alt="老师头像" class="teacher-avatar">
+                        <div class="teacher-avatar">赵</div>
                         <span class="teacher-name">赵老师</span>
                     </div>
                 </div>
@@ -232,17 +242,17 @@
                 <div class="channel-thumbnail">
                     <div class="thumbnail-overlay">
                         <span class="play-icon">▶</span>
-                        <span class="video-duration">14:25</span>
+                        <span class="video-duration">41:25</span>
                     </div>
                 </div>
                 <div class="channel-info">
                     <h3 class="channel-title">旅游英语口语</h3>
                     <div class="channel-meta">
                         <span class="views-count">3.7万次学习</span>
-                        <span class="rating">⭐⭐⭐⭐</span>
+                        <span class="rating">★★★★★</span>
                     </div>
                     <div class="teacher-info">
-                        <img src="#" alt="老师头像" class="teacher-avatar">
+                        <div class="teacher-avatar">孙</div>
                         <span class="teacher-name">孙老师</span>
                     </div>
                 </div>
@@ -253,17 +263,17 @@
                 <div class="channel-thumbnail">
                     <div class="thumbnail-overlay">
                         <span class="play-icon">▶</span>
-                        <span class="video-duration">19:40</span>
+                        <span class="video-duration">47:40</span>
                     </div>
                 </div>
                 <div class="channel-info">
                     <h3 class="channel-title">英语发音纠正</h3>
                     <div class="channel-meta">
                         <span class="views-count">2.8万次学习</span>
-                        <span class="rating">⭐⭐⭐⭐⭐</span>
+                        <span class="rating">★★★★★</span>
                     </div>
                     <div class="teacher-info">
-                        <img src="#" alt="老师头像" class="teacher-avatar">
+                        <div class="teacher-avatar">周</div>
                         <span class="teacher-name">周老师</span>
                     </div>
                 </div>
@@ -274,17 +284,17 @@
                 <div class="channel-thumbnail">
                     <div class="thumbnail-overlay">
                         <span class="play-icon">▶</span>
-                        <span class="video-duration">21:15</span>
+                        <span class="video-duration">39:15</span>
                     </div>
                 </div>
                 <div class="channel-info">
                     <h3 class="channel-title">英语面试技巧</h3>
                     <div class="channel-meta">
                         <span class="views-count">3.2万次学习</span>
-                        <span class="rating">⭐⭐⭐⭐</span>
+                        <span class="rating">★★★★★</span>
                     </div>
                     <div class="teacher-info">
-                        <img src="#" alt="老师头像" class="teacher-avatar">
+                        <div class="teacher-avatar">吴</div>
                         <span class="teacher-name">吴老师</span>
                     </div>
                 </div>
@@ -306,10 +316,10 @@
     <!-- 底部播放栏 -->
     <footer class="player-bar">
         <div class="player-left">
-            <div class="channel-cover">频</div>
+            <div class="channel-cover">英</div>
             <div class="song-info">
-                <p class="song-name">English Daily Conversation</p>
-                <p class="singer">英语日常对话练习</p>
+                <p class="song-name">商务英语会话技巧</p>
+                <p class="singer">李老师</p>
             </div>
         </div>
         <div class="player-middle">
@@ -337,7 +347,7 @@
                 <div class="progress-bar">
                     <div class="progress-fill"></div>
                 </div>
-                <span class="time total">00:00</span>
+                <span class="time total">45:30</span>
             </div>
         </div>
         <div class="player-right">
@@ -348,10 +358,10 @@
             <div class="playlist-container">
                 <button class="playlist-btn"><i class="fas fa-list"></i></button>
                 <div class="playlist-panel">
-                    <div class="playlist-title">收藏频道列表</div>
-                    <div class="playlist-item active">1. English Daily Conversation</div>
-                    <div class="playlist-item">2. 商务英语会话技巧</div>
-                    <div class="playlist-item">3. 日常英语口语800句</div>
+                    <div class="playlist-title">学习列表</div>
+                    <div class="playlist-item active">1. 商务英语会话技巧</div>
+                    <div class="playlist-item">2. 日常英语口语600句</div>
+                    <div class="playlist-item">3. 英语听力进阶训练</div>
                 </div>
             </div>
         </div>
@@ -370,6 +380,38 @@
         const playlistItems = document.querySelectorAll('.playlist-item');
         const progressFill = document.querySelector('.progress-fill');
         const currentTime = document.querySelector('.time.current');
+        const totalTime = document.querySelector('.time.total');
+
+        // 为所有频道卡片添加点击事件
+        document.querySelectorAll('.channel-card').forEach((card, index) => {
+            card.addEventListener('click', () => {
+                const title = card.querySelector('.channel-title').textContent;
+                const teacher = card.querySelector('.teacher-name').textContent;
+                const duration = card.querySelector('.video-duration').textContent;
+                
+                // 更新播放器信息
+                document.querySelector('.song-name').textContent = title;
+                document.querySelector('.singer').textContent = teacher;
+                document.querySelector('.channel-cover').textContent = title.charAt(0);
+                totalTime.textContent = duration;
+                
+                // 更新播放列表
+                playlistItems.forEach((item, i) => {
+                    if (i === 0) {
+                        item.textContent = `1. ${title}`;
+                        item.classList.add('active');
+                    } else if (i === 1) {
+                        item.textContent = `2. 日常英语口语600句`;
+                        item.classList.remove('active');
+                    } else if (i === 2) {
+                        item.textContent = `3. 英语听力进阶训练`;
+                        item.classList.remove('active');
+                    }
+                });
+                
+                alert(`开始播放：${title}\n主讲：${teacher}\n时长：${duration}`);
+            });
+        });
 
         playBtn.addEventListener('click', () => {
             if (audioPlayer.paused) {
@@ -404,7 +446,9 @@
             item.addEventListener('click', () => {
                 playlistItems.forEach(i => i.classList.remove('active'));
                 item.classList.add('active');
-                alert(`正在播放：${item.textContent}`);
+                
+                const title = item.textContent.replace(/^\d+\.\s/, '');
+                alert(`正在播放：${title}`);
             });
         });
 
@@ -416,9 +460,38 @@
             currentTime.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
         });
 
+        // 设置音频总时长（模拟）
+        audioPlayer.addEventListener('loadedmetadata', () => {
+            // 模拟45:30的时长
+            audioPlayer.duration = 2730; // 45分30秒
+        });
+
         document.addEventListener('click', () => {
             speedMenu.classList.remove('active');
             playlistPanel.classList.remove('active');
+        });
+
+        // 过滤按钮功能
+        document.querySelectorAll('.filter-option').forEach(option => {
+            option.addEventListener('click', function() {
+                const group = this.parentElement;
+                const activeBtn = group.querySelector('.filter-option.active');
+                if (activeBtn) {
+                    activeBtn.classList.remove('active');
+                }
+                this.classList.add('active');
+            });
+        });
+
+        // 分页按钮功能
+        document.querySelectorAll('.page-btn:not(.prev-btn):not(.next-btn)').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const activeBtn = document.querySelector('.page-btn.active');
+                if (activeBtn) {
+                    activeBtn.classList.remove('active');
+                }
+                this.classList.add('active');
+            });
         });
     </script>
 </body>

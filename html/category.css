@@ -2,55 +2,61 @@
 /* 页面标题样式 */
 .category-header {
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 25px;
     padding-top: 20px;
 }
 .category-header h1 {
     font-size: 32px;
     color: #FF8C00;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     font-weight: bold;
 }
 .category-header p {
     font-size: 16px;
-    color: #FF8C00;
+    color: #666;
     margin: 0;
 }
-/* 过滤选项样式 */
+
+/* 过滤选项样式 - 紧凑版 */
 .filter-section {
     background-color: white;
     border: 1px solid #FFDAB9;
     border-radius: 8px;
-    padding: 20px 25px;
-    margin-bottom: 30px;
-    box-shadow: 0 4px 12px rgba(255,140,0,0.05);
+    padding: 18px 25px;
+    margin-bottom: 25px;
+    box-shadow: 0 2px 8px rgba(255,140,0,0.05);
 }
+
 .filter-group {
     display: flex;
     align-items: center;
-    margin-bottom: 15px;
+    margin-bottom: 12px;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 8px;
 }
+
 .filter-group:last-child {
     margin-bottom: 0;
 }
+
 .filter-label {
-    font-size: 16px;
+    font-size: 15px;
     color: #FF8C00;
     font-weight: 600;
-    min-width: 60px;
+    min-width: 55px;
 }
+
 .filter-options {
     display: flex;
-    gap: 10px;
+    gap: 8px;
     flex-wrap: wrap;
 }
+
 .filter-option {
     background-color: white;
     border: 1px solid #FFDAB9;
     color: #FF8C00;
-    padding: 8px 20px;
+    padding: 6px 16px;
     border-radius: 4px;
     cursor: pointer;
     font-size: 14px;
@@ -58,48 +64,55 @@
     transition: all 0.3s ease;
     outline: none;
 }
+
 .filter-option:hover {
     background-color: #FFF8DC;
     border-color: #FF8C00;
 }
+
 .filter-option.active {
     background-color: #FF8C00;
     color: white;
     border-color: #FF8C00;
 }
-/* 频道卡片网格布局 - 核心修改：调整卡片宽度基础值 */
+
+/* 频道卡片网格布局 - 紧凑版 */
 .channels-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: 25px;
-    margin-bottom: 40px;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 18px;
+    margin-bottom: 30px;
 }
-/* 频道卡片样式 */
+
+/* 频道卡片样式 - 紧凑版 */
 .channel-card {
     background-color: white;
     border: 1px solid #FFDAB9;
     border-radius: 8px;
     overflow: hidden;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(255,140,0,0.05);
+    box-shadow: 0 3px 10px rgba(255,140,0,0.03);
     cursor: pointer;
     display: flex;
     flex-direction: column;
     height: 100%;
 }
+
 .channel-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(255,140,0,0.1);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(255,140,0,0.08);
     border-color: #FF8C00;
 }
-/* 频道缩略图样式 - 核心修改：调整缩略图高度 */
+
+/* 频道缩略图样式 - 更紧凑 */
 .channel-thumbnail {
     position: relative;
     width: 100%;
-    height: 180px;
+    height: 160px;
     background-color: #FFF8DC;
     overflow: hidden;
 }
+
 .channel-thumbnail::before {
     content: '';
     position: absolute;
@@ -110,6 +123,7 @@
     background: linear-gradient(135deg, rgba(255,140,0,0.1) 0%, rgba(255,204,128,0.2) 100%);
     z-index: 1;
 }
+
 /* 缩略图叠加层 */
 .thumbnail-overlay {
     position: absolute;
@@ -125,47 +139,53 @@
     transition: opacity 0.3s ease;
     z-index: 2;
 }
+
 .channel-card:hover .thumbnail-overlay {
     opacity: 1;
 }
+
 .play-icon {
     background-color: #FF8C00;
     color: white;
-    width: 50px;
-    height: 50px;
+    width: 45px;
+    height: 45px;
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 20px;
-    margin-bottom: 10px;
+    font-size: 18px;
+    margin-bottom: 8px;
     transition: transform 0.3s ease;
 }
+
 .channel-card:hover .play-icon {
     transform: scale(1.1);
 }
+
 .video-duration {
     position: absolute;
-    bottom: 10px;
-    right: 10px;
-    background-color: #FF8C00;
+    bottom: 8px;
+    right: 8px;
+    background-color: rgba(255, 140, 0, 0.9);
     color: white;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 12px;
+    padding: 3px 6px;
+    border-radius: 3px;
+    font-size: 11px;
     font-weight: 500;
 }
-/* 频道信息样式 */
+
+/* 频道信息样式 - 紧凑版 */
 .channel-info {
-    padding: 15px;
+    padding: 12px;
     flex: 1;
     display: flex;
     flex-direction: column;
 }
+
 .channel-title {
-    font-size: 16px;
+    font-size: 15px;
     color: #000;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     font-weight: 600;
     line-height: 1.4;
     display: -webkit-box;
@@ -173,226 +193,342 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
+    min-height: 42px;
 }
+
 .channel-meta {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 12px;
-    font-size: 13px;
+    margin-bottom: 10px;
+    font-size: 12px;
     color: #FF8C00;
 }
+
 .views-count {
     font-weight: 500;
 }
+
 .rating {
     color: #FF8C00;
+    font-size: 12px;
 }
+
 /* 老师信息样式 */
 .teacher-info {
     display: flex;
     align-items: center;
     margin-top: auto;
+    padding-top: 8px;
+    border-top: 1px dashed #FFDAB9;
 }
+
 .teacher-avatar {
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
     background-color: #FFDAB9;
     margin-right: 8px;
     border: 2px solid #FFF8DC;
-}
-.teacher-name {
-    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     color: #FF8C00;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.teacher-name {
+    font-size: 12px;
+    color: #666;
     font-weight: 500;
 }
-/* 分页样式 */
+
+/* 分页样式 - 紧凑版 */
 .pagination {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 8px;
-    margin-top: 30px;
+    gap: 6px;
+    margin-top: 25px;
     flex-wrap: wrap;
 }
+
 .page-btn {
     background-color: white;
     border: 1px solid #FFDAB9;
     color: #FF8C00;
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 500;
     transition: all 0.3s ease;
     display: flex;
     justify-content: center;
     align-items: center;
 }
+
 .page-btn:hover {
     background-color: #FFF8DC;
     border-color: #FF8C00;
 }
+
 .page-btn.active {
     background-color: #FF8C00;
     color: white;
     border-color: #FF8C00;
 }
+
 .page-ellipsis {
-    color: #FF8C00;
-    font-size: 16px;
-    margin: 0 5px;
+    color: #999;
+    font-size: 14px;
+    margin: 0 4px;
 }
+
 .prev-btn, .next-btn {
     width: auto;
     border-radius: 4px;
-    padding: 8px 16px;
+    padding: 6px 12px;
+    font-size: 13px;
 }
-/* 响应式设计 - 核心修改：同步调整各屏幕尺寸下的卡片宽度和缩略图高度 */
-@media (max-width: 992px) {
+
+/* 响应式设计 - 紧凑版 */
+@media (max-width: 1200px) {
     .channels-grid {
         grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 20px;
+        gap: 16px;
     }
+}
+
+@media (max-width: 992px) {
+    .channels-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 15px;
+    }
+    
     .category-header h1 {
         font-size: 28px;
     }
+    
     .channel-thumbnail {
-        height: 160px;
+        height: 150px;
     }
 }
+
 @media (max-width: 768px) {
     .filter-section {
-        padding: 15px 20px;
+        padding: 14px 18px;
     }
+    
     .filter-group {
         flex-direction: column;
         align-items: flex-start;
-        margin-bottom: 20px;
+        margin-bottom: 15px;
     }
+    
     .filter-label {
-        margin-bottom: 5px;
+        margin-bottom: 4px;
+        font-size: 14px;
     }
+    
     .filter-options {
         width: 100%;
     }
+    
     .filter-option {
         flex: 1;
-        min-width: 80px;
+        min-width: 70px;
         text-align: center;
+        padding: 5px 12px;
+        font-size: 13px;
     }
+    
     .channels-grid {
-        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-        gap: 15px;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 12px;
     }
+    
     .category-header h1 {
         font-size: 24px;
     }
-    .channel-thumbnail {
-        height: 140px;
-    }
-    .channel-title {
-        font-size: 14px;
-    }
-    .pagination {
-        gap: 5px;
-    }
-    .page-btn {
-        width: 35px;
-        height: 35px;
-        font-size: 13px;
-    }
-}
-@media (max-width: 480px) {
-    .channels-grid {
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-    }
-    .category-header {
-        padding-top: 10px;
-    }
-    .category-header h1 {
-        font-size: 20px;
-    }
+    
     .category-header p {
         font-size: 14px;
     }
-    .filter-section {
-        padding: 12px 15px;
-    }
-    .filter-option {
-        padding: 6px 12px;
-        font-size: 12px;
-    }
+    
     .channel-thumbnail {
-        height: 120px;
+        height: 130px;
     }
+    
     .channel-info {
         padding: 10px;
     }
+    
     .channel-title {
-        font-size: 13px;
-        -webkit-line-clamp: 1;
+        font-size: 14px;
+        min-height: 38px;
     }
-    .channel-meta {
-        font-size: 11px;
+    
+    .pagination {
+        gap: 4px;
+        margin-top: 20px;
     }
-    .play-icon {
-        width: 40px;
-        height: 40px;
-        font-size: 16px;
+    
+    .page-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 12px;
     }
-    .video-duration {
-        font-size: 10px;
-        padding: 2px 6px;
+    
+    .prev-btn, .next-btn {
+        padding: 5px 10px;
+        font-size: 12px;
     }
 }
+
+@media (max-width: 576px) {
+    .channels-grid {
+        grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+        gap: 10px;
+    }
+    
+    .category-header {
+        padding-top: 10px;
+        margin-bottom: 20px;
+    }
+    
+    .category-header h1 {
+        font-size: 20px;
+        margin-bottom: 6px;
+    }
+    
+    .category-header p {
+        font-size: 13px;
+    }
+    
+    .filter-section {
+        padding: 12px 15px;
+        margin-bottom: 20px;
+    }
+    
+    .filter-option {
+        padding: 4px 10px;
+        font-size: 12px;
+    }
+    
+    .channel-thumbnail {
+        height: 110px;
+    }
+    
+    .channel-info {
+        padding: 8px;
+    }
+    
+    .channel-title {
+        font-size: 13px;
+        min-height: 36px;
+        -webkit-line-clamp: 2;
+        margin-bottom: 6px;
+    }
+    
+    .channel-meta {
+        font-size: 11px;
+        margin-bottom: 8px;
+    }
+    
+    .play-icon {
+        width: 38px;
+        height: 38px;
+        font-size: 14px;
+    }
+    
+    .video-duration {
+        font-size: 10px;
+        padding: 2px 5px;
+        bottom: 6px;
+        right: 6px;
+    }
+    
+    .teacher-avatar {
+        width: 24px;
+        height: 24px;
+        font-size: 10px;
+    }
+    
+    .teacher-name {
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 480px) {
+    .channels-grid {
+        grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+        gap: 10px;
+    }
+    
+    .channel-thumbnail {
+        height: 100px;
+    }
+    
+    .channel-title {
+        font-size: 12px;
+        min-height: 32px;
+        -webkit-line-clamp: 2;
+    }
+}
+
 /* 微交互和动画效果 */
 .channel-card {
     transform-origin: center;
 }
-/* 卡片悬停动画 */
-.channel-card::before {
-    content: '';
-    position: absolute;
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
-    border-radius: 10px;
-    background: linear-gradient(45deg, #FF8C00, #FFDAB9, #FF8C00);
-    z-index: -1;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-.channel-card:hover::before {
-    opacity: 1;
-}
+
 /* 平滑过渡效果 */
 .filter-option, .channel-card, .page-btn {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
 /* 加载动画 */
 @keyframes fadeIn {
     from {
         opacity: 0;
-        transform: translateY(20px);
+        transform: translateY(15px);
     }
     to {
         opacity: 1;
         transform: translateY(0);
     }
 }
+
 .channel-card {
-    animation: fadeIn 0.6s ease-out;
+    animation: fadeIn 0.5s ease-out;
 }
-.channel-card:nth-child(2) { animation-delay: 0.1s; }
-.channel-card:nth-child(3) { animation-delay: 0.2s; }
-.channel-card:nth-child(4) { animation-delay: 0.3s; }
-.channel-card:nth-child(5) { animation-delay: 0.4s; }
-.channel-card:nth-child(6) { animation-delay: 0.5s; }
-.channel-card:nth-child(7) { animation-delay: 0.6s; }
-.channel-card:nth-child(8) { animation-delay: 0.7s; }
-.channel-card:nth-child(9) { animation-delay: 0.8s; }
+
+.channel-card:nth-child(2) { animation-delay: 0.05s; }
+.channel-card:nth-child(3) { animation-delay: 0.1s; }
+.channel-card:nth-child(4) { animation-delay: 0.15s; }
+.channel-card:nth-child(5) { animation-delay: 0.2s; }
+.channel-card:nth-child(6) { animation-delay: 0.25s; }
+.channel-card:nth-child(7) { animation-delay: 0.3s; }
+.channel-card:nth-child(8) { animation-delay: 0.35s; }
+.channel-card:nth-child(9) { animation-delay: 0.4s; }
+
+/* 紧凑卡片悬停效果 */
+.channel-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 8px;
+    box-shadow: 0 0 0 2px rgba(255, 140, 0, 0.3);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.channel-card:hover::after {
+    opacity: 1;
+}

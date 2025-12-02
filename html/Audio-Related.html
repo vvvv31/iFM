@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>音频录制与播放 - 星之声</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lamejs/1.2.0/lame.min.js"></script>
+    <base target="_blank">
+</head>
+<body>
+    <!-- 音频播放元素 -->
+    <audio id="audioPlayer" controls style="display: none;">
+        <source src="" type="audio/mpeg">
+        您的浏览器不支持音频播放
+    </audio>
+
+    <!-- 顶部导航栏 -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-img"></div>
+            <span class="logo-text">星之声</span>
+        </div>
+        <nav class="main-nav">
+            <a href="my-recent.html" class="nav-item">我的主页</a>
+            <a href="audio-recorder.html" class="nav-item active">音频录制</a>
+            <a href="my-collect.html" class="nav-item">我的收藏</a>
+        </nav>
+        <div class="search-box">
+            <input type="text" placeholder="搜索音频内容" class="search-input">
+            <button class="search-btn"><i class="fas fa-search"></i></button>
+        </div>
+        <div class="user-functions">
+            <a href="#" class="func-item"><i class="fas fa-bell"></i> 消息</a>
+            <a href="#" class="func-item"><i class="fas fa-star"></i> 收藏</a>
+            <a href="#" class="func-item"><i class="fas fa-history"></i> 历史</a>
+            <a href="#" class="func-item"><i class="fas fa-pen"></i> 创作中心</a>
+            <button class="submit-btn">投稿</button>
+        </div>
+    </header>
+
+    <!-- 主要内容区 -->
+    <main class="main-content">
+        <!-- 用户信息区 -->
+        <section class="user-info">
+            <div class="avatar-wrapper">
+                <div class="avatar"></div>
+            </div>
+            <div class="user-detail">
+                <div class="username">音频创作者</div>
+                <div class="identity">录制达人</div>
+                <div class="stats">
+                    <span>录音 <b id="recordCount">0</b> 个</span>
+                    <span>时长 <b id="totalDuration">0</b> 分钟</span>
+                    <span>存储 <b id="totalStorage">0</b> MB</span>
+                    <span>评测 <b id="evaluationCount">0</b> 次</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 功能标签栏 -->
+        <section class="tab-bar">
+            <button class="tab active" onclick="showTab('upload')">上传MP3</button>
+            <button class="tab" onclick="showTab('record')">录音功能</button>
+        </section>
+
+        <!-- 上传MP3区域 -->
+        <section id="uploadSection" class="content-block">
+            <div class="content-title">上传MP3文件</div>
+            <div class="upload-container">
+                <!-- 上传区域 -->
+                <div class="upload-area-main" id="uploadBoxMain">
+                    <i class="fas fa-cloud-upload-alt upload-icon-main"></i>
+                    <p class="upload-text-main">点击上传MP3文件</p>
+                    <p class="upload-hint">支持.mp3格式，最大100MB</p>
+                    <input type="file" id="mp3Upload" accept=".mp3" style="display: none;">
+                </div>
+
+                <!-- 上传进度 -->
+                <div class="upload-progress" id="uploadProgress" style="display: none;">
+                    <div class="progress-bar-upload">
+                        <div class="progress-fill-upload" id="progressFillUpload"></div>
+                    </div>
+                    <span class="progress-text" id="progressText">0%</span>
+                </div>
+
+                <!-- 上传文件信息 -->
+                <div class="upload-file-info" id="uploadFileInfo" style="display: none;">
+                    <div class="file-info-header">
+                        <h4><i class="fas fa-file-audio"></i> 文件信息</h4>
+                        <button class="close-btn" id="closeFileInfo">&times;</button>
+                    </div>
+                    <div class="file-info-body">
+                        <div class="info-row">
+                            <span class="info-label">文件名:</span>
+                            <span class="info-value" id="infoFileName">--</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">文件大小:</span>
+                            <span class="info-value" id="infoFileSize">--</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">音频时长:</span>
+                            <span class="info-value" id="infoFileDuration">--</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">比特率:</span>
+                            <span class="info-value" id="infoBitrate">--</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">采样率:</span>
+                            <span class="info-value" id="infoSampleRate">--</span>
+                        </div>
+                    </div>
+                    <div class="file-info-actions">
+                        <button class="action-btn play-upload-btn" id="playUploadBtn">
+                            <i class="fas fa-play"></i> 播放
+                        </button>
+                        <button class="action-btn download-btn" id="downloadUploadBtn">
+                            <i class="fas fa-download"></i> 下载
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 录音功能区域 -->
+        <section id="recordSection" class="content-block" style="display: none;">
+            <div class="content-title">录制音频</div>
+            
+            <!-- 跟读句子区域 -->
+            <div class="sentence-display">
+                <div class="sentence-title">
+                    <i class="fas fa-language"></i>
+                    <span>跟读练习句子</span>
+                </div>
+                <div class="sentence-text" id="currentSentence">
+                    请选择一个跟读句子开始录音练习
+                </div>
+                <div class="sentence-controls">
+                    <div class="sentence-info">
+                        句子 <span id="sentenceIndex">0</span> / <span id="totalSentences">0</span>
+                    </div>
+                    <div>
+                        <button class="sentence-nav-btn" id="prevSentenceBtn" disabled>
+                            <i class="fas fa-chevron-left"></i> 上一个
+                        </button>
+                        <button class="sentence-nav-btn" id="nextSentenceBtn" disabled>
+                            下一个 <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="recorder-container">
+                <!-- 录音设置 -->
+                <div class="recorder-settings">
+                    <div class="setting-group">
+                        <div class="recorder-setting-item">
+                            <label for="recordingName"><i class="fas fa-heading"></i> 录音名称:</label>
+                            <input type="text" id="recordingName" placeholder="请输入录音名称" value="我的录音">
+                        </div>
+                        <div class="recorder-setting-item">
+                            <label for="audioQuality"><i class="fas fa-sliders-h"></i> 音质设置:</label>
+                            <select id="audioQuality">
+                                <option value="128">高质量 (128kbps)</option>
+                                <option value="96" selected>标准 (96kbps)</option>
+                                <option value="64">节省空间 (64kbps)</option>
+                                <option value="32">最小文件 (32kbps)</option>
+                            </select>
+                        </div>
+                        <div class="recorder-setting-item">
+                            <label><i class="fas fa-file-format"></i> 输出格式:</label>
+                            <div class="format-selector">
+                                <div class="format-option active" data-format="mp3">MP3</div>
+                                <div class="format-option" data-format="webm">WebM</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-group">
+                        <div class="recorder-setting-item">
+                            <label><i class="fas fa-clock"></i> 录音时长:</label>
+                            <div class="time-settings">
+                                <div class="time-display-large" id="timeLimitDisplay">最长可录制: 2小时</div>
+                                <div class="time-presets">
+                                    <button class="time-preset-btn" data-minutes="1">1分钟</button>
+                                    <button class="time-preset-btn" data-minutes="5">5分钟</button>
+                                    <button class="time-preset-btn" data-minutes="15">15分钟</button>
+                                    <button class="time-preset-btn" data-minutes="30">30分钟</button>
+                                    <button class="time-preset-btn" data-minutes="60">1小时</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 录音主控制区 -->
+                <div class="recorder-main">
+                    <!-- 计时器 -->
+                    <div class="recorder-timer">
+                        <div class="timer-display-large" id="currentTimeDisplay">00:00:00</div>
+                        <div class="timer-labels">
+                            <span>时</span>
+                            <span>分</span>
+                            <span>秒</span>
+                        </div>
+                    </div>
+                    
+                    <!-- 录音可视化 -->
+                    <div class="recorder-visualizer">
+                        <canvas id="recorderVisualizer"></canvas>
+                        <div class="visualizer-overlay" id="visualizerOverlay">
+                            <div class="visualizer-status">
+                                <div class="status-indicator" id="statusIndicator"></div>
+                                <span id="visualizerStatusText">准备就绪</span>
+                            </div>
+                            <div class="visualizer-level">
+                                <span>音量:</span>
+                                <div class="level-container">
+                                    <div class="level-bar-recording">
+                                        <div class="level-fill-recording" id="levelFillRecording"></div>
+                                    </div>
+                                    <span class="level-text" id="levelText">0%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- MP3转换状态 -->
+                    <div class="mp3-conversion-status" id="mp3ConversionStatus">
+                        <div class="conversion-spinner"></div>
+                        <span>正在转换为MP3格式...</span>
+                    </div>
+                    
+                    <!-- 录音控制按钮 -->
+                    <div class="recorder-controls">
+                        <button class="recorder-btn record-btn-large" id="startRecordBtn">
+                            <div class="btn-icon">
+                                <i class="fas fa-microphone"></i>
+                            </div>
+                            <div class="btn-text">开始录音</div>
+                        </button>
+                        
+                        <button class="recorder-btn pause-btn-large" id="pauseRecordBtn" disabled>
+                            <div class="btn-icon">
+                                <i class="fas fa-pause"></i>
+                            </div>
+                            <div class="btn-text">暂停</div>
+                        </button>
+                        
+                        <button class="recorder-btn stop-btn-large" id="stopRecordBtn" disabled>
+                            <div class="btn-icon">
+                                <i class="fas fa-stop"></i>
+                            </div>
+                            <div class="btn-text">停止</div>
+                        </button>
+                        
+                        <button class="recorder-btn save-btn-large" id="saveRecordBtn" disabled>
+                            <div class="btn-icon">
+                                <i class="fas fa-save"></i>
+                            </div>
+                            <div class="btn-text">保存</div>
+                        </button>
+                    </div>
+                    
+                    <!-- 录音状态信息 -->
+                    <div class="recorder-status">
+                        <div class="status-item">
+                            <i class="fas fa-database"></i>
+                            <span>存储占用: <span id="storageUsage">0 MB</span></span>
+                        </div>
+                        <div class="status-item">
+                            <i class="fas fa-file-audio"></i>
+                            <span>格式: <span id="outputFormat">MP3</span></span>
+                        </div>
+                        <div class="status-item">
+                            <i class="fas fa-microphone-alt"></i>
+                            <span>状态: <span id="recorderStatusText">待机</span></span>
+                        </div>
+                        <div class="status-item">
+                            <i class="fas fa-language"></i>
+                            <span>跟读: <span id="followModeStatus">关闭</span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 录音文件列表 -->
+                <div class="recorder-files">
+                    <div class="files-header">
+                        <h4><i class="fas fa-list"></i> 录音文件列表</h4>
+                        <button class="refresh-btn" id="refreshRecordingsBtn">
+                            <i class="fas fa-sync-alt"></i> 刷新
+                        </button>
+                    </div>
+                    <div class="files-list" id="recordingsList">
+                        <div class="empty-files">
+                            <i class="fas fa-microphone-slash"></i>
+                            <p>暂无录音文件</p>
+                            <p>点击"开始录音"按钮创建第一个录音</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 底部播放栏 -->
+    <footer class="player-bar">
+        <div class="player-left">
+            <div class="channel-cover" id="playerChannelCover">
+                <i class="fas fa-music"></i>
+            </div>
+            <div class="song-info">
+                <p class="song-name" id="playerSongName">未选择音频</p>
+                <p class="singer" id="playerSinger">请上传或录制音频</p>
+            </div>
+        </div>
+        <div class="player-middle">
+            <div class="control-buttons">
+                <button class="control-btn" id="prevBtn">
+                    <i class="fas fa-step-backward"></i>
+                </button>
+                <button class="control-btn play-btn" id="playerPlayBtn">
+                    <i class="fas fa-play-circle"></i>
+                </button>
+                <button class="control-btn" id="nextBtn">
+                    <i class="fas fa-step-forward"></i>
+                </button>
+            </div>
+            <div class="progress-container">
+                <span class="time current" id="playerCurrentTime">00:00</span>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="playerProgressFill"></div>
+                </div>
+                <span class="time total" id="playerTotalTime">00:00</span>
+            </div>
+        </div>
+        <div class="player-right">
+            <button class="control-btn" id="playerVolumeBtn">
+                <i class="fas fa-volume-up"></i>
+            </button>
+            <div class="volume-bar">
+                <div class="volume-fill" id="playerVolumeFill"></div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

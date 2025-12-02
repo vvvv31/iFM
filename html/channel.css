@@ -9,9 +9,13 @@
     }
 }
 .channel-main {
-    min-height: calc(100vh - 180px); /* 减去头部和播放器的高度 */
+    min-height: calc(100vh - 136px); /* 减去头部和播放器的高度 */
     position: relative;
     overflow: hidden;
+    padding: 15px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
 }
 
 /* 背景装饰元素 */
@@ -378,7 +382,7 @@
     .groups-grid {
         grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     }
-    
+
     .channel-sidebar {
         width: 260px;
         padding: 20px;
@@ -393,7 +397,7 @@
         margin: 0;
         padding: 0 15px;
     }
-    
+
     .channel-sidebar {
         width: 100%;
         flex-direction: row;
@@ -402,39 +406,39 @@
         padding: 20px;
         border-radius: 14px;
     }
-    
+
     .channel-search {
         flex: 1;
         max-width: 250px;
     }
-    
+
     .invite-search {
         padding: 12px 40px 12px 15px;
         font-size: 14px;
     }
-    
+
     .create-group-btn {
         padding: 12px 20px;
         font-size: 14px;
         border-radius: 10px;
     }
-    
+
     .groups-grid {
         grid-template-columns: 1fr;
         gap: 20px;
     }
-    
+
     .group-item {
         padding: 20px;
         border-radius: 14px;
     }
-    
+
     /* 调整动画效果 */
     .channel-main::before {
         width: 200px;
         height: 200px;
     }
-    
+
     .channel-main::after {
         width: 150px;
         height: 150px;
@@ -447,39 +451,39 @@
         gap: 15px;
         padding: 15px;
     }
-    
+
     .channel-container {
         width: 100%;
         margin: 0;
         padding: 0 10px;
     }
-    
+
     .channel-search {
         max-width: 100%;
     }
-    
+
     .create-group-btn {
         width: 100%;
     }
-    
+
     .group-item {
         padding: 18px;
         border-radius: 12px;
     }
-    
+
     .group-info h3 {
         font-size: 18px;
     }
-    
+
     .group-info p {
         font-size: 13px;
     }
-    
+
     .join-btn {
         padding: 8px 16px;
         font-size: 13px;
     }
-    
+
     /* 调整背景装饰元素 */
     .channel-main::before {
         width: 150px;
@@ -487,7 +491,7 @@
         top: -30px;
         right: -30px;
     }
-    
+
     .channel-main::after {
         width: 100px;
         height: 100px;
@@ -508,17 +512,17 @@
     .channel-sidebar {
         display: none;
     }
-    
+
     .groups-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .group-item {
         box-shadow: none;
         border: 1px solid #ccc;
         margin-bottom: 20px;
     }
-    
+
     .join-btn {
         display: none;
     }

@@ -103,13 +103,13 @@
         display: block;
         padding: 10px 0;
     }
-    
+
     .group-list-mobile .group-item {
         padding: 12px 15px;
         border-bottom: 1px solid #f0f0f0;
         transition: background-color 0.2s;
     }
-    
+
     .group-list-mobile .group-item:hover,
     .group-list-mobile .group-item.active {
         background-color: #f5f5f5;
@@ -317,6 +317,21 @@
     transform: translateY(-1px);
 }
 
+.send-btn {
+    background-color: #ff8c00;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.send-btn:hover {
+    background-color: #ff6600;
+}
+
 /* 右侧群组信息 */
 .group-info-sidebar {
     width: 280px;
@@ -467,28 +482,28 @@
     .channel-layout {
         gap: 15px;
     }
-    
+
     .channel-sidebar {
         width: 250px;
         padding: 15px;
     }
-    
+
     .group-info-sidebar {
         width: 240px;
     }
-    
+
     .message-text {
         max-width: 70%;
     }
-    
+
     .welcome-bubble {
         max-width: 90%;
     }
-    
+
     .group-header h2 {
         font-size: 20px;
     }
-    
+
     .member-count {
         font-size: 13px;
     }
@@ -500,39 +515,39 @@
         flex-direction: column;
         height: auto;
     }
-    
+
     .channel-sidebar, .group-info-sidebar {
         width: 100%;
     }
-    
+
     .group-list {
         height: calc(100vh - 400px);
     }
-    
+
     .channel-sidebar {
         display: none;
     }
-    
+
     .group-info-sidebar {
         display: none;
     }
-    
+
     .message-text {
         max-width: 80%;
     }
-    
+
     .welcome-bubble {
         max-width: 100%;
     }
-    
+
     .group-header {
         padding: 15px;
     }
-    
+
     .group-header h2 {
         font-size: 18px;
     }
-    
+
     .group-welcome, .chat-messages, .message-input-area {
         padding: 15px;
     }
@@ -543,29 +558,29 @@
     .channel-main {
         padding: 10px 0;
     }
-    
+
     .group-list {
         height: calc(100vh - 380px);
     }
-    
+
     .group-header, .group-welcome, .chat-messages, .message-input-area {
         padding: 12px;
     }
-    
+
     .user-avatar {
         width: 32px;
         height: 32px;
     }
-    
+
     .message-text {
         font-size: 13px;
         padding: 8px 12px;
     }
-    
+
     .message-input {
         padding: 8px 15px;
     }
-    
+
     .create-group-btn {
         padding: 10px 15px;
         font-size: 14px;

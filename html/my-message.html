@@ -6,6 +6,187 @@
     <title>我的-私信 - 星之声</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* 私信页面特有样式 */
+        .message-area {
+            display: flex;
+            gap: 20px;
+            min-height: 500px;
+        }
+        
+        .message-list {
+            width: 280px;
+            background-color: #FFF8DC;
+            border: 1px solid #FFDAB9;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .msg-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #FFDAB9;
+            transition: background-color 0.3s;
+        }
+        
+        .msg-item:hover {
+            background-color: #FFEDCC;
+        }
+        
+        .msg-item.active {
+            background-color: #FF8C00;
+            color: #fff;
+        }
+        
+        .msg-item.active .avatar {
+            background-color: #fff;
+        }
+        
+        .msg-item .avatar-wrapper {
+            width: 40px;
+            height: 40px;
+            margin-right: 12px;
+        }
+        
+        .msg-item .avatar {
+            width: 36px;
+            height: 36px;
+            background-color: #FF8C00;
+        }
+        
+        .msg-item span {
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        .chat-window {
+            flex: 1;
+            background-color: #fff;
+            border: 1px solid #FFDAB9;
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chat-header {
+            background-color: #FF8C00;
+            color: #fff;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #FFDAB9;
+        }
+        
+        .chat-header .avatar-wrapper {
+            width: 40px;
+            height: 40px;
+            margin-right: 12px;
+        }
+        
+        .chat-header .avatar {
+            width: 36px;
+            height: 36px;
+            background-color: #fff;
+        }
+        
+        .chat-header span {
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        .chat-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background-color: #FFF8DC;
+        }
+        
+        .chat-message {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+        
+        .chat-message.received {
+            background-color: #fff;
+            border: 1px solid #FFDAB9;
+            color: #333;
+            margin-right: auto;
+        }
+        
+        .chat-message.sent {
+            background-color: #FF8C00;
+            color: #fff;
+            margin-left: auto;
+        }
+        
+        .chat-message .time {
+            display: block;
+            font-size: 11px;
+            color: #999;
+            margin-top: 5px;
+            text-align: right;
+        }
+        
+        .chat-message.sent .time {
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .chat-input-area {
+            padding: 15px 20px;
+            border-top: 1px solid #FFDAB9;
+            background-color: #fff;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .chat-input-area input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #FFDAB9;
+            border-radius: 20px;
+            outline: none;
+            font-size: 14px;
+        }
+        
+        .chat-input-area button {
+            background-color: #FF8C00;
+            color: #fff;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        
+        .chat-input-area button:hover {
+            background-color: #ff6b00;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .message-area {
+                flex-direction: column;
+            }
+            
+            .message-list {
+                width: 100%;
+                max-height: 200px;
+                overflow-y: auto;
+            }
+            
+            .chat-window {
+                min-height: 400px;
+            }
+        }
+    </style>
 </head>
 <body>
     <!-- 音频元素 -->
@@ -26,7 +207,7 @@
             <a href="channel.html" class="nav-item">频道</a>                
         </nav>
         <div class="search-box">
-            <input type="text" placeholder="Hinted search text" class="search-input">
+            <input type="text" placeholder="搜索频道或内容" class="search-input">
             <button class="search-btn"><i class="fas fa-search"></i></button>
         </div>
         <div class="user-functions">
@@ -37,9 +218,9 @@
                 </svg>
             </a>
             <a href="#" class="func-item"><i class="fas fa-bell"></i> 消息</a>
-            <a href="#" class="func-item"><i class="fas fa-star"></i> 收藏</a>
-            <a href="#" class="func-item"><i class="fas fa-history"></i> 历史</a>
-            <a href="#" class="func-item"><i class="fas fa-pen"></i> 创作中心</a>
+            <a href="my-collect.html" class="func-item"><i class="fas fa-star"></i> 收藏</a>
+            <a href="my-recent.html" class="func-item"><i class="fas fa-history"></i> 历史</a>
+            <a href="my-creator_center.html" class="func-item"><i class="fas fa-pen"></i> 创作中心</a>
             <button class="submit-btn">投稿</button>
         </div>
     </header>
@@ -64,13 +245,13 @@
             <button class="tab" onclick="window.location.href='my-recent.html'">最近收听</button>
             <button class="tab" onclick="window.location.href='my-collect.html'">收藏</button>
             <button class="tab" onclick="window.location.href='my-subscribe.html'">订阅</button>
-            <button class="tab  active" onclick="window.location.href='my-message.html'">私信</button>
+            <button class="tab active" onclick="window.location.href='my-message.html'">私信</button>
             <button class="tab" onclick="window.location.href='my-creator_center.html'">创作者中心</button>
         </section>
         <section class="content-block">
             <div class="message-area">
                 <div class="message-list">
-                    <div class="msg-item">
+                    <div class="msg-item active">
                         <div class="avatar-wrapper">
                             <div class="avatar"></div>
                         </div>
@@ -81,6 +262,24 @@
                             <div class="avatar"></div>
                         </div>
                         <span>学生2</span>
+                    </div>
+                    <div class="msg-item">
+                        <div class="avatar-wrapper">
+                            <div class="avatar"></div>
+                        </div>
+                        <span>同学A</span>
+                    </div>
+                    <div class="msg-item">
+                        <div class="avatar-wrapper">
+                            <div class="avatar"></div>
+                        </div>
+                        <span>同学B</span>
+                    </div>
+                    <div class="msg-item">
+                        <div class="avatar-wrapper">
+                            <div class="avatar"></div>
+                        </div>
+                        <span>同学C</span>
                     </div>
                 </div>
                 <div class="chat-window">
@@ -95,10 +294,26 @@
                             你应该知道班级邀请码是多少吧
                             <span class="time">2025.11.22 15:03</span>
                         </div>
+                        <div class="chat-message sent">
+                            老师，邀请码是2025ABC
+                            <span class="time">2025.11.22 15:05</span>
+                        </div>
+                        <div class="chat-message received">
+                            好的，已经收到了。记得按时完成本周的听力作业
+                            <span class="time">2025.11.22 15:06</span>
+                        </div>
+                        <div class="chat-message sent">
+                            好的老师，我正在收听《Seasons in》这首练习
+                            <span class="time">2025.11.22 15:08</span>
+                        </div>
+                        <div class="chat-message received">
+                            这首曲子很适合听力训练，继续加油！
+                            <span class="time">2025.11.22 15:10</span>
+                        </div>
                     </div>
                     <div class="chat-input-area">
-                        <input type="text" placeholder="请输入消息...">
-                        <button>发送</button>
+                        <input type="text" placeholder="请输入消息..." id="messageInput">
+                        <button id="sendBtn">发送</button>
                     </div>
                 </div>
             </div>
@@ -154,13 +369,16 @@
                     <div class="playlist-item active">1. Seasons in</div>
                     <div class="playlist-item">2. 班级背景音乐</div>
                     <div class="playlist-item">3. 学习纯音乐</div>
+                    <div class="playlist-item">4. 英语听力练习</div>
+                    <div class="playlist-item">5. 古典音乐欣赏</div>
                 </div>
             </div>
         </div>
     </footer>
 
-    <!-- 功能JavaScript（与最近收听页面一致） -->
+    <!-- 功能JavaScript -->
     <script>
+        // 播放器功能
         const audioPlayer = document.getElementById('audioPlayer');
         const playBtn = document.querySelector('.play-btn');
         const speedBtn = document.querySelector('.speed-btn');
@@ -172,7 +390,9 @@
         const playlistItems = document.querySelectorAll('.playlist-item');
         const progressFill = document.querySelector('.progress-fill');
         const currentTime = document.querySelector('.time.current');
+        const totalTime = document.querySelector('.time.total');
 
+        // 播放/暂停控制
         playBtn.addEventListener('click', () => {
             if (audioPlayer.paused) {
                 audioPlayer.play();
@@ -183,10 +403,19 @@
             }
         });
 
+        // 设置初始播放时间
+        audioPlayer.addEventListener('loadedmetadata', () => {
+            const minutes = Math.floor(audioPlayer.duration / 60);
+            const seconds = Math.floor(audioPlayer.duration % 60);
+            totalTime.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        });
+
+        // 倍速控制
         speedBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             speedMenu.classList.toggle('active');
         });
+        
         speedOptions.forEach(option => {
             option.addEventListener('click', () => {
                 const rate = parseFloat(option.getAttribute('data-rate'));
@@ -198,30 +427,141 @@
             });
         });
 
+        // 播放列表控制
         playlistBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             playlistPanel.classList.toggle('active');
         });
+        
         playlistItems.forEach(item => {
             item.addEventListener('click', () => {
                 playlistItems.forEach(i => i.classList.remove('active'));
                 item.classList.add('active');
-                alert(`正在播放：${item.textContent}`);
+                
+                // 更新播放器信息
+                const songName = item.textContent.substring(3); // 移除序号
+                document.querySelector('.song-name').textContent = songName;
+                
+                // 模拟播放
+                playBtn.innerHTML = '<i class="fas fa-pause-circle"></i>';
+                
+                // 这里可以添加实际的音频切换逻辑
+                console.log(`正在播放：${songName}`);
             });
         });
 
+        // 进度条更新
         audioPlayer.addEventListener('timeupdate', () => {
             const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
             progressFill.style.width = `${progress}%`;
+            
             const minutes = Math.floor(audioPlayer.currentTime / 60);
             const seconds = Math.floor(audioPlayer.currentTime % 60);
             currentTime.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
         });
 
+        // 点击进度条跳转
+        document.querySelector('.progress-bar').addEventListener('click', (e) => {
+            const progressBar = e.currentTarget;
+            const clickPosition = e.offsetX;
+            const progressBarWidth = progressBar.clientWidth;
+            const percentage = (clickPosition / progressBarWidth) * 100;
+            
+            if (audioPlayer.duration) {
+                audioPlayer.currentTime = (percentage / 100) * audioPlayer.duration;
+                progressFill.style.width = `${percentage}%`;
+            }
+        });
+
+        // 关闭菜单
         document.addEventListener('click', () => {
             speedMenu.classList.remove('active');
             playlistPanel.classList.remove('active');
         });
+
+        // 私信页面功能
+        const msgItems = document.querySelectorAll('.msg-item');
+        const messageInput = document.getElementById('messageInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const chatContent = document.querySelector('.chat-content');
+
+        // 切换对话
+        msgItems.forEach(item => {
+            item.addEventListener('click', () => {
+                msgItems.forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                
+                // 更新聊天窗口标题
+                const name = item.querySelector('span').textContent;
+                document.querySelector('.chat-header span').textContent = name;
+                
+                // 清空聊天内容（模拟加载新对话）
+                chatContent.innerHTML = `<div class="chat-message received">
+                    开始与${name}的对话
+                    <span class="time">${getCurrentTime()}</span>
+                </div>`;
+                
+                // 滚动到底部
+                chatContent.scrollTop = chatContent.scrollHeight;
+            });
+        });
+
+        // 发送消息
+        sendBtn.addEventListener('click', sendMessage);
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        function sendMessage() {
+            const message = messageInput.value.trim();
+            if (message === '') return;
+            
+            // 创建新消息
+            const newMessage = document.createElement('div');
+            newMessage.className = 'chat-message sent';
+            newMessage.innerHTML = `${message}<span class="time">${getCurrentTime()}</span>`;
+            
+            // 添加到聊天窗口
+            chatContent.appendChild(newMessage);
+            
+            // 清空输入框
+            messageInput.value = '';
+            
+            // 滚动到底部
+            chatContent.scrollTop = chatContent.scrollHeight;
+            
+            // 模拟回复（3秒后）
+            setTimeout(() => {
+                const replies = [
+                    '好的，收到了',
+                    '明白了，谢谢',
+                    '我会注意的',
+                    '这个建议不错',
+                    '继续努力'
+                ];
+                const randomReply = replies[Math.floor(Math.random() * replies.length)];
+                
+                const replyMessage = document.createElement('div');
+                replyMessage.className = 'chat-message received';
+                replyMessage.innerHTML = `${randomReply}<span class="time">${getCurrentTime()}</span>`;
+                
+                chatContent.appendChild(replyMessage);
+                chatContent.scrollTop = chatContent.scrollHeight;
+            }, 3000);
+        }
+
+        // 获取当前时间
+        function getCurrentTime() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = (now.getMonth() + 1).toString().padStart(2, '0');
+            const day = now.getDate().toString().padStart(2, '0');
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            return `${year}.${month}.${day} ${hours}:${minutes}`;
+        }
     </script>
 </body>
 </html>

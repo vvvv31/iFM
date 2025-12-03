@@ -112,7 +112,7 @@
         <!-- 频道网格展示 -->
         <div class="channels-grid">
             <!-- 频道卡片 1 -->
-            <div class="channel-card">
+            <div class="channel-card" data-course-id="1">
                 <div class="channel-thumbnail">
                     <div class="thumbnail-overlay">
                         <span class="play-icon">▶</span>
@@ -133,7 +133,7 @@
             </div>
 
             <!-- 频道卡片 2 -->
-            <div class="channel-card">
+            <div class="channel-card" data-course-id="2">
                 <div class="channel-thumbnail">
                     <div class="thumbnail-overlay">
                         <span class="play-icon">▶</span>
@@ -154,7 +154,7 @@
             </div>
 
             <!-- 频道卡片 3 -->
-            <div class="channel-card">
+            <div class="channel-card" data-course-id="3">
                 <div class="channel-thumbnail">
                     <div class="thumbnail-overlay">
                         <span class="play-icon">▶</span>
@@ -175,7 +175,7 @@
             </div>
 
             <!-- 频道卡片 4 -->
-            <div class="channel-card">
+            <div class="channel-card" data-course-id="4">
                 <div class="channel-thumbnail">
                     <div class="thumbnail-overlay">
                         <span class="play-icon">▶</span>
@@ -196,7 +196,7 @@
             </div>
 
             <!-- 频道卡片 5 -->
-            <div class="channel-card">
+            <div class="channel-card" data-course-id="5">
                 <div class="channel-thumbnail">
                     <div class="thumbnail-overlay">
                         <span class="play-icon">▶</span>
@@ -217,7 +217,7 @@
             </div>
 
             <!-- 频道卡片 6 -->
-            <div class="channel-card">
+            <div class="channel-card" data-course-id="6">
                 <div class="channel-thumbnail">
                     <div class="thumbnail-overlay">
                         <span class="play-icon">▶</span>
@@ -238,7 +238,7 @@
             </div>
 
             <!-- 频道卡片 7 -->
-            <div class="channel-card">
+            <div class="channel-card" data-course-id="7">
                 <div class="channel-thumbnail">
                     <div class="thumbnail-overlay">
                         <span class="play-icon">▶</span>
@@ -259,7 +259,7 @@
             </div>
 
             <!-- 频道卡片 8 -->
-            <div class="channel-card">
+            <div class="channel-card" data-course-id="8">
                 <div class="channel-thumbnail">
                     <div class="thumbnail-overlay">
                         <span class="play-icon">▶</span>
@@ -280,7 +280,7 @@
             </div>
 
             <!-- 频道卡片 9 -->
-            <div class="channel-card">
+            <div class="channel-card" data-course-id="9">
                 <div class="channel-thumbnail">
                     <div class="thumbnail-overlay">
                         <span class="play-icon">▶</span>
@@ -382,37 +382,78 @@
         const currentTime = document.querySelector('.time.current');
         const totalTime = document.querySelector('.time.total');
 
-        // 为所有频道卡片添加点击事件
+        // 为所有频道卡片添加点击事件 - 跳转到详情页
         document.querySelectorAll('.channel-card').forEach((card, index) => {
             card.addEventListener('click', () => {
+                const courseId = card.getAttribute('data-course-id') || (index + 1);
                 const title = card.querySelector('.channel-title').textContent;
                 const teacher = card.querySelector('.teacher-name').textContent;
                 const duration = card.querySelector('.video-duration').textContent;
+                const views = card.querySelector('.views-count').textContent;
                 
-                // 更新播放器信息
-                document.querySelector('.song-name').textContent = title;
-                document.querySelector('.singer').textContent = teacher;
-                document.querySelector('.channel-cover').textContent = title.charAt(0);
-                totalTime.textContent = duration;
+                // 保存课程信息到 localStorage，以便在详情页使用
+                const courseInfo = {
+                    id: courseId,
+                    title: title,
+                    teacher: teacher,
+                    duration: duration,
+                    views: views,
+                    rating: '★★★★★',
+                    description: getCourseDescription(courseId),
+                    chapters: getCourseChapters(courseId)
+                };
                 
-                // 更新播放列表
-                playlistItems.forEach((item, i) => {
-                    if (i === 0) {
-                        item.textContent = `1. ${title}`;
-                        item.classList.add('active');
-                    } else if (i === 1) {
-                        item.textContent = `2. 日常英语口语600句`;
-                        item.classList.remove('active');
-                    } else if (i === 2) {
-                        item.textContent = `3. 英语听力进阶训练`;
-                        item.classList.remove('active');
-                    }
-                });
+                localStorage.setItem('currentCourse', JSON.stringify(courseInfo));
                 
-                alert(`开始播放：${title}\n主讲：${teacher}\n时长：${duration}`);
+                // 跳转到课程详情页
+                window.location.href = 'program_list.html';
             });
         });
 
+        // 获取课程描述（模拟数据）
+        function getCourseDescription(courseId) {
+            const descriptions = {
+                1: "本课程专为商务人士设计，涵盖商务会议、谈判、邮件写作等实用场景，帮助您提升商务英语沟通能力。",
+                2: "精选600个日常口语表达，覆盖生活、工作、旅行等各个方面，让您的英语口语更地道。",
+                3: "通过系统训练，提高英语听力理解能力，帮助您更好地理解英语对话和讲座。",
+                4: "从基础到高级，系统学习英语写作技巧，提高写作表达能力。",
+                5: "为零基础学习者设计，从字母发音开始，循序渐进学习英语基础知识。",
+                6: "系统讲解英语语法规则，帮助您理解和使用正确的英语语法结构。",
+                7: "针对旅游场景的实用英语口语，让您出国旅游更加顺畅。",
+                8: "纠正常见的英语发音问题，提高口语发音准确性和流利度。",
+                9: "学习英语面试中的常见问题和回答技巧，提高面试成功率。"
+            };
+            return descriptions[courseId] || "本课程内容丰富，适合不同水平的学习者。";
+        }
+
+        // 获取课程章节（模拟数据）
+        function getCourseChapters(courseId) {
+            const chaptersData = {
+                1: [
+                    { title: "商务会议英语", duration: "15:30" },
+                    { title: "商务谈判技巧", duration: "18:20" },
+                    { title: "商务邮件写作", duration: "11:40" }
+                ],
+                2: [
+                    { title: "日常问候与介绍", duration: "20:15" },
+                    { title: "餐厅点餐用语", duration: "15:30" },
+                    { title: "购物砍价技巧", duration: "24:30" }
+                ],
+                3: [
+                    { title: "听力基础训练", duration: "15:00" },
+                    { title: "对话听力理解", duration: "12:20" },
+                    { title: "讲座听力技巧", duration: "10:40" }
+                ]
+                // 其他课程的章节数据...
+            };
+            return chaptersData[courseId] || [
+                { title: "第一课", duration: "10:00" },
+                { title: "第二课", duration: "12:00" },
+                { title: "第三课", duration: "15:00" }
+            ];
+        }
+
+        // 原有的播放器功能保持不变
         playBtn.addEventListener('click', () => {
             if (audioPlayer.paused) {
                 audioPlayer.play();

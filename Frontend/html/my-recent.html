@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的-收藏 - 星之声</title>
-    <link rel="stylesheet" href="style.css">
+    <title>我的-最近收听 - 星之声</title>
+    <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <!-- 音频元素 -->
+    <!-- 音频元素（控制倍速/播放） -->
     <audio id="audioPlayer" controls style="display: none;">
         <source src="" type="audio/mpeg">
         您的浏览器不支持音频播放
@@ -21,9 +21,9 @@
             <span class="logo-text">星之声</span>
         </div>
         <nav class="main-nav">
-            <a href="index.html" class="nav-item">首页</a>                           
+            <a href="index.html" class="nav-item">首页</a>
             <a href="category.html" class="nav-item">分类</a>
-            <a href="channel.html" class="nav-item">频道</a>                
+            <a href="channel.html" class="nav-item">频道</a>
         </nav>
         <div class="search-box">
             <input type="text" placeholder="Hinted search text" class="search-input">
@@ -61,13 +61,14 @@
             </div>
         </section>
         <section class="tab-bar">
-            <button class="tab" onclick="window.location.href='my-recent.html'">最近收听</button>
-            <button class="tab active" onclick="window.location.href='my-collect.html'">收藏</button>
+            <button class="tab active" onclick="window.location.href='my-recent.html'">最近收听</button>
+            <button class="tab" onclick="window.location.href='my-collect.html'">收藏</button>
             <button class="tab" onclick="window.location.href='my-subscribe.html'">订阅</button>
             <button class="tab" onclick="window.location.href='my-message.html'">私信</button>
-            <button class="tab" onclick="window.location.href='my-creator_center.html'">创作者中心</button>
+            <button class="tab" onclick="window.location.href='my-creator_center.html'">创作者中心</button>                 
         </section>
         <section class="content-block">
+            <div class="content-title">今天</div>
             <div class="channel-cards">
                 <div class="channel-card">频道</div>
                 <div class="channel-card">频道</div>
@@ -76,9 +77,10 @@
         </section>
     </main>
 
-    <!-- 底部播放栏 -->
+    <!-- 底部播放栏（核心修改：频道封面+倍速+播放列表） -->
     <footer class="player-bar">
         <div class="player-left">
+            <!-- 贴合图片的频道封面（文字样式） -->
             <div class="channel-cover">频道</div>
             <div class="song-info">
                 <p class="song-name">Seasons in</p>
@@ -91,6 +93,7 @@
                 <button class="control-btn play-btn"><i class="fas fa-play-circle"></i></button>
                 <button class="control-btn"><i class="fas fa-step-forward"></i></button>
                 <button class="control-btn"><i class="fas fa-random"></i></button>
+                <!-- 倍速控制功能 -->
                 <div class="speed-control">
                     <button class="speed-btn">
                         <i class="fas fa-tachometer-alt"></i>
@@ -118,19 +121,21 @@
             <div class="volume-bar">
                 <div class="volume-fill"></div>
             </div>
+            <!-- 播放列表功能 -->
             <div class="playlist-container">
                 <button class="playlist-btn"><i class="fas fa-list"></i></button>
                 <div class="playlist-panel">
-                    <div class="playlist-title">收藏频道列表</div>
+                    <div class="playlist-title">播放列表</div>
                     <div class="playlist-item active">1. Seasons in</div>
-                    <div class="playlist-item">2. Seasons in</div>
-                    <div class="playlist-item">3. Seasons in</div>
+                    <div class="playlist-item">2. 清晨轻音乐</div>
+                    <div class="playlist-item">3. 午后咖啡时光</div>
+                    <div class="playlist-item">4. 夜晚助眠曲</div>
                 </div>
             </div>
         </div>
     </footer>
 
-    <!-- 功能JavaScript（与最近收听页面一致） -->
+    <!-- 功能实现JavaScript -->
     <script>
         const audioPlayer = document.getElementById('audioPlayer');
         const playBtn = document.querySelector('.play-btn');
@@ -144,6 +149,7 @@
         const progressFill = document.querySelector('.progress-fill');
         const currentTime = document.querySelector('.time.current');
 
+        // 播放/暂停控制
         playBtn.addEventListener('click', () => {
             if (audioPlayer.paused) {
                 audioPlayer.play();
@@ -154,6 +160,7 @@
             }
         });
 
+        // 倍速切换功能
         speedBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             speedMenu.classList.toggle('active');
@@ -169,6 +176,7 @@
             });
         });
 
+        // 播放列表功能
         playlistBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             playlistPanel.classList.toggle('active');
@@ -177,10 +185,12 @@
             item.addEventListener('click', () => {
                 playlistItems.forEach(i => i.classList.remove('active'));
                 item.classList.add('active');
+                // 切换播放列表项（可根据实际音频路径修改）
                 alert(`正在播放：${item.textContent}`);
             });
         });
 
+        // 进度条更新
         audioPlayer.addEventListener('timeupdate', () => {
             const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
             progressFill.style.width = `${progress}%`;
@@ -189,6 +199,7 @@
             currentTime.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
         });
 
+        // 点击页面其他区域关闭菜单
         document.addEventListener('click', () => {
             speedMenu.classList.remove('active');
             playlistPanel.classList.remove('active');

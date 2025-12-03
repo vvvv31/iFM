@@ -3,9 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的-订阅 - 星之声</title>
-    <link rel="stylesheet" href="style.css">
+    <title>频道 - 星之声</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/channel.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="../js/script.js" defer></script>
+    <style>
+        /* 新增样式：确保内容不被底部播放栏遮挡 */
+        .main.channel-main {
+            padding-bottom: 90px;
+        }
+
+        /* 底部播放栏固定定位 */
+        .player-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background-color: white;
+            border-top: 1px solid #FFDAB9;
+        }
+    </style>
 </head>
 <body>
     <!-- 音频元素 -->
@@ -21,9 +40,9 @@
             <span class="logo-text">星之声</span>
         </div>
         <nav class="main-nav">
-            <a href="index.html" class="nav-item">首页</a>                           
+            <a href="index.html" class="nav-item">首页</a>
             <a href="category.html" class="nav-item">分类</a>
-            <a href="channel.html" class="nav-item">频道</a>                
+            <a href="channel.html" class="nav-item active">频道</a>                     
         </nav>
         <div class="search-box">
             <input type="text" placeholder="Hinted search text" class="search-input">
@@ -44,54 +63,72 @@
         </div>
     </header>
 
-    <!-- 主要内容区 -->
-    <main class="main-content">
-        <section class="user-info">
-            <div class="avatar-wrapper">
-                <div class="avatar"></div>
-            </div>
-            <div class="user-detail">
-                <div class="username">用户名</div>
-                <div class="identity">身份</div>
-                <div class="stats">
-                    <span>关注 <b>0</b></span>
-                    <span>粉丝 <b>0</b></span>
-                    <span>收听时长 <b>0</b></span>
-                </div>
-            </div>
-        </section>
-        <section class="tab-bar">
-            <button class="tab" onclick="window.location.href='my-recent.html'">最近收听</button>
-            <button class="tab" onclick="window.location.href='my-collect.html'">收藏</button>
-            <button class="tab active" onclick="window.location.href='my-subscribe.html'">订阅</button>
-            <button class="tab" onclick="window.location.href='my-message.html'">私信</button>
-            <button class="tab" onclick="window.location.href='my-creator_center.html'">创作者中心</button>
-        </section>
-        <section class="content-block">
-            <div class="subscribe-list">
-                <div class="subscribe-item">
-                    <div class="avatar-wrapper">
-                        <div class="avatar"></div>
+    <!-- 主要内容区域 - 保持原有布局 -->
+    <main class="main channel-main">
+        <div class="container channel-container">
+            <!-- 左侧搜索和群组搜索 -->
+            <aside class="channel-sidebar">
+                <!-- 搜索框 -->
+                <div class="channel-search">
+                    <div class="search-box">
+                        <input type="text" placeholder="输入邀请码" class="invite-search">
+                        <button class="close-btn">×</button>
                     </div>
-                    <span>xx老师</span>
                 </div>
-                <div class="subscribe-item">
-                    <div class="avatar-wrapper">
-                        <div class="avatar"></div>
+
+                <!-- 创建群组按钮 -->
+                <button class="create-group-btn">创建群组</button>
+            </aside>
+
+            <!-- 右侧群组列表 -->
+            <section class="groups-section">
+                <div class="groups-grid">
+                    <!-- 群组项 -->
+                    <div class="group-item">
+                        <div class="group-info">
+                            <h3>群组名字</h3>
+                            <p>简介</p>
+                        </div>
+                        <div class="group-buttons">
+                            <span class="members-count">已加入n人</span>
+                            <button class="join-btn">加入</button>
+                            <span class="invite-code">邀请码：xxxx</span>
+                        </div>
                     </div>
-                    <span>学生2</span>
+                    <div class="group-item">
+                        <div class="group-info">
+                            <h3>群组名字</h3>
+                            <p>简介</p>
+                        </div>
+                        <div class="group-buttons">
+                            <span class="members-count">已加入n人</span>
+                            <button class="join-btn">加入</button>
+                            <span class="invite-code">邀请码：xxxx</span>
+                        </div>
+                    </div>
+                    <div class="group-item">
+                        <div class="group-info">
+                            <h3>群组名字</h3>
+                            <p>简介</p>
+                        </div>
+                        <div class="group-buttons">
+                            <span class="members-count">已加入n人</span>
+                            <button class="join-btn">加入</button>
+                            <span class="invite-code">邀请码：xxxx</span>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </section>
+            </section>
+        </div>
     </main>
 
-    <!-- 底部播放栏 -->
+    <!-- 底部播放栏 - 与分类页面保持一致 -->
     <footer class="player-bar">
         <div class="player-left">
-            <div class="channel-cover">频道</div>
+            <div class="channel-cover">E</div>
             <div class="song-info">
-                <p class="song-name">Seasons in</p>
-                <p class="singer">James</p>
+                <p class="song-name">日常对话 - 打招呼与自我介绍</p>
+                <p class="singer">英语日常对话 - 初级</p>
             </div>
         </div>
         <div class="player-middle">
@@ -130,16 +167,16 @@
             <div class="playlist-container">
                 <button class="playlist-btn"><i class="fas fa-list"></i></button>
                 <div class="playlist-panel">
-                    <div class="playlist-title">订阅频道列表</div>
-                    <div class="playlist-item active">1. Seasons in</div>
-                    <div class="playlist-item">2. 音乐课堂</div>
-                    <div class="playlist-item">3. 学生作品</div>
+                    <div class="playlist-title">收藏频道列表</div>
+                    <div class="playlist-item active">1. 日常对话 - 打招呼与自我介绍</div>
+                    <div class="playlist-item">2. 日常对话 - 询问与回答</div>
+                    <div class="playlist-item">3. 日常对话 - 告别用语</div>
                 </div>
             </div>
         </div>
     </footer>
 
-    <!-- 功能JavaScript（与最近收听页面一致） -->
+    <!-- 播放控制脚本 -->
     <script>
         const audioPlayer = document.getElementById('audioPlayer');
         const playBtn = document.querySelector('.play-btn');

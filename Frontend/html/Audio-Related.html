@@ -1,0 +1,1336 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>音频录制与播放 - 星之声</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lamejs/1.2.0/lame.min.js"></script>
+    <base target="_blank">
+    <style>
+        /* 添加录音页面的特有样式 */
+        .audio-tab-bar {
+            display: flex;
+            gap: 10px;
+            background-color: #FFF8DC;
+            border: 1px solid #FFDAB9;
+            border-radius: 8px;
+            padding: 5px;
+            margin-bottom: 15px;
+        }
+        
+        .audio-tab {
+            flex: 1;
+            padding: 8px 0;
+            text-align: center;
+            font-size: 14px;
+            border: none;
+            border-radius: 4px;
+            background: none;
+            cursor: pointer;
+        }
+        
+        .audio-tab.active {
+            background-color: #FF8C00;
+            color: #fff;
+            font-weight: bold;
+        }
+        
+        .audio-content-section {
+            display: none;
+        }
+        
+        .audio-content-section.active {
+            display: block;
+        }
+        
+        /* 录音页面的自定义样式 */
+        .recording-controls {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+            justify-content: center;
+        }
+        
+        .recording-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .record-btn {
+            background-color: #FF8C00;
+            color: white;
+        }
+        
+        .record-btn:hover:not(:disabled) {
+            background-color: #e67e00;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 140, 0, 0.3);
+        }
+        
+        .stop-btn {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        .stop-btn:hover:not(:disabled) {
+            background-color: #d32f2f;
+        }
+        
+        .save-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        .save-btn:hover:not(:disabled) {
+            background-color: #45a049;
+        }
+        
+        .recording-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .recording-status {
+            background-color: #FFF8DC;
+            border: 1px solid #FFDAB9;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .recording-timer {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            color: #FF8C00;
+            margin: 10px 0;
+        }
+        
+        .upload-area {
+            border: 2px dashed #FF8C00;
+            border-radius: 8px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            background-color: #FFF8DC;
+            transition: all 0.3s ease;
+        }
+        
+        .upload-area:hover {
+            background-color: #FFEDCC;
+        }
+        
+        .upload-icon {
+            font-size: 48px;
+            color: #FF8C00;
+            margin-bottom: 15px;
+        }
+        
+        .recordings-list {
+            margin-top: 20px;
+        }
+        
+        .recording-item {
+            background-color: #f9f9f9;
+            border: 1px solid #FFDAB9;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .recording-info {
+            flex: 1;
+        }
+        
+        .recording-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .recording-meta {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .recording-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .action-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .play-btn-small {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        .download-btn-small {
+            background-color: #2196F3;
+            color: white;
+        }
+        
+        .delete-btn-small {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        /* 跟读句子样式 */
+        .follow-sentence {
+            background-color: #E0FFFF;
+            border: 1px solid #FF8C00;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            text-align: center;
+        }
+        
+        .sentence-text {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .sentence-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- 音频元素 -->
+    <audio id="audioPlayer" controls style="display: none;">
+        <source src="" type="audio/mpeg">
+        您的浏览器不支持音频播放
+    </audio>
+
+    <!-- 顶部导航栏 -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-img"></div>
+            <span class="logo-text">星之声</span>
+        </div>
+        <nav class="main-nav">
+            <a href="index.html" class="nav-item">首页</a>
+            <a href="category.html" class="nav-item">分类</a>
+            <a href="channel.html" class="nav-item">频道</a>
+        </nav>
+        <div class="search-box">
+            <input type="text" placeholder="Hinted search text" class="search-input">
+            <button class="search-btn"><i class="fas fa-search"></i></button>
+        </div>
+        <div class="user-functions">
+            <a href="my-recent.html" class="func-item">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+            </a>
+            <a href="my-message.html" class="func-item"><i class="fas fa-bell"></i> 消息</a>
+            <a href="my-collect.html" class="func-item"><i class="fas fa-star"></i> 收藏</a>
+            <a href="my-recent.html" class="func-item"><i class="fas fa-history"></i> 历史</a>
+            <a href="my-creator_center.html" class="func-item"><i class="fas fa-pen"></i> 创作中心</a>
+            <a href="login.html"><button class="submit-btn">登录/注册</button></a>
+        </div>
+    </header>
+
+    <!-- 主要内容区（与my-collect.html统一结构） -->
+    <main class="main-content">
+        <section class="user-info">
+            <div class="avatar-wrapper">
+                <div class="avatar"></div>
+            </div>
+            <div class="user-detail">
+                <div class="username">音频创作者</div>
+                <div class="identity">录制达人</div>
+                <div class="stats">
+                    <span>关注 <b>0</b></span>
+                    <span>粉丝 <b>0</b></span>
+                    <span>录音 <b id="recordCount">0</b> 个</span>
+                    <span>评测 <b id="evaluationCount">0</b> 次</span>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 自定义标签栏 -->
+        <section class="audio-tab-bar">
+            <button class="audio-tab active" onclick="showAudioSection('upload')">上传MP3</button>
+            <button class="audio-tab" onclick="showAudioSection('record')">录音功能</button>
+        </section>
+
+        <!-- 上传MP3区域 -->
+        <section id="uploadSection" class="audio-content-section active content-block">
+            <div class="content-title">上传MP3文件</div>
+            <div class="upload-area" id="uploadBoxMain" onclick="document.getElementById('mp3Upload').click()">
+                <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                <p class="upload-text-main" style="font-weight: bold; margin-bottom: 5px;">点击上传MP3文件</p>
+                <p class="upload-hint" style="color: #666; font-size: 14px;">支持.mp3格式，最大100MB</p>
+                <input type="file" id="mp3Upload" accept=".mp3" style="display: none;">
+            </div>
+
+            <!-- 上传进度 -->
+            <div class="upload-progress" id="uploadProgress" style="display: none; margin-top: 20px;">
+                <div class="progress-bar-upload">
+                    <div class="progress-fill-upload" id="progressFillUpload"></div>
+                </div>
+                <span class="progress-text" id="progressText">0%</span>
+            </div>
+
+            <!-- 上传文件信息 -->
+            <div class="upload-file-info" id="uploadFileInfo" style="display: none; margin-top: 20px;">
+                <div class="file-info-header">
+                    <h4><i class="fas fa-file-audio"></i> 文件信息</h4>
+                    <button class="close-btn" id="closeFileInfo">&times;</button>
+                </div>
+                <div class="file-info-body">
+                    <div class="info-row">
+                        <span class="info-label">文件名:</span>
+                        <span class="info-value" id="infoFileName">--</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">文件大小:</span>
+                        <span class="info-value" id="infoFileSize">--</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">音频时长:</span>
+                        <span class="info-value" id="infoFileDuration">--</span>
+                    </div>
+                </div>
+                <div class="file-info-actions">
+                    <button class="action-btn play-upload-btn" id="playUploadBtn">
+                        <i class="fas fa-play"></i> 播放
+                    </button>
+                    <button class="action-btn download-btn" id="downloadUploadBtn">
+                        <i class="fas fa-download"></i> 下载
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 录音功能区域 -->
+        <section id="recordSection" class="audio-content-section content-block">
+            <div class="content-title">录制音频</div>
+            
+            <!-- 跟读句子区域 -->
+            <div class="follow-sentence">
+                <div class="sentence-text" id="currentSentence">
+                    请选择一个跟读句子开始录音练习
+                </div>
+                <div class="sentence-controls">
+                    <div class="sentence-info" style="font-size: 14px; color: #666;">
+                        句子 <span id="sentenceIndex">0</span> / <span id="totalSentences">0</span>
+                    </div>
+                    <div>
+                        <button class="sentence-nav-btn" id="prevSentenceBtn" style="padding: 6px 12px; background: #f0f0f0; border: 1px solid #FFDAB9; border-radius: 4px; margin-right: 5px;">
+                            <i class="fas fa-chevron-left"></i> 上一个
+                        </button>
+                        <button class="sentence-nav-btn" id="nextSentenceBtn" style="padding: 6px 12px; background: #f0f0f0; border: 1px solid #FFDAB9; border-radius: 4px;">
+                            下一个 <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 录音控制 -->
+            <div class="recording-status">
+                <div style="text-align: center; margin-bottom: 15px;">
+                    <div style="font-weight: bold; color: #FF8C00; margin-bottom: 5px;">录音控制</div>
+                    <div class="recording-timer" id="currentTimeDisplay">00:00:00</div>
+                </div>
+                
+                <div class="recording-controls">
+                    <button class="recording-btn record-btn" id="startRecordBtn">
+                        <i class="fas fa-microphone"></i> 开始录音
+                    </button>
+                    <button class="recording-btn stop-btn" id="stopRecordBtn" disabled>
+                        <i class="fas fa-stop"></i> 停止
+                    </button>
+                    <button class="recording-btn save-btn" id="saveRecordBtn" disabled>
+                        <i class="fas fa-save"></i> 保存
+                    </button>
+                </div>
+                
+                <div style="display: flex; justify-content: space-around; margin-top: 15px; font-size: 14px; color: #666;">
+                    <div>状态: <span id="recorderStatusText">待机</span></div>
+                    <div>格式: <span id="outputFormat">MP3</span></div>
+                    <div>跟读: <span id="followModeStatus">关闭</span></div>
+                </div>
+            </div>
+            
+            <!-- 录音设置 -->
+            <div style="background-color: #FFF8DC; border: 1px solid #FFDAB9; border-radius: 8px; padding: 15px; margin: 15px 0;">
+                <div style="font-weight: bold; color: #FF8C00; margin-bottom: 10px;">录音设置</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-size: 14px;">录音名称:</label>
+                        <input type="text" id="recordingName" placeholder="请输入录音名称" value="我的录音" style="width: 100%; padding: 8px; border: 1px solid #FF8C00; border-radius: 4px;">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-size: 14px;">音质设置:</label>
+                        <select id="audioQuality" style="width: 100%; padding: 8px; border: 1px solid #FF8C00; border-radius: 4px;">
+                            <option value="128">高质量 (128kbps)</option>
+                            <option value="96" selected>标准 (96kbps)</option>
+                            <option value="64">节省空间 (64kbps)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-size: 14px;">输出格式:</label>
+                        <div class="format-selector" style="display: flex; gap: 10px;">
+                            <div class="format-option active" data-format="mp3" style="padding: 8px 15px; background: #FF8C00; color: white; border-radius: 4px; cursor: pointer;">MP3</div>
+                            <div class="format-option" data-format="webm" style="padding: 8px 15px; background: #f0f0f0; color: #333; border-radius: 4px; cursor: pointer;">WebM</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 录音文件列表 -->
+            <div class="recorder-files" style="border: 1px solid #FFDAB9; border-radius: 8px; overflow: hidden;">
+                <div class="files-header" style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background-color: #FFF8DC; border-bottom: 1px solid #FFDAB9;">
+                    <h4 style="display: flex; align-items: center; gap: 8px; margin: 0;"><i class="fas fa-list"></i> 录音文件列表</h4>
+                    <button class="refresh-btn" id="refreshRecordingsBtn" style="padding: 6px 12px; background: #f5f5f5; border: 1px solid #ddd; border-radius: 4px; display: flex; align-items: center; gap: 5px;">
+                        <i class="fas fa-sync-alt"></i> 刷新
+                    </button>
+                </div>
+                <div class="files-list" id="recordingsList" style="max-height: 400px; overflow-y: auto; padding: 15px;">
+                    <div class="empty-files" style="text-align: center; padding: 40px 20px; color: #999;">
+                        <i class="fas fa-microphone-slash" style="font-size: 48px; margin-bottom: 15px; opacity: 0.5;"></i>
+                        <p>暂无录音文件</p>
+                        <p>点击"开始录音"按钮创建第一个录音</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 底部播放栏 -->
+    <footer class="player-bar">
+        <div class="player-left">
+            <div class="channel-cover">频道</div>
+            <div class="song-info">
+                <p class="song-name">Seasons in</p>
+                <p class="singer">James</p>
+            </div>
+        </div>
+        <div class="player-middle">
+            <div class="control-buttons">
+                <button class="control-btn"><i class="fas fa-step-backward"></i></button>
+                <button class="control-btn play-btn"><i class="fas fa-play-circle"></i></button>
+                <button class="control-btn"><i class="fas fa-step-forward"></i></button>
+                <button class="control-btn"><i class="fas fa-random"></i></button>
+                <div class="speed-control">
+                    <button class="speed-btn">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span id="currentSpeed">1x</span>
+                    </button>
+                    <div class="speed-menu">
+                        <div class="speed-option" data-rate="0.5">0.5x</div>
+                        <div class="speed-option active" data-rate="1">1x</div>
+                        <div class="speed-option" data-rate="1.5">1.5x</div>
+                        <div class="speed-option" data-rate="2">2x</div>
+                        <div class="speed-option" data-rate="3">3x</div>
+                    </div>
+                </div>
+            </div>
+            <div class="progress-container">
+                <span class="time current">00:00</span>
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+                <span class="time total">00:00</span>
+            </div>
+        </div>
+        <div class="player-right">
+            <button class="control-btn"><i class="fas fa-volume-up"></i></button>
+            <div class="volume-bar">
+                <div class="volume-fill"></div>
+            </div>
+            <div class="playlist-container">
+                <button class="playlist-btn"><i class="fas fa-list"></i></button>
+                <div class="playlist-panel">
+                    <div class="playlist-title">收藏频道列表</div>
+                    <div class="playlist-item active">1. Seasons in</div>
+                    <div class="playlist-item">2. Seasons in</div>
+                    <div class="playlist-item">3. Seasons in</div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript 功能 -->
+    <script>
+        // ========== 全局变量 ==========
+        let uploadedAudio = null;
+        let uploadedAudioUrl = null;
+        let uploadedAudioName = '';
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let isRecording = false;
+        let recordingTimer = null;
+        let recordingSeconds = 0;
+        let recordingHistory = JSON.parse(localStorage.getItem('audioRecorderHistory')) || [];
+        
+        // 跟读句子库
+        const followSentences = [
+            "The quick brown fox jumps over the lazy dog.",
+            "Practice makes perfect when learning a new language.",
+            "She sells seashells by the seashore on sunny Sundays.",
+            "How much wood would a woodchuck chuck if a woodchuck could chuck wood?",
+            "I scream, you scream, we all scream for ice cream."
+        ];
+        
+        let currentSentenceIndex = 0;
+        let selectedFormat = 'mp3';
+
+        // ========== 页面初始化 ==========
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化跟读句子
+            initializeFollowSentences();
+            
+            // 加载录音历史
+            loadRecordings();
+            updateStats();
+            
+            // 初始化事件监听器
+            setupEventListeners();
+            
+            // 初始化播放器
+            initializePlayer();
+            
+            // 设置初始标签页
+            showAudioSection('upload');
+        });
+
+        // ========== 标签页切换 ==========
+        function showAudioSection(sectionName) {
+            // 更新标签按钮状态
+            document.querySelectorAll('.audio-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            event.target.classList.add('active');
+            
+            // 显示对应的内容区域
+            document.querySelectorAll('.audio-content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            document.getElementById(sectionName + 'Section').classList.add('active');
+        }
+
+        // ========== 初始化跟读句子 ==========
+        function initializeFollowSentences() {
+            document.getElementById('totalSentences').textContent = followSentences.length;
+            currentSentenceIndex = Math.floor(Math.random() * followSentences.length);
+            updateSentenceDisplay();
+            updateFollowModeStatus();
+        }
+
+        function updateSentenceDisplay() {
+            document.getElementById('currentSentence').textContent = followSentences[currentSentenceIndex];
+            document.getElementById('sentenceIndex').textContent = currentSentenceIndex + 1;
+            
+            const prevBtn = document.getElementById('prevSentenceBtn');
+            const nextBtn = document.getElementById('nextSentenceBtn');
+            
+            prevBtn.disabled = currentSentenceIndex === 0;
+            nextBtn.disabled = currentSentenceIndex === followSentences.length - 1;
+        }
+
+        function updateFollowModeStatus() {
+            document.getElementById('followModeStatus').textContent = '开启';
+        }
+
+        // ========== 事件监听器设置 ==========
+        function setupEventListeners() {
+            // 上传相关
+            const uploadBox = document.getElementById('uploadBoxMain');
+            const mp3Upload = document.getElementById('mp3Upload');
+            const closeFileInfo = document.getElementById('closeFileInfo');
+            const playUploadBtn = document.getElementById('playUploadBtn');
+            const downloadUploadBtn = document.getElementById('downloadUploadBtn');
+            
+            if (uploadBox) uploadBox.addEventListener('click', () => mp3Upload.click());
+            if (mp3Upload) mp3Upload.addEventListener('change', handleMP3Upload);
+            if (closeFileInfo) closeFileInfo.addEventListener('click', closeFileInfoPanel);
+            if (playUploadBtn) playUploadBtn.addEventListener('click', playUploadedAudio);
+            if (downloadUploadBtn) downloadUploadBtn.addEventListener('click', downloadUploadedAudio);
+            
+            // 录音相关
+            const startRecordBtn = document.getElementById('startRecordBtn');
+            const stopRecordBtn = document.getElementById('stopRecordBtn');
+            const saveRecordBtn = document.getElementById('saveRecordBtn');
+            const refreshRecordingsBtn = document.getElementById('refreshRecordingsBtn');
+            
+            if (startRecordBtn) startRecordBtn.addEventListener('click', startRecording);
+            if (stopRecordBtn) stopRecordBtn.addEventListener('click', stopRecording);
+            if (saveRecordBtn) saveRecordBtn.addEventListener('click', saveRecording);
+            if (refreshRecordingsBtn) refreshRecordingsBtn.addEventListener('click', loadRecordings);
+            
+            // 格式选择按钮
+            document.querySelectorAll('.format-option').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.format-option').forEach(opt => opt.classList.remove('active'));
+                    this.classList.add('active');
+                    selectedFormat = this.getAttribute('data-format');
+                    document.getElementById('outputFormat').textContent = selectedFormat.toUpperCase();
+                });
+            });
+            
+            // 跟读句子导航按钮
+            const prevSentenceBtn = document.getElementById('prevSentenceBtn');
+            const nextSentenceBtn = document.getElementById('nextSentenceBtn');
+            const currentSentence = document.getElementById('currentSentence');
+            
+            if (prevSentenceBtn) prevSentenceBtn.addEventListener('click', () => {
+                if (currentSentenceIndex > 0) {
+                    currentSentenceIndex--;
+                    updateSentenceDisplay();
+                }
+            });
+            
+            if (nextSentenceBtn) nextSentenceBtn.addEventListener('click', () => {
+                if (currentSentenceIndex < followSentences.length - 1) {
+                    currentSentenceIndex++;
+                    updateSentenceDisplay();
+                }
+            });
+            
+            if (currentSentence) currentSentence.addEventListener('click', () => {
+                if (!isRecording) {
+                    const newIndex = Math.floor(Math.random() * followSentences.length);
+                    currentSentenceIndex = newIndex;
+                    updateSentenceDisplay();
+                    showMessage('已切换为新跟读句子');
+                }
+            });
+        }
+
+        // ========== 上传MP3功能 ==========
+        function handleMP3Upload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            if (!file.type.includes('audio/mpeg') && !file.name.toLowerCase().endsWith('.mp3')) {
+                showMessage('请选择MP3格式的音频文件');
+                return;
+            }
+            
+            const maxSize = 100 * 1024 * 1024;
+            if (file.size > maxSize) {
+                showMessage('文件大小不能超过100MB');
+                return;
+            }
+            
+            showUploadProgress();
+            simulateUpload(file);
+        }
+
+        function showUploadProgress() {
+            const uploadProgress = document.getElementById('uploadProgress');
+            const progressFill = document.getElementById('progressFillUpload');
+            const progressText = document.getElementById('progressText');
+            
+            if (uploadProgress) {
+                uploadProgress.style.display = 'flex';
+                progressFill.style.width = '0%';
+                progressText.textContent = '0%';
+            }
+        }
+
+        function simulateUpload(file) {
+            let progress = 0;
+            const progressFill = document.getElementById('progressFillUpload');
+            const progressText = document.getElementById('progressText');
+            
+            const uploadInterval = setInterval(() => {
+                progress += Math.random() * 10 + 5;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(uploadInterval);
+                    completeUpload(file);
+                }
+                
+                progressFill.style.width = `${progress}%`;
+                progressText.textContent = `${Math.round(progress)}%`;
+            }, 100);
+        }
+
+        function completeUpload(file) {
+            if (uploadedAudioUrl) {
+                URL.revokeObjectURL(uploadedAudioUrl);
+            }
+            
+            uploadedAudioUrl = URL.createObjectURL(file);
+            uploadedAudioName = file.name;
+            uploadedAudio = new Audio(uploadedAudioUrl);
+            
+            uploadedAudio.addEventListener('loadedmetadata', () => {
+                showFileInfo(file);
+                showMessage('MP3文件上传成功');
+            });
+            
+            const uploadProgress = document.getElementById('uploadProgress');
+            if (uploadProgress) uploadProgress.style.display = 'none';
+        }
+
+        function showFileInfo(file) {
+            document.getElementById('infoFileName').textContent = file.name;
+            document.getElementById('infoFileSize').textContent = formatFileSize(file.size);
+            
+            if (uploadedAudio) {
+                document.getElementById('infoFileDuration').textContent = formatTime(uploadedAudio.duration);
+            }
+            
+            const uploadFileInfo = document.getElementById('uploadFileInfo');
+            if (uploadFileInfo) uploadFileInfo.style.display = 'block';
+            
+            updatePlayerInfo(uploadedAudioName, '上传音频');
+        }
+
+        function closeFileInfoPanel() {
+            const uploadFileInfo = document.getElementById('uploadFileInfo');
+            if (uploadFileInfo) uploadFileInfo.style.display = 'none';
+            
+            const mp3Upload = document.getElementById('mp3Upload');
+            if (mp3Upload) mp3Upload.value = '';
+        }
+
+        function playUploadedAudio() {
+            if (!uploadedAudio) {
+                showMessage('请先上传音频文件');
+                return;
+            }
+            
+            stopCurrentPlayback();
+            uploadedAudio.play();
+            updatePlayerState(true);
+            showMessage('正在播放: ' + uploadedAudioName);
+            
+            uploadedAudio.onended = () => {
+                updatePlayerState(false);
+            };
+        }
+
+        function downloadUploadedAudio() {
+            if (!uploadedAudioUrl) {
+                showMessage('没有可下载的音频文件');
+                return;
+            }
+            
+            const link = document.createElement('a');
+            link.href = uploadedAudioUrl;
+            link.download = uploadedAudioName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showMessage('文件下载中: ' + uploadedAudioName);
+        }
+
+        // ========== 录音功能 ==========
+        function startRecording() {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                showMessage('您的浏览器不支持录音功能');
+                return;
+            }
+            
+            navigator.mediaDevices.getUserMedia({ 
+                audio: { 
+                    channelCount: 1,
+                    sampleRate: 44100,
+                    echoCancellation: true,
+                    noiseSuppression: true
+                } 
+            })
+            .then(stream => {
+                isRecording = true;
+                updateRecordingUI('recording');
+                
+                audioChunks = [];
+                recordingSeconds = 0;
+                updateTimeDisplay();
+                
+                const options = { 
+                    mimeType: 'audio/webm;codecs=opus',
+                    audioBitsPerSecond: 128000
+                };
+                
+                try {
+                    mediaRecorder = new MediaRecorder(stream, options);
+                } catch (e) {
+                    console.warn('使用指定编解码器失败，使用默认设置:', e);
+                    mediaRecorder = new MediaRecorder(stream);
+                }
+                
+                mediaRecorder.ondataavailable = (event) => {
+                    if (event.data.size > 0) {
+                        audioChunks.push(event.data);
+                    }
+                };
+                
+                mediaRecorder.onstop = () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm;codecs=opus' });
+                    
+                    const recording = {
+                        id: Date.now(),
+                        name: document.getElementById('recordingName').value || '我的录音',
+                        timestamp: new Date().toLocaleString(),
+                        duration: recordingSeconds,
+                        size: audioBlob.size,
+                        format: selectedFormat,
+                        sentence: followSentences[currentSentenceIndex],
+                        blobUrl: URL.createObjectURL(audioBlob)
+                    };
+                    
+                    window.currentRecording = recording;
+                    updateRecordingUI('stopped');
+                    document.getElementById('saveRecordBtn').disabled = false;
+                    
+                    stream.getTracks().forEach(track => track.stop());
+                    
+                    showMessage('录音完成: ' + recording.name);
+                };
+                
+                mediaRecorder.start(100);
+                startRecordingTimer();
+                
+                if (currentSentenceIndex >= 0) {
+                    showMessage(`开始跟读录音：${followSentences[currentSentenceIndex]}`);
+                } else {
+                    showMessage('开始录音');
+                }
+            })
+            .catch(err => {
+                console.error('无法访问麦克风:', err);
+                showMessage('无法访问麦克风，请检查权限设置');
+                updateRecordingUI('idle');
+            });
+        }
+
+        function stopRecording() {
+            if (!isRecording) return;
+            
+            isRecording = false;
+            
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+            }
+            
+            if (recordingTimer) {
+                clearInterval(recordingTimer);
+                recordingTimer = null;
+            }
+        }
+
+        function saveRecording() {
+            if (!window.currentRecording) {
+                showMessage('没有录音可保存');
+                return;
+            }
+            
+            const recording = window.currentRecording;
+            recordingHistory.unshift(recording);
+            
+            if (recordingHistory.length > 20) {
+                recordingHistory = recordingHistory.slice(0, 20);
+            }
+            
+            localStorage.setItem('audioRecorderHistory', JSON.stringify(recordingHistory));
+            loadRecordings();
+            updateStats();
+            
+            document.getElementById('saveRecordBtn').disabled = true;
+            
+            let message = '录音已保存: ' + recording.name;
+            if (recording.sentence) {
+                message += ' - 跟读练习';
+            }
+            showMessage(message);
+            
+            if (recording.sentence && currentSentenceIndex < followSentences.length - 1) {
+                currentSentenceIndex++;
+                updateSentenceDisplay();
+            }
+        }
+
+        function startRecordingTimer() {
+            recordingSeconds = 0;
+            updateTimeDisplay();
+            
+            recordingTimer = setInterval(() => {
+                recordingSeconds++;
+                updateTimeDisplay();
+                
+                if (recordingSeconds >= 7200) {
+                    stopRecording();
+                    showMessage('已达到最大录制时间（2小时），录音已自动停止');
+                }
+            }, 1000);
+        }
+
+        function updateTimeDisplay() {
+            const hours = Math.floor(recordingSeconds / 3600);
+            const minutes = Math.floor((recordingSeconds % 3600) / 60);
+            const seconds = recordingSeconds % 60;
+            
+            document.getElementById('currentTimeDisplay').textContent = 
+                `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function updateRecordingUI(state) {
+            const startBtn = document.getElementById('startRecordBtn');
+            const stopBtn = document.getElementById('stopRecordBtn');
+            const statusText = document.getElementById('recorderStatusText');
+            
+            if (!startBtn || !stopBtn || !statusText) return;
+            
+            switch(state) {
+                case 'idle':
+                    startBtn.disabled = false;
+                    stopBtn.disabled = true;
+                    statusText.textContent = '待机';
+                    break;
+                    
+                case 'recording':
+                    startBtn.disabled = true;
+                    stopBtn.disabled = false;
+                    statusText.textContent = '录音中';
+                    break;
+                    
+                case 'stopped':
+                    startBtn.disabled = false;
+                    stopBtn.disabled = true;
+                    statusText.textContent = '已完成';
+                    break;
+            }
+        }
+
+        // ========== 录音文件管理 ==========
+        function loadRecordings() {
+            const recordingsList = document.getElementById('recordingsList');
+            if (!recordingsList) return;
+            
+            if (recordingHistory.length === 0) {
+                recordingsList.innerHTML = `
+                    <div class="empty-files" style="text-align: center; padding: 40px 20px; color: #999;">
+                        <i class="fas fa-microphone-slash" style="font-size: 48px; margin-bottom: 15px; opacity: 0.5;"></i>
+                        <p>暂无录音文件</p>
+                        <p>点击"开始录音"按钮创建第一个录音</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            recordingsList.innerHTML = '';
+            
+            recordingHistory.forEach((recording, index) => {
+                const recordingItem = document.createElement('div');
+                recordingItem.className = 'recording-item';
+                
+                let sentenceHtml = '';
+                if (recording.sentence) {
+                    sentenceHtml = `
+                        <div style="background-color: #f0f8ff; padding: 8px; border-radius: 4px; margin-top: 8px; font-size: 14px;">
+                            <strong>跟读句子:</strong> ${recording.sentence}
+                        </div>
+                    `;
+                }
+                
+                recordingItem.innerHTML = `
+                    <div class="recording-info">
+                        <div class="recording-name">${recording.name}</div>
+                        <div class="recording-meta">
+                            时长: ${formatTime(recording.duration)} | 
+                            大小: ${formatFileSize(recording.size)} | 
+                            时间: ${recording.timestamp}
+                        </div>
+                        ${sentenceHtml}
+                    </div>
+                    <div class="recording-actions">
+                        <button class="action-btn play-btn-small" data-index="${index}">
+                            <i class="fas fa-play"></i>
+                        </button>
+                        <button class="action-btn download-btn-small" data-index="${index}">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        <button class="action-btn delete-btn-small" data-index="${index}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                
+                recordingsList.appendChild(recordingItem);
+            });
+            
+            // 添加事件监听器
+            document.querySelectorAll('.play-btn-small').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    playRecording(index);
+                });
+            });
+            
+            document.querySelectorAll('.download-btn-small').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    downloadRecording(index);
+                });
+            });
+            
+            document.querySelectorAll('.delete-btn-small').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    deleteRecording(index);
+                });
+            });
+        }
+
+        function playRecording(index) {
+            if (index < 0 || index >= recordingHistory.length) return;
+            
+            const recording = recordingHistory[index];
+            
+            stopCurrentPlayback();
+            
+            const audio = new Audio(recording.blobUrl);
+            audio.play();
+            
+            let playerType = '录音文件';
+            if (recording.sentence) {
+                playerType = '跟读练习';
+                showMessage(`跟读句子：${recording.sentence}`);
+            }
+            
+            updatePlayerInfo(recording.name, playerType);
+            updatePlayerState(true);
+            
+            audio.onended = () => {
+                updatePlayerState(false);
+            };
+            
+            showMessage('正在播放: ' + recording.name);
+        }
+
+        function downloadRecording(index) {
+            if (index < 0 || index >= recordingHistory.length) return;
+            
+            const recording = recordingHistory[index];
+            const format = recording.format || 'webm';
+            const link = document.createElement('a');
+            link.href = recording.blobUrl;
+            
+            let fileName = recording.name;
+            if (!fileName.toLowerCase().endsWith('.' + format)) {
+                fileName += '.' + format;
+            }
+            
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            let message = '录音下载中: ' + fileName;
+            if (recording.sentence) {
+                message += ' - 跟读练习';
+            }
+            showMessage(message);
+        }
+
+        function deleteRecording(index) {
+            if (index < 0 || index >= recordingHistory.length) return;
+            
+            const recording = recordingHistory[index];
+            const hasSentence = recording.sentence;
+            
+            let confirmMessage = '确定要删除这个录音吗？';
+            if (hasSentence) confirmMessage += '\n(包含跟读句子内容)';
+            
+            if (confirm(confirmMessage)) {
+                URL.revokeObjectURL(recordingHistory[index].blobUrl);
+                recordingHistory.splice(index, 1);
+                localStorage.setItem('audioRecorderHistory', JSON.stringify(recordingHistory));
+                loadRecordings();
+                updateStats();
+                showMessage('录音已删除');
+            }
+        }
+
+        function updateStats() {
+            const totalRecordings = recordingHistory.length;
+            let totalDuration = 0;
+            let followCount = 0;
+            
+            recordingHistory.forEach(recording => {
+                totalDuration += recording.duration;
+                if (recording.sentence) {
+                    followCount++;
+                }
+            });
+            
+            document.getElementById('recordCount').textContent = totalRecordings;
+            
+            // 更新用户信息区域的统计
+            const statsElement = document.querySelector('.stats');
+            if (statsElement) {
+                const recordSpan = statsElement.querySelector('span:nth-child(3) b');
+                if (recordSpan) {
+                    recordSpan.textContent = totalRecordings;
+                }
+            }
+        }
+
+        // ========== 播放器功能 ==========
+        function initializePlayer() {
+            const playerPlayBtn = document.getElementById('playerPlayBtn');
+            const playerVolumeBtn = document.getElementById('playerVolumeBtn');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const speedBtn = document.querySelector('.speed-btn');
+            const speedMenu = document.querySelector('.speed-menu');
+            const speedOptions = document.querySelectorAll('.speed-option');
+            const currentSpeed = document.getElementById('currentSpeed');
+            const playlistBtn = document.querySelector('.playlist-btn');
+            const playlistPanel = document.querySelector('.playlist-panel');
+            const playlistItems = document.querySelectorAll('.playlist-item');
+            const progressFill = document.getElementById('playerProgressFill');
+            const progressBar = document.querySelector('.progress-bar');
+            
+            if (playerPlayBtn) playerPlayBtn.addEventListener('click', togglePlayback);
+            if (playerVolumeBtn) playerVolumeBtn.addEventListener('click', toggleMute);
+            if (prevBtn) prevBtn.addEventListener('click', playPrevious);
+            if (nextBtn) nextBtn.addEventListener('click', playNext);
+            
+            // 倍速控制
+            if (speedBtn && speedMenu) {
+                speedBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    speedMenu.classList.toggle('active');
+                });
+            }
+            
+            if (speedOptions) {
+                speedOptions.forEach(option => {
+                    option.addEventListener('click', () => {
+                        const rate = parseFloat(option.getAttribute('data-rate'));
+                        if (uploadedAudio) {
+                            uploadedAudio.playbackRate = rate;
+                        }
+                        currentSpeed.textContent = `${rate}x`;
+                        speedOptions.forEach(opt => opt.classList.remove('active'));
+                        option.classList.add('active');
+                        speedMenu.classList.remove('active');
+                    });
+                });
+            }
+            
+            // 播放列表
+            if (playlistBtn && playlistPanel) {
+                playlistBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    playlistPanel.classList.toggle('active');
+                });
+                
+                if (playlistItems) {
+                    playlistItems.forEach(item => {
+                        item.addEventListener('click', () => {
+                            playlistItems.forEach(i => i.classList.remove('active'));
+                            item.classList.add('active');
+                        });
+                    });
+                }
+            }
+            
+            // 音量控制
+            const volumeBar = document.querySelector('.volume-bar');
+            if (volumeBar) {
+                volumeBar.addEventListener('click', adjustVolume);
+            }
+            
+            // 进度条控制
+            if (progressBar) {
+                progressBar.addEventListener('click', seekAudio);
+            }
+            
+            document.addEventListener('click', () => {
+                if (speedMenu) speedMenu.classList.remove('active');
+                if (playlistPanel) playlistPanel.classList.remove('active');
+            });
+        }
+
+        function togglePlayback() {
+            if (uploadedAudio) {
+                if (uploadedAudio.paused) {
+                    uploadedAudio.play();
+                    document.getElementById('playerPlayBtn').innerHTML = '<i class="fas fa-pause-circle"></i>';
+                } else {
+                    uploadedAudio.pause();
+                    document.getElementById('playerPlayBtn').innerHTML = '<i class="fas fa-play-circle"></i>';
+                }
+            }
+        }
+
+        function toggleMute() {
+            const volumeBtn = document.getElementById('playerVolumeBtn');
+            const volumeFill = document.getElementById('playerVolumeFill');
+            
+            if (uploadedAudio) {
+                uploadedAudio.muted = !uploadedAudio.muted;
+                
+                if (uploadedAudio.muted) {
+                    volumeBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
+                    volumeFill.style.width = '0%';
+                } else {
+                    volumeBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+                    volumeFill.style.width = '70%';
+                }
+            }
+        }
+
+        function adjustVolume(e) {
+            if (!uploadedAudio) return;
+            
+            const volumeBar = e.currentTarget;
+            const rect = volumeBar.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const percentage = x / rect.width;
+            
+            uploadedAudio.volume = Math.max(0, Math.min(1, percentage));
+            document.getElementById('playerVolumeFill').style.width = `${percentage * 100}%`;
+        }
+
+        function seekAudio(e) {
+            if (!uploadedAudio) return;
+            
+            const progressBar = e.currentTarget;
+            const rect = progressBar.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const percentage = x / rect.width;
+            
+            uploadedAudio.currentTime = percentage * uploadedAudio.duration;
+            document.getElementById('playerProgressFill').style.width = `${percentage * 100}%`;
+        }
+
+        function playPrevious() {
+            showMessage('上一曲功能待实现');
+        }
+
+        function playNext() {
+            showMessage('下一曲功能待实现');
+        }
+
+        function stopCurrentPlayback() {
+            if (uploadedAudio && !uploadedAudio.paused) {
+                uploadedAudio.pause();
+                uploadedAudio.currentTime = 0;
+                updatePlayerState(false);
+            }
+        }
+
+        function updatePlayerInfo(name, type) {
+            document.getElementById('playerSongName').textContent = name;
+            document.getElementById('playerSinger').textContent = type;
+            
+            if (type === '上传音频') {
+                document.getElementById('playerChannelCover').innerHTML = '<i class="fas fa-cloud-upload-alt"></i>';
+            } else if (type === '跟读练习') {
+                document.getElementById('playerChannelCover').innerHTML = '<i class="fas fa-language"></i>';
+            } else {
+                document.getElementById('playerChannelCover').innerHTML = '<i class="fas fa-microphone"></i>';
+            }
+        }
+
+        function updatePlayerState(isPlaying) {
+            const playerPlayBtn = document.getElementById('playerPlayBtn');
+            
+            if (isPlaying) {
+                playerPlayBtn.innerHTML = '<i class="fas fa-pause-circle"></i>';
+                
+                if (uploadedAudio) {
+                    uploadedAudio.addEventListener('timeupdate', updateProgress);
+                }
+            } else {
+                playerPlayBtn.innerHTML = '<i class="fas fa-play-circle"></i>';
+            }
+        }
+
+        function updateProgress() {
+            if (!uploadedAudio) return;
+            
+            const progress = (uploadedAudio.currentTime / uploadedAudio.duration) * 100;
+            document.getElementById('playerProgressFill').style.width = `${progress}%`;
+            
+            const currentMinutes = Math.floor(uploadedAudio.currentTime / 60);
+            const currentSeconds = Math.floor(uploadedAudio.currentTime % 60);
+            document.getElementById('playerCurrentTime').textContent = 
+                `${currentMinutes.toString().padStart(2, '0')}:${currentSeconds.toString().padStart(2, '0')}`;
+            
+            const totalMinutes = Math.floor(uploadedAudio.duration / 60);
+            const totalSeconds = Math.floor(uploadedAudio.duration % 60);
+            document.getElementById('playerTotalTime').textContent = 
+                `${totalMinutes.toString().padStart(2, '0')}:${totalSeconds.toString().padStart(2, '0')}`;
+        }
+
+        // ========== 工具函数 ==========
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function formatTime(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = Math.floor(seconds % 60);
+            
+            if (hours > 0) {
+                return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            } else {
+                return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }
+        }
+
+        function showMessage(message) {
+            // 移除已有的消息
+            const existingMessages = document.querySelectorAll('.message-popup');
+            existingMessages.forEach(msg => msg.remove());
+            
+            // 创建新消息
+            const messageEl = document.createElement('div');
+            messageEl.className = 'message-popup';
+            messageEl.textContent = message;
+            document.body.appendChild(messageEl);
+            
+            // 3秒后移除消息
+            setTimeout(() => {
+                if (messageEl.parentNode) {
+                    messageEl.parentNode.removeChild(messageEl);
+                }
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的-订阅 - 星之声</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- 音频元素 -->
+    <audio id="audioPlayer" controls style="display: none;">
+        <source src="" type="audio/mpeg">
+        您的浏览器不支持音频播放
+    </audio>
+
+    <!-- 顶部导航栏 -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-img"></div>
+            <span class="logo-text">星之声</span>
+        </div>
+        <nav class="main-nav">
+            <a href="index.html" class="nav-item">首页</a>
+            <a href="category.html" class="nav-item">分类</a>
+            <a href="channel.html" class="nav-item">频道</a>
+        </nav>
+        <div class="search-box">
+            <input type="text" placeholder="Hinted search text" class="search-input">
+            <button class="search-btn"><i class="fas fa-search"></i></button>
+        </div>
+        <div class="user-functions">
+            <a href="my-recent.html" class="func-item">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+            </a>
+            <a href="my-message.html" class="func-item"><i class="fas fa-bell"></i> 消息</a>
+            <a href="my-collect.html" class="func-item"><i class="fas fa-star"></i> 收藏</a>
+            <a href="my-recent.html" class="func-item"><i class="fas fa-history"></i> 历史</a>
+            <a href="my-creator_center.html" class="func-item"><i class="fas fa-pen"></i> 创作中心</a>
+            <a href="login.html"><button class="submit-btn">登录/注册</button></a>
+        </div>
+    </header>
+
+    <!-- 主要内容区 -->
+    <main class="main-content">
+        <section class="user-info">
+            <div class="avatar-wrapper">
+                <div class="avatar"></div>
+            </div>
+            <div class="user-detail">
+                <div class="username">用户名</div>
+                <div class="identity">身份</div>
+                <div class="stats">
+                    <span>关注 <b>0</b></span>
+                    <span>粉丝 <b>0</b></span>
+                    <span>收听时长 <b>0</b></span>
+                </div>
+            </div>
+        </section>
+        <section class="tab-bar">
+            <button class="tab" onclick="window.location.href='my-recent.html'">最近收听</button>
+            <button class="tab" onclick="window.location.href='my-collect.html'">收藏</button>
+            <button class="tab active" onclick="window.location.href='my-subscribe.html'">订阅</button>
+            <button class="tab" onclick="window.location.href='my-message.html'">私信</button>
+            <button class="tab" onclick="window.location.href='my-creator_center.html'">创作者中心</button>
+        </section>
+        <section class="content-block">
+            <div class="subscribe-list">
+                <div class="subscribe-item">
+                    <div class="avatar-wrapper">
+                        <div class="avatar"></div>
+                    </div>
+                    <span>xx老师</span>
+                </div>
+                <div class="subscribe-item">
+                    <div class="avatar-wrapper">
+                        <div class="avatar"></div>
+                    </div>
+                    <span>学生2</span>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 底部播放栏 -->
+    <footer class="player-bar">
+        <div class="player-left">
+            <div class="channel-cover">频道</div>
+            <div class="song-info">
+                <p class="song-name">Seasons in</p>
+                <p class="singer">James</p>
+            </div>
+        </div>
+        <div class="player-middle">
+            <div class="control-buttons">
+                <button class="control-btn"><i class="fas fa-step-backward"></i></button>
+                <button class="control-btn play-btn"><i class="fas fa-play-circle"></i></button>
+                <button class="control-btn"><i class="fas fa-step-forward"></i></button>
+                <button class="control-btn"><i class="fas fa-random"></i></button>
+                <div class="speed-control">
+                    <button class="speed-btn">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span id="currentSpeed">1x</span>
+                    </button>
+                    <div class="speed-menu">
+                        <div class="speed-option" data-rate="0.5">0.5x</div>
+                        <div class="speed-option active" data-rate="1">1x</div>
+                        <div class="speed-option" data-rate="1.5">1.5x</div>
+                        <div class="speed-option" data-rate="2">2x</div>
+                        <div class="speed-option" data-rate="3">3x</div>
+                    </div>
+                </div>
+            </div>
+            <div class="progress-container">
+                <span class="time current">00:00</span>
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+                <span class="time total">00:00</span>
+            </div>
+        </div>
+        <div class="player-right">
+            <button class="control-btn"><i class="fas fa-volume-up"></i></button>
+            <div class="volume-bar">
+                <div class="volume-fill"></div>
+            </div>
+            <div class="playlist-container">
+                <button class="playlist-btn"><i class="fas fa-list"></i></button>
+                <div class="playlist-panel">
+                    <div class="playlist-title">订阅频道列表</div>
+                    <div class="playlist-item active">1. Seasons in</div>
+                    <div class="playlist-item">2. 音乐课堂</div>
+                    <div class="playlist-item">3. 学生作品</div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 功能JavaScript（与最近收听页面一致） -->
+    <script>
+        const audioPlayer = document.getElementById('audioPlayer');
+        const playBtn = document.querySelector('.play-btn');
+        const speedBtn = document.querySelector('.speed-btn');
+        const speedMenu = document.querySelector('.speed-menu');
+        const speedOptions = document.querySelectorAll('.speed-option');
+        const currentSpeed = document.getElementById('currentSpeed');
+        const playlistBtn = document.querySelector('.playlist-btn');
+        const playlistPanel = document.querySelector('.playlist-panel');
+        const playlistItems = document.querySelectorAll('.playlist-item');
+        const progressFill = document.querySelector('.progress-fill');
+        const currentTime = document.querySelector('.time.current');
+
+        playBtn.addEventListener('click', () => {
+            if (audioPlayer.paused) {
+                audioPlayer.play();
+                playBtn.innerHTML = '<i class="fas fa-pause-circle"></i>';
+            } else {
+                audioPlayer.pause();
+                playBtn.innerHTML = '<i class="fas fa-play-circle"></i>';
+            }
+        });
+
+        speedBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            speedMenu.classList.toggle('active');
+        });
+        speedOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                const rate = parseFloat(option.getAttribute('data-rate'));
+                audioPlayer.playbackRate = rate;
+                currentSpeed.textContent = `${rate}x`;
+                speedOptions.forEach(opt => opt.classList.remove('active'));
+                option.classList.add('active');
+                speedMenu.classList.remove('active');
+            });
+        });
+
+        playlistBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            playlistPanel.classList.toggle('active');
+        });
+        playlistItems.forEach(item => {
+            item.addEventListener('click', () => {
+                playlistItems.forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                alert(`正在播放：${item.textContent}`);
+            });
+        });
+
+        audioPlayer.addEventListener('timeupdate', () => {
+            const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+            progressFill.style.width = `${progress}%`;
+            const minutes = Math.floor(audioPlayer.currentTime / 60);
+            const seconds = Math.floor(audioPlayer.currentTime % 60);
+            currentTime.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        });
+
+        document.addEventListener('click', () => {
+            speedMenu.classList.remove('active');
+            playlistPanel.classList.remove('active');
+        });
+    </script>
+</body>
+</html>

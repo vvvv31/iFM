@@ -168,10 +168,11 @@
             登录星之声
             <span class="close-btn">×</span>
         </div>
-        <div class="input-group" id="login-username-group">
-            <label>用户名</label>
-            <input type="text" id="login-username" placeholder="请输入用户名">
-            <div class="error-tip" id="login-username-tip">用户名不能为空</div>
+        <!-- 登录界面：用户名改为手机号 -->
+        <div class="input-group" id="login-phone-group">
+            <label>手机号</label>
+            <input type="tel" id="login-phone" placeholder="请输入手机号">
+            <div class="error-tip" id="login-phone-tip">请输入有效的手机号</div>
         </div>
         <div class="input-group" id="login-pwd-group">
             <label>密码</label>
@@ -209,10 +210,11 @@
             <input type="text" id="reg-username" placeholder="请输入用户名（3-10位）">
             <div class="error-tip" id="reg-username-tip">用户名长度需在3-10位之间</div>
         </div>
-        <div class="input-group" id="reg-email-group">
-            <label>邮箱</label>
-            <input type="email" id="reg-email" placeholder="请输入邮箱">
-            <div class="error-tip" id="reg-email-tip">请输入有效的邮箱地址</div>
+        <!-- 注册界面：邮箱改为手机号 -->
+        <div class="input-group" id="reg-phone-group">
+            <label>手机号</label>
+            <input type="tel" id="reg-phone" placeholder="请输入手机号">
+            <div class="error-tip" id="reg-phone-tip">请输入有效的手机号</div>
         </div>
         <div class="input-group" id="reg-pwd-group">
             <label>密码</label>
@@ -238,21 +240,21 @@
         const toLoginLink = document.querySelector('.to-login');
         const closeBtns = document.querySelectorAll('.close-btn');
 
-        // 登录表单元素
-        const loginUsername = document.getElementById('login-username');
+        // 登录表单元素（用户名改为手机号）
+        const loginPhone = document.getElementById('login-phone');
         const loginPwd = document.getElementById('login-pwd');
         const loginBtn = document.getElementById('login-btn');
-        const loginUsernameGroup = document.getElementById('login-username-group');
+        const loginPhoneGroup = document.getElementById('login-phone-group');
         const loginPwdGroup = document.getElementById('login-pwd-group');
 
-        // 注册表单元素
+        // 注册表单元素（邮箱改为手机号）
         const regUsername = document.getElementById('reg-username');
-        const regEmail = document.getElementById('reg-email');
+        const regPhone = document.getElementById('reg-phone');
         const regPwd = document.getElementById('reg-pwd');
         const regRepwd = document.getElementById('reg-repwd');
         const regBtn = document.getElementById('reg-btn');
         const regUsernameGroup = document.getElementById('reg-username-group');
-        const regEmailGroup = document.getElementById('reg-email-group');
+        const regPhoneGroup = document.getElementById('reg-phone-group');
         const regPwdGroup = document.getElementById('reg-pwd-group');
         const regRepwdGroup = document.getElementById('reg-repwd-group');
 
@@ -283,24 +285,25 @@
         });
 
         // 登录表单验证
-        loginUsername.addEventListener('blur', validateLoginUsername);
+        loginPhone.addEventListener('blur', validateLoginPhone);
         loginPwd.addEventListener('blur', validateLoginPwd);
         loginBtn.addEventListener('click', handleLogin);
 
         // 注册表单验证
         regUsername.addEventListener('blur', validateRegUsername);
-        regEmail.addEventListener('blur', validateRegEmail);
+        regPhone.addEventListener('blur', validateRegPhone);
         regPwd.addEventListener('blur', validateRegPwd);
         regRepwd.addEventListener('blur', validateRegRepwd);
         regBtn.addEventListener('click', handleRegister);
 
-        // 验证登录用户名
-        function validateLoginUsername() {
-            if (!loginUsername.value.trim()) {
-                loginUsernameGroup.classList.add('error');
+        // 验证登录手机号（新增）
+        function validateLoginPhone() {
+            const phoneReg = /^1[3-9]\d{9}$/; // 手机号正则：11位数字，以1开头，第二位3-9
+            if (!phoneReg.test(loginPhone.value.trim())) {
+                loginPhoneGroup.classList.add('error');
                 return false;
             }
-            loginUsernameGroup.classList.remove('error');
+            loginPhoneGroup.classList.remove('error');
             return true;
         }
 
@@ -325,14 +328,14 @@
             return true;
         }
 
-        // 验证邮箱格式
-        function validateRegEmail() {
-            const emailReg = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-            if (!emailReg.test(regEmail.value.trim())) {
-                regEmailGroup.classList.add('error');
+        // 验证注册手机号（原邮箱验证修改）
+        function validateRegPhone() {
+            const phoneReg = /^1[3-9]\d{9}$/;
+            if (!phoneReg.test(regPhone.value.trim())) {
+                regPhoneGroup.classList.add('error');
                 return false;
             }
-            regEmailGroup.classList.remove('error');
+            regPhoneGroup.classList.remove('error');
             return true;
         }
 
@@ -358,14 +361,14 @@
 
         // 处理登录提交
         function handleLogin() {
-            const isUsernameValid = validateLoginUsername();
+            const isPhoneValid = validateLoginPhone();
             const isPwdValid = validateLoginPwd();
 
-            if (isUsernameValid && isPwdValid) {
+            if (isPhoneValid && isPwdValid) {
                 // 这里可替换为真实登录请求
-                alert(`登录成功！欢迎回来，${loginUsername.value}！`);
+                alert(`登录成功！欢迎回来，${loginPhone.value}！`);
                 // 清空表单
-                loginUsername.value = '';
+                loginPhone.value = '';
                 loginPwd.value = '';
             }
         }
@@ -373,40 +376,40 @@
         // 处理注册提交
         function handleRegister() {
             const isUsernameValid = validateRegUsername();
-            const isEmailValid = validateRegEmail();
+            const isPhoneValid = validateRegPhone();
             const isPwdValid = validateRegPwd();
             const isRepwdValid = validateRegRepwd();
 
-            if (isUsernameValid && isEmailValid && isPwdValid && isRepwdValid) {
+            if (isUsernameValid && isPhoneValid && isPwdValid && isRepwdValid) {
                 // 这里可替换为真实注册请求
-                alert(`注册成功！用户名：${regUsername.value}，请登录`);
+                alert(`注册成功！手机号：${regPhone.value}，请登录`);
                 // 清空表单并切换到登录界面
                 regUsername.value = '';
-                regEmail.value = '';
+                regPhone.value = '';
                 regPwd.value = '';
                 regRepwd.value = '';
                 registerContainer.style.display = 'none';
                 loginContainer.style.display = 'block';
-                loginUsername.value = regUsername.value;
+                loginPhone.value = regPhone.value; // 自动填充手机号
             }
         }
 
         // 清空登录表单错误
         function clearLoginErrors() {
-            loginUsernameGroup.classList.remove('error');
+            loginPhoneGroup.classList.remove('error');
             loginPwdGroup.classList.remove('error');
-            loginUsername.value = '';
+            loginPhone.value = '';
             loginPwd.value = '';
         }
 
         // 清空注册表单错误
         function clearRegErrors() {
             regUsernameGroup.classList.remove('error');
-            regEmailGroup.classList.remove('error');
+            regPhoneGroup.classList.remove('error');
             regPwdGroup.classList.remove('error');
             regRepwdGroup.classList.remove('error');
             regUsername.value = '';
-            regEmail.value = '';
+            regPhone.value = '';
             regPwd.value = '';
             regRepwd.value = '';
         }

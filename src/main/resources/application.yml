@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: ifm-service
+  datasource:
+    url: jdbc:mysql://localhost:3306/ifm_db?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: root
+    password: '00000712' # 注意：密码中含有数字，虽然不强制，但用引号括起来是很好的习惯。
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+# ✅ logging 和 mybatis 不属于 spring 内部配置，所以要与 spring 平级
+logging:
+  level:
+    org.mybatis: DEBUG           # MyBatis 框架日志
+    java.sql: DEBUG              # JDBC 操作日志
+    java.sql.Statement: DEBUG    # 打印实际 SQL 语句
+    java.sql.PreparedStatement: DEBUG  # 打印参数绑定信息
+    java.sql.ResultSet: DEBUG    # 打印结果集
+    com.yaoyiduo.quiz.mapper: DEBUG  # 打印你自己包里的 Mapper 执行日志
+
+mybatis:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl  # ✅ 注意大小写

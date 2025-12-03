@@ -3,19 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的-收藏 - 星之声</title>
+    <title>搜索结果 - 星之声</title>
+    <!-- 复用现有样式文件 -->
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="../js/search.js"></script>
 </head>
 <body>
     <!-- 音频元素 -->
     <audio id="audioPlayer" controls style="display: none;">
-        <source src="" type="audio/mpeg">
         您的浏览器不支持音频播放
     </audio>
 
-    <!-- 顶部导航栏 -->
+    <!-- 顶部导航栏（与首页一致） -->
     <header class="header">
         <div class="logo">
             <div class="logo-img"></div>
@@ -23,7 +22,7 @@
         </div>
         <nav class="main-nav">
             <a href="index.html" class="nav-item">首页</a>
-            <a href="category.html" class="nav-item">分类</a>
+            <a href="category.html" class="nav-item active">分类</a>
             <a href="channel.html" class="nav-item">社区</a>
         </nav>
         <div class="search-box">
@@ -40,44 +39,38 @@
             <a href="my-message.html" class="func-item"><i class="fas fa-bell"></i> 消息</a>
             <a href="my-collect.html" class="func-item"><i class="fas fa-star"></i> 收藏</a>
             <a href="my-recent.html" class="func-item"><i class="fas fa-history"></i> 历史</a>
-            <a href="my-creator_center.html" class="func-item"><i class="fas fa-pen"></i> 创作中心</a>
-            <a href="login.html"><button class="submit-btn">登录/注册</button></a>
         </div>
     </header>
 
     <!-- 主要内容区 -->
     <main class="main-content">
-        <section class="user-info">
-            <div class="avatar-wrapper">
-                <div class="avatar"></div>
+        <!-- 搜索结果头部 -->
+        <div class="content-block">
+            <div class="content-title">搜索结果</div>
+            <div class="search-result-header" style="padding: 10px 0; color: #666;">
+                您搜索的关键词：<span style="color: #FF8C00; font-weight: bold;" id="search-keyword"></span>
             </div>
-            <div class="user-detail">
-                <div class="username">用户名</div>
-                <div class="identity">身份</div>
-                <div class="stats">
-                    <span>关注 <b>0</b></span>
-                    <span>粉丝 <b>0</b></span>
-                    <span>收听时长 <b>0</b></span>
-                </div>
+        </div>
+
+        <!-- 搜索结果列表 -->
+        <div class="content-block">
+            <div class="content-title">相关课程</div>
+            <div class="channel-cards" id="course-results">
+                <!-- 结果项占位，实际会通过JS动态渲染 -->
+                <div class="channel-card">暂无匹配结果</div>
             </div>
-        </section>
-        <section class="tab-bar">
-            <button class="tab" onclick="window.location.href='my-recent.html'">最近收听</button>
-            <button class="tab active" onclick="window.location.href='my-collect.html'">收藏</button>
-            <button class="tab" onclick="window.location.href='my-subscribe.html'">订阅</button>
-            <button class="tab" onclick="window.location.href='my-message.html'">私信</button>
-            <button class="tab" onclick="window.location.href='my-creator_center.html'">创作者中心</button>
-        </section>
-        <section class="content-block">
-            <div class="channel-cards">
-                <div class="channel-card">频道</div>
-                <div class="channel-card">频道</div>
-                <div class="channel-card">频道</div>
+        </div>
+
+        <!-- 相关频道 -->
+        <div class="content-block">
+            <div class="content-title">相关频道</div>
+            <div class="channel-cards" id="channel-results">
+                <div class="channel-card">暂无匹配频道</div>
             </div>
-        </section>
+        </div>
     </main>
 
-    <!-- 底部播放栏 -->
+    <!-- 底部播放栏（与首页一致） -->
     <footer class="player-bar">
         <div class="player-left">
             <div class="channel-cover">频道</div>
@@ -115,9 +108,9 @@
             </div>
         </div>
         <div class="player-right">
-            <button class="control-btn"><i class="fas fa-volume-up"></i></button>
-            <div class="volume-bar">
-                <div class="volume-fill"></div>
+            <button class="control-btn" id="playerVolumeBtn"><i class="fas fa-volume-up"></i></button>
+            <div class="volume-bar" id="volumeBar">
+                <div class="volume-fill" id="playerVolumeFill"></div>
             </div>
             <div class="playlist-container">
                 <button class="playlist-btn"><i class="fas fa-list"></i></button>
@@ -131,8 +124,14 @@
         </div>
     </footer>
 
-    <!-- 功能JavaScript（与最近收听页面一致） -->
+    <!-- 引入依赖脚本 -->
+    <script src="../js/router.js"></script>
+    <script src="../js/search.js"></script>
+    <script src="../js/script.js"></script>
+
+    <!-- 播放器功能脚本（与首页一致） -->
     <script>
+        // 播放器功能
         const audioPlayer = document.getElementById('audioPlayer');
         const playBtn = document.querySelector('.play-btn');
         const speedBtn = document.querySelector('.speed-btn');
@@ -144,7 +143,15 @@
         const playlistItems = document.querySelectorAll('.playlist-item');
         const progressFill = document.querySelector('.progress-fill');
         const currentTime = document.querySelector('.time.current');
+        const volumeBtn = document.getElementById('playerVolumeBtn');
+        const volumeFill = document.getElementById('playerVolumeFill');
+        const volumeBar = document.querySelector('.volume-bar');
 
+        // 初始化音频
+        audioPlayer.src = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
+        audioPlayer.load();
+
+        // 播放/暂停控制
         playBtn.addEventListener('click', () => {
             if (audioPlayer.paused) {
                 audioPlayer.play();
@@ -155,10 +162,12 @@
             }
         });
 
+        // 倍速控制
         speedBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             speedMenu.classList.toggle('active');
         });
+
         speedOptions.forEach(option => {
             option.addEventListener('click', () => {
                 const rate = parseFloat(option.getAttribute('data-rate'));
@@ -170,29 +179,141 @@
             });
         });
 
+        // 播放列表控制
         playlistBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             playlistPanel.classList.toggle('active');
         });
+
         playlistItems.forEach(item => {
             item.addEventListener('click', () => {
                 playlistItems.forEach(i => i.classList.remove('active'));
                 item.classList.add('active');
-                alert(`正在播放：${item.textContent}`);
+
+                // 根据选择的课程更新播放器信息
+                const courseName = item.textContent.substring(3);
+                document.querySelector('.song-name').textContent = courseName;
+                document.querySelector('.singer').textContent = '英语学习课程';
+
+                // 这里可以添加切换音频的逻辑
+                showMessage(`切换到: ${courseName}`);
             });
         });
 
+        // 音量控制
+        let isMuted = false;
+        let lastVolume = 0.7;
+
+        volumeBtn.addEventListener('click', () => {
+            if (isMuted) {
+                // 取消静音
+                audioPlayer.muted = false;
+                audioPlayer.volume = lastVolume;
+                volumeFill.style.width = `${lastVolume * 100}%`;
+                volumeBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+                isMuted = false;
+            } else {
+                // 静音
+                lastVolume = audioPlayer.volume;
+                audioPlayer.muted = true;
+                audioPlayer.volume = 0;
+                volumeFill.style.width = '0%';
+                volumeBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
+                isMuted = true;
+            }
+        });
+
+        // 音量条控制
+        volumeBar.addEventListener('click', (e) => {
+            const rect = volumeBar.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const percentage = Math.max(0, Math.min(1, x / rect.width));
+
+            audioPlayer.volume = percentage;
+            audioPlayer.muted = false;
+            volumeFill.style.width = `${percentage * 100}%`;
+            volumeBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+            isMuted = false;
+            lastVolume = percentage;
+        });
+
+        // 进度条更新
         audioPlayer.addEventListener('timeupdate', () => {
-            const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
-            progressFill.style.width = `${progress}%`;
+            const percentage = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+            progressFill.style.width = `${percentage}%`;
+
+            // 更新当前时间显示
             const minutes = Math.floor(audioPlayer.currentTime / 60);
             const seconds = Math.floor(audioPlayer.currentTime % 60);
             currentTime.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+            // 更新总时间显示
+            if (audioPlayer.duration) {
+                const totalMinutes = Math.floor(audioPlayer.duration / 60);
+                const totalSeconds = Math.floor(audioPlayer.duration % 60);
+                document.querySelector('.time.total').textContent =
+                    `${totalMinutes.toString().padStart(2, '0')}:${totalSeconds.toString().padStart(2, '0')}`;
+            }
         });
 
-        document.addEventListener('click', () => {
-            speedMenu.classList.remove('active');
-            playlistPanel.classList.remove('active');
+        // 消息提示功能
+        function showMessage(message) {
+            // 移除已有的消息
+            const existingMessages = document.querySelectorAll('.message-popup');
+            existingMessages.forEach(msg => msg.remove());
+
+            // 创建新消息
+            const messageEl = document.createElement('div');
+            messageEl.className = 'message-popup';
+            messageEl.textContent = message;
+            document.body.appendChild(messageEl);
+
+            // 3秒后移除消息
+            setTimeout(() => {
+                if (messageEl.parentNode) {
+                    messageEl.parentNode.removeChild(messageEl);
+                }
+            }, 3000);
+        }
+
+        // 点击外部关闭菜单
+        document.addEventListener('click', (e) => {
+            if (!speedMenu.contains(e.target) && !speedBtn.contains(e.target)) {
+                speedMenu.classList.remove('active');
+            }
+
+            if (!playlistPanel.contains(e.target) && !playlistBtn.contains(e.target)) {
+                playlistPanel.classList.remove('active');
+            }
+        });
+
+        // 防止菜单点击事件冒泡
+        speedMenu.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+
+        playlistPanel.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+
+        // 音频播放结束事件
+        audioPlayer.addEventListener('ended', () => {
+            playBtn.innerHTML = '<i class="fas fa-play-circle"></i>';
+            progressFill.style.width = '0%';
+            currentTime.textContent = '00:00';
+        });
+
+        // 搜索结果页专属脚本：解析URL参数并展示
+        function getSearchKeyword() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return decodeURIComponent(urlParams.get('keyword') || '');
+        }
+
+        // 页面加载后展示关键词
+        window.addEventListener('load', () => {
+            const keyword = getSearchKeyword();
+            document.getElementById('search-keyword').textContent = keyword;
+            // 这里可以添加搜索逻辑，根据关键词加载结果
         });
     </script>
 </body>

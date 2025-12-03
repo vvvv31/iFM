@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* 创作者中心特有样式 - 补充 style.css */
-        
+
         /* 创作者统计卡片 */
         .creator-stats {
             display: grid;
@@ -102,20 +102,20 @@
                 grid-template-columns: 1fr;
                 gap: 15px;
             }
-            
+
             .creator-actions {
                 grid-template-columns: 1fr;
                 gap: 15px;
             }
-            
+
             .stat-card, .action-card {
                 padding: 20px;
             }
-            
+
             .stat-value {
                 font-size: 28px;
             }
-            
+
             .action-icon {
                 font-size: 32px;
                 width: 50px;
@@ -127,15 +127,15 @@
             .creator-stats, .creator-actions {
                 gap: 10px;
             }
-            
+
             .stat-card, .action-card {
                 padding: 15px;
             }
-            
+
             .stat-value {
                 font-size: 24px;
             }
-            
+
             .action-title {
                 font-size: 16px;
             }
@@ -156,26 +156,26 @@
             <span class="logo-text">星之声</span>
         </div>
         <nav class="main-nav">
-            <a href="index.html" class="nav-item">首页</a>
-            <a href="category.html" class="nav-item">分类</a>
-            <a href="channel.html" class="nav-item">社区</a>
+            <a href="javascript:;" class="nav-item" data-href="home">首页</a>
+            <a href="javascript:;" class="nav-item" data-href="category">分类</a>
+            <a href="javascript:;" class="nav-item" data-href="channel">社区</a>
         </nav>
         <div class="search-box">
-            <input type="text" placeholder="Hinted search text" class="search-input">
-            <button class="search-btn"><i class="fas fa-search"></i></button>
+            <input type="text" placeholder="搜索课程、频道..." class="search-input" id="homeSearchInput">
+            <button class="search-btn" id="homeSearchBtn"><i class="fas fa-search"></i></button>
         </div>
         <div class="user-functions">
-            <a href="my-recent.html" class="func-item">
+            <a href="javascript:;" class="func-item" data-href="my-recent">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                     <circle cx="12" cy="7" r="4"></circle>
                 </svg>
             </a>
-            <a href="my-message.html" class="func-item"><i class="fas fa-bell"></i> 消息</a>
-            <a href="my-collect.html" class="func-item"><i class="fas fa-star"></i> 收藏</a>
-            <a href="my-recent.html" class="func-item"><i class="fas fa-history"></i> 历史</a>
-            <a href="my-creator_center.html" class="func-item"><i class="fas fa-pen"></i> 创作中心</a>
-            <a href="login.html"><button class="submit-btn">登录/注册</button></a>
+            <a href="javascript:;" class="func-item" data-href="my-message"><i class="fas fa-bell"></i> 消息</a>
+            <a href="javascript:;" class="func-item" data-href="my-collect"><i class="fas fa-star"></i> 收藏</a>
+            <a href="javascript:;" class="func-item" data-href="my-recent"><i class="fas fa-history"></i> 历史</a>
+            <a href="javascript:;" class="func-item active" data-href="my-creator"><i class="fas fa-pen"></i> 创作中心</a>
+            <button class="submit-btn" data-href="login">登录/注册</button>
         </div>
     </header>
 
@@ -224,7 +224,7 @@
 
             <h3 class="content-title">创作工具</h3>
             <div class="creator-actions">
-                <div class="action-card" onclick="alert('开始直播功能')">
+                <div class="action-card" onclick="window.location.href='live-streaming.html')">
                     <div class="action-icon">
                         <i class="fas fa-microphone"></i>
                     </div>
@@ -238,7 +238,7 @@
                     <div class="action-title">频道管理</div>
                     <div class="action-desc">管理您创建的所有频道</div>
                 </div>
-                <div class="action-card" onclick="alert('数据分析功能')">
+                <div class="action-card" onclick="window.location.href='data-analysis.html">
                     <div class="action-icon">
                         <i class="fas fa-chart-line"></i>
                     </div>
@@ -253,7 +253,7 @@
                     <div class="action-desc">上传音频作品</div>
                 </div>
             </div>
-            
+
             <h3 class="content-title">我的频道</h3>
             <div class="channel-cards">
                 <div class="channel-card">英语口语</div>
@@ -319,6 +319,11 @@
         </div>
     </footer>
 
+    <!-- 引入路由脚本 -->
+    <script src="../js/router.js"></script>
+    <script src="../js/search.js"></script>
+    <script src="../js/script.js"></script>
+
     <!-- 功能JavaScript -->
     <script>
         const audioPlayer = document.getElementById('audioPlayer');
@@ -370,11 +375,11 @@
             item.addEventListener('click', () => {
                 playlistItems.forEach(i => i.classList.remove('active'));
                 item.classList.add('active');
-                
+
                 // 更新播放信息
                 const songName = document.querySelector('.song-name');
                 const singer = document.querySelector('.singer');
-                
+
                 if (item.textContent.includes('创作者访谈')) {
                     songName.textContent = '创作者访谈';
                     singer.textContent = '主播：星之声团队';
@@ -385,7 +390,7 @@
                     songName.textContent = '优秀作品赏析';
                     singer.textContent = '主播：王老师';
                 }
-                
+
                 // 这里可以添加实际的播放逻辑
                 alert(`正在播放：${item.textContent}`);
             });
@@ -419,7 +424,7 @@
                 const title = this.querySelector('.action-title').textContent;
                 this.style.backgroundColor = '#FFF8DC';
                 this.style.transform = 'translateY(-2px)';
-                
+
                 setTimeout(() => {
                     this.style.backgroundColor = '';
                     this.style.transform = '';

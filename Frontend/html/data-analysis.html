@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据分析和收益管理 - 星之声</title>
+    <!-- 复用现有样式文件 -->
+    <link rel="stylesheet" href="../css/style.css">
+    <!-- 添加 Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- 音频元素（复用播放器功能） -->
+    <audio id="audioPlayer" controls style="display: none;">
+        您的浏览器不支持音频播放
+    </audio>
+
+    <!-- 顶部导航栏（与my-collect一致） -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-img"></div>
+            <span class="logo-text">星之声</span>
+        </div>
+        <nav class="main-nav">
+            <a href="index.html" class="nav-item">首页</a>
+            <a href="category.html" class="nav-item">分类</a>
+            <a href="channel.html" class="nav-item">社区</a>
+        </nav>
+        <div class="search-box">
+            <input type="text" placeholder="搜索课程、频道..." class="search-input" id="homeSearchInput">
+            <button class="search-btn" id="homeSearchBtn"><i class="fas fa-search"></i></button>
+        </div>
+        <div class="user-functions">
+            <a href="my-recent.html" class="func-item">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+            </a>
+            <a href="my-message.html" class="func-item"><i class="fas fa-bell"></i> 消息</a>
+            <a href="my-collect.html" class="func-item"><i class="fas fa-star"></i> 收藏</a>
+            <a href="my-recent.html" class="func-item"><i class="fas fa-history"></i> 历史</a>
+            <a href="my-creator_center.html" class="func-item"><i class="fas fa-pen"></i> 创作中心</a>
+            <a href="login.html"><button class="submit-btn">登录/注册</button></a>
+        </div>
+    </header>
+
+    <!-- 主要内容区 -->
+    <main class="main-content">
+        <!-- 页面标题 -->
+        <div class="content-block">
+            <div class="content-title">数据分析和收益管理</div>
+            <div style="padding: 10px 0; color: #666;">
+                查看您的频道表现、听众数据及收益明细
+            </div>
+        </div>
+
+        <!-- 数据概览 -->
+        <div class="content-block">
+            <div class="content-title">数据概览</div>
+            <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 15px;">
+                <div style="flex: 1; min-width: 200px; background-color: #FFF8DC; border-radius: 8px; padding: 15px; border: 1px solid #FFDAB9;">
+                    <div style="font-size: 12px; color: #666; margin-bottom: 5px;">总收听量</div>
+                    <div style="font-size: 24px; font-weight: bold; color: #FF8C00;" id="total-listens">0</div>
+                </div>
+                <div style="flex: 1; min-width: 200px; background-color: #FFF8DC; border-radius: 8px; padding: 15px; border: 1px solid #FFDAB9;">
+                    <div style="font-size: 12px; color: #666; margin-bottom: 5px;">粉丝数</div>
+                    <div style="font-size: 24px; font-weight: bold; color: #FF8C00;" id="total-fans">0</div>
+                </div>
+                <div style="flex: 1; min-width: 200px; background-color: #FFF8DC; border-radius: 8px; padding: 15px; border: 1px solid #FFDAB9;">
+                    <div style="font-size: 12px; color: #666; margin-bottom: 5px;">累计收益（元）</div>
+                    <div style="font-size: 24px; font-weight: bold; color: #FF8C00;" id="total-revenue">0.00</div>
+                </div>
+                <div style="flex: 1; min-width: 200px; background-color: #FFF8DC; border-radius: 8px; padding: 15px; border: 1px solid #FFDAB9;">
+                    <div style="font-size: 12px; color: #666; margin-bottom: 5px;">活跃频道数</div>
+                    <div style="font-size: 24px; font-weight: bold; color: #FF8C00;" id="active-channels">0</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 收听趋势图表 -->
+        <div class="content-block">
+            <div class="content-title">近7天收听趋势</div>
+            <div style="height: 300px; background-color: #FFF8DC; border-radius: 8px; padding: 15px; border: 1px solid #FFDAB9; margin-top: 10px;" id="listen-trend-chart">
+                <!-- 图表将通过JS动态渲染 -->
+                <div style="display: flex; align-items: flex-end; height: 250px; gap: 15px; justify-content: center;">
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 5px;">
+                        <div style="width: 30px; height: 80px; background-color: #FF8C00; border-radius: 4px;"></div>
+                        <span style="font-size: 12px; color: #666;">第1天</span>
+                    </div>
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 5px;">
+                        <div style="width: 30px; height: 120px; background-color: #FF8C00; border-radius: 4px;"></div>
+                        <span style="font-size: 12px; color: #666;">第2天</span>
+                    </div>
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 5px;">
+                        <div style="width: 30px; height: 60px; background-color: #FF8C00; border-radius: 4px;"></div>
+                        <span style="font-size: 12px; color: #666;">第3天</span>
+                    </div>
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 5px;">
+                        <div style="width: 30px; height: 150px; background-color: #FF8C00; border-radius: 4px;"></div>
+                        <span style="font-size: 12px; color: #666;">第4天</span>
+                    </div>
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 5px;">
+                        <div style="width: 30px; height: 90px; background-color: #FF8C00; border-radius: 4px;"></div>
+                        <span style="font-size: 12px; color: #666;">第5天</span>
+                    </div>
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 5px;">
+                        <div style="width: 30px; height: 180px; background-color: #FF8C00; border-radius: 4px;"></div>
+                        <span style="font-size: 12px; color: #666;">第6天</span>
+                    </div>
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 5px;">
+                        <div style="width: 30px; height: 110px; background-color: #FF8C00; border-radius: 4px;"></div>
+                        <span style="font-size: 12px; color: #666;">第7天</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 收益明细 -->
+        <div class="content-block">
+            <div class="content-title">收益明细</div>
+            <div style="margin-top: 10px; border-collapse: collapse; width: 100%;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background-color: #FFF8DC; border-bottom: 2px solid #FFDAB9;">
+                            <th style="padding: 10px; text-align: left; font-size: 14px; color: #333;">日期</th>
+                            <th style="padding: 10px; text-align: center; font-size: 14px; color: #333;">频道名称</th>
+                            <th style="padding: 10px; text-align: center; font-size: 14px; color: #333;">收听量</th>
+                            <th style="padding: 10px; text-align: right; font-size: 14px; color: #333;">收益（元）</th>
+                        </tr>
+                    </thead>
+                    <tbody id="revenue-details">
+                        <!-- 收益明细将通过JS动态渲染 -->
+                        <tr>
+                            <td colspan="4" style="padding: 20px; text-align: center; color: #666; border-bottom: 1px solid #FFDAB9;">
+                                暂无收益数据
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- 底部播放栏（与my-collect一致） -->
+    <footer class="player-bar">
+        <div class="player-left">
+            <div class="channel-cover">📻</div>
+            <div class="song-info">
+                <p class="song-name">当前未播放</p>
+                <p class="singer">点击播放课程内容</p>
+            </div>
+        </div>
+        <div class="player-middle">
+            <div class="control-buttons">
+                <button class="control-btn"><i class="fas fa-step-backward"></i></button>
+                <button class="control-btn play-btn"><i class="fas fa-play-circle"></i></button>
+                <button class="control-btn"><i class="fas fa-step-forward"></i></button>
+                <button class="control-btn"><i class="fas fa-random"></i></button>
+                <div class="speed-control">
+                    <button class="speed-btn">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span id="currentSpeed">1x</span>
+                    </button>
+                    <div class="speed-menu">
+                        <div class="speed-option" data-rate="0.5">0.5x</div>
+                        <div class="speed-option active" data-rate="1">1x</div>
+                        <div class="speed-option" data-rate="1.5">1.5x</div>
+                        <div class="speed-option" data-rate="2">2x</div>
+                        <div class="speed-option" data-rate="3">3x</div>
+                    </div>
+                </div>
+            </div>
+            <div class="progress-container">
+                <span class="time current">00:00</span>
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+                <span class="time total">00:00</span>
+            </div>
+        </div>
+        <div class="player-right">
+            <button class="control-btn"><i class="fas fa-volume-up"></i></button>
+            <div class="volume-bar">
+                <div class="volume-fill"></div>
+            </div>
+            <div class="playlist-container">
+                <button class="playlist-btn"><i class="fas fa-list"></i></button>
+                <div class="playlist-panel">
+                    <div class="playlist-title">收藏频道列表</div>
+                    <div class="playlist-item active">1. 英语听力频道</div>
+                    <div class="playlist-item">2. 日常口语300句</div>
+                    <div class="playlist-item">3. 商务英语进阶</div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 引入依赖脚本（顺序：路由→搜索→全局→专属） -->
+    <script src="../js/router.js"></script>
+    <script src="../js/search.js"></script>
+    <script src="../js/script.js"></script>
+    <script src="../js/data-analysis.js"></script>
+
+    <!-- 播放器控制脚本（与my-collect一致） -->
+    <script>
+        const audioPlayer = document.getElementById('audioPlayer');
+        const playBtn = document.querySelector('.play-btn');
+        const speedBtn = document.querySelector('.speed-btn');
+        const speedMenu = document.querySelector('.speed-menu');
+        const speedOptions = document.querySelectorAll('.speed-option');
+        const currentSpeed = document.getElementById('currentSpeed');
+        const playlistBtn = document.querySelector('.playlist-btn');
+        const playlistPanel = document.querySelector('.playlist-panel');
+        const playlistItems = document.querySelectorAll('.playlist-item');
+        const progressFill = document.querySelector('.progress-fill');
+        const currentTime = document.querySelector('.time.current');
+
+        playBtn.addEventListener('click', () => {
+            if (audioPlayer.paused) {
+                audioPlayer.play();
+                playBtn.innerHTML = '<i class="fas fa-pause-circle"></i>';
+            } else {
+                audioPlayer.pause();
+                playBtn.innerHTML = '<i class="fas fa-play-circle"></i>';
+            }
+        });
+
+        speedBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            speedMenu.classList.toggle('active');
+        });
+        speedOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                const rate = parseFloat(option.getAttribute('data-rate'));
+                audioPlayer.playbackRate = rate;
+                currentSpeed.textContent = `${rate}x`;
+                speedOptions.forEach(opt => opt.classList.remove('active'));
+                option.classList.add('active');
+                speedMenu.classList.remove('active');
+            });
+        });
+
+        playlistBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            playlistPanel.classList.toggle('active');
+        });
+        playlistItems.forEach(item => {
+            item.addEventListener('click', () => {
+                playlistItems.forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                // 可以在这里添加播放逻辑
+                console.log(`正在播放：${item.textContent}`);
+            });
+        });
+
+        audioPlayer.addEventListener('timeupdate', () => {
+            const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+            progressFill.style.width = `${progress}%`;
+            const minutes = Math.floor(audioPlayer.currentTime / 60);
+            const seconds = Math.floor(audioPlayer.currentTime % 60);
+            currentTime.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        });
+
+        document.addEventListener('click', () => {
+            speedMenu.classList.remove('active');
+            playlistPanel.classList.remove('active');
+        });
+    </script>
+</body>
+</html>

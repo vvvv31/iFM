@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>PlayBar (静态片段)</title>
+<style>
+/* Styles adapted from the Vue SFC (unchanged) */
+.pv-player-bar { left:0; right:0; bottom:0; width:100%; background:rgba(220,220,220,0.95); border-top:4px solid #77bfa3; box-shadow:0 -2px 8px rgba(0,0,0,0.12); font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial; padding:8px 0; }
+.pv-player-bar.fixed { position:fixed; z-index:1200; }
+.pv-inner { max-width:1200px; margin:0 auto; display:flex; align-items:center; gap:18px; padding:0 20px; }
+.pv-left { display:flex; align-items:center; gap:12px; min-width:260px; }
+.pv-cover { width:44px; height:44px; border-radius:6px; background:#eee; background-size:cover; background-position:center; cursor: pointer; }
+.pv-meta { display:flex; flex-direction:column; overflow:hidden; cursor: pointer; }
+.pv-title { font-size:14px; font-weight:600; color:#222; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.pv-artist { font-size:12px; color:#666; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.pv-center { flex:1; display:flex; flex-direction:column; gap:8px; align-items:center; }
+.pv-controls { display:flex; align-items:center; gap:10px; margin-bottom:4px; }
+.ctrl-btn { border:0; background:transparent; font-size:16px; width:34px; height:34px; cursor:pointer; }
+.play-btn { width:44px; height:36px; background:linear-gradient(#ff8c00,#ff6a00); color:#fff; border-radius:8px; border:none; cursor:pointer; }
+.rate-control { display:inline-block; position:relative; }
+.rate-btn { padding:6px 8px; border-radius:6px; border:1px solid rgba(0,0,0,0.06); background:#fff; cursor:pointer; font-size:13px; }
+.mode-btn { padding:6px 8px; border-radius:6px; border:1px solid rgba(0,0,0,0.06); background:#fff; cursor:pointer; font-size:13px; }
+.pv-progress-row { display:flex; align-items:center; gap:12px; width:100%; }
+.time.small { font-size:12px; color:#666; width:48px; text-align:center; }
+.pv-progress { position:relative; flex:1; height:8px; background:rgba(255,255,255,0.6); border-radius:8px; cursor:pointer; overflow:visible; }
+.pv-progress-bg { position:absolute; left:0; right:0; top:0; bottom:0; border-radius:8px; }
+.pv-progress-fill { position:absolute; left:0; top:0; bottom:0; width:0%; background:linear-gradient(90deg,#ffd86b,#ffb94d); border-radius:8px; }
+.pv-knob { position:absolute; top:50%; transform:translate(-50%,-50%); width:12px; height:12px; background:#ffcf4d; border-radius:50%; box-shadow:0 2px 6px rgba(255,160,0,0.18); border:2px solid rgba(255,255,255,0.5); }
+.pv-right { min-width:160px; display:flex; align-items:center; gap:12px; justify-content:flex-end; }
+.pv-volume { width:110px; cursor:pointer; }
+.pv-volume-bar { height:6px; background:rgba(0,0,0,0.08); border-radius:6px; position:relative; overflow:hidden; }
+.pv-volume-fill { height:100%; background:linear-gradient(90deg,#ffd86b,#ffb94d); width:80%; }
+.rate-menu { background:#fff; border:1px solid #eee; border-radius:6px; box-shadow:0 8px 26px rgba(0,0,0,0.12); overflow:hidden; padding:6px 0; font-size:14px; }
+.rate-option { padding:8px 12px; cursor:pointer; color:#222; white-space:nowrap; }
+.rate-option:hover { background:#fafafa; }
+.rate-option.active { background:#ff8c00; color:#fff; }
+.playlist-panel { background:#fff; border:1px solid #eee; border-radius:8px; box-shadow:0 8px 30px rgba(0,0,0,0.12); overflow:auto; padding:8px; }
+.playlist-title { font-weight:600; padding:8px 12px; border-bottom:1px solid #f5f5f5; margin-bottom:6px; color:#333; }
+.playlist-list { max-height:320px; overflow:auto; }
+.playlist-item { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:8px; cursor:pointer; }
+.playlist-item.active { background:#fff3e0; color:#ff8c00; font-weight:600; }
+.pi-meta { overflow:hidden; }
+.pi-title { font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.pi-artist { font-size:12px; color:#888; }
+.teleport-overlay { position:fixed; left:0; right:0; top:0; bottom:0; z-index:29999; background:rgba(0,0,0,0); }
+@media (max-width:900px) { .pv-left{display:none;} .pv-right{display:none;} .pv-inner{padding:0 12px;} }
+.rate-menu .rate-option, .playlist-panel .playlist-item { user-select:none; }
+</style>
+</head>
+<body>
+  <aside id="pv-player" class="pv-player-bar fixed" role="region" aria-label="播放器" data-no-nav="false">
+    <div class="pv-inner">
+      <div class="pv-left">
+        <div id="pv-cover" class="pv-cover" aria-hidden="true"></div>
+        <div class="pv-meta">
+          <div id="pv-title" class="pv-title">未播放</div>
+          <div id="pv-artist" class="pv-artist"></div>
+        </div>
+      </div>
+
+      <div class="pv-center">
+        <div class="pv-controls">
+          <button id="pv-prev" class="ctrl-btn" title="上一首" aria-label="上一首">‹</button>
+          <button id="pv-play" class="play-btn" aria-pressed="false" title="播放">▶</button>
+          <button id="pv-next" class="ctrl-btn" title="下一首" aria-label="下一首">›</button>
+
+          <button id="pv-mode-btn" class="mode-btn" title="播放模式">🔁</button>
+
+          <div class="rate-control">
+            <button id="pv-rate-btn" class="rate-btn" title="播放速率">1x</button>
+          </div>
+
+          <button id="pv-list-btn" class="ctrl-btn" title="播放列表">▤</button>
+        </div>
+
+        <div class="pv-progress-row">
+          <span id="pv-time-cur" class="time small">00:00</span>
+
+          <div id="pv-progress" class="pv-progress" role="slider" aria-valuemin="0" aria-valuemax="0" aria-valuenow="0">
+            <div class="pv-progress-bg"></div>
+            <div id="pv-progress-fill" class="pv-progress-fill" style="width:0%"></div>
+            <div id="pv-knob" class="pv-knob" style="left:0%" aria-hidden="true"></div>
+          </div>
+
+          <span id="pv-time-total" class="time small">00:00</span>
+        </div>
+      </div>
+
+      <div class="pv-right">
+        <button id="pv-mute" class="mute-btn ctrl-btn" title="静音">🔊</button>
+
+        <div id="pv-volume" class="pv-volume" title="音量">
+          <div class="pv-volume-bar">
+            <div id="pv-volume-fill" class="pv-volume-fill" style="width:85%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <audio id="pv-audio" preload="metadata"></audio>
+  </aside>
+
+<script>
+/*
+  Fix: ensure clicking on non-interactive areas of the PlayBar navigates to player.html.
+  Problem observed: some clicks on the bar didn't navigate (likely because children were treated
+  as interactive or floating overlays closed). This updated onBarClick logic:
+  - Defines a clear set of interactive selectors to ignore.
+  - Allows clicks on cover/meta/title to navigate (makes cover/meta clickable).
+  - Adds an explicit "openPlayer()" helper and attaches click listeners to pv-cover and pv-meta
+    to guarantee user expectation (click cover/title → open player).
+  - Keeps existing behavior for buttons/controls/floating panels.
+*/
+
+(function () {
+  // existing PlayBar code simplified to focus on navigation fix parts
+  const root = document.getElementById('pv-player');
+  const audio = document.getElementById('pv-audio');
+  const playBtn = document.getElementById('pv-play');
+  const prevBtn = document.getElementById('pv-prev');
+  const nextBtn = document.getElementById('pv-next');
+  const titleEl = document.getElementById('pv-title');
+  const artistEl = document.getElementById('pv-artist');
+  const coverEl = document.getElementById('pv-cover');
+  const progressWrap = document.getElementById('pv-progress');
+  const volWrap = document.getElementById('pv-volume');
+  const rateBtn = document.getElementById('pv-rate-btn');
+  const listBtn = document.getElementById('pv-list-btn');
+
+  // floating references that may exist during operation
+  let rateMenuEl = null;
+  let playlistPanelEl = null;
+  let overlayEl = null;
+
+  // set of selectors considered "interactive" — clicks inside these should NOT navigate
+  const INTERACTIVE_SELECTORS = [
+    'button',
+    'a',
+    'input',
+    'textarea',
+    '.pv-progress',
+    '.pv-volume',
+    '.rate-menu',
+    '.playlist-panel',
+    '.playlist-item',
+    '.rate-option',
+    '.mute-btn',
+    '.pv-knob',
+    '.pv-progress-fill',
+    '.pv-volume-fill'
+  ];
+
+  function isInteractiveTarget(target) {
+    if (!target) return false;
+    for (const sel of INTERACTIVE_SELECTORS) {
+      if (target.closest(sel)) return true;
+    }
+    // also ignore if clicking within a floating overlay element
+    if (rateMenuEl && rateMenuEl.contains(target)) return true;
+    if (playlistPanelEl && playlistPanelEl.contains(target)) return true;
+    if (overlayEl && overlayEl.contains(target)) return true;
+    return false;
+  }
+
+  function openPlayer() {
+    // dispatch CustomEvent to allow listeners to cancel navigation
+    const ev = new CustomEvent('pvplayer:beforeNavigate', { cancelable: true, detail: { track: null }});
+    if (!root.dispatchEvent(ev)) return;
+    try {
+      const p = location.pathname || '';
+      const dir = p.endsWith('/') ? p : p.substring(0, p.lastIndexOf('/') + 1);
+      const url = dir + 'player.html';
+      window.location.href = url;
+    } catch (err) {
+      window.location.href = 'player.html';
+    }
+  }
+
+  // Root click handler: navigate when clicking bar outside interactive elements
+  function onBarClick(e) {
+    const target = e.target;
+    if (!target) return;
+    // If click inside an interactive control, do nothing
+    if (isInteractiveTarget(target)) return;
+    // Otherwise navigate
+    openPlayer();
+  }
+
+  // Helpful: allow clicking the cover/title/meta to open player explicitly
+  function attachExplicitOpeners() {
+    // cover and title/artist area should open player when clicked (unless user clicked a button inside)
+    [coverEl, titleEl, artistEl].forEach(el => {
+      if (!el) return;
+      el.style.cursor = 'pointer';
+      el.addEventListener('click', function (ev) {
+        // if the click was actually on an interactive child, ignore
+        if (isInteractiveTarget(ev.target)) return;
+        ev.stopPropagation();
+        openPlayer();
+      });
+    });
+    // Also allow center region (but avoid controls)
+    const center = document.querySelector('.pv-center');
+    if (center) {
+      center.addEventListener('click', function (ev) {
+        // ignore clicks that hit the control row or progress/volume/buttons
+        if (isInteractiveTarget(ev.target)) return;
+        ev.stopPropagation();
+        openPlayer();
+      });
+    }
+  }
+
+  // Keep existing closeFloating function accessible (if your script uses it)
+  function closeFloating() {
+    if (rateMenuEl && rateMenuEl.parentNode) rateMenuEl.parentNode.removeChild(rateMenuEl);
+    if (playlistPanelEl && playlistPanelEl.parentNode) playlistPanelEl.parentNode.removeChild(playlistPanelEl);
+    if (overlayEl && overlayEl.parentNode) overlayEl.parentNode.removeChild(overlayEl);
+    rateMenuEl = playlistPanelEl = overlayEl = null;
+  }
+
+  // On initialization attach handlers
+  function initNavFix() {
+    // ensure only one handler
+    try { root.removeEventListener('click', onBarClick); } catch (_) {}
+    root.addEventListener('click', onBarClick);
+    attachExplicitOpeners();
+  }
+
+  // init now
+  initNavFix();
+
+  // Expose helpers so other parts of the PlayBar script can manage overlay references
+  window.PVPlayBarNav = {
+    setRateMenuEl(el) { rateMenuEl = el; },
+    setPlaylistPanelEl(el) { playlistPanelEl = el; },
+    setOverlayEl(el) { overlayEl = el; },
+    openPlayer
+  };
+
+})();
+</script>
+</body>
+</html>

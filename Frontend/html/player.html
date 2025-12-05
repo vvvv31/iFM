@@ -1,380 +1,549 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>课程播放 - 星之声</title>
-    <link rel="stylesheet" href="../css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="../js/search.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>课程播放 - 星之声</title>
+
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="../js/search.js" defer></script>
+
+  <style>
+    :root{
+      --left-w: 300px;
+      --right-w: 300px;
+      --gap: 20px;
+      --album-size: 360px;
+      --album-rect-expanded-width: 760px;
+      --album-height: 360px;
+    }
+
+    body { margin:0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background:#fff; color:#333; }
+    /* Header styles (keep consistent with homepage) */
+    .header {
+      display:flex;
+      align-items:center;
+      gap:20px;
+      padding:12px 20px;
+      border-bottom:1px solid #eee;
+      background: #fff;
+    }
+    .logo { display:flex; align-items:center; gap:8px; }
+    .logo-img { width:36px; height:36px; border-radius:6px; background:#ffefd5; }
+    .logo-text { font-weight:700; font-size:18px; color:#333; }
+    .main-nav { display:flex; gap:12px; margin-left:12px; }
+    .nav-item { color:#666; text-decoration:none; padding:6px 8px; border-radius:6px; }
+    .nav-item.active { background:#fff4e6; color:#ff8c00; font-weight:600; }
+    .search-box { margin-left:auto; display:flex; gap:8px; align-items:center; }
+    .search-input { padding:6px 10px; border:1px solid #eee; border-radius:6px; }
+    .search-btn { background:#ff8c00; color:#fff; border:0; padding:6px 10px; border-radius:6px; cursor:pointer; }
+    .user-functions { display:flex; gap:10px; align-items:center; margin-left:12px; }
+    .func-item { color:#666; text-decoration:none; font-size:14px; display:flex; gap:6px; align-items:center; }
+    .submit-btn { background:#ff8c00; color:#fff; border:0; padding:6px 10px; border-radius:6px; cursor:pointer; }
+
+    main.main-content.player-main { padding: 20px; max-width: 1300px; margin: 0 auto; }
+
+    .player-container {
+      display: grid;
+      grid-template-columns: var(--left-w) 1fr var(--right-w);
+      gap: var(--gap);
+      align-items: start;
+    }
+
+    .chapter-sidebar, .recommend-sidebar { background:#fff; border-radius:8px; box-shadow:0 6px 18px rgba(0,0,0,0.05); padding:12px; }
+    .sidebar-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+    .chapter-list { display:flex; flex-direction:column; gap:6px; }
+    .chapter-item { display:flex; align-items:center; justify-content:space-between; padding:8px; border-radius:6px; cursor:pointer; background:#fff; }
+    .chapter-item:hover { background:#fffaf6; }
+    .chapter-item.active { background:#fff8f0; border-left:3px solid #ff9a2a; font-weight:700; color:#ff7a00; }
+
+    .recommend-list { display:flex; flex-direction:column; gap:10px; }
+    .recommend-item { display:flex; gap:10px; align-items:center; padding:10px; border-radius:8px; background:#fffaf5; cursor:pointer; }
+    .recommend-cover { width:56px; height:56px; border-radius:8px; background:#ffeede; display:flex; align-items:center; justify-content:center; font-weight:700; color:#ff7a00; }
+
+    .player-main-area { display:flex; flex-direction:column; gap:18px; }
+    .player-header .course-title { margin:0; font-size:20px; font-weight:700; text-align:center; }
+    .player-header .course-subtitle { margin:4px 0 0 0; color:#777; text-align:center; }
+
+    .player-content { display:flex; flex-direction:column; gap:16px; align-items:center; position:relative; width:100%; max-width:900px; }
+
+    .player-album { display:flex; align-items:center; justify-content:center; width:100%; }
+    .album-image {
+      width: var(--album-size);
+      height: var(--album-size);
+      border-radius: 12px;
+      background: #fbf3e6;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      box-shadow: 0 0 0 8px #e6fbf9 inset;
+      transition: width 280ms ease, height 280ms ease, box-shadow 280ms ease, border-radius 280ms ease;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+    .player-content.subtitle-mode .album-image {
+      width: var(--album-rect-expanded-width);
+      height: var(--album-height);
+      border-radius: 10px;
+      box-shadow: 0 0 0 12px rgba(255,160,0,0.06) inset;
+    }
+    .inner-art { transition: opacity 180ms ease; }
+    .player-content.subtitle-mode .inner-art { opacity: 0; pointer-events: none; }
+
+    .subtitle-panel { position:absolute; left:12px; right:12px; top:12px; bottom:12px; background: rgba(255,255,255,0.96); border-radius:8px; padding:10px; display:flex; flex-direction:column; gap:8px; box-shadow:0 8px 20px rgba(0,0,0,0.06); overflow:hidden; }
+    .subtitle-panel .panel-top { display:flex; align-items:center; justify-content:space-between; }
+    .subtitle-panel .panel-title { font-weight:700; color:#333; }
+    .subtitle-panel .close-subtitle { border:0; background:transparent; cursor:pointer; font-size:18px; color:#666; }
+    .subtitle-panel .lines { flex:1; overflow:auto; padding-right:6px; }
+    .subtitle-line { padding:8px 10px; border-radius:6px; font-size:14px; color:#333; }
+    .subtitle-line.active { background:#fff3df; color:#ff7a00; font-weight:700; }
+
+    .player-controls-large { display:flex; gap:12px; align-items:center; }
+    .control-btn-large { background:transparent; border:0; font-size:20px; cursor:pointer; }
+    .play-btn-large { font-size:24px; border:0; background:transparent; cursor:pointer; }
+
+    .progress-container-large { display:flex; align-items:center; gap:12px; width:100%; }
+    .progress-bar-large { flex:1; height:8px; background:#f1f1f1; border-radius:8px; overflow:hidden; position:relative; }
+    .progress-fill-large { height:100%; background: linear-gradient(90deg,#ffd86b,#ffb94d); width:0%; }
+
+    @media (max-width:1100px) {
+      .player-container { grid-template-columns: 1fr; }
+      :root { --album-rect-expanded-width: calc(100% - 40px); }
+    }
+
+    audio { display:none !important; }
+  </style>
 </head>
 <body>
-    <!-- 音频元素 -->
-    <audio id="audioPlayer" controls style="display: none;">
-        <source src="" type="audio/mpeg">
-        您的浏览器不支持音频播放
-    </audio>
+  <!-- Audio element used by player -->
+  <audio id="audioPlayer" preload="metadata" style="display:none;"></audio>
 
-    <!-- 顶部导航栏 -->
-    <header class="header">
-        <div class="logo">
-            <div class="logo-img"></div>
-            <span class="logo-text">星之声</span>
-        </div>
-        <nav class="main-nav">
-            <a href="index.html" class="nav-item">首页</a>
-            <a href="category.html" class="nav-item">分类</a>
-            <a href="channel.html" class="nav-item">社区</a>
-        </nav>
-        <div class="search-box">
-            <input type="text" placeholder="搜索课程、频道..." class="search-input" id="homeSearchInput">
-            <button class="search-btn" id="homeSearchBtn"><i class="fas fa-search"></i></button>
-        </div>
-        <div class="user-functions">
-            <a href="my-recent.html" class="func-item">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="12" cy="7" r="4"></circle>
-                </svg>
-            </a>
-            <a href="my-message.html" class="func-item"><i class="fas fa-bell"></i> 消息</a>
-            <a href="my-collect.html" class="func-item"><i class="fas fa-star"></i> 收藏</a>
-            <a href="my-recent.html" class="func-item"><i class="fas fa-history"></i> 历史</a>
-            <a href="my-creator_center.html" class="func-item"><i class="fas fa-pen"></i> 创作中心</a>
-            <a href="login.html"><button class="submit-btn">登录/注册</button></a>
-        </div>
-    </header>
+  <!-- TOP NAV (copied from homepage) -->
+  <header class="header">
+    <div class="logo">
+      <div class="logo-img"></div>
+      <span class="logo-text">星之声</span>
+    </div>
+    <nav class="main-nav">
+      <a href="index.html" class="nav-item">首页</a>
+      <a href="category.html" class="nav-item">分类</a>
+      <a href="channel.html" class="nav-item">社区</a>
+    </nav>
+    <div class="search-box">
+      <input type="text" placeholder="搜索课程、频道..." class="search-input" id="homeSearchInput">
+      <button class="search-btn" id="homeSearchBtn"><i class="fas fa-search"></i></button>
+    </div>
+    <div class="user-functions">
+      <a href="my-recent.html" class="func-item">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+      </a>
+      <a href="my-message.html" class="func-item"><i class="fas fa-bell"></i> 消息</a>
+      <a href="my-collect.html" class="func-item"><i class="fas fa-star"></i> 收藏</a>
+      <a href="my-recent.html" class="func-item"><i class="fas fa-history"></i> 历史</a>
+      <a href="my-creator_center.html" class="func-item"><i class="fas fa-pen"></i> 创作中心</a>
+      <a href="login.html"><button class="submit-btn">登录/注册</button></a>
+    </div>
+  </header>
 
-    <!-- 主要内容区 -->
-    <main class="main-content player-main">
-        <div class="player-container">
-            <!-- 播放器主体 -->
-            <div class="player-main-area">
-                <div class="player-header">
-                    <h1 class="course-title">英语日常对话 - 初级</h1>
-                    <p class="course-subtitle">英语学习中心</p>
-                </div>
-                
-                <div class="player-content">
-                    <!-- 课程封面 -->
-                    <div class="player-album">
-                        <div class="album-cover">
-                            <div class="album-image"></div>
-                        </div>
-                    </div>
-                    
-                    <!-- 播放控制 -->
-                    <div class="player-controls-large">
-                        <button class="control-btn-large prev-btn">
-                            <i class="fas fa-step-backward"></i>
-                        </button>
-                        <button class="play-btn-large play-active">
-                            <i class="fas fa-play-circle"></i>
-                        </button>
-                        <button class="control-btn-large next-btn">
-                            <i class="fas fa-step-forward"></i>
-                        </button>
-                    </div>
-                    
-                    <!-- 进度条 -->
-                    <div class="progress-container-large">
-                        <span class="time current">2:20</span>
-                        <div class="progress-bar-large">
-                            <div class="progress-fill-large"></div>
-                            <div class="progress-handle-large"></div>
-                        </div>
-                        <span class="time total">5:20</span>
-                    </div>
-                    
-                    <!-- 章节信息 -->
-                    <div class="current-chapter">
-                        <h3>正在播放：日常对话 - 打招呼与自我介绍</h3>
-                        <p>时长：10:35</p>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- 侧边栏 -->
-            <div class="player-sidebars">
-                <!-- 左侧章节列表 -->
-                <div class="chapter-sidebar">
-                    <div class="sidebar-header">
-                        <h2><i class="fas fa-list-ol"></i> 课程章节</h2>
-                    </div>
-                    <div class="chapter-list">
-                        <div class="chapter-item active">
-                            <span class="chapter-number">1.</span>
-                            <span class="chapter-title">日常对话 - 打招呼与自我介绍</span>
-                            <span class="chapter-duration">10:35</span>
-                        </div>
-                        <div class="chapter-item">
-                            <span class="chapter-number">2.</span>
-                            <span class="chapter-title">日常对话 - 在餐厅点餐</span>
-                            <span class="chapter-duration">8:45</span>
-                        </div>
-                        <div class="chapter-item">
-                            <span class="chapter-number">3.</span>
-                            <span class="chapter-title">日常对话 - 问路与交通</span>
-                            <span class="chapter-duration">12:10</span>
-                        </div>
-                        <div class="chapter-item">
-                            <span class="chapter-number">4.</span>
-                            <span class="chapter-title">日常对话 - 购物常用语</span>
-                            <span class="chapter-duration">9:30</span>
-                        </div>
-                        <div class="chapter-item">
-                            <span class="chapter-number">5.</span>
-                            <span class="chapter-title">日常对话 - 电话沟通</span>
-                            <span class="chapter-duration">11:25</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 右侧推荐课程 -->
-                <div class="recommend-sidebar">
-                    <div class="sidebar-header">
-                        <h2><i class="fas fa-fire"></i> 推荐课程</h2>
-                        <div class="sidebar-actions">
-                            <button class="action-btn"><i class="fas fa-share-alt"></i></button>
-                            <button class="action-btn"><i class="fas fa-ellipsis-h"></i></button>
-                        </div>
-                    </div>
-                    <div class="recommend-list">
-                        <div class="recommend-item">
-                            <div class="recommend-cover">
-                                <div class="cover-icon">B</div>
-                            </div>
-                            <div class="recommend-info">
-                                <h4>商务英语会话</h4>
-                                <p>中级课程</p>
-                            </div>
-                            <button class="play-now-btn">
-                                <i class="fas fa-play"></i>
-                            </button>
-                        </div>
-                        <div class="recommend-item">
-                            <div class="recommend-cover">
-                                <div class="cover-icon">L</div>
-                            </div>
-                            <div class="recommend-info">
-                                <h4>英语听力训练</h4>
-                                <p>初级课程</p>
-                            </div>
-                            <button class="play-now-btn">
-                                <i class="fas fa-play"></i>
-                            </button>
-                        </div>
-                        <div class="recommend-item">
-                            <div class="recommend-cover">
-                                <div class="cover-icon">T</div>
-                            </div>
-                            <div class="recommend-info">
-                                <h4>旅游英语必备</h4>
-                                <p>实用课程</p>
-                            </div>
-                            <button class="play-now-btn">
-                                <i class="fas fa-play"></i>
-                            </button>
-                        </div>
-                        <div class="recommend-item">
-                            <div class="recommend-cover">
-                                <div class="cover-icon">S</div>
-                            </div>
-                            <div class="recommend-info">
-                                <h4>英语口语进阶</h4>
-                                <p>高级课程</p>
-                            </div>
-                            <button class="play-now-btn">
-                                <i class="fas fa-play"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+  <!-- MAIN CONTENT -->
+  <main class="main-content player-main">
+    <div class="player-container">
+      <!-- LEFT: chapter list -->
+      <aside class="chapter-sidebar" aria-labelledby="chapters-title">
+        <div class="sidebar-header">
+          <h2 id="chapters-title"><i class="fas fa-list-ol"></i> 课程章节</h2>
         </div>
-    </main>
+        <div class="chapter-list" id="chapterList">
+          <div class="chapter-item placeholder">加载中…</div>
+        </div>
+      </aside>
 
-    <!-- 底部播放栏 -->
-    <footer class="player-bar">
-        <div class="player-left">
-            <div class="channel-cover">E</div>
-            <div class="song-info">
-                <p class="song-name">英语日常对话 - 初级</p>
-                <p class="singer">日常对话 - 打招呼与自我介绍</p>
-            </div>
+      <!-- CENTER: player area -->
+      <section class="player-main-area" aria-label="播放器主区域">
+        <div class="player-header">
+          <h1 class="course-title" id="courseTitle">示例课程</h1>
+          <p class="course-subtitle" id="courseAuthor">示例作者</p>
         </div>
-        <div class="player-middle">
-            <div class="control-buttons">
-                <button class="control-btn"><i class="fas fa-random"></i></button>
-                <button class="control-btn prev-btn-small"><i class="fas fa-step-backward"></i></button>
-                <button class="control-btn play-btn"><i class="fas fa-play-circle"></i></button>
-                <button class="control-btn next-btn-small"><i class="fas fa-step-forward"></i></button>
-                <button class="control-btn"><i class="fas fa-redo"></i></button>
-                <div class="speed-control">
-                    <button class="speed-btn">
-                        <i class="fas fa-tachometer-alt"></i>
-                        <span id="currentSpeed">1x</span>
-                    </button>
-                    <div class="speed-menu">
-                        <div class="speed-option" data-rate="0.5">0.5x</div>
-                        <div class="speed-option active" data-rate="1">1x</div>
-                        <div class="speed-option" data-rate="1.5">1.5x</div>
-                        <div class="speed-option" data-rate="2">2x</div>
-                        <div class="speed-option" data-rate="3">3x</div>
-                    </div>
-                </div>
-            </div>
-            <div class="progress-container">
-                <span class="time current">00:00</span>
-                <div class="progress-bar">
-                    <div class="progress-fill"></div>
-                </div>
-                <span class="time total">00:00</span>
-            </div>
-        </div>
-        <div class="player-right">
-            <button class="control-btn"><i class="fas fa-volume-up"></i></button>
-            <div class="volume-bar">
-                <div class="volume-fill"></div>
-            </div>
-            <div class="playlist-container">
-                <button class="playlist-btn"><i class="fas fa-list"></i></button>
-                <div class="playlist-panel">
-                    <div class="playlist-title">课程章节列表</div>
-                    <div class="playlist-item active">1. 日常对话 - 打招呼与自我介绍</div>
-                    <div class="playlist-item">2. 日常对话 - 在餐厅点餐</div>
-                    <div class="playlist-item">3. 日常对话 - 问路与交通</div>
-                </div>
-            </div>
-        </div>
-    </footer>
 
-    <script>
-        // 音频播放器功能
-        const audioPlayer = document.getElementById('audioPlayer');
-        const playBtn = document.querySelector('.play-btn');
-        const playBtnLarge = document.querySelector('.play-btn-large');
-        const speedBtn = document.querySelector('.speed-btn');
-        const speedMenu = document.querySelector('.speed-menu');
-        const speedOptions = document.querySelectorAll('.speed-option');
-        const currentSpeed = document.getElementById('currentSpeed');
-        const playlistBtn = document.querySelector('.playlist-btn');
-        const playlistPanel = document.querySelector('.playlist-panel');
-        const playlistItems = document.querySelectorAll('.playlist-item');
-        const chapterItems = document.querySelectorAll('.chapter-item');
-        const progressFill = document.querySelector('.progress-fill');
-        const progressFillLarge = document.querySelector('.progress-fill-large');
-        const currentTime = document.querySelector('.time.current');
-        const currentTimeLarge = document.querySelector('.progress-container-large .time.current');
-        const totalTime = document.querySelector('.time.total');
-        const totalTimeLarge = document.querySelector('.progress-container-large .time.total');
+        <div class="player-content">
+          <div class="player-album">
+            <div class="album-cover">
+              <div class="album-image" id="albumImage" role="button" tabindex="0" aria-label="切换字幕模式">
+                <div class="inner-art" id="innerArt" aria-hidden="true">
+                  <svg width="120" height="120" viewBox="0 0 24 24" fill="none">
+                    <rect x="2" y="2" width="20" height="20" rx="4" fill="#fff4e6" stroke="#ffd8a8"></rect>
+                    <path d="M6 8h12M6 12h8M6 16h10" stroke="#ff9f3b" stroke-width="1.3" stroke-linecap="round"/>
+                  </svg>
+                </div>
+                <div id="subtitlePlaceholder" style="display:none;" aria-hidden="true"></div>
+              </div>
+            </div>
+          </div>
 
-        // 播放/暂停功能
-        function togglePlay() {
-            if (audioPlayer.paused) {
-                audioPlayer.play();
-                playBtn.innerHTML = '<i class="fas fa-pause-circle"></i>';
-                playBtnLarge.innerHTML = '<i class="fas fa-pause-circle"></i>';
-                playBtnLarge.classList.add('play-active');
-            } else {
-                audioPlayer.pause();
-                playBtn.innerHTML = '<i class="fas fa-play-circle"></i>';
-                playBtnLarge.innerHTML = '<i class="fas fa-play-circle"></i>';
-                playBtnLarge.classList.remove('play-active');
-            }
+          <div class="player-controls-large">
+            <button class="control-btn-large prev-btn" id="page-prev" title="上一章"><i class="fas fa-step-backward"></i></button>
+            <button class="play-btn-large play-active" id="page-play" title="播放/暂停"><i class="fas fa-play-circle"></i></button>
+            <button class="control-btn-large next-btn" id="page-next" title="下一章"><i class="fas fa-step-forward"></i></button>
+          </div>
+
+          <div class="progress-container-large">
+            <span class="time current" id="page-time-cur">00:00</span>
+            <div class="progress-bar-large" id="page-progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="0" aria-valuenow="0">
+              <div class="progress-fill-large" id="page-progress-fill"></div>
+            </div>
+            <span class="time total" id="page-time-total">00:00</span>
+          </div>
+
+          <div class="current-chapter">
+            <h3 id="now-playing">未播放</h3>
+            <p id="now-duration"></p>
+          </div>
+        </div>
+      </section>
+
+      <!-- RIGHT: recommendations -->
+      <aside class="recommend-sidebar" aria-labelledby="recommend-title">
+        <div class="sidebar-header">
+          <h2 id="recommend-title"><i class="fas fa-fire"></i> 推荐课程</h2>
+        </div>
+        <div class="recommend-list" id="recommendList">
+          <div class="recommend-item placeholder">加载中…</div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+  (function () {
+    // API endpoints - adjust to your backend
+    const API = {
+      course: (id) => `/api/course/${encodeURIComponent(id)}`,
+      chapterAudio: (cid) => `/api/chapter/${encodeURIComponent(cid)}/audio`,
+      recommendations: (id) => `/api/course/${encodeURIComponent(id)}/recommendations`
+    };
+
+    const audio = document.getElementById('audioPlayer');
+    const chapterListEl = document.getElementById('chapterList');
+    const recommendListEl = document.getElementById('recommendList');
+    const courseTitleEl = document.getElementById('courseTitle');
+    const courseAuthorEl = document.getElementById('courseAuthor');
+
+    const playBtn = document.getElementById('page-play');
+    const prevBtn = document.getElementById('page-prev');
+    const nextBtn = document.getElementById('page-next');
+    const progressFill = document.getElementById('page-progress-fill');
+    const progressBar = document.getElementById('page-progress-bar');
+    const timeCur = document.getElementById('page-time-cur');
+    const timeTotal = document.getElementById('page-time-total');
+    const nowPlaying = document.getElementById('now-playing');
+    const nowDuration = document.getElementById('now-duration');
+
+    const albumImage = document.getElementById('albumImage');
+    const innerArt = document.getElementById('innerArt');
+    const subtitlePlaceholder = document.getElementById('subtitlePlaceholder');
+
+    // Local state
+    let playlist = []; // [{ id, title, src, durationText }]
+    let index = 0;
+    let subtitleMode = false;
+
+    function escapeHtml(str) { return String(str || '').replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m])); }
+    function getCourseId() { const params = new URLSearchParams(location.search); const q = params.get('course'); if (q) return q; const main = document.getElementById('playerPage'); if (main && main.dataset && main.dataset.courseId) return main.dataset.courseId; return 'demo'; }
+
+    async function loadCourse(courseId) {
+      if (!courseId) return;
+      try {
+        const res = await fetch(API.course(courseId), { credentials: 'same-origin' });
+        if (!res.ok) throw new Error('course fetch failed ' + res.status);
+        const data = await res.json();
+        const course = data.data || data.course || data;
+        courseTitleEl.textContent = course.title || '未命名课程';
+        const authorName = (course.author && course.author.name) || course.authorName || '';
+        const authorId = (course.author && course.author.id) || course.authorId || '';
+        courseAuthorEl.innerHTML = authorName ? `作者：<a href="/author/${authorId}">${escapeHtml(authorName)}</a>` : '';
+
+        const chapters = course.chapters || course.sections || course.list || [];
+        playlist = chapters.map(ch => ({
+          id: ch.id || ch.chapterId || ch.sid || String(Math.random()).slice(2),
+          title: ch.title || ch.name || '未命名章节',
+          src: ch.audioUrl || ch.src || '',
+          durationText: ch.duration || ch.length || ch.time || ''
+        }));
+
+        renderChapterList();
+        const recs = course.recommendations || course.recs || await loadRecommendations(courseId);
+        renderRecommendations(recs || []);
+        if (playlist.length && !playlist[0].src) {
+          await preloadChapterAudioInfo([playlist[0]]);
         }
+      } catch (err) {
+        console.error('loadCourse error', err);
+      }
+    }
 
-        playBtn.addEventListener('click', togglePlay);
-        playBtnLarge.addEventListener('click', togglePlay);
+    async function loadRecommendations(courseId) {
+      try {
+        const res = await fetch(API.recommendations(courseId), { credentials: 'same-origin' });
+        if (!res.ok) return null;
+        const j = await res.json();
+        return j.data || j.list || j.recommendations || j;
+      } catch (err) {
+        console.warn('loadRecommendations failed', err);
+        return null;
+      }
+    }
 
-        // 倍速控制
-        speedBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            speedMenu.classList.toggle('active');
-        });
-        speedOptions.forEach(option => {
-            option.addEventListener('click', () => {
-                const rate = parseFloat(option.getAttribute('data-rate'));
-                audioPlayer.playbackRate = rate;
-                currentSpeed.textContent = `${rate}x`;
-                speedOptions.forEach(opt => opt.classList.remove('active'));
-                option.classList.add('active');
-                speedMenu.classList.remove('active');
-            });
-        });
+    function renderChapterList() {
+      chapterListEl.innerHTML = '';
+      playlist.forEach((ch, i) => {
+        const item = document.createElement('div');
+        item.className = 'chapter-item' + (i === 0 ? ' active' : '');
+        item.dataset.trackId = ch.id;
+        item.dataset.trackSrc = ch.src || '';
+        const anchor = document.createElement('a');
+        anchor.className = 'chapter-link';
+        anchor.href = `/course/${encodeURIComponent(getCourseId())}/chapter/${encodeURIComponent(ch.id)}`;
+        anchor.innerHTML = `<span style="width:28px;flex:0 0 28px">${i+1}.</span><span style="flex:1">${escapeHtml(ch.title)}</span><span style="margin-left:8px">${escapeHtml(ch.durationText || '')}</span>`;
+        item.appendChild(anchor);
 
-        // 播放列表控制
-        playlistBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            playlistPanel.classList.toggle('active');
-        });
-        playlistItems.forEach(item => {
-            item.addEventListener('click', () => {
-                playlistItems.forEach(i => i.classList.remove('active'));
-                item.classList.add('active');
-                const chapterTitle = item.textContent.replace(/^\d+\.\s/, '');
-                document.querySelector('.current-chapter h3').textContent = `正在播放：${chapterTitle}`;
-                updateNowPlayingInfo(chapterTitle);
-            });
-        });
-
-        // 章节选择
-        chapterItems.forEach(item => {
-            item.addEventListener('click', () => {
-                chapterItems.forEach(i => i.classList.remove('active'));
-                item.classList.add('active');
-                const chapterTitle = item.querySelector('.chapter-title').textContent;
-                document.querySelector('.current-chapter h3').textContent = `正在播放：${chapterTitle}`;
-                updateNowPlayingInfo(chapterTitle);
-                
-                // 更新底部播放器信息
-                const chapterNumber = item.querySelector('.chapter-number').textContent;
-                const playlistItem = document.querySelector(`.playlist-item:nth-child(${parseInt(chapterNumber)})`);
-                if (playlistItem) {
-                    playlistItems.forEach(i => i.classList.remove('active'));
-                    playlistItem.classList.add('active');
-                }
-            });
+        item.addEventListener('click', async (ev) => {
+          if (ev.ctrlKey || ev.metaKey || ev.shiftKey) return;
+          ev.preventDefault();
+          ev.stopPropagation();
+          await playTrackByIndex(i);
         });
 
-        // 更新当前播放信息
-        function updateNowPlayingInfo(title) {
-            document.querySelector('.player-left .song-name').textContent = '英语日常对话 - 初级';
-            document.querySelector('.player-left .singer').textContent = title;
+        chapterListEl.appendChild(item);
+      });
+    }
+
+    function renderRecommendations(recs) {
+      recommendListEl.innerHTML = '';
+      if (!recs || !recs.length) {
+        recommendListEl.innerHTML = '<div class="recommend-item placeholder">暂无推荐</div>';
+        return;
+      }
+      recs.forEach(r => {
+        const item = document.createElement('div');
+        item.className = 'recommend-item';
+        item.dataset.courseId = r.id || r.courseId || r.uid || '';
+        item.innerHTML = `
+          <div class="recommend-cover">${escapeHtml((r.shortTitle||r.title||'')[0]||'R')}</div>
+          <div class="recommend-info"><h4>${escapeHtml(r.title||r.name||'')}</h4><p>${escapeHtml(r.subtitle||r.level||'')}</p></div>
+          <div style="margin-left:auto"><button class="play-now-btn" title="打开并播放">播放</button></div>
+        `;
+        const playNowBtn = item.querySelector('.play-now-btn');
+        item.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const cid = item.dataset.courseId;
+          if (!cid) return;
+          loadCourse(cid).then(() => {
+            if (playlist.length) playTrackByIndex(0);
+          });
+          if (history && history.replaceState) {
+            const params = new URLSearchParams(location.search);
+            params.set('course', cid);
+            params.delete('chapter');
+            history.replaceState({}, '', location.pathname + '?' + params.toString());
+          }
+        });
+        playNowBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const cid = item.dataset.courseId;
+          if (!cid) return;
+          loadCourse(cid).then(() => { if (playlist.length) playTrackByIndex(0); });
+          if (history && history.replaceState) {
+            const params = new URLSearchParams(location.search);
+            params.set('course', cid);
+            params.delete('chapter');
+            history.replaceState({}, '', location.pathname + '?' + params.toString());
+          }
+        });
+        recommendListEl.appendChild(item);
+      });
+    }
+
+    async function preloadChapterAudioInfo(chapters) {
+      for (const ch of chapters) {
+        if (!ch.src || !ch.src.trim()) {
+          try {
+            const res = await fetch(API.chapterAudio(ch.id), { credentials: 'same-origin' });
+            if (!res.ok) continue;
+            const j = await res.json();
+            const payload = j.data || j || {};
+            const src = payload.src || payload.url || payload.streamUrl || '';
+            const durationSeconds = payload.durationSeconds || payload.duration || null;
+            if (src) ch.src = src;
+            if (durationSeconds && !ch.durationText) {
+              const m = Math.floor(durationSeconds / 60), s = Math.floor(durationSeconds % 60);
+              ch.durationText = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+            }
+          } catch (err) {
+            console.warn('preloadChapterAudioInfo error', err);
+          }
         }
+      }
+      renderChapterList();
+    }
 
-        // 模拟音频进度更新
-        audioPlayer.addEventListener('timeupdate', () => {
-            const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
-            progressFill.style.width = `${progress}%`;
-            progressFillLarge.style.width = `${progress}%`;
-            
-            const minutes = Math.floor(audioPlayer.currentTime / 60);
-            const seconds = Math.floor(audioPlayer.currentTime % 60);
-            currentTime.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-            if (currentTimeLarge) {
-                currentTimeLarge.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    async function playTrackByIndex(i, pushHistory = true) {
+      if (i < 0 || i >= playlist.length) return;
+      index = i;
+      highlightChapterUI(index);
+      updateNowPlayingUI(index);
+      const track = playlist[index];
+      if (track.src && track.src.trim()) {
+        audio.src = track.src;
+        audio.load();
+      } else {
+        try {
+          const res = await fetch(API.chapterAudio(track.id), { credentials: 'same-origin' });
+          if (res.ok) {
+            const j = await res.json();
+            const payload = j.data || j || {};
+            const src = payload.src || payload.url || payload.streamUrl || '';
+            const durationSeconds = payload.durationSeconds || payload.duration || null;
+            if (src) {
+              track.src = src;
+              audio.src = src;
+              audio.load();
             }
-        });
-
-        // 设置总时长
-        audioPlayer.addEventListener('loadedmetadata', () => {
-            const minutes = Math.floor(audioPlayer.duration / 60);
-            const seconds = Math.floor(audioPlayer.duration % 60);
-            totalTime.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-            if (totalTimeLarge) {
-                totalTimeLarge.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            if (durationSeconds && !track.durationText) {
+              const m = Math.floor(durationSeconds / 60), s = Math.floor(durationSeconds % 60);
+              track.durationText = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+              renderChapterList();
             }
-        });
+          }
+        } catch (err) {
+          console.warn('fetch chapter audio failed', err);
+        }
+      }
 
-        // 点击关闭菜单
-        document.addEventListener('click', () => {
-            speedMenu.classList.remove('active');
-            playlistPanel.classList.remove('active');
-        });
+      try {
+        const p = audio.play();
+        if (p && typeof p.then === 'function') await p;
+      } catch (err) {
+        try { audio.load(); const p2 = audio.play(); if (p2 && typeof p2.then === 'function') await p2; } catch (_) {}
+      }
 
-        // 初始化
-        updateNowPlayingInfo('日常对话 - 打招呼与自我介绍');
-    </script>
+      if (pushHistory && history && history.replaceState) {
+        const params = new URLSearchParams(location.search);
+        params.set('course', getCourseId());
+        params.set('chapter', playlist[index].id);
+        history.replaceState({}, '', location.pathname + '?' + params.toString());
+      }
+    }
+
+    function highlightChapterUI(i) {
+      const items = Array.from(chapterListEl.querySelectorAll('.chapter-item'));
+      items.forEach((el, idx) => el.classList.toggle('active', idx === i));
+    }
+
+    function updateNowPlayingUI(i) {
+      const t = playlist[i];
+      if (t) {
+        nowPlaying.textContent = `正在播放：${t.title}`;
+        nowDuration.textContent = `时长：${t.durationText || ''}`;
+      } else {
+        nowPlaying.textContent = '未播放';
+        nowDuration.textContent = '';
+      }
+    }
+
+    function refreshProgress() {
+      const dur = audio.duration || 0;
+      const cur = audio.currentTime || 0;
+      const pct = dur ? (cur / dur) * 100 : 0;
+      const fill = document.getElementById('page-progress-fill');
+      if (fill) fill.style.width = pct + '%';
+      progressBar.setAttribute('aria-valuemax', Math.floor(dur));
+      progressBar.setAttribute('aria-valuenow', Math.floor(cur));
+      timeCur.textContent = formatTime(cur);
+      timeTotal.textContent = formatTime(dur);
+    }
+
+    function formatTime(sec) {
+      if (!sec || isNaN(sec) || sec <= 0) return '00:00';
+      const m = Math.floor(sec / 60), s = Math.floor(sec % 60);
+      return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    }
+
+    function onProgressClick(e) {
+      if (!audio.duration) return;
+      const rect = progressBar.getBoundingClientRect();
+      const x = (e.clientX || (e.touches && e.touches[0].clientX)) - rect.left;
+      const p = Math.max(0, Math.min(1, x / rect.width));
+      audio.currentTime = p * audio.duration;
+      refreshProgress();
+    }
+
+    // subtitle minimal handlers for album click
+    const sampleSubs = [{ t: 0, text: 'Hello' }];
+    function createSubtitlePanel(lines = sampleSubs) {
+      const panel = document.createElement('div');
+      panel.className = 'subtitle-panel';
+      const top = document.createElement('div'); top.className = 'panel-top';
+      const title = document.createElement('div'); title.className = 'panel-title'; title.textContent = '字幕模式';
+      const closeBtn = document.createElement('button'); closeBtn.className = 'close-subtitle'; closeBtn.type='button'; closeBtn.innerHTML = '&#10005;';
+      closeBtn.addEventListener('click', (e) => { e.stopPropagation(); closeSubtitlePanel(); });
+      top.appendChild(title); top.appendChild(closeBtn); panel.appendChild(top);
+      const linesWrap = document.createElement('div'); linesWrap.className = 'lines';
+      lines.forEach((ln, idx) => { const d = document.createElement('div'); d.className = 'subtitle-line'; d.textContent = ln.text; d.dataset.t = ln.t; linesWrap.appendChild(d); });
+      panel.appendChild(linesWrap);
+      return panel;
+    }
+    function openSubtitlePanel(chapterId) {
+      subtitlePlaceholder.innerHTML = '';
+      const panel = createSubtitlePanel();
+      subtitlePlaceholder.appendChild(panel);
+      subtitlePlaceholder.style.display = 'block';
+      subtitlePlaceholder.setAttribute('aria-hidden', 'false');
+    }
+    function closeSubtitlePanel() {
+      subtitlePlaceholder.innerHTML = '';
+      subtitlePlaceholder.style.display = 'none';
+      subtitlePlaceholder.setAttribute('aria-hidden', 'true');
+    }
+
+    // album click toggles subtitle panel
+    albumImage && albumImage.addEventListener('click', (e) => {
+      if (subtitlePlaceholder.style.display === 'block') closeSubtitlePanel();
+      else openSubtitlePanel();
+    });
+
+    async function init() {
+      const courseId = getCourseId();
+      await loadCourse(courseId);
+
+      playBtn && playBtn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        if (audio.paused) {
+          try { const p = audio.play(); if (p && typeof p.then === 'function') await p; } catch (err) { try { audio.load(); const p2 = audio.play(); if (p2 && typeof p2.then === 'function') await p2; } catch (_) {} }
+        } else audio.pause();
+      });
+
+      prevBtn && prevBtn.addEventListener('click', (e) => { e.stopPropagation(); if (index > 0) playTrackByIndex(index - 1); });
+      nextBtn && nextBtn.addEventListener('click', (e) => { e.stopPropagation(); if (index < playlist.length - 1) playTrackByIndex(index + 1); });
+
+      audio.addEventListener('timeupdate', refreshProgress);
+      audio.addEventListener('loadedmetadata', refreshProgress);
+      audio.addEventListener('ended', () => { if (index < playlist.length - 1) playTrackByIndex(index + 1); });
+
+      progressBar && progressBar.addEventListener('click', onProgressClick);
+
+      // progress bar is clickable for seeking
+    }
+
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+
+    // expose for debugging
+    window.PlayerPage = { loadCourse, playTrackByIndex, getPlaylist: () => playlist, getCurrent: () => ({ index, track: playlist[index] }) };
+  })();
+  </script>
 </body>
 </html>

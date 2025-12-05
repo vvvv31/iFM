@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -330,10 +330,52 @@
                 margin-left: 0;
             }
         }
+
+        /* PlayBar styles (copied from PlayBar.html) */
+.pv-player-bar { left:0; right:0; bottom:0; width:100%; background:rgba(220,220,220,0.95); border-top:4px solid #77bfa3; box-shadow:0 -2px 8px rgba(0,0,0,0.12); font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial; padding:8px 0; }
+.pv-player-bar.fixed { position:fixed; z-index:1200; }
+.pv-inner { max-width:1200px; margin:0 auto; display:flex; align-items:center; gap:18px; padding:0 20px; }
+.pv-left { display:flex; align-items:center; gap:12px; min-width:260px; }
+.pv-cover { width:44px; height:44px; border-radius:6px; background:#eee; background-size:cover; background-position:center; cursor: pointer; }
+.pv-meta { display:flex; flex-direction:column; overflow:hidden; cursor: pointer; }
+.pv-title { font-size:14px; font-weight:600; color:#222; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.pv-artist { font-size:12px; color:#666; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.pv-center { flex:1; display:flex; flex-direction:column; gap:8px; align-items:center; }
+.pv-controls { display:flex; align-items:center; gap:10px; margin-bottom:4px; }
+.ctrl-btn { border:0; background:transparent; font-size:16px; width:34px; height:34px; cursor:pointer; }
+.play-btn { width:44px; height:36px; background:linear-gradient(#ff8c00,#ff6a00); color:#fff; border-radius:8px; border:none; cursor:pointer; }
+.rate-control { display:inline-block; position:relative; }
+.rate-btn { padding:6px 8px; border-radius:6px; border:1px solid rgba(0,0,0,0.06); background:#fff; cursor:pointer; font-size:13px; }
+.mode-btn { padding:6px 8px; border-radius:6px; border:1px solid rgba(0,0,0,0.06); background:#fff; cursor:pointer; font-size:13px; }
+.pv-progress-row { display:flex; align-items:center; gap:12px; width:100%; }
+.time.small { font-size:12px; color:#666; width:48px; text-align:center; }
+.pv-progress { position:relative; flex:1; height:8px; background:rgba(255,255,255,0.6); border-radius:8px; cursor:pointer; overflow:visible; }
+.pv-progress-bg { position:absolute; left:0; right:0; top:0; bottom:0; border-radius:8px; }
+.pv-progress-fill { position:absolute; left:0; top:0; bottom:0; width:0%; background:linear-gradient(90deg,#ffd86b,#ffb94d); border-radius:8px; }
+.pv-knob { position:absolute; top:50%; transform:translate(-50%,-50%); width:12px; height:12px; background:#ffcf4d; border-radius:50%; box-shadow:0 2px 6px rgba(255,160,0,0.18); border:2px solid rgba(255,255,255,0.5); }
+.pv-right { min-width:160px; display:flex; align-items:center; gap:12px; justify-content:flex-end; }
+.pv-volume { width:110px; cursor:pointer; }
+.pv-volume-bar { height:6px; background:rgba(0,0,0,0.08); border-radius:6px; position:relative; overflow:hidden; }
+.pv-volume-fill { height:100%; background:linear-gradient(90deg,#ffd86b,#ffb94d); width:80%; }
+.rate-menu { background:#fff; border:1px solid #eee; border-radius:6px; box-shadow:0 8px 26px rgba(0,0,0,0.12); overflow:hidden; padding:6px 0; font-size:14px; }
+.rate-option { padding:8px 12px; cursor:pointer; color:#222; white-space:nowrap; }
+.rate-option:hover { background:#fafafa; }
+.rate-option.active { background:#ff8c00; color:#fff; }
+.playlist-panel { background:#fff; border:1px solid #eee; border-radius:8px; box-shadow:0 8px 30px rgba(0,0,0,0.12); overflow:auto; padding:8px; }
+.playlist-title { font-weight:600; padding:8px 12px; border-bottom:1px solid #f5f5f5; margin-bottom:6px; color:#333; }
+.playlist-list { max-height:320px; overflow:auto; }
+.playlist-item { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:8px; cursor:pointer; }
+.playlist-item.active { background:#fff3e0; color:#ff8c00; font-weight:600; }
+.pi-meta { overflow:hidden; }
+.pi-title { font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.pi-artist { font-size:12px; color:#888; }
+.teleport-overlay { position:fixed; left:0; right:0; top:0; bottom:0; z-index:29999; background:rgba(0,0,0,0); }
+@media (max-width:900px) { .pv-left{display:none;} .pv-right{display:none;} .pv-inner{padding:0 12px;} }
+.rate-menu .rate-option, .playlist-panel .playlist-item { user-select:none; }
     </style>
 </head>
 <body>
-    <!-- 音频元素 -->
+    <!-- 音频元素 (保留原来元素 in case other scripts use it) -->
     <audio id="audioPlayer" controls style="display: none;">
         <source src="" type="audio/mpeg">
         您的浏览器不支持音频播放
@@ -555,65 +597,227 @@
         </section>
     </main>
 
-       <!-- 底部播放栏 -->
-    <footer class="player-bar">
-        <div class="player-left">
-            <div class="channel-cover">频道</div>
-            <div class="song-info">
-                <p class="song-name">Seasons in</p>
-                <p class="singer">James</p>
-            </div>
+  <!-- Replaced footer: use PlayBar.html's player bar -->
+  <aside id="pv-player" class="pv-player-bar fixed" role="region" aria-label="播放器" data-no-nav="false">
+    <div class="pv-inner">
+      <div class="pv-left">
+        <div id="pv-cover" class="pv-cover" aria-hidden="true"></div>
+        <div class="pv-meta">
+          <div id="pv-title" class="pv-title">未播放</div>
+          <div id="pv-artist" class="pv-artist"></div>
         </div>
-        <div class="player-middle">
-            <div class="control-buttons">
-                <button class="control-btn"><i class="fas fa-step-backward"></i></button>
-                <button class="control-btn play-btn"><i class="fas fa-play-circle"></i></button>
-                <button class="control-btn"><i class="fas fa-step-forward"></i></button>
-                <button class="control-btn"><i class="fas fa-random"></i></button>
-                <div class="speed-control">
-                    <button class="speed-btn">
-                        <i class="fas fa-tachometer-alt"></i>
-                        <span id="currentSpeed">1x</span>
-                    </button>
-                    <div class="speed-menu">
-                        <div class="speed-option" data-rate="0.5">0.5x</div>
-                        <div class="speed-option active" data-rate="1">1x</div>
-                        <div class="speed-option" data-rate="1.5">1.5x</div>
-                        <div class="speed-option" data-rate="2">2x</div>
-                        <div class="speed-option" data-rate="3">3x</div>
-                    </div>
-                </div>
-            </div>
-            <div class="progress-container">
-                <span class="time current">00:00</span>
-                <div class="progress-bar">
-                    <div class="progress-fill"></div>
-                </div>
-                <span class="time total">00:00</span>
-            </div>
-        </div>
-        <div class="player-right">
-            <button class="control-btn"><i class="fas fa-volume-up"></i></button>
-            <div class="volume-bar">
-                <div class="volume-fill"></div>
-            </div>
-            <div class="playlist-container">
-                <button class="playlist-btn"><i class="fas fa-list"></i></button>
-                <div class="playlist-panel">
-                    <div class="playlist-title">收藏频道列表</div>
-                    <div class="playlist-item active">1. Seasons in</div>
-                    <div class="playlist-item">2. Seasons in</div>
-                    <div class="playlist-item">3. Seasons in</div>
-                </div>
-            </div>
-        </div>
-    </footer>
+      </div>
 
-    <!-- JavaScript 功能 -->
+      <div class="pv-center">
+        <div class="pv-controls">
+          <button id="pv-prev" class="ctrl-btn" title="上一首" aria-label="上一首">‹</button>
+          <button id="pv-play" class="play-btn" aria-pressed="false" title="播放">▶</button>
+          <button id="pv-next" class="ctrl-btn" title="下一首" aria-label="下一首">›</button>
+
+          <button id="pv-mode-btn" class="mode-btn" title="播放模式">🔁</button>
+
+          <div class="rate-control">
+            <button id="pv-rate-btn" class="rate-btn" title="播放速率">1x</button>
+          </div>
+
+          <button id="pv-list-btn" class="ctrl-btn" title="播放列表">▤</button>
+        </div>
+
+        <div class="pv-progress-row">
+          <span id="pv-time-cur" class="time small">00:00</span>
+
+          <div id="pv-progress" class="pv-progress" role="slider" aria-valuemin="0" aria-valuemax="0" aria-valuenow="0">
+            <div class="pv-progress-bg"></div>
+            <div id="pv-progress-fill" class="pv-progress-fill" style="width:0%"></div>
+            <div id="pv-knob" class="pv-knob" style="left:0%" aria-hidden="true"></div>
+          </div>
+
+          <span id="pv-time-total" class="time small">00:00</span>
+        </div>
+      </div>
+
+      <div class="pv-right">
+        <button id="pv-mute" class="mute-btn ctrl-btn" title="静音">🔊</button>
+
+        <div id="pv-volume" class="pv-volume" title="音量">
+          <div class="pv-volume-bar">
+            <div id="pv-volume-fill" class="pv-volume-fill" style="width:85%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <audio id="pv-audio" preload="metadata"></audio>
+  </aside>
+
+<script>
+/*
+  PlayBar navigation fix and basic interactions (copied/adapted from PlayBar.html).
+  This script adds safe click-to-player behavior and exposes helpers.
+*/
+(function () {
+  const root = document.getElementById('pv-player');
+  const audio = document.getElementById('pv-audio');
+  const playBtn = document.getElementById('pv-play');
+  const prevBtn = document.getElementById('pv-prev');
+  const nextBtn = document.getElementById('pv-next');
+  const titleEl = document.getElementById('pv-title');
+  const artistEl = document.getElementById('pv-artist');
+  const coverEl = document.getElementById('pv-cover');
+  const progressWrap = document.getElementById('pv-progress');
+  const volWrap = document.getElementById('pv-volume');
+
+  let rateMenuEl = null;
+  let playlistPanelEl = null;
+  let overlayEl = null;
+
+  const INTERACTIVE_SELECTORS = [
+    'button',
+    'a',
+    'input',
+    'textarea',
+    '.pv-progress',
+    '.pv-volume',
+    '.rate-menu',
+    '.playlist-panel',
+    '.playlist-item',
+    '.rate-option',
+    '.mute-btn',
+    '.pv-knob',
+    '.pv-progress-fill',
+    '.pv-volume-fill'
+  ];
+
+  function isInteractiveTarget(target) {
+    if (!target) return false;
+    for (const sel of INTERACTIVE_SELECTORS) {
+      if (target.closest(sel)) return true;
+    }
+    if (rateMenuEl && rateMenuEl.contains(target)) return true;
+    if (playlistPanelEl && playlistPanelEl.contains(target)) return true;
+    if (overlayEl && overlayEl.contains(target)) return true;
+    return false;
+  }
+
+  function openPlayer() {
+    const ev = new CustomEvent('pvplayer:beforeNavigate', { cancelable: true, detail: { track: null }} );
+    if (!root.dispatchEvent(ev)) return;
+    try {
+      const p = location.pathname || '';
+      const dir = p.endsWith('/') ? p : p.substring(0, p.lastIndexOf('/') + 1);
+      const url = dir + 'player.html';
+      window.location.href = url;
+    } catch (err) {
+      window.location.href = 'player.html';
+    }
+  }
+
+  function onBarClick(e) {
+    const target = e.target;
+    if (!target) return;
+    if (isInteractiveTarget(target)) return;
+    openPlayer();
+  }
+
+  function attachExplicitOpeners() {
+    [coverEl, titleEl, artistEl].forEach(el => {
+      if (!el) return;
+      el.style.cursor = 'pointer';
+      el.addEventListener('click', function (ev) {
+        if (isInteractiveTarget(ev.target)) return;
+        ev.stopPropagation();
+        openPlayer();
+      });
+    });
+    const center = document.querySelector('.pv-center');
+    if (center) {
+      center.addEventListener('click', function (ev) {
+        if (isInteractiveTarget(ev.target)) return;
+        ev.stopPropagation();
+        openPlayer();
+      });
+    }
+  }
+
+  function initNavFix() {
+    try { root.removeEventListener('click', onBarClick); } catch (_) {}
+    root.addEventListener('click', onBarClick);
+    attachExplicitOpeners();
+  }
+
+  initNavFix();
+
+  window.PVPlayBarNav = {
+    setRateMenuEl(el) { rateMenuEl = el; },
+    setPlaylistPanelEl(el) { playlistPanelEl = el; },
+    setOverlayEl(el) { overlayEl = el; },
+    openPlayer
+  };
+
+  // Basic play/pause handling for pv-audio (keeps UI minimal; integrate with your full player if needed)
+  function togglePlay() {
+    if (!audio) return;
+    if (audio.paused) {
+      audio.play().catch(()=>{});
+      playBtn.textContent = '❚❚';
+      playBtn.setAttribute('aria-pressed','true');
+    } else {
+      audio.pause();
+      playBtn.textContent = '▶';
+      playBtn.setAttribute('aria-pressed','false');
+    }
+  }
+  if (playBtn) playBtn.addEventListener('click', (e) => { e.stopPropagation(); togglePlay(); });
+
+  // update time/progress display
+  const timeCurEl = document.getElementById('pv-time-cur');
+  const timeTotalEl = document.getElementById('pv-time-total');
+  const progFill = document.getElementById('pv-progress-fill');
+  const pvKnob = document.getElementById('pv-knob');
+
+  function formatTime(s) {
+    if (!s || isNaN(s) || s <= 0) return '00:00';
+    const m = Math.floor(s / 60), sec = Math.floor(s % 60);
+    return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+  }
+
+  if (audio) {
+    audio.addEventListener('timeupdate', () => {
+      const dur = audio.duration || 0;
+      const cur = audio.currentTime || 0;
+      const pct = dur ? (cur / dur) * 100 : 0;
+      if (progFill) progFill.style.width = pct + '%';
+      if (pvKnob) pvKnob.style.left = pct + '%';
+      if (timeCurEl) timeCurEl.textContent = formatTime(cur);
+      if (timeTotalEl) timeTotalEl.textContent = formatTime(dur);
+    });
+    audio.addEventListener('loadedmetadata', () => {
+      if (timeTotalEl) timeTotalEl.textContent = formatTime(audio.duration);
+    });
+    audio.addEventListener('ended', () => {
+      if (playBtn) { playBtn.textContent = '▶'; playBtn.setAttribute('aria-pressed','false'); }
+    });
+  }
+
+  // clicking progress to seek
+  if (progressWrap) {
+    progressWrap.addEventListener('click', (e) => {
+      if (!audio || !audio.duration) return;
+      const rect = progressWrap.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const p = Math.max(0, Math.min(1, x / rect.width));
+      audio.currentTime = p * audio.duration;
+    });
+  }
+
+})();
+</script>
+
+    <!-- JavaScript 功能 (existing index scripts) -->
     <script>
-        // 播放器功能
+        // 播放器功能 (index page logic) - keep as-is; some controls reference elements that may not exist after replacing footer
         const audioPlayer = document.getElementById('audioPlayer');
-        const playBtn = document.querySelector('.play-btn');
+        const playBtn = document.querySelector('.play-btn'); // note: pv play button also has .play-btn; keep usage minimal in page scripts
         const speedBtn = document.querySelector('.speed-btn');
         const speedMenu = document.querySelector('.speed-menu');
         const speedOptions = document.querySelectorAll('.speed-option');
@@ -630,44 +834,53 @@
         const nextBtn = document.getElementById('nextBtn');
         const readAloudBtn = document.getElementById('readAloudBtn');
 
-        // 初始化音频（示例音频）
-        audioPlayer.src = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
-        audioPlayer.load();
+        // 初始化音频（示例音频） — keep original audioPlayer for backward compat
+        if (audioPlayer) {
+          audioPlayer.src = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
+          audioPlayer.load();
+        }
 
-        // 播放/暂停控制
-        playBtn.addEventListener('click', () => {
-            if (audioPlayer.paused) {
-                audioPlayer.play();
-                playBtn.innerHTML = '<i class="fas fa-pause-circle"></i>';
-            } else {
-                audioPlayer.pause();
-                playBtn.innerHTML = '<i class="fas fa-play-circle"></i>';
-            }
-        });
-
-        // 倍速控制
-        speedBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            speedMenu.classList.toggle('active');
-        });
-        
-        speedOptions.forEach(option => {
-            option.addEventListener('click', () => {
-                const rate = parseFloat(option.getAttribute('data-rate'));
-                audioPlayer.playbackRate = rate;
-                currentSpeed.textContent = `${rate}x`;
-                speedOptions.forEach(opt => opt.classList.remove('active'));
-                option.classList.add('active');
-                speedMenu.classList.remove('active');
+        // Some controls referenced here may be the pv-player equivalents; guard uses:
+        // 播放/暂停控制 (this will affect the original audioPlayer if present)
+        if (playBtn && audioPlayer) {
+            playBtn.addEventListener('click', () => {
+                if (audioPlayer.paused) {
+                    audioPlayer.play();
+                    playBtn.innerHTML = '<i class="fas fa-pause-circle"></i>';
+                } else {
+                    audioPlayer.pause();
+                    playBtn.innerHTML = '<i class="fas fa-play-circle"></i>';
+                }
             });
-        });
+        }
 
-        // 播放列表控制
-        playlistBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            playlistPanel.classList.toggle('active');
-        });
-        
+        // 倍速控制 (if these controls exist)
+        if (speedBtn && speedMenu && speedOptions) {
+          speedBtn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              speedMenu.classList.toggle('active');
+          });
+          
+          speedOptions.forEach(option => {
+              option.addEventListener('click', () => {
+                  const rate = parseFloat(option.getAttribute('data-rate'));
+                  if (audioPlayer) audioPlayer.playbackRate = rate;
+                  if (currentSpeed) currentSpeed.textContent = `${rate}x`;
+                  speedOptions.forEach(opt => opt.classList.remove('active'));
+                  option.classList.add('active');
+                  speedMenu.classList.remove('active');
+              });
+          });
+        }
+
+        // 播放列表控制 (guarded)
+        if (playlistBtn && playlistPanel) {
+          playlistBtn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              playlistPanel.classList.toggle('active');
+          });
+        }
+
         playlistItems.forEach(item => {
             item.addEventListener('click', () => {
                 playlistItems.forEach(i => i.classList.remove('active'));
@@ -675,108 +888,69 @@
                 
                 // 根据选择的课程更新播放器信息
                 const courseName = item.textContent.substring(3);
-                document.getElementById('playerSongName').textContent = courseName;
-                document.getElementById('playerSinger').textContent = '英语学习课程';
+                const playerSongName = document.getElementById('playerSongName');
+                const playerSinger = document.getElementById('playerSinger');
+                if (playerSongName) playerSongName.textContent = courseName;
+                if (playerSinger) playerSinger.textContent = '英语学习课程';
                 
                 // 这里可以添加切换音频的逻辑
                 showMessage(`切换到: ${courseName}`);
             });
         });
 
-        // 音量控制
-        let isMuted = false;
-        let lastVolume = 0.7;
-        
-        volumeBtn.addEventListener('click', () => {
-            if (isMuted) {
-                // 取消静音
-                audioPlayer.muted = false;
-                audioPlayer.volume = lastVolume;
-                volumeFill.style.width = `${lastVolume * 100}%`;
-                volumeBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
-                isMuted = false;
-            } else {
-                // 静音
-                lastVolume = audioPlayer.volume;
-                audioPlayer.muted = true;
-                audioPlayer.volume = 0;
-                volumeFill.style.width = '0%';
-                volumeBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
-                isMuted = true;
-            }
-        });
-
-        // 音量条控制
-        volumeBar.addEventListener('click', (e) => {
-            const rect = volumeBar.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const percentage = Math.max(0, Math.min(1, x / rect.width));
-            
-            audioPlayer.volume = percentage;
-            audioPlayer.muted = false;
-            volumeFill.style.width = `${percentage * 100}%`;
-            volumeBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
-            isMuted = false;
-            lastVolume = percentage;
-        });
-
-        // 进度条控制
+        // 进度条控制 (guarded)
         const progressBar = document.querySelector('.progress-bar');
-        progressBar.addEventListener('click', (e) => {
-            const rect = progressBar.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const percentage = Math.max(0, Math.min(1, x / rect.width));
-            
-            audioPlayer.currentTime = percentage * audioPlayer.duration;
-        });
+        if (progressBar && audioPlayer) {
+            progressBar.addEventListener('click', (e) => {
+                const rect = progressBar.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const percentage = Math.max(0, Math.min(1, x / rect.width));
+                audioPlayer.currentTime = percentage * audioPlayer.duration;
+            });
+        }
 
         // 更新进度显示
-        audioPlayer.addEventListener('timeupdate', () => {
-            const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
-            progressFill.style.width = `${progress}%`;
-            
-            // 更新当前时间
-            const minutes = Math.floor(audioPlayer.currentTime / 60);
-            const seconds = Math.floor(audioPlayer.currentTime % 60);
-            currentTime.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-            
-            // 更新总时间
-            const totalMinutes = Math.floor(audioPlayer.duration / 60);
-            const totalSeconds = Math.floor(audioPlayer.duration % 60);
-            document.querySelector('.time.total').textContent = 
-                `${totalMinutes.toString().padStart(2, '0')}:${totalSeconds.toString().padStart(2, '0')}`;
-        });
+        if (audioPlayer) {
+          audioPlayer.addEventListener('timeupdate', () => {
+              const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+              if (progressFill) progressFill.style.width = `${progress}%`;
+              
+              // 更新当前时间
+              const minutes = Math.floor(audioPlayer.currentTime / 60);
+              const seconds = Math.floor(audioPlayer.currentTime % 60);
+              if (currentTime) currentTime.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+              
+              // 更新总时间
+              const totalMinutes = Math.floor(audioPlayer.duration / 60);
+              const totalSeconds = Math.floor(audioPlayer.duration % 60);
+              const totalEl = document.querySelector('.time.total');
+              if (totalEl) totalEl.textContent = `${totalMinutes.toString().padStart(2, '0')}:${totalSeconds.toString().padStart(2, '0')}`;
+          });
 
-        // 音频加载完成时更新总时间
-        audioPlayer.addEventListener('loadedmetadata', () => {
-            const totalMinutes = Math.floor(audioPlayer.duration / 60);
-            const totalSeconds = Math.floor(audioPlayer.duration % 60);
-            document.querySelector('.time.total').textContent = 
-                `${totalMinutes.toString().padStart(2, '0')}:${totalSeconds.toString().padStart(2, '0')}`;
-        });
+          audioPlayer.addEventListener('loadedmetadata', () => {
+              const totalMinutes = Math.floor(audioPlayer.duration / 60);
+              const totalSeconds = Math.floor(audioPlayer.duration % 60);
+              const totalEl = document.querySelector('.time.total');
+              if (totalEl) totalEl.textContent = `${totalMinutes.toString().padStart(2, '0')}:${totalSeconds.toString().padStart(2, '0')}`;
+          });
 
-        // 上一曲/下一曲功能
-        prevBtn.addEventListener('click', () => {
-            showMessage('上一曲功能');
-        });
-        
-        nextBtn.addEventListener('click', () => {
-            showMessage('下一曲功能');
-        });
+          audioPlayer.addEventListener('ended', () => {
+              showMessage && showMessage('播放结束');
+          });
+        }
 
-        // 朗读功能
-        readAloudBtn.addEventListener('click', () => {
-            const quoteText = document.querySelector('.quote-text').textContent;
-            if ('speechSynthesis' in window) {
-                const utterance = new SpeechSynthesisUtterance(quoteText);
-                utterance.lang = 'en-US';
-                utterance.rate = 0.8;
-                speechSynthesis.speak(utterance);
-                showMessage('正在朗读英语句子...');
-            } else {
-                showMessage('您的浏览器不支持语音朗读功能');
-            }
-        });
+        // 上一曲/下一曲功能 (if prevBtn/nextBtn exist)
+        if (prevBtn) prevBtn.addEventListener('click', () => { showMessage('上一曲功能'); });
+        if (nextBtn) nextBtn.addEventListener('click', () => { showMessage('下一曲功能'); });
+
+        // 朗读按钮 → 跳转到 Audio-Related 页面（并把文本作为 query param 传递）
+        if (readAloudBtn) {
+          readAloudBtn.addEventListener('click', () => {
+              const quoteText = document.querySelector('.quote-text').textContent || '';
+              const target = `./Audio-Related.html?auto=read&text=${encodeURIComponent(quoteText)}`;
+              window.location.href = target;
+          });
+        }
 
         // 频道点击功能
         function showChannel(type) {
@@ -793,17 +967,14 @@
 
         // 消息提示功能
         function showMessage(message) {
-            // 移除已有的消息
             const existingMessages = document.querySelectorAll('.message-popup');
             existingMessages.forEach(msg => msg.remove());
             
-            // 创建新消息
             const messageEl = document.createElement('div');
             messageEl.className = 'message-popup';
             messageEl.textContent = message;
             document.body.appendChild(messageEl);
             
-            // 3秒后移除消息
             setTimeout(() => {
                 if (messageEl.parentNode) {
                     messageEl.parentNode.removeChild(messageEl);
@@ -813,30 +984,27 @@
 
         // 点击外部关闭菜单
         document.addEventListener('click', (e) => {
-            if (!speedMenu.contains(e.target) && !speedBtn.contains(e.target)) {
+            if (speedMenu && !speedMenu.contains(e.target) && !speedBtn.contains(e.target)) {
                 speedMenu.classList.remove('active');
             }
             
-            if (!playlistPanel.contains(e.target) && !playlistBtn.contains(e.target)) {
+            if (playlistPanel && !playlistPanel.contains(e.target) && !playlistBtn.contains(e.target)) {
                 playlistPanel.classList.remove('active');
             }
         });
         
         // 防止菜单点击事件冒泡
-        speedMenu.addEventListener('click', (e) => {
-            e.stopPropagation();
-        });
-        
-        playlistPanel.addEventListener('click', (e) => {
-            e.stopPropagation();
-        });
+        if (speedMenu) speedMenu.addEventListener('click', (e) => { e.stopPropagation(); });
+        if (playlistPanel) playlistPanel.addEventListener('click', (e) => { e.stopPropagation(); });
 
-        // 音频播放结束事件
-        audioPlayer.addEventListener('ended', () => {
-            playBtn.innerHTML = '<i class="fas fa-play-circle"></i>';
-            progressFill.style.width = '0%';
-            currentTime.textContent = '00:00';
-        });
+        // 音频播放结束 event for original audio
+        if (audioPlayer) {
+          audioPlayer.addEventListener('ended', () => {
+              if (playBtn) playBtn.innerHTML = '<i class="fas fa-play-circle"></i>';
+              if (progressFill) progressFill.style.width = '0%';
+              if (currentTime) currentTime.textContent = '00:00';
+          });
+        }
     </script>
 </body>
 </html>

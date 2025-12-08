@@ -1021,130 +1021,350 @@
     </footer>
 
     <script>
-        // 选项卡切换功能
-        document.querySelectorAll('.tab-btn').forEach(button => {
-            button.addEventListener('click', () => {
-                // 移除所有按钮的active类
-                document.querySelectorAll('.tab-btn').forEach(btn => {
-                    btn.classList.remove('active');
+        // 课程数据
+        const courseData = {
+            'zero_basics': {
+                title: '零基础英语入门',
+                description: '从字母发音到基础对话，系统学习英语基础知识',
+                level: '初级',
+                lessons: '30集',
+                status: '已完结',
+                plays: '15.2万',
+                rating: '4.9',
+                learners: '8.3万',
+                details: {
+                    intro: '本课程专为英语零基础学习者设计，从最基础的字母发音开始，逐步过渡到单词、句子和基础对话，帮助学习者建立坚实的英语基础。',
+                    goals: ['掌握26个英文字母的正确发音', '学会100个基础单词', '能够进行简单的自我介绍', '理解基础语法结构', '能够进行简单的日常对话'],
+                    audience: ['英语零基础学习者', '想要重新学习英语的人士', '对英语感兴趣的任何年龄段的学员'],
+                    features: ['系统化的学习路径', '清晰的发音指导', '丰富的练习活动', '实用的日常对话场景']
+                }
+            },
+            'business_advanced': {
+                title: '商务英语进阶',
+                description: '掌握职场沟通技巧，提升商务英语应用能力',
+                level: '中级',
+                lessons: '25集',
+                status: '已完结',
+                plays: '9.8万',
+                rating: '4.8',
+                learners: '4.5万',
+                details: {
+                    intro: '本课程专注于商务场景中的英语应用，涵盖会议、谈判、邮件写作、演讲等职场必备技能，帮助学习者在商务环境中自信沟通。',
+                    goals: ['掌握商务会议常用表达', '能够撰写专业商务邮件', '学会商务谈判技巧', '提高商务演讲能力', '了解跨文化商务礼仪'],
+                    audience: ['职场人士', '商务英语学习者', '准备进入外企的求职者', '需要与国外客户沟通的专业人士'],
+                    features: ['真实的商务场景', '专业的商务术语', '实用的沟通技巧', '跨文化沟通指导']
+                }
+            },
+            'daily_conversation': {
+                title: '日常口语300句',
+                description: '学习最实用的日常英语表达，提升口语流利度',
+                level: '初级到中级',
+                lessons: '20集',
+                status: '已完结',
+                plays: '12.5万',
+                rating: '4.9',
+                learners: '5.8万',
+                details: {
+                    intro: '本课程精选300个最常用的日常英语表达，涵盖问候、购物、餐饮、交通等生活场景，帮助学习者在各种日常情境中流利交流。',
+                    goals: ['掌握日常问候与告别', '能够在餐厅点餐交流', '学会购物时的常用表达', '能够进行简单的问路对话', '提高日常交流的流利度'],
+                    audience: ['日常英语学习者', '准备出国旅游的人士', '想要提高口语能力的学习者', '需要在日常生活中使用英语的人'],
+                    features: ['实用的日常表达', '真实的生活场景', '丰富的对话练习', '地道的口语用法']
+                }
+            },
+            'listening_skills': {
+                title: '英语听力技巧课',
+                description: '系统训练听力理解能力，掌握听力技巧与方法',
+                level: '中级',
+                lessons: '15集',
+                status: '已完结',
+                plays: '8.3万',
+                rating: '4.7',
+                learners: '3.9万',
+                details: {
+                    intro: '本课程专注于英语听力技能的训练，通过系统的听力练习和技巧讲解，帮助学习者提高英语听力理解能力，克服听力障碍。',
+                    goals: ['提高英语听力理解能力', '掌握听力预测技巧', '学会抓住关键信息', '能够理解不同口音的英语', '提高听力反应速度'],
+                    audience: ['英语听力困难者', '准备英语考试的学习者', '需要提高工作听力的专业人士', '英语爱好者'],
+                    features: ['循序渐进的听力训练', '多种口音的听力材料', '实用的听力技巧', '针对性的练习活动']
+                }
+            },
+            'writing_improvement': {
+                title: '英文写作提升',
+                description: '学习英文写作技巧，提升书面表达能力',
+                level: '中级到高级',
+                lessons: '18集',
+                status: '已完结',
+                plays: '6.7万',
+                rating: '4.8',
+                learners: '3.2万',
+                details: {
+                    intro: '本课程专注于英文写作能力的提升，从句子结构到段落组织，从基础写作到学术写作，帮助学习者系统提高英文书面表达能力。',
+                    goals: ['掌握英文句子结构', '学会段落组织方法', '能够撰写不同文体文章', '提高语法和词汇使用准确性', '培养英文写作思维'],
+                    audience: ['英文写作学习者', '准备留学考试的学生', '需要英文写作的职场人士', '英文写作爱好者'],
+                    features: ['系统的写作训练', '多种文体写作指导', '详细的写作修改建议', '实用的写作技巧']
+                }
+            },
+            'business_english': {
+                title: '商务英语',
+                description: '职场英语技巧与商务沟通',
+                level: '中级',
+                lessons: '22集',
+                status: '已完结',
+                plays: '10.2万',
+                rating: '4.8',
+                learners: '4.8万',
+                details: {
+                    intro: '本课程专注于职场商务英语，涵盖商务沟通、会议、谈判、邮件写作等实用技能，帮助学习者在职场中自如运用英语。',
+                    goals: ['掌握商务沟通基本技巧', '能够参与英语商务会议', '学会撰写专业商务邮件', '提高商务谈判能力', '了解国际商务礼仪'],
+                    audience: ['职场商务人士', '外企员工', '商务英语专业学生', '需要商务英语交流的人士'],
+                    features: ['真实的职场场景', '专业的商务术语', '实用的沟通策略', '国际商务文化']
+                }
+            },
+            'daily_dialogue': {
+                title: '日常对话',
+                description: '生活场景英语对话练习',
+                level: '初级',
+                lessons: '16集',
+                status: '已完结',
+                plays: '9.1万',
+                rating: '4.7',
+                learners: '4.2万',
+                details: {
+                    intro: '本课程通过模拟日常生活中的各种场景，帮助学习者掌握实用的英语对话技巧，提高在日常生活中的英语交流能力。',
+                    goals: ['掌握日常问候与寒暄', '能够在超市购物时交流', '学会餐厅点餐对话', '能够进行简单的社交对话', '提高日常口语流利度'],
+                    audience: ['日常英语初学者', '生活英语学习者', '准备出国生活的人士', '想要提高日常交流能力的学习者'],
+                    features: ['生活化场景对话', '实用的日常表达', '简单的语法讲解', '丰富的对话练习']
+                }
+            },
+            'listening_training': {
+                title: '听力训练',
+                description: '英语听力理解能力专项训练',
+                level: '初级到中级',
+                lessons: '12集',
+                status: '已完结',
+                plays: '7.5万',
+                rating: '4.6',
+                learners: '3.5万',
+                details: {
+                    intro: '本课程通过系统的听力训练，帮助学习者提高英语听力理解能力，从基础听力到进阶理解，逐步提升听力水平。',
+                    goals: ['提高基础听力理解', '学会捕捉关键信息', '能够理解简单对话', '提高听力反应速度', '培养英语听力习惯'],
+                    audience: ['英语听力初学者', '听力困难的学习者', '准备英语考试的学生', '想要提高听力能力的人'],
+                    features: ['循序渐进的训练', '多种难度的材料', '实用的听力技巧', '针对性的练习']
+                }
+            },
+            'reading_comprehension': {
+                title: '阅读理解',
+                description: '英语阅读能力提升与理解技巧',
+                level: '中级',
+                lessons: '14集',
+                status: '已完结',
+                plays: '8.9万',
+                rating: '4.7',
+                learners: '4.1万',
+                details: {
+                    intro: '本课程专注于英语阅读理解能力的提升，通过精选阅读材料和技巧讲解，帮助学习者提高阅读速度和理解深度。',
+                    goals: ['提高英语阅读速度', '掌握阅读理解技巧', '能够分析文章结构', '学会推断词义和句意', '提高阅读答题准确率'],
+                    audience: ['英语阅读学习者', '准备英语考试的学生', '需要阅读英文资料的专业人士', '英语阅读爱好者'],
+                    features: ['精选阅读材料', '系统的阅读技巧', '多种题型练习', '阅读策略指导']
+                }
+            }
+        };
+
+        // 获取URL参数
+        function getQueryParam(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        // 根据课程ID加载课程数据
+        function loadCourseData() {
+            const courseId = getQueryParam('course') || 'daily_conversation'; // 默认显示日常对话课程
+            const course = courseData[courseId] || courseData['daily_conversation'];
+
+            // 更新页面标题
+            document.title = `${course.title} - 英语学习中心`;
+
+            // 更新课程标题和描述
+            document.querySelector('.program-title').textContent = course.title;
+            document.querySelector('.program-header').querySelector('.cover-image').style.backgroundColor = '#E0FFFF';
+
+            // 更新元数据
+            const metaContainer = document.querySelector('.program-meta');
+            metaContainer.innerHTML = `
+                <span class="meta-item">${course.level}</span>
+                <span class="meta-item">${course.lessons}</span>
+                <span class="meta-item">${course.status}</span>
+            `;
+
+            // 更新统计数据
+            const statsContainer = document.querySelector('.program-stats');
+            statsContainer.innerHTML = `
+                <span class="stat-item">播放量：${course.plays}</span>
+                <span class="stat-item">评分：${course.rating}</span>
+                <span class="stat-item">学习人数：${course.learners}</span>
+            `;
+
+            // 更新课程详情
+            const detailTab = document.querySelector('.tab-content.active');
+            detailTab.innerHTML = `
+                <div class="detail-section">
+                    <h2>课程介绍</h2>
+                    <p>${course.description}</p>
+                    <p>${course.details.intro}</p>
+                    <p>通过本课程的学习，您将能够：</p>
+                    <ul>
+                        ${course.details.goals.map(goal => `<li>${goal}</li>`).join('')}
+                    </ul>
+                </div>
+
+                <div class="detail-section">
+                    <h2>适合人群</h2>
+                    <ul>
+                        ${course.details.audience.map(aud => `<li>${aud}</li>`).join('')}
+                    </ul>
+                </div>
+
+                <div class="detail-section">
+                    <h2>课程特色</h2>
+                    <ul>
+                        ${course.details.features.map(feature => `<li>${feature}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+
+            // 更新播放器信息
+            document.querySelector('.song-name').textContent = course.title;
+            document.querySelector('.singer').textContent = '第一节：课程介绍';
+        }
+
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCourseData();
+
+            // 保持原有的选项卡功能
+            document.querySelectorAll('.tab-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    // 移除所有按钮的active类
+                    document.querySelectorAll('.tab-btn').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+
+                    // 添加当前按钮的active类
+                    button.classList.add('active');
+
+                    // 隐藏所有内容
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+
+                    // 显示对应内容
+                    const tabContents = document.querySelectorAll('.tab-content');
+                    const index = Array.from(button.parentElement.children).indexOf(button);
+                    if (tabContents[index]) {
+                        tabContents[index].classList.add('active');
+                    }
                 });
-                
-                // 添加当前按钮的active类
-                button.classList.add('active');
-                
-                // 隐藏所有内容
-                document.querySelectorAll('.tab-content').forEach(content => {
-                    content.classList.remove('active');
+            });
+
+            // 章节项点击功能
+            document.querySelectorAll('.chapter-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    document.querySelectorAll('.chapter-item').forEach(chapter => {
+                        chapter.classList.remove('active');
+                    });
+                    item.classList.add('active');
                 });
-                
-                // 显示对应内容
-                const tabContents = document.querySelectorAll('.tab-content');
-                const index = Array.from(button.parentElement.children).indexOf(button);
-                if (tabContents[index]) {
-                    tabContents[index].classList.add('active');
+            });
+
+            // 播放按钮点击功能
+            document.querySelectorAll('.play-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const lessonItem = button.closest('.lesson-item');
+                    const lessonTitle = lessonItem.querySelector('.lesson-title').textContent;
+                    const lessonDuration = lessonItem.querySelector('.lesson-duration').textContent;
+
+                    // 更新播放器信息
+                    document.querySelector('.song-name').textContent = lessonTitle;
+                    document.querySelector('.time.total').textContent = lessonDuration;
+
+                    // 显示提示
+                    alert(`开始播放：${lessonTitle}`);
+                });
+            });
+
+            // 单元标题点击展开/收起
+            document.querySelectorAll('.unit-header').forEach(header => {
+                header.addEventListener('click', () => {
+                    const unitItem = header.parentElement;
+                    const lessonList = unitItem.querySelector('.lesson-list');
+                    lessonList.style.display = lessonList.style.display === 'none' ? 'block' : 'none';
+                });
+            });
+
+            // 播放器功能（与收藏页面一致）
+            const audioPlayer = document.getElementById('audioPlayer');
+            const playBtn = document.querySelector('.play-btn');
+            const speedBtn = document.querySelector('.speed-btn');
+            const speedMenu = document.querySelector('.speed-menu');
+            const speedOptions = document.querySelectorAll('.speed-option');
+            const currentSpeed = document.getElementById('currentSpeed');
+            const playlistBtn = document.querySelector('.playlist-btn');
+            const playlistPanel = document.querySelector('.playlist-panel');
+            const playlistItems = document.querySelectorAll('.playlist-item');
+            const progressFill = document.querySelector('.progress-fill');
+            const currentTime = document.querySelector('.time.current');
+
+            playBtn.addEventListener('click', () => {
+                if (audioPlayer.paused) {
+                    audioPlayer.play();
+                    playBtn.innerHTML = '<i class="fas fa-pause-circle"></i>';
+                } else {
+                    audioPlayer.pause();
+                    playBtn.innerHTML = '<i class="fas fa-play-circle"></i>';
                 }
             });
-        });
-        
-        // 章节项点击功能
-        document.querySelectorAll('.chapter-item').forEach(item => {
-            item.addEventListener('click', () => {
-                document.querySelectorAll('.chapter-item').forEach(chapter => {
-                    chapter.classList.remove('active');
-                });
-                item.classList.add('active');
-            });
-        });
-        
-        // 播放按钮点击功能
-        document.querySelectorAll('.play-btn').forEach(button => {
-            button.addEventListener('click', (e) => {
+
+            speedBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
-                const lessonItem = button.closest('.lesson-item');
-                const lessonTitle = lessonItem.querySelector('.lesson-title').textContent;
-                const lessonDuration = lessonItem.querySelector('.lesson-duration').textContent;
-                
-                // 更新播放器信息
-                document.querySelector('.song-name').textContent = lessonTitle;
-                document.querySelector('.time.total').textContent = lessonDuration;
-                
-                // 显示提示
-                alert(`开始播放：${lessonTitle}`);
+                speedMenu.classList.toggle('active');
             });
-        });
-        
-        // 单元标题点击展开/收起
-        document.querySelectorAll('.unit-header').forEach(header => {
-            header.addEventListener('click', () => {
-                const unitItem = header.parentElement;
-                const lessonList = unitItem.querySelector('.lesson-list');
-                lessonList.style.display = lessonList.style.display === 'none' ? 'block' : 'none';
+            speedOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    const rate = parseFloat(option.getAttribute('data-rate'));
+                    audioPlayer.playbackRate = rate;
+                    currentSpeed.textContent = `${rate}x`;
+                    speedOptions.forEach(opt => opt.classList.remove('active'));
+                    option.classList.add('active');
+                    speedMenu.classList.remove('active');
+                });
             });
-        });
-        
-        // 播放器功能（与收藏页面一致）
-        const audioPlayer = document.getElementById('audioPlayer');
-        const playBtn = document.querySelector('.play-btn');
-        const speedBtn = document.querySelector('.speed-btn');
-        const speedMenu = document.querySelector('.speed-menu');
-        const speedOptions = document.querySelectorAll('.speed-option');
-        const currentSpeed = document.getElementById('currentSpeed');
-        const playlistBtn = document.querySelector('.playlist-btn');
-        const playlistPanel = document.querySelector('.playlist-panel');
-        const playlistItems = document.querySelectorAll('.playlist-item');
-        const progressFill = document.querySelector('.progress-fill');
-        const currentTime = document.querySelector('.time.current');
 
-        playBtn.addEventListener('click', () => {
-            if (audioPlayer.paused) {
-                audioPlayer.play();
-                playBtn.innerHTML = '<i class="fas fa-pause-circle"></i>';
-            } else {
-                audioPlayer.pause();
-                playBtn.innerHTML = '<i class="fas fa-play-circle"></i>';
-            }
-        });
+            playlistBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                playlistPanel.classList.toggle('active');
+            });
+            playlistItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    playlistItems.forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+                    const lessonTitle = item.textContent.replace(/^\d+\.\s*/, '');
+                    document.querySelector('.song-name').textContent = `英语日常对话系列`;
+                    document.querySelector('.singer').textContent = lessonTitle;
+                });
+            });
 
-        speedBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            speedMenu.classList.toggle('active');
-        });
-        speedOptions.forEach(option => {
-            option.addEventListener('click', () => {
-                const rate = parseFloat(option.getAttribute('data-rate'));
-                audioPlayer.playbackRate = rate;
-                currentSpeed.textContent = `${rate}x`;
-                speedOptions.forEach(opt => opt.classList.remove('active'));
-                option.classList.add('active');
+            audioPlayer.addEventListener('timeupdate', () => {
+                const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+                progressFill.style.width = `${progress}%`;
+                const minutes = Math.floor(audioPlayer.currentTime / 60);
+                const seconds = Math.floor(audioPlayer.currentTime % 60);
+                currentTime.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            });
+
+            document.addEventListener('click', () => {
                 speedMenu.classList.remove('active');
+                playlistPanel.classList.remove('active');
             });
-        });
-
-        playlistBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            playlistPanel.classList.toggle('active');
-        });
-        playlistItems.forEach(item => {
-            item.addEventListener('click', () => {
-                playlistItems.forEach(i => i.classList.remove('active'));
-                item.classList.add('active');
-                const lessonTitle = item.textContent.replace(/^\d+\.\s*/, '');
-                document.querySelector('.song-name').textContent = `英语日常对话系列`;
-                document.querySelector('.singer').textContent = lessonTitle;
-            });
-        });
-
-        audioPlayer.addEventListener('timeupdate', () => {
-            const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
-            progressFill.style.width = `${progress}%`;
-            const minutes = Math.floor(audioPlayer.currentTime / 60);
-            const seconds = Math.floor(audioPlayer.currentTime % 60);
-            currentTime.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        });
-
-        document.addEventListener('click', () => {
-            speedMenu.classList.remove('active');
-            playlistPanel.classList.remove('active');
         });
     </script>
 </body>

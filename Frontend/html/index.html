@@ -15,31 +15,134 @@
             margin-bottom: 20px;
             flex-wrap: wrap;
         }
-        
-        .large-recommend {
+
+        /* 轮播图样式 - 替换原来的大卡片 */
+        .carousel-container {
             flex: 2;
             min-width: 300px;
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .carousel {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            min-height: 200px;
+            overflow: hidden;
             background-color: #E0FFFF;
             border: 2px solid #FF8C00;
             border-radius: 8px;
+        }
+
+        .carousel-inner {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+            height: 100%;
+        }
+
+        .carousel-item {
+            min-width: 100%;
             padding: 30px 20px;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             text-align: center;
+            background-color: #E0FFFF;
+            box-sizing: border-box;
         }
-        
-        .large-recommend h2 {
+
+        .carousel-item h2 {
             color: #FF8C00;
             font-size: 28px;
             margin-bottom: 10px;
         }
-        
-        .large-recommend p {
+
+        .carousel-item p {
             color: #666;
             font-size: 16px;
+            margin-bottom: 15px;
+            max-width: 80%;
         }
-        
+
+        .carousel-btn {
+            background-color: #FF8C00;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .carousel-btn:hover {
+            background-color: #e67e00;
+        }
+
+        .carousel-controls {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            transform: translateY(-50%);
+            padding: 0 10px;
+            box-sizing: border-box;
+            z-index: 10;
+        }
+
+        .carousel-btn-prev,
+        .carousel-btn-next {
+            background-color: rgba(255, 140, 0, 0.8);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
+
+        .carousel-btn-prev:hover,
+        .carousel-btn-next:hover {
+            background-color: rgba(255, 140, 0, 1);
+            transform: scale(1.1);
+        }
+
+        .carousel-indicators {
+            position: absolute;
+            bottom: 15px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .carousel-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.5);
+            border: 1px solid #FF8C00;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .carousel-indicator.active {
+            background-color: #FF8C00;
+            transform: scale(1.2);
+        }
+
         .small-recommend-grid {
             flex: 3;
             display: grid;
@@ -47,7 +150,7 @@
             gap: 15px;
             min-width: 300px;
         }
-        
+
         .small-recommend {
             background-color: #FFF8DC;
             border: 1px solid #FFDAB9;
@@ -60,28 +163,28 @@
             text-align: center;
             transition: all 0.3s ease;
         }
-        
+
         .small-recommend:hover {
             transform: translateY(-5px);
             box-shadow: 0 5px 15px rgba(255, 140, 0, 0.1);
         }
-        
+
         .small-recommend h3 {
             color: #FF8C00;
             font-size: 18px;
             margin-bottom: 5px;
         }
-        
+
         .small-recommend p {
             color: #333;
             font-size: 14px;
             font-weight: bold;
         }
-        
+
         .daily-quote-section {
             margin-bottom: 20px;
         }
-        
+
         .daily-quote {
             background-color: #FFF8DC;
             border: 1px solid #FFDAB9;
@@ -91,11 +194,11 @@
             justify-content: space-between;
             align-items: center;
         }
-        
+
         .quote-content {
             flex: 1;
         }
-        
+
         .quote-content span {
             display: inline-block;
             background-color: #FF8C00;
@@ -106,14 +209,14 @@
             margin-bottom: 10px;
             font-weight: bold;
         }
-        
+
         .quote-text {
             font-size: 16px;
             color: #333;
             line-height: 1.6;
             font-style: italic;
         }
-        
+
         .copy-btn {
             background-color: #FF8C00;
             color: white;
@@ -126,28 +229,28 @@
             margin-left: 20px;
             white-space: nowrap;
         }
-        
+
         .copy-btn:hover {
             background-color: #e67e00;
         }
-        
+
         .rank-section {
             margin-bottom: 20px;
         }
-        
+
         .rank-container {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 15px;
         }
-        
+
         .rank-item {
             background-color: #fff;
             border: 1px solid #FFDAB9;
             border-radius: 8px;
             overflow: hidden;
         }
-        
+
         .rank-header {
             background-color: #FFF8DC;
             padding: 12px 15px;
@@ -156,39 +259,39 @@
             justify-content: space-between;
             align-items: center;
         }
-        
+
         .rank-header h3 {
             color: #333;
             font-size: 14px;
             font-weight: bold;
             margin: 0;
         }
-        
+
         .rank-icon {
             font-size: 18px;
         }
-        
+
         .rank-content {
             padding: 15px;
         }
-        
+
         .rank-item-list {
             display: flex;
             flex-direction: column;
             gap: 10px;
         }
-        
+
         .rank-song {
             display: flex;
             align-items: center;
             padding: 8px 0;
             border-bottom: 1px dashed #FFDAB9;
         }
-        
+
         .rank-song:last-child {
             border-bottom: none;
         }
-        
+
         .rank-num {
             width: 25px;
             height: 25px;
@@ -203,48 +306,48 @@
             margin-right: 10px;
             flex-shrink: 0;
         }
-        
+
         .rank-title {
             font-size: 14px;
             color: #333;
             flex: 1;
         }
-        
+
         .channels-section {
             margin-bottom: 20px;
         }
-        
+
         .channels-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 15px;
         }
-        
+
         .channels-header h2 {
             color: #333;
             font-size: 16px;
             font-weight: bold;
             margin: 0;
         }
-        
+
         .view-more {
             color: #FF8C00;
             font-size: 14px;
             text-decoration: none;
             transition: color 0.3s ease;
         }
-        
+
         .view-more:hover {
             color: #e67e00;
         }
-        
+
         .channels-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
             gap: 15px;
         }
-        
+
         .channel-item {
             background-color: #fff;
             border: 1px solid #FFDAB9;
@@ -256,12 +359,12 @@
             transition: all 0.3s ease;
             cursor: pointer;
         }
-        
+
         .channel-item:hover {
             transform: translateY(-3px);
             box-shadow: 0 5px 15px rgba(255, 140, 0, 0.1);
         }
-        
+
         .channel-icon {
             font-size: 24px;
             width: 50px;
@@ -273,61 +376,76 @@
             justify-content: center;
             flex-shrink: 0;
         }
-        
+
         .channel-info {
             flex: 1;
         }
-        
+
         .channel-title {
             color: #333;
             font-size: 14px;
             font-weight: bold;
             margin-bottom: 4px;
         }
-        
+
         .channel-desc {
             color: #666;
             font-size: 12px;
             line-height: 1.4;
         }
-        
+
         /* 响应式调整 */
         @media (max-width: 768px) {
             .recommend-section {
                 flex-direction: column;
             }
-            
-            .large-recommend,
+
+            .carousel-container,
             .small-recommend-grid {
                 width: 100%;
             }
-            
+
             .rank-container {
                 grid-template-columns: 1fr;
             }
-            
+
             .channels-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
+
+            .carousel-controls {
+                padding: 0 5px;
+            }
+
+            .carousel-btn-prev,
+            .carousel-btn-next {
+                width: 35px;
+                height: 35px;
+                font-size: 16px;
+            }
         }
-        
+
         @media (max-width: 480px) {
             .small-recommend-grid {
                 grid-template-columns: 1fr;
             }
-            
+
             .channels-grid {
                 grid-template-columns: 1fr;
             }
-            
+
             .daily-quote {
                 flex-direction: column;
                 text-align: center;
                 gap: 15px;
             }
-            
+
             .copy-btn {
                 margin-left: 0;
+            }
+
+            .carousel-indicators {
+                bottom: 10px;
             }
         }
 
@@ -388,7 +506,7 @@
             <span class="logo-text">星之声</span>
         </div>
         <nav class="main-nav">
-            <a href="index.html" class="nav-item active">首页</a>           
+            <a href="index.html" class="nav-item active">首页</a>
             <a href="category.html" class="nav-item">分类</a>
             <a href="channel.html" class="nav-item">社区</a>
         </nav>
@@ -429,14 +547,60 @@
             </div>
         </section>
 
-        <!-- 精选课程区域 -->
+        <!-- 精选课程区域 - 改为轮播图形式 -->
         <section class="recommend-section">
-            <div class="large-recommend">
-                <div class="recommend-content">
-                    <h2>精选课程</h2>
-                    <p>提升英语听说读写全面能力</p>
+            <div class="carousel-container">
+                <div class="carousel" id="courseCarousel">
+                    <div class="carousel-inner" id="carouselInner">
+                        <!-- 轮播项 1 -->
+                        <div class="carousel-item active">
+                            <h2>零基础英语入门</h2>
+                            <p>从字母发音到基础对话，系统学习英语基础知识</p>
+                            <button class="carousel-btn" onclick="showMessage('开始学习：零基础英语入门')">开始学习</button>
+                        </div>
+                        <!-- 轮播项 2 -->
+                        <div class="carousel-item">
+                            <h2>商务英语进阶</h2>
+                            <p>掌握职场沟通技巧，提升商务英语应用能力</p>
+                            <button class="carousel-btn" onclick="showMessage('开始学习：商务英语进阶')">开始学习</button>
+                        </div>
+                        <!-- 轮播项 3 -->
+                        <div class="carousel-item">
+                            <h2>日常口语300句</h2>
+                            <p>学习最实用的日常英语表达，提升口语流利度</p>
+                            <button class="carousel-btn" onclick="showMessage('开始学习：日常口语300句')">开始学习</button>
+                        </div>
+                        <!-- 轮播项 4 -->
+                        <div class="carousel-item">
+                            <h2>英语听力技巧课</h2>
+                            <p>系统训练听力理解能力，掌握听力技巧与方法</p>
+                            <button class="carousel-btn" onclick="showMessage('开始学习：英语听力技巧课')">开始学习</button>
+                        </div>
+                        <!-- 轮播项 5 -->
+                        <div class="carousel-item">
+                            <h2>英文写作提升</h2>
+                            <p>学习英文写作技巧，提升书面表达能力</p>
+                            <button class="carousel-btn" onclick="showMessage('开始学习：英文写作提升')">开始学习</button>
+                        </div>
+                    </div>
+
+                    <!-- 轮播控制按钮 -->
+                    <div class="carousel-controls">
+                        <button class="carousel-btn-prev" id="carouselPrev">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <button class="carousel-btn-next" id="carouselNext">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+
+                    <!-- 轮播指示器 -->
+                    <div class="carousel-indicators" id="carouselIndicators">
+                        <!-- 指示器将由JS动态生成 -->
+                    </div>
                 </div>
             </div>
+
             <div class="small-recommend-grid">
                 <div class="small-recommend">
                     <div class="recommend-info">
@@ -651,6 +815,124 @@
   </aside>
 
 <script>
+/* 轮播图功能 */
+document.addEventListener('DOMContentLoaded', function() {
+    // 获取轮播相关元素
+    const carouselInner = document.getElementById('carouselInner');
+    const carouselPrev = document.getElementById('carouselPrev');
+    const carouselNext = document.getElementById('carouselNext');
+    const carouselIndicators = document.getElementById('carouselIndicators');
+
+    if (!carouselInner) return;
+
+    // 获取所有轮播项
+    const carouselItems = carouselInner.querySelectorAll('.carousel-item');
+    const totalItems = carouselItems.length;
+    let currentIndex = 0;
+    let autoPlayInterval;
+
+    // 生成指示器
+    function generateIndicators() {
+        carouselIndicators.innerHTML = '';
+        for (let i = 0; i < totalItems; i++) {
+            const indicator = document.createElement('div');
+            indicator.className = 'carousel-indicator';
+            if (i === currentIndex) {
+                indicator.classList.add('active');
+            }
+            indicator.addEventListener('click', () => goToSlide(i));
+            carouselIndicators.appendChild(indicator);
+        }
+    }
+
+    // 更新轮播位置
+    function updateCarousel() {
+        // 移除所有active类
+        carouselItems.forEach(item => item.classList.remove('active'));
+
+        // 添加当前active类
+        carouselItems[currentIndex].classList.add('active');
+
+        // 更新轮播位置
+        carouselInner.style.transform = `translateX(-${currentIndex * 100}%)`;
+
+        // 更新指示器
+        const indicators = carouselIndicators.querySelectorAll('.carousel-indicator');
+        indicators.forEach((indicator, index) => {
+            if (index === currentIndex) {
+                indicator.classList.add('active');
+            } else {
+                indicator.classList.remove('active');
+            }
+        });
+    }
+
+    // 切换到指定幻灯片
+    function goToSlide(index) {
+        currentIndex = index;
+        if (currentIndex < 0) {
+            currentIndex = totalItems - 1;
+        } else if (currentIndex >= totalItems) {
+            currentIndex = 0;
+        }
+        updateCarousel();
+        resetAutoPlay();
+    }
+
+    // 下一张
+    function nextSlide() {
+        goToSlide(currentIndex + 1);
+    }
+
+    // 上一张
+    function prevSlide() {
+        goToSlide(currentIndex - 1);
+    }
+
+    // 自动播放
+    function startAutoPlay() {
+        autoPlayInterval = setInterval(nextSlide, 5000); // 5秒切换一次
+    }
+
+    // 重置自动播放
+    function resetAutoPlay() {
+        clearInterval(autoPlayInterval);
+        startAutoPlay();
+    }
+
+    // 初始化
+    generateIndicators();
+    updateCarousel();
+    startAutoPlay();
+
+    // 绑定事件
+    if (carouselPrev) {
+        carouselPrev.addEventListener('click', (e) => {
+            e.stopPropagation();
+            prevSlide();
+        });
+    }
+
+    if (carouselNext) {
+        carouselNext.addEventListener('click', (e) => {
+            e.stopPropagation();
+            nextSlide();
+        });
+    }
+
+    // 鼠标悬停时暂停自动播放
+    const carousel = document.getElementById('courseCarousel');
+    if (carousel) {
+        carousel.addEventListener('mouseenter', () => {
+            clearInterval(autoPlayInterval);
+        });
+
+        carousel.addEventListener('mouseleave', () => {
+            startAutoPlay();
+        });
+    }
+});
+
 /*
   PlayBar navigation fix and basic interactions (copied/adapted from PlayBar.html).
   This script adds safe click-to-player behavior and exposes helpers.
@@ -860,7 +1142,7 @@
               e.stopPropagation();
               speedMenu.classList.toggle('active');
           });
-          
+
           speedOptions.forEach(option => {
               option.addEventListener('click', () => {
                   const rate = parseFloat(option.getAttribute('data-rate'));
@@ -885,14 +1167,14 @@
             item.addEventListener('click', () => {
                 playlistItems.forEach(i => i.classList.remove('active'));
                 item.classList.add('active');
-                
+
                 // 根据选择的课程更新播放器信息
                 const courseName = item.textContent.substring(3);
                 const playerSongName = document.getElementById('playerSongName');
                 const playerSinger = document.getElementById('playerSinger');
                 if (playerSongName) playerSongName.textContent = courseName;
                 if (playerSinger) playerSinger.textContent = '英语学习课程';
-                
+
                 // 这里可以添加切换音频的逻辑
                 showMessage(`切换到: ${courseName}`);
             });
@@ -914,12 +1196,12 @@
           audioPlayer.addEventListener('timeupdate', () => {
               const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
               if (progressFill) progressFill.style.width = `${progress}%`;
-              
+
               // 更新当前时间
               const minutes = Math.floor(audioPlayer.currentTime / 60);
               const seconds = Math.floor(audioPlayer.currentTime % 60);
               if (currentTime) currentTime.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-              
+
               // 更新总时间
               const totalMinutes = Math.floor(audioPlayer.duration / 60);
               const totalSeconds = Math.floor(audioPlayer.duration % 60);
@@ -961,7 +1243,7 @@
                 'writing': '写作提升频道',
                 'business': '商务英语频道'
             };
-            
+
             showMessage(`进入${channels[type]}`);
         }
 
@@ -969,12 +1251,12 @@
         function showMessage(message) {
             const existingMessages = document.querySelectorAll('.message-popup');
             existingMessages.forEach(msg => msg.remove());
-            
+
             const messageEl = document.createElement('div');
             messageEl.className = 'message-popup';
             messageEl.textContent = message;
             document.body.appendChild(messageEl);
-            
+
             setTimeout(() => {
                 if (messageEl.parentNode) {
                     messageEl.parentNode.removeChild(messageEl);
@@ -987,12 +1269,12 @@
             if (speedMenu && !speedMenu.contains(e.target) && !speedBtn.contains(e.target)) {
                 speedMenu.classList.remove('active');
             }
-            
+
             if (playlistPanel && !playlistPanel.contains(e.target) && !playlistBtn.contains(e.target)) {
                 playlistPanel.classList.remove('active');
             }
         });
-        
+
         // 防止菜单点击事件冒泡
         if (speedMenu) speedMenu.addEventListener('click', (e) => { e.stopPropagation(); });
         if (playlistPanel) playlistPanel.addEventListener('click', (e) => { e.stopPropagation(); });

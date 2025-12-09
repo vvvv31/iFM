@@ -492,7 +492,7 @@
 .rate-menu .rate-option, .playlist-panel .playlist-item { user-select:none; }
     </style>
 </head>
-<body>
+<body class="has-fixed-header">
     <!-- 音频元素 (保留原来元素 in case other scripts use it) -->
     <audio id="audioPlayer" controls style="display: none;">
         <source src="" type="audio/mpeg">
@@ -509,6 +509,7 @@
             <a href="index.html" class="nav-item active">首页</a>
             <a href="category.html" class="nav-item">分类</a>
             <a href="channel.html" class="nav-item">社区</a>
+            <a href="group.html" class="nav-item">合集</a>
         </nav>
         <div class="search-box">
             <input type="text" placeholder="搜索课程、频道..." class="search-input" id="homeSearchInput">

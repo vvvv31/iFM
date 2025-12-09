@@ -5,8 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>我的-私信 - 星之声</title>
     <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/mystyle.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="../js/search.js"></script>
+    <script src="../js/script.js" defer></script>
     <style>
         /* 私信页面特有样式 */
         .message-area {
@@ -189,7 +191,7 @@
         }
     </style>
 </head>
-<body>
+<body class="has-fixed-header">
     <!-- 音频元素 -->
     <audio id="audioPlayer" controls style="display: none;">
         <source src="" type="audio/mpeg">
@@ -206,6 +208,7 @@
             <a href="index.html" class="nav-item">首页</a>
             <a href="category.html" class="nav-item">分类</a>
             <a href="channel.html" class="nav-item">社区</a>
+            <a href="group.html" class="nav-item">合集</a>
         </nav>
         <div class="search-box">
             <input type="text" placeholder="搜索课程、频道..." class="search-input" id="homeSearchInput">

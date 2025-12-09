@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="../css/mystyle.css">
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="../js/search.js"></script>
     <style>
         .group-container {
             max-width: 800px;
@@ -107,7 +108,37 @@
         }
     </style>
 </head>
-<body>
+<body class="has-fixed-header">
+    <!-- 顶部导航栏（与 index.html 一致） -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-img"></div>
+            <span class="logo-text">星之声</span>
+        </div>
+        <nav class="main-nav">
+            <a href="index.html" class="nav-item">首页</a>
+            <a href="category.html" class="nav-item">分类</a>
+            <a href="channel.html" class="nav-item">社区</a>
+            <a href="group.html" class="nav-item active">合集</a>
+        </nav>
+        <div class="search-box">
+            <input type="text" placeholder="搜索课程、频道..." class="search-input" id="homeSearchInput">
+            <button class="search-btn" id="homeSearchBtn"><i class="fas fa-search"></i></button>
+        </div>
+        <div class="user-functions">
+            <a href="my-recent.html" class="func-item">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+            </a>
+            <a href="my-message.html" class="func-item"><i class="fas fa-bell"></i> 消息</a>
+            <a href="my-collect.html" class="func-item"><i class="fas fa-star"></i> 收藏</a>
+            <a href="my-recent.html" class="func-item"><i class="fas fa-history"></i> 历史</a>
+            <a href="my-creator_center.html" class="func-item"><i class="fas fa-pen"></i> 创作中心</a>
+            <a href="login.html"><button class="submit-btn">登录/注册</button></a>
+        </div>
+    </header>
     <div class="group-container">
         <div class="group-header">
             <h1><i class="fas fa-folder"></i> 合集管理</h1>
@@ -146,6 +177,76 @@
         </div>
     </div>
     
+    <!-- 上传音频到合集（前端UI） -->
+    <div class="group-container" style="margin-top:20px;">
+        <div class="group-header">
+            <h2><i class="fas fa-upload"></i> 上传音频到合集</h2>
+            <p>选择文件，填写信息并上传到你选择的合集</p>
+        </div>
+
+        <form id="upload-form" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="audio-file">选择音频文件</label>
+                <input type="file" id="audio-file" accept="audio/*">
+            </div>
+
+            <div id="file-info" style="display:none; margin-bottom:10px;">
+                <div><strong id="file-name"></strong></div>
+                <div id="file-size"></div>
+                <div id="file-duration"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="audio-title">音频标题</label>
+                <input type="text" id="audio-title" placeholder="请输入标题" required>
+            </div>
+
+            <div class="form-group">
+                <label for="audio-description">音频描述</label>
+                <textarea id="audio-description" rows="2" placeholder="可选描述"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="audio-group">选择合集</label>
+                <select id="audio-group">
+                    <option value="">不添加到任何合集</option>
+                </select>
+            </div>
+
+            <div id="upload-create-group-form" style="display:none; margin-bottom:10px;">
+                <div class="form-group">
+                    <input type="text" id="new-group-name" placeholder="新合集名称">
+                </div>
+                <div class="form-group">
+                    <input type="text" id="new-group-desc" placeholder="新合集描述（可选）">
+                </div>
+                <div style="display:flex;gap:8px;">
+                    <button type="button" id="submit-create-group" class="btn btn-primary">创建合集</button>
+                    <button type="button" id="cancel-create-group" class="btn">取消</button>
+                </div>
+            </div>
+
+            <div id="audio-preview" style="display:none; margin-bottom:10px;">
+                <audio id="audio-player" controls style="width:100%;"></audio>
+            </div>
+
+            <div id="progress-container" style="display:none; background:#eee; padding:6px; border-radius:4px;">
+                <div style="height:10px; background:#ddd; border-radius:4px; overflow:hidden;">
+                    <div id="progress-fill" style="width:0%; height:100%; background:#28a745;"></div>
+                </div>
+                <div id="progress-text" style="margin-top:6px; font-size:12px;">0%</div>
+            </div>
+
+            <div style="display:flex; gap:8px; margin-top:10px;">
+                <button type="submit" class="btn btn-primary">上传</button>
+                <button type="button" id="reset-btn" class="btn">重置</button>
+            </div>
+
+            <div id="upload-message" class="message" style="display:none; margin-top:10px;"></div>
+        </form>
+    </div>
+    
+    <script src="../js/upload-audio.js"></script>
     <script>
         // DOM元素
         const createGroupForm = document.getElementById('create-group-form');

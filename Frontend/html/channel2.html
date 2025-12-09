@@ -695,6 +695,23 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
         }
+
+        .delete-group-btn {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background-color: #ff4d4f;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 100%;
+        }
+
+        .delete-group-btn:hover {
+            background-color: #ff7875;
+        }
         
         /* 移动端适配 */
         @media (max-width: 768px) {
@@ -773,6 +790,101 @@
             align-items: center;
             justify-content: space-between;
             z-index: 1000;
+        }
+        /* 创建学习群组模态框样式 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 400px;
+            padding: 20px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            margin: 0;
+            color: var(--text-primary);
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn-cancel,
+        .btn-create {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .btn-cancel {
+            background-color: #f5f5f5;
+            color: var(--text-primary);
+        }
+
+        .btn-create {
+            background-color: var(--orange-light);
+            color: white;
         }
     </style>
 </head>
@@ -1024,6 +1136,7 @@
                         </div>
                         <div class="invite-code-section">
                             <div class="invite-code" onclick="copyInviteCode()">#ENGLISH789</div>
+                            <button class="delete-group-btn" onclick="deleteCurrentGroup()">删除群组</button>
                         </div>
                     </div>
                 </aside>
@@ -1465,13 +1578,7 @@
                 });
             });
 
-            // 创建群组按钮
-            document.getElementById('createGroupBtn').addEventListener('click', function() {
-                const groupName = prompt('请输入新群组名称：');
-                if (groupName) {
-                    alert(`已创建群组：${groupName}\n功能开发中...`);
-                }
-            });
+            // 创建群组按钮的事件监听器已移至模态框实现部分
 
             // 查看成员按钮
             window.showGroupMembers = function() {
@@ -1501,8 +1608,45 @@
             // 查看群文件
             window.showGroupFiles = function() {
                 alert('群文件功能开发中...');
-            };
-        }
+            }
+
+            // 删除当前群组
+            window.deleteCurrentGroup = function() {
+                if (confirm('确定要删除当前群组吗？此操作不可恢复！')) {
+                    // 从groupData中删除当前群组
+                    delete groupData[currentGroupId];
+
+                    // 从桌面端群组列表中移除
+                    const desktopItems = document.querySelectorAll('.group-items .group-item');
+                    desktopItems.forEach(item => {
+                        const groupId = parseInt(item.getAttribute('data-group-id'));
+                        if (groupId === currentGroupId) {
+                            item.remove();
+                        }
+                    });
+
+                    // 从移动端群组列表中移除
+                    const mobileItems = document.querySelectorAll('.group-list-mobile .group-item');
+                    mobileItems.forEach(item => {
+                        const groupId = parseInt(item.getAttribute('data-group-id'));
+                        if (groupId === currentGroupId) {
+                            item.remove();
+                        }
+                    });
+
+                    // 选择第一个可用的群组作为当前群组
+                    const remainingGroupIds = Object.keys(groupData).map(id => parseInt(id));
+                    if (remainingGroupIds.length > 0) {
+                        // 如果还有其他群组，切换到第一个
+                        switchGroup(remainingGroupIds[0]);
+                    } else {
+                        // 如果没有群组了，显示提示
+                        alert('所有群组已删除！');
+                        // 这里可以添加无群组时的默认显示内容
+                     }
+                 }
+             }
+         }
 
         // 复制邀请码
         function copyInviteCode() {
@@ -1667,6 +1811,128 @@
                     loadGroupData(currentGroupId);
                 }
             });
+        });
+
+        // 创建群组模态框功能
+        const createGroupModal = document.createElement('div');
+        createGroupModal.className = 'modal-overlay';
+        createGroupModal.style.display = 'none';
+        createGroupModal.innerHTML = `
+            <div class="modal">
+                <div class="modal-header">
+                    <h2 class="modal-title">创建学习群组</h2>
+                    <button class="close-btn">&times;</button>
+                </div>
+                <div class="modal-content">
+                    <div class="form-group">
+                        <label for="groupName">群组名称</label>
+                        <input type="text" id="groupName" placeholder="请输入群组名称" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="groupDescription">群组描述</label>
+                        <textarea id="groupDescription" placeholder="请输入群组描述（可选）"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-cancel">取消</button>
+                    <button class="btn-create">创建</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(createGroupModal);
+
+        // 显示模态框
+        document.getElementById('createGroupBtn').addEventListener('click', function() {
+            createGroupModal.style.display = 'flex';
+        });
+
+        // 关闭模态框
+        createGroupModal.querySelector('.close-btn').addEventListener('click', function() {
+            createGroupModal.style.display = 'none';
+        });
+
+        // 取消按钮
+        createGroupModal.querySelector('.btn-cancel').addEventListener('click', function() {
+            createGroupModal.style.display = 'none';
+        });
+
+        // 点击模态框外部关闭
+        createGroupModal.addEventListener('click', function(e) {
+            if (e.target === createGroupModal) {
+                createGroupModal.style.display = 'none';
+            }
+        });
+
+        // 创建群组
+        createGroupModal.querySelector('.btn-create').addEventListener('click', function() {
+            const groupName = createGroupModal.querySelector('#groupName').value;
+            const groupDescription = createGroupModal.querySelector('#groupDescription').value;
+
+            if (groupName) {
+                // 模拟创建群组
+                const newGroupId = 'group_' + Date.now();
+
+                // 更新群组数据
+                groupData[newGroupId] = {
+                    name: groupName,
+                    description: groupDescription,
+                    memberCount: 3,
+                    messages: [
+                        {
+                            sender: "系统",
+                            text: `欢迎加入 ${groupName} 群组！🌟`,
+                            time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+                            isSystem: true
+                        }
+                    ],
+                    onlineMembers: ['您', '其他成员1', '其他成员2'],
+                    allMembers: ['您', '其他成员1', '其他成员2'],
+                    unreadCount: 1,
+                    todayTopic: "暂无话题"
+                };
+
+                // 更新群组列表UI
+                // 生成随机头像ID（1-4）
+                const avatarId = Math.floor(Math.random() * 4) + 1;
+                const avatarSrc = `images/english-group${avatarId}.png`;
+                
+                // 创建群组项HTML
+                const groupItemHTML = `
+                    <img src="${avatarSrc}" alt="群组头像">
+                    <div class="group-info">
+                        <h4>${groupName}</h4>
+                        <p>${groupDescription || '暂无描述'}</p>
+                    </div>
+                `;
+                
+                // 添加到移动端群组列表
+                const mobileGroupList = document.querySelector('.group-list-mobile');
+                if (mobileGroupList) {
+                    const newMobileGroupItem = document.createElement('div');
+                    newMobileGroupItem.className = 'group-item';
+                    newMobileGroupItem.setAttribute('onclick', `switchGroup('${newGroupId}')`);
+                    newMobileGroupItem.innerHTML = groupItemHTML;
+                    mobileGroupList.appendChild(newMobileGroupItem);
+                }
+                
+                // 添加到桌面端群组列表
+                const desktopGroupItems = document.querySelector('.group-items');
+                if (desktopGroupItems) {
+                    const newDesktopGroupItem = document.createElement('div');
+                    newDesktopGroupItem.className = 'group-item';
+                    newDesktopGroupItem.setAttribute('onclick', `switchGroup('${newGroupId}')`);
+                    newDesktopGroupItem.innerHTML = groupItemHTML;
+                    desktopGroupItems.appendChild(newDesktopGroupItem);
+                }
+
+                // 关闭模态框
+                createGroupModal.style.display = 'none';
+
+                // 显示成功提示
+                alert(`已创建群组：${groupName}`);
+            } else {
+                alert('请输入群组名称');
+            }
         });
     </script>
 </body>

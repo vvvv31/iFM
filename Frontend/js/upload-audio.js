@@ -1,6 +1,6 @@
 // upload-audio.js - 音频上传前端逻辑
 
-// DOM元素
+// DOM元素 (guarded in case script runs before DOM or elements missing)
 const fileInput = document.getElementById('audio-file');
 const fileInfo = document.getElementById('file-info');
 const fileName = document.getElementById('file-name');
@@ -17,19 +17,31 @@ const audioPreview = document.getElementById('audio-preview');
 const audioPlayer = document.getElementById('audio-player');
 const resetBtn = document.getElementById('reset-btn');
 const message = document.getElementById('message');
+const fileInputLabel = document.querySelector('.file-input-label');
 
 // 全局变量
 let selectedFile = null;
 let audioURL = null;
 
 // 文件选择事件监听
-fileInput.addEventListener('change', handleFileSelect);
+if (fileInput) {
+    fileInput.addEventListener('change', handleFileSelect);
+}
+
+// 让可见的 label 也能触发隐藏的 file input
+if (fileInputLabel && fileInput) {
+    fileInputLabel.addEventListener('click', (e) => { e.preventDefault(); fileInput.click(); });
+}
 
 // 表单提交事件监听
-uploadForm.addEventListener('submit', handleUpload);
+if (uploadForm) {
+    uploadForm.addEventListener('submit', handleUpload);
+}
 
 // 重置按钮事件监听
-resetBtn.addEventListener('click', resetForm);
+if (resetBtn) {
+    resetBtn.addEventListener('click', resetForm);
+}
 
 // 页面加载时获取用户合集列表
 document.addEventListener('DOMContentLoaded', () => {
@@ -88,8 +100,8 @@ function isValidFileSize(file) {
  * 显示文件信息
  */
 function displayFileInfo(file) {
-    fileName.textContent = file.name;
-    fileSize.textContent = formatFileSize(file.size);
+    if (fileName) fileName.textContent = file.name;
+    if (fileSize) fileSize.textContent = formatFileSize(file.size);
     
     // 创建音频元素获取时长
     const audio = new Audio();
@@ -102,7 +114,7 @@ function displayFileInfo(file) {
     
     audio.src = URL.createObjectURL(file);
     
-    fileInfo.style.display = 'block';
+    if (fileInfo) fileInfo.style.display = 'block';
 }
 
 /**
@@ -116,10 +128,9 @@ function createAudioPreview(file) {
     
     // 创建新的URL
     audioURL = URL.createObjectURL(file);
-    audioPlayer.src = audioURL;
-    
+    if (audioPlayer) audioPlayer.src = audioURL;
     // 显示预览
-    audioPreview.style.display = 'block';
+    if (audioPreview) audioPreview.style.display = 'block';
 }
 
 /**
@@ -179,54 +190,61 @@ async function handleUpload(event) {
  */
 function loadUserGroups() {
     return new Promise((resolve, reject) => {
-        fetch('http://localhost:3000/api/group/user', {
-            headers: {
-                'Authorization': `Bearer ${getAuthToken()}`,
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.code === 200) {
-                // 清空现有选项（保留默认选项）
+        fetch('/api/group/user', {
+                headers: {
+                    'Authorization': `Bearer ${getAuthToken()}`,
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json().catch(()=>({})))
+            .then(data => {
+                // 清空现有选项并保留默认
+                if (!audioGroup) return resolve(null);
                 const defaultOption = audioGroup.querySelector('option[value=""]');
                 audioGroup.innerHTML = '';
-                
-                // 添加默认选项
-                if (defaultOption) {
-                    audioGroup.appendChild(defaultOption);
-                } else {
+                if (defaultOption) audioGroup.appendChild(defaultOption);
+                else {
                     const newDefaultOption = document.createElement('option');
                     newDefaultOption.value = '';
                     newDefaultOption.textContent = '不添加到任何合集';
                     audioGroup.appendChild(newDefaultOption);
                 }
-                
-                // 添加合集选项
-                data.data.forEach(group => {
+
+                // 如果后端返回数组直接当作数据
+                const groups = Array.isArray(data) ? data : (data && data.data ? data.data : []);
+                groups.forEach(group => {
                     const option = document.createElement('option');
-                    option.value = group._id;
-                    option.textContent = group.name;
+                    option.value = group._id || group.id || group.id_str || group.id;
+                    option.textContent = group.name || group.title || '合集';
                     audioGroup.appendChild(option);
                 });
-            }
-            resolve(data);
-        })
-        .catch(error => {
-            console.error('加载合集列表失败:', error);
-            reject(error);
-        })
-        .finally(() => {
-            // 确保"创建新合集"选项始终在列表底部
-            let createNewOption = audioGroup.querySelector('option[value="create_new"]');
-            if (createNewOption) {
-                createNewOption.remove();
-            }
-            
-            createNewOption = document.createElement('option');
-            createNewOption.value = 'create_new';
-            createNewOption.textContent = '+ 创建新合集';
-            audioGroup.appendChild(createNewOption);
-        });
+
+                // 确保"创建新合集"选项始终在列表底部
+                let createNewOption = audioGroup.querySelector('option[value="create_new"]');
+                if (createNewOption) createNewOption.remove();
+                createNewOption = document.createElement('option');
+                createNewOption.value = 'create_new';
+                createNewOption.textContent = '+ 创建新合集';
+                audioGroup.appendChild(createNewOption);
+
+                resolve(data);
+            })
+            .catch(error => {
+                console.error('加载合集列表失败:', error);
+                // 即便失败也要确保创建新合集选项存在
+                if (audioGroup) {
+                    audioGroup.innerHTML = '';
+                    const newDefaultOption = document.createElement('option');
+                    newDefaultOption.value = '';
+                    newDefaultOption.textContent = '不添加到任何合集';
+                    audioGroup.appendChild(newDefaultOption);
+                    const createNewOption = document.createElement('option');
+                    createNewOption.value = 'create_new';
+                    createNewOption.textContent = '+ 创建新合集';
+                    audioGroup.appendChild(createNewOption);
+                }
+                reject(error);
+            });
     });
 }
 
@@ -260,9 +278,10 @@ function uploadAudioFile(formData) {
             reject(new Error('网络错误，上传失败'));
         });
         
-        // 打开连接并发送请求
-        xhr.open('POST', 'http://localhost:3000/api/upload/audio', true);
-        xhr.setRequestHeader('Authorization', `Bearer ${getAuthToken()}`); // 如果需要认证
+        // 打开连接并发送请求 (使用相对路径，便于部署到不同主机)
+        xhr.open('POST', '/api/upload/audio', true);
+        const token = getAuthToken();
+        if (token) xhr.setRequestHeader('Authorization', `Bearer ${token}`);
         xhr.send(formData);
     });
 }
@@ -295,11 +314,10 @@ function resetForm() {
     resetFileInput();
     
     // 重置表单字段
-    uploadForm.reset();
-    
+    if (uploadForm) uploadForm.reset();
     // 隐藏预览和信息
-    fileInfo.style.display = 'none';
-    audioPreview.style.display = 'none';
+    if (fileInfo) fileInfo.style.display = 'none';
+    if (audioPreview) audioPreview.style.display = 'none';
     
     // 释放音频URL
     if (audioURL) {
@@ -308,7 +326,7 @@ function resetForm() {
     }
     
     // 清空消息
-    message.style.display = 'none';
+    if (message) message.style.display = 'none';
 }
 
 /**
@@ -316,20 +334,24 @@ function resetForm() {
  */
 function resetFileInput() {
     selectedFile = null;
-    fileInput.value = '';
+    if (fileInput) fileInput.value = '';
 }
 
 /**
  * 显示消息
  */
 function showMessage(text, type = 'info') {
+    if (!message) {
+        console[type === 'error' ? 'error' : 'log'](text);
+        return;
+    }
     message.textContent = text;
     message.className = `message ${type}`;
     message.style.display = 'block';
     
     // 3秒后自动隐藏消息
     setTimeout(() => {
-        message.style.display = 'none';
+        if (message) message.style.display = 'none';
     }, 3000);
 }
 

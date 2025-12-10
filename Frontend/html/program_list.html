@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>英语课程节目列表 - 英语学习中心</title>
+    <title>英语课程节目列表 - 星之声</title>
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="../js/search.js"></script>
@@ -14,19 +14,19 @@
             min-height: calc(100vh - 66px - 84px);
             padding: 30px 0;
         }
-        
+
         .program-layout {
             display: flex;
             gap: 30px;
             flex-wrap: wrap;
         }
-        
+
         /* 主内容区 */
         .program-content {
             flex: 1;
             min-width: 300px;
         }
-        
+
         /* 课程封面和标题区域 */
         .program-header {
             display: flex;
@@ -37,11 +37,11 @@
             padding: 30px;
             margin-bottom: 20px;
         }
-        
+
         .program-cover {
             flex-shrink: 0;
         }
-        
+
         .cover-image {
             width: 300px;
             height: 200px;
@@ -50,14 +50,14 @@
             border: 2px solid #FF8C00;
             background-color: #E0FFFF;
         }
-        
+
         .program-info {
             flex: 1;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
         }
-        
+
         .program-title {
             font-size: 24px;
             font-weight: 700;
@@ -67,7 +67,7 @@
             position: relative;
             padding-bottom: 10px;
         }
-        
+
         .program-title::after {
             content: '';
             position: absolute;
@@ -78,14 +78,14 @@
             background-color: #FF8C00;
             border-radius: 1px;
         }
-        
+
         .program-meta {
             display: flex;
             gap: 10px;
             margin-bottom: 15px;
             flex-wrap: wrap;
         }
-        
+
         .meta-item {
             background-color: #fff8e1;
             color: #FF8C00;
@@ -95,7 +95,7 @@
             font-weight: 500;
             border: 1px solid #FFDAB9;
         }
-        
+
         .program-stats {
             display: flex;
             gap: 20px;
@@ -104,13 +104,13 @@
             font-size: 14px;
             flex-wrap: wrap;
         }
-        
+
         .program-actions {
             display: flex;
             gap: 15px;
             flex-wrap: wrap;
         }
-        
+
         .action-btn {
             padding: 10px 24px;
             border-radius: 25px;
@@ -121,40 +121,45 @@
             border: none;
             outline: none;
         }
-        
+
         .btn-primary {
             background-color: #FF8C00;
             color: white;
             border: 1px solid #FF8C00;
         }
-        
+
         .btn-primary:hover {
             background-color: #ff7000;
             transform: translateY(-1px);
         }
-        
+
         .btn-secondary {
             background-color: #fff3e0;
             color: #FF8C00;
             border: 1px solid #FFDAB9;
         }
-        
+
         .btn-secondary:hover {
             background-color: #ffe0b2;
             transform: translateY(-1px);
         }
-        
+
+        .btn-secondary.collected {
+            background-color: #FF8C00;
+            color: white;
+        }
+
         .btn-outline {
             background-color: transparent;
             color: #FF8C00;
             border: 1px solid #FF8C00;
         }
-        
+
         .btn-outline:hover {
             background-color: #fff8e1;
             transform: translateY(-1px);
         }
-        
+
         /* 标签导航 */
         .program-tabs {
             background-color: #FFF8DC;
@@ -162,12 +167,12 @@
             border-radius: 8px;
             margin-bottom: 20px;
         }
-        
+
         .tab-container {
             display: flex;
             border-bottom: 1px solid #FFDAB9;
         }
-        
+
         .tab-btn {
             padding: 15px 25px;
             background: none;
@@ -179,17 +184,17 @@
             transition: all 0.3s ease;
             position: relative;
         }
-        
+
         .tab-btn:hover {
             color: #FF8C00;
             background-color: #FFEDCC;
         }
-        
+
         .tab-btn.active {
             color: #FF8C00;
             font-weight: 600;
         }
-        
+
         .tab-btn.active::after {
             content: '';
             position: absolute;
@@ -198,8 +203,9 @@
             width: 100%;
             height: 2px;
             background-color: #FF8C00;
+            border-radius: 1px;
         }
-        
+
         /* 标签内容 */
         .tab-content {
             background-color: #fff;
@@ -207,11 +213,11 @@
             padding: 25px;
             display: none;
         }
-        
+
         .tab-content.active {
             display: block;
         }
-        
+
         /* 详情部分样式 */
         .detail-section {
             margin-bottom: 25px;
@@ -236,7 +242,7 @@
             background-color: #FF8C00;
             border-radius: 2px;
         }
-        
+
         .detail-section p {
             margin-bottom: 15px;
             color: #333;
@@ -244,19 +250,19 @@
             text-align: justify;
             word-break: break-word;
         }
-        
+
         .detail-section ul {
             margin-bottom: 15px;
             padding-left: 20px;
         }
-        
+
         .detail-section li {
             margin-bottom: 8px;
             color: #333;
             position: relative;
             padding-left: 10px;
         }
-        
+
         .detail-section li::before {
             content: '•';
             color: #FF8C00;
@@ -264,7 +270,7 @@
             position: absolute;
             left: -10px;
         }
-        
+
         /* 课程大纲样式 */
         .syllabus-section h2 {
             font-size: 18px;
@@ -272,7 +278,7 @@
             color: #000;
             margin-bottom: 20px;
         }
-        
+
         .unit-item {
             margin-bottom: 20px;
             background-color: #fafafa;
@@ -280,7 +286,7 @@
             border-radius: 8px;
             overflow: hidden;
         }
-        
+
         .unit-header {
             background-color: #fff3e0;
             padding: 15px 20px;
@@ -291,28 +297,33 @@
             transition: background-color 0.3s ease;
             border-bottom: 1px solid #FFDAB9;
         }
-        
+
         .unit-header:hover {
             background-color: #ffe0b2;
         }
-        
+
         .unit-header h3 {
             font-size: 16px;
             font-weight: 600;
             color: #000;
             margin: 0;
         }
-        
+
         .unit-duration {
             font-size: 13px;
             color: #FF8C00;
             font-weight: 500;
         }
-        
+
         .lesson-list {
             padding: 10px 0;
+            display: none;
         }
-        
+
+        .lesson-list.show {
+            display: block;
+        }
+
         .lesson-item {
             display: flex;
             align-items: center;
@@ -322,40 +333,40 @@
             cursor: pointer;
             border-bottom: 1px solid #f0f0f0;
         }
-        
+
         .lesson-item:last-child {
             border-bottom: none;
         }
-        
+
         .lesson-item:hover {
             background-color: #FFF8DC;
         }
-        
+
         .lesson-info {
             display: flex;
             align-items: center;
             gap: 15px;
             flex: 1;
         }
-        
+
         .lesson-number {
             font-size: 14px;
             font-weight: 600;
             color: #FF8C00;
             min-width: 30px;
         }
-        
+
         .lesson-title {
             font-size: 14px;
             color: #000;
         }
-        
+
         .lesson-duration {
             font-size: 13px;
             color: #666;
             margin-right: 15px;
         }
-        
+
         .play-btn {
             width: 32px;
             height: 32px;
@@ -370,13 +381,13 @@
             transition: all 0.3s ease;
             flex-shrink: 0;
         }
-        
+
         .play-btn:hover {
             background-color: #FF8C00;
             color: #fff;
             transform: scale(1.05);
         }
-        
+
         /* 课程章节侧边栏样式 */
         .chapter-sidebar {
             width: 320px;
@@ -386,7 +397,7 @@
             border-radius: 8px;
             overflow: hidden;
         }
-        
+
         .chapter-header {
             background-color: #FF8C00;
             color: white;
@@ -397,12 +408,12 @@
             align-items: center;
             gap: 10px;
         }
-        
+
         .chapter-header h2 {
             margin: 0;
             font-size: 16px;
         }
-        
+
         .back-button {
             background: none;
             border: none;
@@ -416,11 +427,11 @@
             align-items: center;
             justify-content: center;
         }
-        
+
         .chapter-list {
             background-color: #f9f9f9;
         }
-        
+
         .chapter-item {
             display: flex;
             align-items: center;
@@ -429,15 +440,15 @@
             transition: background-color 0.2s ease;
             border-bottom: 1px solid #f0f0f0;
         }
-        
+
         .chapter-item:last-child {
             border-bottom: none;
         }
-        
+
         .chapter-item.active {
             background-color: #fff0e0;
         }
-        
+
         .chapter-number {
             color: #FF8C00;
             font-weight: 600;
@@ -445,12 +456,12 @@
             font-size: 14px;
             min-width: 20px;
         }
-        
+
         .chapter-content {
             flex: 1;
             min-width: 0;
         }
-        
+
         .chapter-title {
             font-size: 14px;
             color: #333;
@@ -459,179 +470,106 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        
+
         .chapter-duration {
             color: #FF8C00;
             font-size: 14px;
             margin-left: 10px;
             font-weight: 500;
         }
-        
-        /* 页脚样式 */
-        .footer {
-            background-color: #fff;
-            padding: 30px 0;
-            border-top: 1px solid #FFDAB9;
-            margin-top: 40px;
+
+        /* 学员评价样式 */
+        .write-review {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border: 1px solid #e0e0e0;
         }
-        
-        .footer-content {
+
+        .write-review h3 {
+            margin-bottom: 20px;
+            font-size: 18px;
+            color: #333;
+        }
+
+        .review-form {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
+            flex-direction: column;
             gap: 20px;
         }
-        
-        .footer-info p {
-            color: #666;
-            font-size: 14px;
-            margin: 0;
-        }
-        
-        .footer-links {
+
+        .review-field {
             display: flex;
-            gap: 20px;
+            flex-direction: column;
+            gap: 8px;
         }
-        
-        .footer-link {
-            text-decoration: none;
-            color: #666;
+
+        .review-field label {
+            font-weight: 500;
+            color: #555;
             font-size: 14px;
+        }
+
+        .rating-input {
+            display: flex;
+            gap: 10px;
+        }
+
+        .rating-star {
+            font-size: 24px;
+            color: #ddd;
+            cursor: pointer;
             transition: color 0.3s ease;
         }
-        
-        .footer-link:hover {
-            color: #FF8C00;
+
+        .rating-star:hover,
+        .rating-star.active,
+        .rating-star.hovered {
+            color: #ffc107;
         }
-        
-        /* 响应式设计 */
-        @media (max-width: 1024px) {
-            .program-layout {
-                flex-direction: column;
-            }
-            
-            .chapter-sidebar {
-                width: 100%;
-                max-width: none;
-            }
-            
-            .program-title {
-                font-size: 22px;
-            }
-            
-            .program-header {
-                padding: 20px;
-            }
-            
-            .program-header {
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .program-cover {
-                align-self: center;
-            }
-            
-            .cover-image {
-                width: 100%;
-                max-width: 400px;
-                height: auto;
-            }
-            
-            .program-actions {
-                justify-content: center;
-            }
+
+        #reviewContent {
+            width: 100%;
+            padding: 12px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+            resize: vertical;
+            font-family: inherit;
+            color: #333;
         }
-        
-        @media (max-width: 768px) {
-            .program-title {
-                font-size: 20px;
-            }
-            
-            .detail-section p {
-                font-size: 14px;
-            }
-            
-            .program-header {
-                padding: 15px;
-            }
-            
-            .tab-container {
-                overflow-x: auto;
-                white-space: nowrap;
-            }
-            
-            .tab-btn {
-                padding: 12px 20px;
-                font-size: 13px;
-            }
-            
-            .tab-content {
-                padding: 20px;
-            }
-            
-            .footer-content {
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .footer-links {
-                flex-wrap: wrap;
-                justify-content: center;
-            }
+
+        #reviewContent:focus {
+            outline: none;
+            border-color: #FF8C00;
+            box-shadow: 0 0 0 2px rgba(255, 140, 0, 0.1);
         }
-        
-        @media (max-width: 480px) {
-            .program-header {
-                padding: 15px;
-            }
-            
-            .program-title {
-                font-size: 18px;
-            }
-            
-            .program-info {
-                align-items: flex-start;
-            }
-            
-            .program-stats {
-                flex-direction: column;
-                gap: 8px;
-            }
-            
-            .program-meta {
-                flex-wrap: wrap;
-                gap: 8px;
-            }
-            
-            .program-actions {
-                flex-wrap: wrap;
-                gap: 10px;
-            }
-            
-            .action-btn {
-                padding: 8px 16px;
-                font-size: 13px;
-                flex: 1;
-                min-width: 120px;
-            }
-            
-            .tab-content {
-                padding: 15px;
-            }
-            
-            .detail-section h2 {
-                font-size: 16px;
-            }
-            
-            .lesson-item {
-                padding: 10px 15px;
-                flex-wrap: wrap;
-            }
+
+        #submitReview {
+            padding: 10px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            border-radius: 4px;
+            background-color: #FF8C00;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            align-self: flex-start;
         }
-        
-        /* 学员评价样式 */
+
+        #submitReview:hover {
+            background-color: #ff7000;
+            transform: translateY(-1px);
+        }
+
+        #submitReview:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
         .reviews-header {
             display: flex;
             justify-content: space-between;
@@ -664,7 +602,6 @@
             font-size: 14px;
         }
 
-        /* 评分分布 */
         .rating-distribution {
             margin-bottom: 30px;
         }
@@ -703,7 +640,6 @@
             text-align: right;
         }
 
-        /* 评价列表 */
         .reviews-list {
             margin-bottom: 20px;
         }
@@ -773,135 +709,200 @@
             font-size: 16px;
         }
 
-        /* 加载更多按钮 */
         .load-more-reviews {
             text-align: center;
             margin-top: 20px;
         }
 
-        /* 响应式调整 */
+        /* 页脚样式 */
+        .footer {
+            background-color: #fff;
+            padding: 30px 0;
+            border-top: 1px solid #FFDAB9;
+            margin-top: 40px;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .footer-info p {
+            color: #666;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .footer-link {
+            text-decoration: none;
+            color: #666;
+            font-size: 14px;
+            transition: color 0.3s ease;
+        }
+
+        .footer-link:hover {
+            color: #FF8C00;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1024px) {
+            .program-layout {
+                flex-direction: column;
+            }
+
+            .chapter-sidebar {
+                width: 100%;
+                max-width: none;
+            }
+
+            .program-title {
+                font-size: 22px;
+            }
+
+            .program-header {
+                padding: 20px;
+            }
+
+            .program-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .program-cover {
+                align-self: center;
+            }
+
+            .cover-image {
+                width: 100%;
+                max-width: 400px;
+                height: auto;
+            }
+
+            .program-actions {
+                justify-content: center;
+            }
+        }
+
         @media (max-width: 768px) {
+            .program-title {
+                font-size: 20px;
+            }
+
+            .detail-section p {
+                font-size: 14px;
+            }
+
+            .program-header {
+                padding: 15px;
+            }
+
+            .tab-container {
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+
+            .tab-btn {
+                padding: 12px 20px;
+                font-size: 13px;
+            }
+
+            .tab-content {
+                padding: 20px;
+            }
+
+            .write-review {
+                padding: 15px;
+            }
+
+            .rating-star {
+                font-size: 20px;
+            }
+
+            #submitReview {
+                padding: 8px 20px;
+                font-size: 13px;
+                width: 100%;
+            }
+
             .reviews-header {
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 15px;
             }
-            
+
             .rating-score {
                 font-size: 24px;
             }
-            
+
             .rating-stars {
                 font-size: 16px;
             }
+
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .footer-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
         }
-        
-        /* 写评论表单样式 */
-        .write-review {
-            background-color: #f9f9f9;
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 30px;
-            border: 1px solid #e0e0e0;
-        }
-        
-        .write-review h3 {
-            margin-bottom: 20px;
-            font-size: 18px;
-            color: #333;
-        }
-        
-        .review-form {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-        
-        .review-field {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        
-        .review-field label {
-            font-weight: 500;
-            color: #555;
-            font-size: 14px;
-        }
-        
-        .rating-input {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .rating-star {
-            font-size: 24px;
-            color: #ddd;
-            cursor: pointer;
-            transition: color 0.3s ease;
-        }
-        
-        .rating-star:hover,
-        .rating-star.active,
-        .rating-star.hovered {
-            color: #ffc107;
-        }
-        
-        #reviewContent {
-            width: 100%;
-            padding: 12px;
-            border-radius: 4px;
-            border: 1px solid #ddd;
-            font-size: 14px;
-            resize: vertical;
-            font-family: inherit;
-            color: #333;
-        }
-        
-        #reviewContent:focus {
-            outline: none;
-            border-color: #FF8C00;
-            box-shadow: 0 0 0 2px rgba(255, 140, 0, 0.1);
-        }
-        
-        #submitReview {
-            padding: 10px 24px;
-            font-size: 14px;
-            font-weight: 600;
-            border: none;
-            border-radius: 4px;
-            background-color: #FF8C00;
-            color: white;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            align-self: flex-start;
-        }
-        
-        #submitReview:hover {
-            background-color: #ff7000;
-            transform: translateY(-1px);
-        }
-        
-        #submitReview:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-            transform: none;
-        }
-        
-        /* 响应式调整 */
-        @media (max-width: 768px) {
-            .write-review {
+
+        @media (max-width: 480px) {
+            .program-header {
                 padding: 15px;
             }
-            
-            .rating-star {
-                font-size: 20px;
+
+            .program-title {
+                font-size: 18px;
             }
-            
-            #submitReview {
-                padding: 8px 20px;
+
+            .program-info {
+                align-items: flex-start;
+            }
+
+            .program-stats {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .program-meta {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .program-actions {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+
+            .action-btn {
+                padding: 8px 16px;
                 font-size: 13px;
-                width: 100%;
+                flex: 1;
+                min-width: 120px;
+            }
+
+            .tab-content {
+                padding: 15px;
+            }
+
+            .detail-section h2 {
+                font-size: 16px;
+            }
+
+            .lesson-item {
+                padding: 10px 15px;
+                flex-wrap: wrap;
             }
         }
     </style>
@@ -924,9 +925,12 @@
             <a href="category.html" class="nav-item">分类</a>
             <a href="channel.html" class="nav-item">社区</a>
         </nav>
+        <!-- 修复928行：搜索框添加label关联 -->
         <div class="search-box">
-            <input type="text" placeholder="搜索课程、频道..." class="search-input" id="homeSearchInput">
-            <button class="search-btn" id="homeSearchBtn"><i class="fas fa-search"></i></button>
+            <label for="homeSearchInput" style="display: none;">搜索课程、频道</label>
+            <input type="text" id="homeSearchInput" class="search-input" placeholder="搜索课程、频道...">
+            <!-- 修复933行：修正图标标签闭合 -->
+            <button class="search-btn" id="homeSearchBtn"><<i class="fas fa-search"><</i></button>
         </div>
         <div class="user-functions">
             <a href="my-recent.html" class="func-item">
@@ -935,10 +939,10 @@
                     <circle cx="12" cy="7" r="4"></circle>
                 </svg>
             </a>
-            <a href="my-message.html" class="func-item"><i class="fas fa-bell"></i> 消息</a>
-            <a href="my-collect.html" class="func-item"><i class="fas fa-star"></i> 收藏</a>
-            <a href="my-recent.html" class="func-item"><i class="fas fa-history"></i> 历史</a>
-            <a href="my-creator_center.html" class="func-item"><i class="fas fa-pen"></i> 创作中心</a>
+            <a href="my-message.html" class="func-item"><<i class="fas fa-bell"><</i> 消息</a>
+            <a href="my-collect.html" class="func-item"><<i class="fas fa-star"><</i> 收藏</a>
+            <a href="my-recent.html" class="func-item"><<i class="fas fa-history"><</i> 历史</a>
+            <a href="my-creator_center.html" class="func-item"><<i class="fas fa-pen"><</i> 创作中心</a>
             <a href="login.html"><button class="submit-btn">登录/注册</button></a>
         </div>
     </header>
@@ -1040,7 +1044,7 @@
                                     <h3>第一单元：日常问候与自我介绍</h3>
                                     <span class="unit-duration">5集 · 约45分钟</span>
                                 </div>
-                                <div class="lesson-list">
+                                <div class="lesson-list show">
                                     <div class="lesson-item">
                                         <div class="lesson-info">
                                             <span class="lesson-number">1.1</span>
@@ -1048,7 +1052,7 @@
                                         </div>
                                         <span class="lesson-duration">8:30</span>
                                         <button class="play-btn" onclick="playAudio('audio/1.1.mp3', '基础问候语')">
-                                            <i class="fas fa-play"></i>
+                                            <<i class="fas fa-play"><</i>
                                         </button>
                                     </div>
                                     <div class="lesson-item">
@@ -1058,7 +1062,7 @@
                                         </div>
                                         <span class="lesson-duration">10:15</span>
                                         <button class="play-btn" onclick="playAudio('audio/1.2.mp3', '自我介绍')">
-                                            <i class="fas fa-play"></i>
+                                            <<i class="fas fa-play"><</i>
                                         </button>
                                     </div>
                                     <div class="lesson-item">
@@ -1068,7 +1072,7 @@
                                         </div>
                                         <span class="lesson-duration">7:45</span>
                                         <button class="play-btn" onclick="playAudio('audio/1.3.mp3', '询问和回答个人信息')">
-                                            <i class="fas fa-play"></i>
+                                            <<i class="fas fa-play"><</i>
                                         </button>
                                     </div>
                                     <div class="lesson-item">
@@ -1078,7 +1082,7 @@
                                         </div>
                                         <span class="lesson-duration">9:20</span>
                                         <button class="play-btn" onclick="playAudio('audio/1.4.mp3', '谈论天气和季节')">
-                                            <i class="fas fa-play"></i>
+                                            <<i class="fas fa-play"><</i>
                                         </button>
                                     </div>
                                     <div class="lesson-item">
@@ -1088,7 +1092,7 @@
                                         </div>
                                         <span class="lesson-duration">9:05</span>
                                         <button class="play-btn" onclick="playAudio('audio/1.5.mp3', '第一单元复习与练习')">
-                                            <i class="fas fa-play"></i>
+                                            <<i class="fas fa-play"><</i>
                                         </button>
                                     </div>
                                 </div>
@@ -1108,7 +1112,7 @@
                                         </div>
                                         <span class="lesson-duration">10:30</span>
                                         <button class="play-btn" onclick="playAudio('audio/2.1.mp3', '预订餐厅和入座')">
-                                            <i class="fas fa-play"></i>
+                                            <<i class="fas fa-play"><</i>
                                         </button>
                                     </div>
                                     <div class="lesson-item">
@@ -1118,7 +1122,7 @@
                                         </div>
                                         <span class="lesson-duration">11:15</span>
                                         <button class="play-btn" onclick="playAudio('audio/2.2.mp3', '点餐用语')">
-                                            <i class="fas fa-play"></i>
+                                            <<i class="fas fa-play"><</i>
                                         </button>
                                     </div>
                                     <div class="lesson-item">
@@ -1128,7 +1132,7 @@
                                         </div>
                                         <span class="lesson-duration">9:45</span>
                                         <button class="play-btn" onclick="playAudio('audio/2.3.mp3', '询问菜品和特殊要求')">
-                                            <i class="fas fa-play"></i>
+                                            <<i class="fas fa-play"><</i>
                                         </button>
                                     </div>
                                     <div class="lesson-item">
@@ -1138,7 +1142,7 @@
                                         </div>
                                         <span class="lesson-duration">9:30</span>
                                         <button class="play-btn" onclick="playAudio('audio/2.4.mp3', '用餐过程中的交流')">
-                                            <i class="fas fa-play"></i>
+                                            <<i class="fas fa-play"><</i>
                                         </button>
                                     </div>
                                     <div class="lesson-item">
@@ -1148,7 +1152,7 @@
                                         </div>
                                         <span class="lesson-duration">9:00</span>
                                         <button class="play-btn" onclick="playAudio('audio/2.5.mp3', '结账和感谢')">
-                                            <i class="fas fa-play"></i>
+                                            <<i class="fas fa-play"><</i>
                                         </button>
                                     </div>
                                 </div>
@@ -1168,7 +1172,7 @@
                                         </div>
                                         <span class="lesson-duration">9:40</span>
                                         <button class="play-btn" onclick="playAudio('audio/3.1.mp3', '询问商品和价格')">
-                                            <i class="fas fa-play"></i>
+                                            <<i class="fas fa-play"><</i>
                                         </button>
                                     </div>
                                     <div class="lesson-item">
@@ -1178,7 +1182,7 @@
                                         </div>
                                         <span class="lesson-duration">10:10</span>
                                         <button class="play-btn" onclick="playAudio('audio/3.2.mp3', '讨论尺寸和颜色')">
-                                            <i class="fas fa-play"></i>
+                                            <<i class="fas fa-play"><</i>
                                         </button>
                                     </div>
                                     <div class="lesson-item">
@@ -1188,7 +1192,7 @@
                                         </div>
                                         <span class="lesson-duration">8:50</span>
                                         <button class="play-btn" onclick="playAudio('audio/3.3.mp3', '试穿和试用')">
-                                            <i class="fas fa-play"></i>
+                                            <<i class="fas fa-play"><</i>
                                         </button>
                                     </div>
                                     <div class="lesson-item">
@@ -1198,7 +1202,7 @@
                                         </div>
                                         <span class="lesson-duration">10:20</span>
                                         <button class="play-btn" onclick="playAudio('audio/3.4.mp3', '讨价还价和优惠')">
-                                            <i class="fas fa-play"></i>
+                                            <<i class="fas fa-play"><</i>
                                         </button>
                                     </div>
                                     <div class="lesson-item">
@@ -1208,7 +1212,7 @@
                                         </div>
                                         <span class="lesson-duration">9:00</span>
                                         <button class="play-btn" onclick="playAudio('audio/3.5.mp3', '付款和包装')">
-                                            <i class="fas fa-play"></i>
+                                            <<i class="fas fa-play"><</i>
                                         </button>
                                     </div>
                                 </div>
@@ -1228,7 +1232,7 @@
                                         </div>
                                         <span class="lesson-duration">10:30</span>
                                         <button class="play-btn" onclick="playAudio('audio/4.1.mp3', '询问路线和方向')">
-                                            <i class="fas fa-play"></i>
+                                            <<i class="fas fa-play"><</i>
                                         </button>
                                     </div>
                                     <div class="lesson-item">
@@ -1238,7 +1242,7 @@
                                         </div>
                                         <span class="lesson-duration">11:15</span>
                                         <button class="play-btn" onclick="playAudio('audio/4.2.mp3', '公共交通用语')">
-                                            <i class="fas fa-play"></i>
+                                            <<i class="fas fa-play"><</i>
                                         </button>
                                     </div>
                                     <div class="lesson-item">
@@ -1248,7 +1252,7 @@
                                         </div>
                                         <span class="lesson-duration">9:45</span>
                                         <button class="play-btn" onclick="playAudio('audio/4.3.mp3', '出租车与网约车')">
-                                            <i class="fas fa-play"></i>
+                                            <<i class="fas fa-play"><</i>
                                         </button>
                                     </div>
                                     <div class="lesson-item">
@@ -1258,7 +1262,7 @@
                                         </div>
                                         <span class="lesson-duration">11:20</span>
                                         <button class="play-btn" onclick="playAudio('audio/4.4.mp3', '机场与航班')">
-                                            <i class="fas fa-play"></i>
+                                            <<i class="fas fa-play"><</i>
                                         </button>
                                     </div>
                                     <div class="lesson-item">
@@ -1268,7 +1272,7 @@
                                         </div>
                                         <span class="lesson-duration">9:30</span>
                                         <button class="play-btn" onclick="playAudio('audio/4.5.mp3', '酒店住宿相关对话')">
-                                            <i class="fas fa-play"></i>
+                                            <<i class="fas fa-play"><</i>
                                         </button>
                                     </div>
                                 </div>
@@ -1276,19 +1280,21 @@
                         </div>
                     </div>
 
-                    <!-- 学员评价内容 -->
+                    <!-- 学员评价内容（修复1285行：添加隐藏input关联label） -->
                     <div class="tab-content" id="reviews">
                         <div class="write-review">
                             <h3>写下您的评价</h3>
                             <form class="review-form">
                                 <div class="review-field">
                                     <label for="rating">您的评分</label>
+                                    <!-- 核心修复：添加id=rating的隐藏input，关联label -->
+                                    <input type="hidden" id="rating" name="rating" value="0">
                                     <div class="rating-input">
-                                        <span class="rating-star" data-rating="1" onclick="setRating(1)"><i class="fas fa-star"></i></span>
-                                        <span class="rating-star" data-rating="2" onclick="setRating(2)"><i class="fas fa-star"></i></span>
-                                        <span class="rating-star" data-rating="3" onclick="setRating(3)"><i class="fas fa-star"></i></span>
-                                        <span class="rating-star" data-rating="4" onclick="setRating(4)"><i class="fas fa-star"></i></span>
-                                        <span class="rating-star" data-rating="5" onclick="setRating(5)"><i class="fas fa-star"></i></span>
+                                        <span class="rating-star" data-rating="1" onclick="setRating(1)"><<i class="fas fa-star"><</i></span>
+                                        <span class="rating-star" data-rating="2" onclick="setRating(2)"><<i class="fas fa-star"><</i></span>
+                                        <span class="rating-star" data-rating="3" onclick="setRating(3)"><<i class="fas fa-star"><</i></span>
+                                        <span class="rating-star" data-rating="4" onclick="setRating(4)"><<i class="fas fa-star"><</i></span>
+                                        <span class="rating-star" data-rating="5" onclick="setRating(5)"><<i class="fas fa-star"><</i></span>
                                     </div>
                                 </div>
                                 <div class="review-field">
@@ -1302,11 +1308,11 @@
                         <div class="reviews-header">
                             <div class="overall-rating">
                                 <div class="rating-stars">
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star-half-alt"></i>
+                                    <<i class="fas fa-star"><</i>
+                                    <<i class="fas fa-star"><</i>
+                                    <<i class="fas fa-star"><</i>
+                                    <<i class="fas fa-star"><</i>
+                                    <<i class="fas fa-star-half-alt"><</i>
                                 </div>
                                 <div>
                                     <span class="rating-score">4.9</span>
@@ -1364,11 +1370,11 @@
                                         </div>
                                     </div>
                                     <div class="review-rating">
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
+                                        <<i class="fas fa-star"><</i>
+                                        <<i class="fas fa-star"><</i>
+                                        <<i class="fas fa-star"><</i>
+                                        <<i class="fas fa-star"><</i>
+                                        <<i class="fas fa-star"><</i>
                                     </div>
                                 </div>
                                 <div class="review-content">
@@ -1386,11 +1392,11 @@
                                         </div>
                                     </div>
                                     <div class="review-rating">
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star-half-alt"></i>
+                                        <<i class="fas fa-star"><</i>
+                                        <<i class="fas fa-star"><</i>
+                                        <<i class="fas fa-star"><</i>
+                                        <<i class="fas fa-star"><</i>
+                                        <<i class="fas fa-star-half-alt"><</i>
                                     </div>
                                 </div>
                                 <div class="review-content">
@@ -1408,11 +1414,11 @@
                                         </div>
                                     </div>
                                     <div class="review-rating">
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="far fa-star"></i>
+                                        <<i class="fas fa-star"><</i>
+                                        <<i class="fas fa-star"><</i>
+                                        <<i class="fas fa-star"><</i>
+                                        <<i class="fas fa-star"><</i>
+                                        <<i class="far fa-star"><</i>
                                     </div>
                                 </div>
                                 <div class="review-content">
@@ -1469,7 +1475,7 @@
             <aside class="chapter-sidebar">
                 <div class="chapter-header">
                     <button class="back-button">
-                        <i class="fas fa-arrow-left"></i>
+                        <<i class="fas fa-arrow-left"><</i>
                     </button>
                     <h2>课程章节</h2>
                 </div>
@@ -1558,11 +1564,8 @@
 
             tabBtns.forEach(btn => {
                 btn.addEventListener('click', function() {
-                    // 移除所有活跃状态
                     tabBtns.forEach(b => b.classList.remove('active'));
                     tabContents.forEach(c => c.classList.remove('active'));
-
-                    // 添加当前活跃状态
                     this.classList.add('active');
                     const tabId = this.getAttribute('data-tab');
                     document.getElementById(tabId).classList.add('active');
@@ -1605,38 +1608,31 @@
         // 单元展开/折叠功能
         function toggleUnit(header) {
             const lessonList = header.nextElementSibling;
-            const isVisible = lessonList.style.display !== 'none';
-            lessonList.style.display = isVisible ? 'none' : 'block';
+            lessonList.classList.toggle('show');
         }
 
         // 音频播放功能
         function playAudio(src, title) {
             const audioPlayer = document.getElementById('audioPlayer');
             const source = audioPlayer.querySelector('source');
-
-            // 更新音频源并播放
             source.src = src;
             audioPlayer.load();
             audioPlayer.play();
-
-            // 显示音频播放器
             audioPlayer.style.display = 'block';
             audioPlayer.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
 
-        // 评分星星功能
+        // 评分星星功能（同步更新隐藏input值）
         let selectedRating = 0;
         function setRating(rating) {
             selectedRating = rating;
             const stars = document.querySelectorAll('.rating-star');
+            // 同步更新隐藏input的评分值
+            document.getElementById('rating').value = rating;
 
             stars.forEach(star => {
                 const starRating = parseInt(star.getAttribute('data-rating'));
-                if (starRating <= rating) {
-                    star.classList.add('active');
-                } else {
-                    star.classList.remove('active');
-                }
+                star.classList.toggle('active', starRating <= rating);
             });
 
             // 启用提交按钮
@@ -1645,19 +1641,18 @@
 
         // 提交评价功能
         document.getElementById('submitReview').addEventListener('click', function() {
-            const content = document.getElementById('reviewContent').value;
-            if (!content.trim()) {
+            const content = document.getElementById('reviewContent').value.trim();
+            if (!content) {
                 alert('请输入评价内容');
                 return;
             }
 
             alert(`感谢您的评价！\n评分：${selectedRating}星\n内容：${content}`);
-            // 实际应用中这里会发送评价到服务器
+            // 重置表单
             document.querySelector('.review-form').reset();
-            document.querySelectorAll('.rating-star').forEach(star => {
-                star.classList.remove('active');
-            });
+            document.querySelectorAll('.rating-star').forEach(star => star.classList.remove('active'));
             selectedRating = 0;
+            document.getElementById('rating').value = 0;
             this.disabled = true;
         });
     </script>

@@ -41,6 +41,9 @@ app.use(limiter);
 connectDB();
 connectRedis();
 
+// 静态文件服务
+app.use('/uploads', express.static('uploads'));
+
 // 路由配置
 app.use('/api', routes);
 

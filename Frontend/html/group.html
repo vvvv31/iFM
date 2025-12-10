@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>合集管理</title>
+    <link rel="stylesheet" href="../css/mystyle.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .group-container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .group-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        
+        .message {
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            display: none;
+        }
+        
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .groups-list {
+            margin-top: 30px;
+        }
+        
+        .group-item {
+            padding: 15px;
+            background-color: white;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .group-item h3 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+        
+        .group-item p {
+            margin: 0 0 10px 0;
+            color: #666;
+        }
+        
+        .group-item small {
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="group-container">
+        <div class="group-header">
+            <h1><i class="fas fa-folder"></i> 合集管理</h1>
+            <p>创建和管理你的音频合集</p>
+        </div>
+        
+        <!-- 创建合集表单 -->
+        <div class="form-container">
+            <h2>创建新合集</h2>
+            <form id="create-group-form">
+                <div class="form-group">
+                    <label for="group-name">合集名称</label>
+                    <input type="text" id="group-name" name="name" placeholder="请输入合集名称" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="group-description">合集描述</label>
+                    <textarea id="group-description" name="description" rows="3" placeholder="请输入合集描述"></textarea>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-plus"></i>
+                    创建合集
+                </button>
+            </form>
+        </div>
+        
+        <div id="message" class="message"></div>
+        
+        <!-- 合集列表 -->
+        <div class="groups-list">
+            <h2>我的合集</h2>
+            <div id="groups-container">
+                <div class="group-item">暂无合集</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // DOM元素
+        const createGroupForm = document.getElementById('create-group-form');
+        const groupsContainer = document.getElementById('groups-container');
+        const message = document.getElementById('message');
+        
+        // 表单提交事件监听
+        createGroupForm.addEventListener('submit', handleCreateGroup);
+        
+        // 页面加载时获取合集列表
+        document.addEventListener('DOMContentLoaded', () => {
+            loadGroups();
+        });
+        
+        /**
+         * 获取认证令牌
+         */
+        function getAuthToken() {
+            return localStorage.getItem('authToken') || '';
+        }
+        
+        /**
+         * 处理创建合集
+         */
+        function handleCreateGroup(event) {
+            event.preventDefault();
+            
+            const formData = new FormData(createGroupForm);
+            const groupData = {
+                name: formData.get('name'),
+                description: formData.get('description')
+            };
+            
+            fetch('http://localhost:3000/api/group/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${getAuthToken()}`
+                },
+                body: JSON.stringify(groupData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.code === 0) {
+                    showMessage('合集创建成功！', 'success');
+                    createGroupForm.reset();
+                    loadGroups(); // 重新加载合集列表
+                } else {
+                    showMessage(data.message || '创建失败', 'error');
+                }
+            })
+            .catch(error => {
+                showMessage('网络错误，创建失败', 'error');
+            });
+        }
+        
+        /**
+         * 加载合集列表
+         */
+        function loadGroups() {
+            fetch('http://localhost:3000/api/group/user', {
+                headers: {
+                    'Authorization': `Bearer ${getAuthToken()}`
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.code === 0) {
+                    const groups = data.data;
+                    
+                    if (groups.length === 0) {
+                        groupsContainer.innerHTML = '<div class="group-item">暂无合集</div>';
+                        return;
+                    }
+                    
+                    const groupsHtml = groups.map(group => `
+                        <div class="group-item">
+                            <h3>${group.name}</h3>
+                            <p>${group.description || '无描述'}</p>
+                            <small>创建于: ${new Date(group.createdAt).toLocaleString()}</small>
+                        </div>
+                    `).join('');
+                    
+                    groupsContainer.innerHTML = groupsHtml;
+                } else {
+                    showMessage(data.message || '加载失败', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('加载合集列表失败:', error);
+            });
+        }
+        
+        /**
+         * 显示消息
+         */
+        function showMessage(text, type = 'info') {
+            message.textContent = text;
+            message.className = `message ${type}`;
+            message.style.display = 'block';
+            
+            // 3秒后自动隐藏消息
+            setTimeout(() => {
+                message.style.display = 'none';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

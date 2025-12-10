@@ -874,6 +874,52 @@
 
       <audio id="pv-audio" preload="metadata"></audio>
     </aside>
+    
+    <!-- 群组聊天脚本绑定（启用切换群组与发送消息） -->
+    <script>
+    (function(){
+        // Ensure global ws from script.js exists and is connected via initWebSocket on DOMContentLoaded
+        window.switchGroup = function(groupId){
+            // UI switch: mark active list item
+            document.querySelectorAll('.group-item').forEach(el=>el.classList.toggle('active', el.getAttribute('data-group-id')==groupId));
+            // show loading indicator briefly
+            const ind = document.getElementById('switchIndicator'); if(ind){ ind.style.display='flex'; setTimeout(()=>ind.style.display='none',500); }
+            // fetch group info (placeholder)
+            const nameEl = document.getElementById('currentGroupName'); if(nameEl) nameEl.textContent = document.querySelector(`.group-item[data-group-id="${groupId}"] .group-info h4`).textContent || '群组';
+            // update members count mock
+            const memberCountEl = document.getElementById('currentMemberCount'); if(memberCountEl) memberCountEl.textContent = '成员: ' + (30 + Number(groupId));
+            // clear chat and load placeholder messages (in real app, fetch from /api/group/:id/messages)
+            const chat = document.getElementById('chatMessages'); if(chat){ chat.innerHTML = ''; chat.appendChild((function(){ const sys = document.createElement('div'); sys.className='system-message'; sys.innerHTML = '<div class="message-bubble"><div class="message-text">已切换到群组 '+groupId+'</div></div>'; return sys; })()); }
+        };
+
+        const sendBtn = document.getElementById('sendBtn');
+        const messageInput = document.getElementById('messageInput');
+
+        function sendMessage(){
+            const text = (messageInput.value||'').trim(); if(!text) return;
+            // prefer existing global ws if available
+            if(window.ws && window.ws.readyState === WebSocket.OPEN){
+                const uid = (window.currentUser && window.currentUser.id) ? window.currentUser.id : (typeof currentUser !== 'undefined' && currentUser.id ? currentUser.id : ('anon_' + Math.random().toString(36).slice(2,8)));
+                window.ws.send(JSON.stringify({ type:'comment', userId: uid, content: text, timestamp: Date.now() }));
+            } else {
+                // fallback: append locally
+                const chat = document.getElementById('chatMessages'); if(chat){ const el = document.createElement('div'); el.className='message-item own-message'; el.innerHTML = `<div class="message-avatar">ME</div><div class="message-content-wrapper"><div class="message-info"><span class="message-sender">我</span><span class="message-time">${new Date().toLocaleTimeString()}</span></div><div class="message-bubble"><div class="message-text">${text}</div></div></div>`; chat.appendChild(el); chat.scrollTop = chat.scrollHeight; }
+            }
+            messageInput.value = '';
+        }
+
+        if(sendBtn){ sendBtn.addEventListener('click', sendMessage); }
+        if(messageInput){ messageInput.addEventListener('keypress', (e)=>{ if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); sendMessage(); } }); }
+
+        // copy invite code
+        window.copyInviteCode = function(){ const codeEl = document.querySelector('.invite-code'); if(!codeEl) return; const text = codeEl.textContent || codeEl.innerText; navigator.clipboard && navigator.clipboard.writeText(text).then(()=>{ showNotification('邀请码已复制'); }).catch(()=>{ alert('复制失败：'+text); }); };
+
+        window.showGroupMembers = function(){ const listEl = document.getElementById('onlineMembers'); if(!listEl) return; listEl.innerHTML = ''; for(let i=1;i<=5;i++){ const item = document.createElement('div'); item.className='member-item'; item.innerHTML = `<div class="member-avatar online">U${i}</div><span class="member-name">成员${i}</span>`; listEl.appendChild(item); } };
+
+        // basic delete stub
+        window.deleteCurrentGroup = function(){ if(confirm('确认删除当前群组？此操作不可撤销')){ showNotification('群组已删除（模拟）'); } };
+    })();
+    </script>
 
     <script>
         // 英语学习群组数据
@@ -939,9 +985,60 @@
 
         function initializePage() {
             const urlParams = new URLSearchParams(window.location.search);
-            const groupIdFromUrl = urlParams.get('group');
-            if (groupIdFromUrl && groupData[groupIdFromUrl]) {
-                currentGroupId = parseInt(groupIdFromUrl);
+            const groupIdFromUrl = urlParams.get('groupId') || urlParams.get('group');
+            if (groupIdFromUrl) {
+                // if we already have data for this id, use it
+                if (groupData[groupIdFromUrl]) {
+                    currentGroupId = isNaN(groupIdFromUrl) ? groupIdFromUrl : parseInt(groupIdFromUrl);
+                    loadGroupData(currentGroupId);
+                    setupEventListeners();
+                    return;
+                }
+                // try to fetch from backend
+                fetch('/api/group/' + encodeURIComponent(groupIdFromUrl)).then(res => {
+                    if (res.ok) return res.json();
+                    throw new Error('no-data');
+                }).then(json => {
+                    const id = groupIdFromUrl;
+                    groupData[id] = {
+                        name: json.name || ('群组 ' + id),
+                        description: json.desc || json.description || '',
+                        memberCount: json.members || json.memberCount || 1,
+                        messages: json.messages || [{ sender: '系统', text: '已进入群组', time: new Date().toLocaleTimeString(), isSystem: true }],
+                        onlineMembers: json.onlineMembers || [],
+                        allMembers: json.allMembers || [],
+                        unreadCount: json.unreadCount || 0,
+                        todayTopic: json.todayTopic || ''
+                    };
+                    currentGroupId = id;
+                    loadGroupData(currentGroupId);
+                    setupEventListeners();
+                }).catch(() => {
+                    // fallback to sampleGroups if present (navigated within same session)
+                    if (window.sampleGroups && Array.isArray(window.sampleGroups)) {
+                        const found = window.sampleGroups.find(g => String(g.id) === String(groupIdFromUrl));
+                        if (found) {
+                            groupData[groupIdFromUrl] = {
+                                name: found.name,
+                                description: found.desc || '',
+                                memberCount: found.members || 1,
+                                messages: [{ sender: '系统', text: '占位群组（来自本地）', time: new Date().toLocaleTimeString(), isSystem: true }],
+                                onlineMembers: [], allMembers: [], unreadCount: 0, todayTopic: ''
+                            };
+                            currentGroupId = groupIdFromUrl;
+                            loadGroupData(currentGroupId);
+                            setupEventListeners();
+                            return;
+                        }
+                    }
+                    // final fallback: create placeholder
+                    const id = groupIdFromUrl;
+                    groupData[id] = { name: '群组 ' + id, description: '暂无描述', memberCount: 1, messages: [{ sender: '系统', text: '占位群组', time: new Date().toLocaleTimeString(), isSystem: true }], onlineMembers: [], allMembers: [], unreadCount: 0, todayTopic: '' };
+                    currentGroupId = id;
+                    loadGroupData(currentGroupId);
+                    setupEventListeners();
+                });
+                return;
             }
             loadGroupData(currentGroupId);
             setupEventListeners();
@@ -957,7 +1054,7 @@
             if (groupId !== currentGroupId) {
                 currentGroupId = groupId;
                 loadGroupData(groupId);
-                const newUrl = window.location.pathname + '?group=' + groupId;
+                const newUrl = window.location.pathname + '?groupId=' + encodeURIComponent(groupId);
                 window.history.pushState({ groupId: groupId }, '', newUrl);
             }
         }
@@ -1046,18 +1143,19 @@
         function updateGroupListActiveState(activeGroupId) {
             const desktopItems = document.querySelectorAll('.group-items .group-item');
             desktopItems.forEach(item => {
-                const groupId = parseInt(item.getAttribute('data-group-id'));
-                const group = groupData[groupId];
-                if (groupId === activeGroupId) {
+                const groupIdAttr = item.getAttribute('data-group-id');
+                const isActive = String(groupIdAttr) === String(activeGroupId);
+                const group = groupData[groupIdAttr] || groupData[Number(groupIdAttr)];
+                if (isActive) {
                     item.classList.add('active');
-                    if (group.unreadCount > 0) {
+                    if (group && group.unreadCount > 0) {
                         group.unreadCount = 0;
                         const countElement = item.querySelector('.message-count');
                         if (countElement) countElement.remove();
                     }
                 } else {
                     item.classList.remove('active');
-                    if (group.unreadCount > 0) {
+                    if (group && group.unreadCount > 0) {
                         let countElement = item.querySelector('.message-count');
                         if (!countElement) {
                             countElement = document.createElement('span');
@@ -1074,18 +1172,19 @@
 
             const mobileItems = document.querySelectorAll('.group-list-mobile .group-item');
             mobileItems.forEach(item => {
-                const groupId = parseInt(item.getAttribute('data-group-id'));
-                const group = groupData[groupId];
-                if (groupId === activeGroupId) {
+                const groupIdAttr = item.getAttribute('data-group-id');
+                const isActive = String(groupIdAttr) === String(activeGroupId);
+                const group = groupData[groupIdAttr] || groupData[Number(groupIdAttr)];
+                if (isActive) {
                     item.classList.add('active');
-                    if (group.unreadCount > 0) {
+                    if (group && group.unreadCount > 0) {
                         group.unreadCount = 0;
                         const countElement = item.querySelector('.message-count');
                         if (countElement) countElement.remove();
                     }
                 } else {
                     item.classList.remove('active');
-                    if (group.unreadCount > 0) {
+                    if (group && group.unreadCount > 0) {
                         let countElement = item.querySelector('.message-count');
                         if (!countElement) {
                             countElement = document.createElement('span');

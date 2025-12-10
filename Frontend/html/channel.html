@@ -418,34 +418,38 @@
                 }
             });
 
-            createGroupModal.querySelector('.btn-create').addEventListener('click', function() {
-                const groupName = createGroupModal.querySelector('#groupName').value;
-                const groupDescription = createGroupModal.querySelector('#groupDescription').value;
+            createGroupModal.querySelector('.btn-create').addEventListener('click', async function() {
+              const groupName = createGroupModal.querySelector('#groupName').value;
+              const groupDescription = createGroupModal.querySelector('#groupDescription').value;
 
-                if (groupName) {
-                    const inviteCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+              if (!groupName) return alert('请输入群组名称');
 
-                    const newGroupItem = document.createElement('div');
-                    newGroupItem.className = 'group-item';
-                    newGroupItem.innerHTML = `
-                        <div class="group-info">
-                            <h3>${groupName}</h3>
-                            <p>${groupDescription || '暂无描述'}</p>
-                        </div>
-                        <div class="group-buttons">
-                            <span class="members-count">已加入1人</span>
-                            <button class="join-btn" onclick="window.location.href='channel2.html'">加入</button>
-                            <span class="invite-code">邀请码：${inviteCode}</span>
-                        </div>
-                    `;
-                    const groupsGrid = document.querySelector('.groups-grid');
-                    if (groupsGrid) {
-                        groupsGrid.appendChild(newGroupItem);
-                    }
-                    createGroupModal.style.display = 'none';
-                } else {
-                    alert('请输入群组名称');
+              // try backend create, otherwise fallback to client id
+              let createdId = null;
+              try{
+                const res = await fetch('/api/group', {
+                  method: 'POST', headers: {'Content-Type':'application/json'},
+                  body: JSON.stringify({ name: groupName, desc: groupDescription })
+                });
+                if(res.ok){
+                  const json = await res.json();
+                  if(json && json.id) createdId = json.id;
                 }
+              }catch(err){
+                // ignore and fallback
+              }
+              if(!createdId) createdId = 'g' + Date.now();
+
+              const newGroup = { id: createdId, name: groupName, desc: groupDescription || '暂无描述', members: 1, category: '其他' };
+              if(window.sampleGroups && Array.isArray(window.sampleGroups)){
+                window.sampleGroups.unshift(newGroup);
+              } else {
+                sampleGroups.unshift(newGroup);
+              }
+              renderGroups(window.sampleGroups || sampleGroups);
+              createGroupModal.style.display = 'none';
+              // navigate to the group's page
+              window.location.href = `channel2.html?groupId=${encodeURIComponent(createdId)}`;
             });
         });
     </script>
@@ -696,6 +700,8 @@
           { id:2, name:'早起打卡组', desc:'每天早起一起学习', members:64, category:'其他' },
           { id:3, name:'深度讨论组', desc:'长篇材料讨论', members:32, category:'讨论' }
         ];
+        // expose for other scripts/pages
+        window.sampleGroups = sampleGroups;
 
         const samplePosts = [
           { id:1, author:'小明', text:'刚完成一节发音练习，收获颇丰！', likes:4, time:'1小时前', tags:['学习'] },
@@ -714,12 +720,23 @@
         const attachBtn = document.getElementById('attachBtn');
         const composerFiles = document.getElementById('composerFiles');
         const previewArea = document.getElementById('previewArea');
+        const channelSearch = document.getElementById('channelSearch');
+        const clearSearch = document.getElementById('clearSearch');
+
+        function escapeHtml(str){
+          return String(str).replace(/[&<>"']/g, function(m){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"})[m]; });
+        }
 
         function renderGroups(list){
           groupsGrid.innerHTML = '';
           list.forEach(g=>{
             const el = document.createElement('div'); el.className='group-item';
-            el.innerHTML = `<div class="group-info"><h3>${g.name}</h3><p>${g.desc}</p></div><div class="group-buttons"><span class="members-count">已加入${g.members}人</span><button class="join-btn">加入</button><span class="invite-code">邀请码：${Math.random().toString(36).slice(2,8).toUpperCase()}</span></div>`;
+            el.setAttribute('data-group-id', g.id);
+            el.innerHTML = `<div class="group-info"><h3>${escapeHtml(g.name)}</h3><p>${escapeHtml(g.desc)}</p></div><div class="group-buttons"><span class="members-count">已加入${g.members}人</span><button class="join-btn" data-id="${g.id}">加入</button><span class="invite-code">邀请码：${Math.random().toString(36).slice(2,8).toUpperCase()}</span></div>`;
+            // clicking the group navigates to the chat/detail page for that group
+            el.addEventListener('click', ()=>{
+              window.location.href = `channel2.html?groupId=${encodeURIComponent(g.id)}`;
+            });
             groupsGrid.appendChild(el);
           });
         }
@@ -728,7 +745,7 @@
           postsList.innerHTML = '';
           list.forEach(p=>{
             const node = document.createElement('div'); node.className='post-card';
-            node.innerHTML = `<div class="post-meta"><span>${p.author}</span><span>${p.time}</span></div><div class="post-body">${p.text}</div><div class="post-actions"><button class="like-btn">❤ ${p.likes}</button></div>`;
+            node.innerHTML = `<div class="post-meta"><span>${escapeHtml(p.author)}</span><span>${escapeHtml(p.time)}</span></div><div class="post-body">${escapeHtml(p.text)}</div><div class="post-actions"><button class="like-btn" data-id="${p.id}">❤ ${p.likes}</button></div>`;
             postsList.appendChild(node);
           });
         }
@@ -737,15 +754,29 @@
         renderGroups(sampleGroups);
         renderPosts(samplePosts);
 
-        // Category click
+        // Category click: 'feed' shows feed; 'groups' shows all groups; other categories filter groups
         categoryList.addEventListener('click', (e)=>{
           const btn = e.target.closest('.category-item'); if(!btn) return;
           document.querySelectorAll('.category-item').forEach(b=>b.classList.remove('active'));
           btn.classList.add('active');
           const cat = btn.getAttribute('data-category');
           if(cat === 'feed') { feedPanel.style.display='block'; groupsPanel.style.display='none'; }
-          else { feedPanel.style.display='none'; groupsPanel.style.display='block'; }
+          else if(cat === 'groups') { feedPanel.style.display='none'; groupsPanel.style.display='block'; renderGroups(sampleGroups); }
+          else { feedPanel.style.display='none'; groupsPanel.style.display='block'; renderGroups(sampleGroups.filter(g=>g.category===cat)); }
         });
+
+        // Search box filters groups by name
+        function applySearchFilter(){
+          const q = (channelSearch.value||'').trim().toLowerCase();
+          const activeCatBtn = document.querySelector('.category-item.active');
+          const activeCat = activeCatBtn ? activeCatBtn.getAttribute('data-category') : null;
+          let list = sampleGroups.slice();
+          if(activeCat && activeCat !== 'feed' && activeCat !== 'groups') list = list.filter(g=>g.category===activeCat);
+          if(q) list = list.filter(g=> g.name.toLowerCase().includes(q) || g.desc.toLowerCase().includes(q));
+          renderGroups(list);
+        }
+        channelSearch && channelSearch.addEventListener('input', applySearchFilter);
+        clearSearch && clearSearch.addEventListener('click', ()=>{ if(channelSearch) channelSearch.value=''; applySearchFilter(); });
 
         // View mode
         function setViewMode(mode){
@@ -761,18 +792,34 @@
         sortSelect.addEventListener('change', ()=>{
           const val = sortSelect.value; let sorted = [...sampleGroups];
           if(val==='new') sorted.sort((a,b)=>b.id-a.id);
-          else if(val==='members') sorted.sort((a,b)=>b.members-b.members);
-          else sorted = sorted; // active sort mock
+          else if(val==='members') sorted.sort((a,b)=>b.members - a.members).reverse();
+          else if(val==='active') sorted.sort((a,b)=>b.members - a.members).reverse();
           renderGroups(sorted);
         });
 
-        // Filter chips
+        // Filter chips (tags) affect groups display
         filterChips.forEach(ch=> ch.addEventListener('click', ()=>{
           ch.classList.toggle('active');
           const active = Array.from(filterChips).filter(c=>c.classList.contains('active')).map(c=>c.getAttribute('data-filter'));
           if(active.length===0) renderGroups(sampleGroups);
           else renderGroups(sampleGroups.filter(g=> active.includes(g.category)));
         }));
+
+        // Join button handler (delegated)
+        groupsGrid.addEventListener('click', (e)=>{
+          const btn = e.target.closest('.join-btn'); if(!btn) return;
+          e.stopPropagation(); // prevent parent group click from firing navigation
+          const id = btn.getAttribute('data-id');
+          btn.textContent = '已加入'; btn.disabled = true; // mock behavior
+        });
+
+        // Post like handler (delegated)
+        postsList.addEventListener('click', (e)=>{
+          const btn = e.target.closest('.like-btn'); if(!btn) return;
+          const id = Number(btn.getAttribute('data-id'));
+          const post = samplePosts.find(p=>p.id===id); if(!post) return;
+          post.likes = (post.likes||0) + 1; renderPosts(samplePosts);
+        });
 
         // Composer
         attachBtn.addEventListener('click', ()=> composerFiles.click());
@@ -784,10 +831,17 @@
           });
         });
         document.getElementById('postBtn').addEventListener('click', ()=>{
-          const text = composerInput.value.trim(); if(!text) return alert('请输入内容');
+          const text = (composerInput.value||'').trim(); if(!text) return alert('请输入内容');
           const newPost = { id:Date.now(), author:'你', text, likes:0, time:'刚刚' };
           samplePosts.unshift(newPost); renderPosts(samplePosts); composerInput.value=''; previewArea.innerHTML=''; composerFiles.value='';
         });
+
+        // Ensure initial view based on active category
+        (function initPanels(){
+          const active = document.querySelector('.category-item.active');
+          if(active && active.getAttribute('data-category')==='feed') { feedPanel.style.display='block'; groupsPanel.style.display='none'; }
+          else { feedPanel.style.display='none'; groupsPanel.style.display='block'; }
+        })();
 
       })();
       </script>

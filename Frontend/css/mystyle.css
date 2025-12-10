@@ -5,8 +5,7 @@
     box-sizing: border-box;
 }
 
-/* Root font / background defaults */
-html, body {
+body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
     line-height: 1.6;
     color: #000;
@@ -22,107 +21,141 @@ html, body {
 
 /* 头部样式 */
 .header {
-    background-color: #FF8C00;
-    color: #fff;
-    padding: 8px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 15px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    background-color: #ff8c00;
+    padding: 15px 0;
+    box-shadow: 0 2px 4px rgba(255,140,0,0.1);
+    position: sticky;
+    top: 0;
     z-index: 1000;
 }
 
-/* Fixed header opt-in: add `has-fixed-header` to body for pages that should use a fixed header.
-   This keeps the change scoped (won't affect pages that don't opt in). */
-body.has-fixed-header .header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-}
-
-/* Reserve vertical space only for pages that enable the fixed header */
-body.has-fixed-header {
-    padding-top: 66px; /* adjust if header height changes */
+.header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 15px;
 }
 
 /* Logo样式 */
 .logo {
     display: flex;
     align-items: center;
-    gap: 8px;
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
 }
 
 .logo-img {
-    width: 30px;
-    height: 30px;
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
     border-radius: 50%;
-    background-color: #fff;
-}
-
-.logo-text {
-    font-size: 16px;
-    font-weight: bold;
-    color: #fff;
+    background-color: white;
 }
 
 /* 导航菜单样式 */
-.main-nav {
+.nav {
+    margin-left: 30px;
+}
+
+.nav-list {
     display: flex;
-    gap: 15px;
+    list-style: none;
+    gap: 20px;
 }
 
 .nav-item {
-    color: #fff;
-    text-decoration: none;
-    font-size: 14px;
-    padding: 4px 8px;
-    border-radius: 4px;
-    transition: background-color 0.3s;
+    margin: 0;
 }
 
-.nav-item:hover { background-color: rgba(255,255,255,0.2); }
-.nav-item.active { background-color: #fff; color: #FF8C00; font-weight: bold; }
+.nav-link {
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 500;
+    transition: color 0.3s;
+    padding: 5px 0;
+}
+
+.nav-link:hover,
+.nav-item.active .nav-link {
+    color: #fff8e1;
+}
 
 /* 搜索框样式 */
-.search-box {
+.search-container {
     flex: 1;
     max-width: 400px;
+    margin: 0 20px;
     position: relative;
 }
 
 .search-input {
     width: 100%;
-    padding: 6px 12px;
-    border: none;
-    border-radius: 4px;
+    padding: 10px 40px 10px 20px;
+    border: 1px solid #ffcc80;
+    border-radius: 25px;
     outline: none;
     font-size: 14px;
+    background-color: white;
+}
+
+.search-input:focus {
+    border-color: #ff8c00;
+    box-shadow: 0 0 0 2px rgba(255,140,0,0.1);
 }
 
 .search-btn {
     position: absolute;
-    right: 5px;
+    right: 10px;
     top: 50%;
     transform: translateY(-50%);
     background: none;
     border: none;
-    color: #999;
+    color: #ff8c00;
     cursor: pointer;
+    padding: 5px;
 }
 
 /* 用户菜单样式 */
-.user-functions {
+.user-menu-list {
     display: flex;
     align-items: center;
-    gap: 12px;
+    list-style: none;
+    gap: 15px;
 }
 
-.func-item { color: #fff; text-decoration: none; font-size: 14px; display:flex; align-items:center; gap:3px; }
-.func-item:hover { color: #FFEDCC; }
-.submit-btn { background-color:#fff; color:#FF8C00; border:none; padding:6px 12px; border-radius:4px; font-size:14px; font-weight:bold; cursor:pointer; }
-.submit-btn:hover { background-color:#FFEDCC; }
+.user-menu-item {
+    margin: 0;
+}
+
+.user-menu-link {
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: color 0.3s;
+    padding: 5px 0;
+}
+
+.user-menu-link:hover {
+    color: #fff8e1;
+}
+
+.btn-orange {
+    background-color: white;
+    color: #ff8c00 !important;
+    padding: 8px 20px;
+    border-radius: 25px;
+    font-weight: bold;
+    transition: all 0.3s;
+}
+
+.btn-orange:hover {
+    background-color: #fff8e1;
+    color: #ff8c00 !important;
+}
 
 /* 主要内容区域样式 */
 .main {
@@ -365,61 +398,6 @@ body.has-fixed-header {
 }
 
 /* 前三名特殊样式 */
-
-/* Upload page specific styles (scoped) */
-.upload-page * {
-    box-sizing: border-box;
-}
-.upload-page body {
-    /* body rules are global; keep page background via container instead */
-}
-.upload-page .upload-container {
-    max-width: 850px;
-    margin: 20px auto 60px auto;
-    padding: 30px;
-    background-color: white;
-    border-radius: 16px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-    animation: fadeIn 0.5s ease-in-out;
-}
-.upload-page h1 { text-align:center; margin-bottom:30px; color:#2c3e50; font-size:2.2rem; font-weight:700; }
-.upload-page .form-group { margin-bottom:25px; }
-.upload-page label { display:block; margin-bottom:8px; font-weight:600; color:#555; font-size:0.95rem; }
-.upload-page input[type="text"],
-.upload-page textarea,
-.upload-page select {
-    width:100%; padding:12px 15px; border:2px solid #e1e5e9; border-radius:8px; font-size:16px; background:#fafbfc;
-}
-.upload-page textarea { height:120px; resize:vertical; }
-.upload-page .file-input-wrapper { position:relative; overflow:hidden; display:inline-block; width:100%; }
-.upload-page .file-input { position:absolute; left:0; top:0; opacity:0; width:100%; height:100%; cursor:pointer; }
-.upload-page .file-input-label { display:block; padding:15px 20px; background:linear-gradient(135deg,#667eea 0%,#764ba2 100%); color:white; border-radius:8px; text-align:center; cursor:pointer; font-weight:600; }
-.upload-page .file-info { background:#e7f3fe; border-left:4px solid #2196F3; padding:15px; margin-top:15px; border-radius:8px; display:none; }
-.upload-page .audio-preview { margin:25px 0; display:none; }
-.upload-page .audio-preview audio { width:100%; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.1); }
-.upload-page .progress-container { width:100%; height:25px; background:#f1f3f4; border-radius:12px; margin:25px 0; display:none; overflow:hidden; }
-.upload-page .progress-fill { height:100%; background:linear-gradient(90deg,#4CAF50 0%,#45a049 100%); border-radius:12px; width:0%; transition:width 0.3s ease; box-shadow:0 0 10px rgba(76,175,80,0.4); position:relative; }
-.upload-page .progress-fill::after { content:''; position:absolute; top:0; left:0; right:0; bottom:0; background:linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent); animation:progressShine 1.5s infinite; }
-.upload-page .progress-text { text-align:center; position:relative; top:-25px; font-weight:600; color:#333; font-size:0.9rem; }
-.upload-page .btn-group { display:flex; gap:15px; margin-top:35px; flex-wrap:wrap; }
-.upload-page .btn { padding:14px 24px; border-radius:8px; font-size:16px; cursor:pointer; font-weight:600; flex:1; min-width:120px; }
-.upload-page .btn-primary { background:linear-gradient(135deg,#4CAF50 0%,#45a049 100%); color:white; box-shadow:0 4px 12px rgba(76,175,80,0.3); }
-.upload-page .btn-secondary { background:#f8f9fa; color:#495057; border:2px solid #dee2e6; }
-.upload-page .message { padding:16px 20px; margin-bottom:25px; border-radius:8px; display:none; font-weight:500; }
-.upload-page .message.success { background:#d4edda; border-left:4px solid #28a745; color:#155724; }
-.upload-page .message.error { background:#f8d7da; border-left:4px solid #dc3545; color:#721c24; }
-.upload-page #create-group-form { margin-top:25px; padding:25px; background:#f8f9fa; border-radius:12px; display:none; border:2px solid #e9ecef; }
-
-@keyframes fadeIn { from { opacity:0; transform:translateY(10px);} to { opacity:1; transform:translateY(0);} }
-@keyframes progressShine { 0% { transform:translateX(-100%);} 100% { transform:translateX(100%);} }
-
-@media (max-width:600px) {
-    .upload-page .upload-container { padding:20px; }
-    .upload-page h1 { font-size:1.8rem; }
-    .upload-page .btn-group { flex-direction:column; }
-    .upload-page .btn { width:100%; }
-}
-
 .rank-song:nth-child(1) .rank-num {
     background-color: #ff8c00;
     width: 26px;

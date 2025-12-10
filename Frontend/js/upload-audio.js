@@ -1,40 +1,40 @@
 // upload-audio.js - 音频上传前端逻辑
 
-// 全局变量（将在 DOMContentLoaded 时初始化元素）
-let fileInput, fileInfo, fileName, fileSize, fileDuration, audioTitle, audioDescription, audioGroup, uploadForm;
-let progressContainer, progressFill, progressText, audioPreview, audioPlayer, resetBtn, message;
+// DOM元素
+const fileInput = document.getElementById('audio-file');
+const fileInfo = document.getElementById('file-info');
+const fileName = document.getElementById('file-name');
+const fileSize = document.getElementById('file-size');
+const fileDuration = document.getElementById('file-duration');
+const audioTitle = document.getElementById('audio-title');
+const audioDescription = document.getElementById('audio-description');
+const audioGroup = document.getElementById('audio-group');
+const uploadForm = document.getElementById('upload-form');
+const progressContainer = document.getElementById('progress-container');
+const progressFill = document.getElementById('progress-fill');
+const progressText = document.getElementById('progress-text');
+const audioPreview = document.getElementById('audio-preview');
+const audioPlayer = document.getElementById('audio-player');
+const resetBtn = document.getElementById('reset-btn');
+const message = document.getElementById('message');
+
+// 全局变量
 let selectedFile = null;
 let audioURL = null;
 
-// 页面加载时初始化元素并绑定事件（安全加载在非上传页面）
+// 文件选择事件监听
+fileInput.addEventListener('change', handleFileSelect);
+
+// 表单提交事件监听
+uploadForm.addEventListener('submit', handleUpload);
+
+// 重置按钮事件监听
+resetBtn.addEventListener('click', resetForm);
+
+// 页面加载时获取用户合集列表
 document.addEventListener('DOMContentLoaded', () => {
-    fileInput = document.getElementById('audio-file');
-    fileInfo = document.getElementById('file-info');
-    fileName = document.getElementById('file-name');
-    fileSize = document.getElementById('file-size');
-    fileDuration = document.getElementById('file-duration');
-    audioTitle = document.getElementById('audio-title');
-    audioDescription = document.getElementById('audio-description');
-    audioGroup = document.getElementById('audio-group');
-    uploadForm = document.getElementById('upload-form');
-    progressContainer = document.getElementById('progress-container');
-    progressFill = document.getElementById('progress-fill');
-    progressText = document.getElementById('progress-text');
-    audioPreview = document.getElementById('audio-preview');
-    audioPlayer = document.getElementById('audio-player');
-    resetBtn = document.getElementById('reset-btn');
-    // upload UI uses a dedicated message element to avoid colliding with page-level messages
-    message = document.getElementById('upload-message') || document.getElementById('message');
-
-    if (fileInput) fileInput.addEventListener('change', handleFileSelect);
-    if (uploadForm) uploadForm.addEventListener('submit', handleUpload);
-    if (resetBtn) resetBtn.addEventListener('click', resetForm);
-
-    // 仅当页面包含上传 UI 时加载用户合集并初始化创建合集功能
-    if (audioGroup) {
-        loadUserGroups();
-        initCreateGroupFeature();
-    }
+    loadUserGroups();
+    initCreateGroupFeature();
 });
 
 /**
@@ -185,7 +185,7 @@ function loadUserGroups() {
     })
     .then(response => response.json())
     .then(data => {
-            if (data.code === 0) {
+        if (data.code === 200) {
             // 清空现有选项（保留默认选项）
             const defaultOption = audioGroup.querySelector('option[value=""]');
             audioGroup.innerHTML = '';
@@ -291,11 +291,11 @@ function resetForm() {
     resetFileInput();
     
     // 重置表单字段
-        if (uploadForm) uploadForm.reset();
+    uploadForm.reset();
     
     // 隐藏预览和信息
-        if (fileInfo) fileInfo.style.display = 'none';
-        if (audioPreview) audioPreview.style.display = 'none';
+    fileInfo.style.display = 'none';
+    audioPreview.style.display = 'none';
     
     // 释放音频URL
     if (audioURL) {
@@ -304,7 +304,7 @@ function resetForm() {
     }
     
     // 清空消息
-        if (message) message.style.display = 'none';
+    message.style.display = 'none';
 }
 
 /**
@@ -319,19 +319,14 @@ function resetFileInput() {
  * 显示消息
  */
 function showMessage(text, type = 'info') {
-    if (message) {
-        message.textContent = text;
-        message.className = `message ${type}`;
-        message.style.display = 'block';
-
-        // 3秒后自动隐藏消息
-        setTimeout(() => {
-            if (message) message.style.display = 'none';
-        }, 3000);
-    } else {
-        // 回退：如果页面没有 message 元素，使用 alert
-        try { alert(text); } catch (e) { console.log(type, text); }
-    }
+    message.textContent = text;
+    message.className = `message ${type}`;
+    message.style.display = 'block';
+    
+    // 3秒后自动隐藏消息
+    setTimeout(() => {
+        message.style.display = 'none';
+    }, 3000);
 }
 
 /**
@@ -368,33 +363,26 @@ function getAuthToken() {
  * 初始化创建合集功能
  */
 function initCreateGroupFeature() {
-    const createGroupForm = document.getElementById('upload-create-group-form');
+    const createGroupForm = document.getElementById('create-group-form');
     const cancelCreateGroupBtn = document.getElementById('cancel-create-group');
     const submitCreateGroupBtn = document.getElementById('submit-create-group');
     const audioGroupSelect = document.getElementById('audio-group');
-
-    if (!audioGroupSelect || !createGroupForm || !cancelCreateGroupBtn || !submitCreateGroupBtn) {
-        // 页面没有创建合集的 UI，直接返回
-        return;
-    }
-
+    
     // 显示创建合集表单
     function showCreateGroupForm() {
         createGroupForm.style.display = 'block';
     }
-
+    
     // 隐藏创建合集表单
     function hideCreateGroupForm() {
         createGroupForm.style.display = 'none';
         // 重置选择为默认选项
         audioGroupSelect.value = '';
         // 清空表单
-        const ng = document.getElementById('new-group-name');
-        const nd = document.getElementById('new-group-desc');
-        if (ng) ng.value = '';
-        if (nd) nd.value = '';
+        document.getElementById('new-group-name').value = '';
+        document.getElementById('new-group-desc').value = '';
     }
-
+    
     // 监听合集选择事件
     audioGroupSelect.addEventListener('change', () => {
         if (audioGroupSelect.value === 'create_new') {
@@ -403,16 +391,14 @@ function initCreateGroupFeature() {
             hideCreateGroupForm();
         }
     });
-
+    
     // 隐藏创建合集表单 - 取消按钮
     cancelCreateGroupBtn.addEventListener('click', hideCreateGroupForm);
-
+    
     // 提交创建合集请求
     submitCreateGroupBtn.addEventListener('click', async () => {
-        const groupNameEl = document.getElementById('new-group-name');
-        const groupDescEl = document.getElementById('new-group-desc');
-        const groupName = groupNameEl ? groupNameEl.value.trim() : '';
-        const groupDesc = groupDescEl ? groupDescEl.value.trim() : '';
+        const groupName = document.getElementById('new-group-name').value.trim();
+        const groupDesc = document.getElementById('new-group-desc').value.trim();
         
         // 验证表单
         if (!groupName) {

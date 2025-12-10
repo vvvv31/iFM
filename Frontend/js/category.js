@@ -225,6 +225,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             `;
 
+            //卡片点击跳转至详情页，携带节目ID
+            channelCard.addEventListener('click', function() {
+                // 跳转URL格式：program_list.html?id=节目ID（根据文件实际路径调整）
+                window.location.href = `program_list.html?id=${channel.id}`;
+            });
+
             // 添加卡片到列表
             channelsGrid.appendChild(channelCard);
         });

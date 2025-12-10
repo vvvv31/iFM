@@ -152,6 +152,7 @@
             margin: 25px 0;
             display: none;
             overflow: hidden;
+            position: relative;
         }
         
         .progress-fill {
@@ -160,6 +161,18 @@
             border-radius: 10px;
             width: 0%;
             transition: width 0.3s ease;
+        }
+        
+        /* 上传进度文本 */
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 10;
         }
         
         /* 按钮组 */
@@ -323,6 +336,66 @@
             opacity: 0.7;
         }
         
+        /* 上传进度条样式 */
+        .progress-container {
+            width: 100%;
+            height: 6px;
+            background-color: #fff3e0;
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 15px 0;
+            position: relative;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background-color: #ff8c00;
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+        
+        .progress-text {
+            position: absolute;
+            right: 0;
+            top: -25px;
+            color: #ff8c00;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        /* 底部播放栏进度条样式 */
+        .player-middle .progress-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            width: 100%;
+            max-width: 500px;
+            height: auto;
+            background: none;
+            margin: 15px 0;
+        }
+        
+        .player-middle .progress-bar {
+            flex: 1;
+            height: 6px;
+            background-color: #fff3e0;
+            border-radius: 3px;
+            overflow: hidden;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .player-middle .progress-bar:hover .progress-fill {
+            height: 100%;
+        }
+        
+        .player-middle .time {
+            color: #ff8c00;
+            font-size: 13px;
+            min-width: 45px;
+            text-align: center;
+        }
+        
         :-ms-input-placeholder {
             color: #ffab91;
         }
@@ -442,8 +515,9 @@
                 </div>
                 
                 <!-- 上传进度 -->
-                <div id="progress-container" class="progress-container">
-                    <div id="progress-fill" class="progress-fill"></div>
+                <div id="upload-progress-container" class="progress-container">
+                    <div id="upload-progress-fill" class="progress-fill"></div>
+                    <span id="upload-progress-text" class="progress-text">0%</span>
                 </div>
                 
                 <!-- 表单按钮 -->
@@ -485,11 +559,11 @@
                 </div>
             </div>
             <div class="progress-container">
-                <span class="time current">00:00</span>
-                <div class="progress-bar">
-                    <div class="progress-fill"></div>
+                <span class="time current" id="player-current-time">00:00</span>
+                <div class="progress-bar" id="player-progress-bar">
+                    <div class="progress-fill" id="player-progress-fill"></div>
                 </div>
-                <span class="time total">00:00</span>
+                <span class="time total" id="player-total-time">00:00</span>
             </div>
         </div>
         <div class="player-right">
@@ -511,7 +585,7 @@
 
     <!-- 功能JavaScript（与收藏页面一致） -->
     <script>
-        const audioPlayer = document.getElementById('audioPlayer');
+        const bottomAudioPlayer = document.getElementById('audio-player');
         const playBtn = document.querySelector('.play-btn');
         const speedBtn = document.querySelector('.speed-btn');
         const speedMenu = document.querySelector('.speed-menu');
@@ -520,15 +594,13 @@
         const playlistBtn = document.querySelector('.playlist-btn');
         const playlistPanel = document.querySelector('.playlist-panel');
         const playlistItems = document.querySelectorAll('.playlist-item');
-        const progressFill = document.querySelector('.progress-fill');
-        const currentTime = document.querySelector('.time.current');
 
         playBtn.addEventListener('click', () => {
-            if (audioPlayer.paused) {
-                audioPlayer.play();
+            if (bottomAudioPlayer.paused) {
+                bottomAudioPlayer.play();
                 playBtn.innerHTML = '<i class="fas fa-pause-circle"></i>';
             } else {
-                audioPlayer.pause();
+                bottomAudioPlayer.pause();
                 playBtn.innerHTML = '<i class="fas fa-play-circle"></i>';
             }
         });
@@ -540,7 +612,7 @@
         speedOptions.forEach(option => {
             option.addEventListener('click', () => {
                 const rate = parseFloat(option.getAttribute('data-rate'));
-                audioPlayer.playbackRate = rate;
+                bottomAudioPlayer.playbackRate = rate;
                 currentSpeed.textContent = `${rate}x`;
                 speedOptions.forEach(opt => opt.classList.remove('active'));
                 option.classList.add('active');
@@ -560,12 +632,47 @@
             });
         });
 
-        audioPlayer.addEventListener('timeupdate', () => {
-            const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
-            progressFill.style.width = `${progress}%`;
-            const minutes = Math.floor(audioPlayer.currentTime / 60);
-            const seconds = Math.floor(audioPlayer.currentTime % 60);
-            currentTime.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        // 获取进度条元素
+        const playerCurrentTime = document.getElementById('player-current-time');
+        const playerTotalTime = document.getElementById('player-total-time');
+        const playerProgressBar = document.getElementById('player-progress-bar');
+        const playerProgressFill = document.getElementById('player-progress-fill');
+        
+        // 播放进度更新
+        bottomAudioPlayer.addEventListener('timeupdate', () => {
+            const progress = (bottomAudioPlayer.currentTime / bottomAudioPlayer.duration) * 100;
+            playerProgressFill.style.width = `${progress}%`;
+            
+            // 更新当前时间
+            const minutes = Math.floor(bottomAudioPlayer.currentTime / 60);
+            const seconds = Math.floor(bottomAudioPlayer.currentTime % 60);
+            playerCurrentTime.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            // 更新总时间（只需要更新一次）
+            if (bottomAudioPlayer.duration && playerTotalTime.textContent === '00:00') {
+                const totalMinutes = Math.floor(bottomAudioPlayer.duration / 60);
+                const totalSeconds = Math.floor(bottomAudioPlayer.duration % 60);
+                playerTotalTime.textContent = `${totalMinutes.toString().padStart(2, '0')}:${totalSeconds.toString().padStart(2, '0')}`;
+            }
+        });
+        
+        // 音频加载完成时更新总时间
+        bottomAudioPlayer.addEventListener('loadedmetadata', () => {
+            const totalMinutes = Math.floor(bottomAudioPlayer.duration / 60);
+            const totalSeconds = Math.floor(bottomAudioPlayer.duration % 60);
+            playerTotalTime.textContent = `${totalMinutes.toString().padStart(2, '0')}:${totalSeconds.toString().padStart(2, '0')}`;
+        });
+        
+        // 进度条点击跳转功能
+        playerProgressBar.addEventListener('click', (e) => {
+            if (!bottomAudioPlayer.duration) return;
+            
+            const barWidth = playerProgressBar.offsetWidth;
+            const clickPosition = e.offsetX;
+            const percentage = clickPosition / barWidth;
+            const newTime = percentage * bottomAudioPlayer.duration;
+            
+            bottomAudioPlayer.currentTime = newTime;
         });
 
         document.addEventListener('click', () => {

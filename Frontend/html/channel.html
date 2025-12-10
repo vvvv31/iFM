@@ -15,16 +15,45 @@
             padding-bottom: 90px;
         }
 
-        /* 底部播放栏固定定位 */
-        .player-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            background-color: white;
-            border-top: 1px solid #FFDAB9;
+        /* 为固定播放栏预留空间 */
+        body { padding-bottom: 96px; }
+        /* PlayBar（来自 PlayBar.html）样式 */
+        .pv-player-bar {
+          position: fixed; left: 0; right: 0; bottom: 0;
+          width: 100%; height: 96px; background: #ffffff;
+          border-top: 1px solid #e0e0e0; box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+          z-index: 29999; display: flex; align-items: center; user-select: none; pointer-events: auto;
         }
+        .pv-inner {
+          width: 100%; max-width: 1200px; margin: 0 auto;
+          display: grid; grid-template-columns: auto 1fr auto; align-items: center;
+          column-gap: 16px; padding: 0 24px; height: 100%;
+        }
+        .pv-left { display: inline-flex; align-items: center; gap: 12px; min-width: 240px; }
+        .pv-cover { width: 52px; height: 52px; border-radius: 8px; background: #eee no-repeat center/cover; box-shadow: 0 2px 6px rgba(0,0,0,0.1); flex-shrink: 0; }
+        .pv-meta { display: flex; flex-direction: column; min-width: 0; }
+        .pv-title { font-size: 16px; font-weight: 700; color: #222; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .pv-artist { font-size: 12px; color: #666; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .pv-center { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-width: 0; }
+        .pv-controls { display: inline-flex; align-items: center; gap: 18px; }
+        .ctrl-btn, .mode-btn, .rate-btn { background: transparent; border: none; cursor: pointer; color: #444; font-size: 18px; padding: 6px; display: inline-flex; align-items: center; justify-content: center; transition: color 0.2s; }
+        .ctrl-btn:hover, .mode-btn:hover, .rate-btn:hover { color: #ff8c00; }
+        .play-btn { width: 44px; height: 44px; border-radius: 50%; background: #ff8c00; color: #fff; border: none; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 10px rgba(255,140,0,0.30); transition: transform 0.1s, background 0.2s; }
+        .play-btn:hover { background: #e67e00; transform: scale(1.05); }
+        .icon { width: 18px; height: 18px; fill: currentColor; }
+        .pv-progress-row { display: flex; align-items: center; gap: 12px; width: 100%; }
+        .time.small { font-size: 12px; color: #888; width: 48px; text-align: center; font-variant-numeric: tabular-nums; }
+        .pv-progress { position: relative; flex: 1; height: 6px; background: #eee; border-radius: 3px; cursor: pointer; touch-action: none; }
+        .pv-progress-fill { position: absolute; left: 0; top: 0; bottom: 0; background: #ff8c00; border-radius: 3px; width: 0%; pointer-events: none; }
+        .pv-knob { position: absolute; top: 50%; right: -6px; transform: translateY(-50%); width: 12px; height: 12px; background: #fff; border: 2px solid #ff8c00; border-radius: 50%; box-shadow: 0 1px 4px rgba(0,0,0,0.2); opacity: 0; transition: opacity 0.2s; pointer-events: none; }
+        .pv-right { display: inline-flex; align-items: center; justify-content: flex-end; gap: 12px; min-width: 240px; }
+        .pv-volume { width: 140px; height: 20px; display: flex; align-items: center; cursor: pointer; position: relative; }
+        .pv-volume-bar { width: 100%; height: 4px; background: #eee; border-radius: 2px; position: relative; overflow: visible; pointer-events: none; }
+        .pv-volume-fill { height: 100%; background: #888; width: 50%; border-radius: 2px; position: relative; }
+        .playlist-panel { background:#fff; border:1px solid #eee; border-radius:8px; box-shadow:0 8px 30px rgba(0,0,0,0.12); overflow:auto; padding:8px; position:absolute; bottom:110px; right:24px; display:none; }
+        .playlist-item { padding:8px 12px; cursor:pointer; }
+        .playlist-item.active { background:#fff3e0; color:#ff8c00; font-weight:600; }
+        @media (max-width: 900px) { .pv-left{min-width:0;} .pv-right{min-width:0;} .pv-inner{grid-template-columns:auto 1fr auto; column-gap:10px; padding:0 12px;} }
     </style>
 </head>
 <body>
@@ -64,118 +93,164 @@
         </div>
     </header>
 
-    <!-- 主要内容区域 - 保持原有布局 -->
+    <!-- 主要内容区域：分类侧栏 + 群组列表 / 动态 Feed -->
     <main class="main channel-main">
-        <div class="container channel-container">
-            <!-- 左侧搜索和群组搜索 -->
-            <aside class="channel-sidebar">
-                <!-- 搜索框 -->
-                <div class="channel-search">
-                    <div class="search-box">
-                        <input type="text" placeholder="输入邀请码" class="invite-search">
-                        <button class="close-btn">×</button>
-                    </div>
-                </div>
+      <div class="container channel-container">
+        <!-- 左侧分类与快捷操作 -->
+        <aside class="channel-sidebar">
+          <div class="channel-search">
+            <div class="search-box">
+              <input type="text" placeholder="搜索频道/群组" id="channelSearch" class="invite-search">
+              <button class="close-btn" id="clearSearch">×</button>
+            </div>
+          </div>
 
-                <!-- 创建群组按钮 -->
-                <button class="create-group-btn">创建群组</button>
-            </aside>
+          <div class="category-list" id="categoryList">
+            <button class="category-item active" data-category="feed">动态</button>
+            <button class="category-item" data-category="groups">群组</button>
+            <button class="category-item" data-category="讨论">讨论</button>
+            <button class="category-item" data-category="学习">学习</button>
+            <button class="category-item" data-category="其他">其他</button>
+          </div>
 
-            <!-- 右侧群组列表 -->
-            <section class="groups-section">
-                <div class="groups-grid">
-                    <!-- 群组项 -->
-                    <div class="group-item">
-                        <div class="group-info">
-                            <h3>群组名字</h3>
-                            <p>简介</p>
-                        </div>
-                        <div class="group-buttons">
-                            <span class="members-count">已加入n人</span>
-                            <button class="join-btn" onclick="window.location.href='channel2.html'">加入</button>
-                            <span class="invite-code">邀请码：xxxx</span>
-                        </div>
-                    </div>
-                    <div class="group-item">
-                        <div class="group-info">
-                            <h3>群组名字</h3>
-                            <p>简介</p>
-                        </div>
-                        <div class="group-buttons">
-                            <span class="members-count">已加入n人</span>
-                            <button class="join-btn" onclick="window.location.href='channel2.html'">加入</button>
-                            <span class="invite-code">邀请码：xxxx</span>
-                        </div>
-                    </div>
-                    <div class="group-item">
-                        <div class="group-info">
-                            <h3>群组名字</h3>
-                            <p>简介</p>
-                        </div>
-                        <div class="group-buttons">
-                            <span class="members-count">已加入n人</span>
-                            <button class="join-btn" onclick="window.location.href='channel2.html'">加入</button>
-                            <span class="invite-code">邀请码：xxxx</span>
-                        </div>
-                    </div>
+          <button class="create-group-btn">创建群组</button>
+        </aside>
+
+        <!-- 右侧主视图区（工具栏 + 列表或 Feed） -->
+        <section class="groups-section">
+          <div class="channel-controls">
+            <div class="left-controls">
+              <div class="view-toggle" role="tablist" aria-label="视图切换">
+                <button class="view-btn" data-mode="card" title="卡片视图">▦</button>
+                <button class="view-btn" data-mode="list" title="列表视图">≡</button>
+                <button class="view-btn" data-mode="compact" title="紧凑视图">☰</button>
+              </div>
+              <div class="filter-chips" id="filterChips">
+                <button class="chip" data-filter="讨论">讨论</button>
+                <button class="chip" data-filter="学习">学习</button>
+                <button class="chip" data-filter="其他">其他</button>
+              </div>
+            </div>
+            <div class="right-controls">
+              <label for="sortSelect">排序：</label>
+              <select id="sortSelect">
+                <option value="active">活跃度</option>
+                <option value="new">最新</option>
+                <option value="members">成员数</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- 群组列表面板 -->
+          <div id="groupsPanel" class="panel">
+            <div id="groupsGrid" class="groups-grid"></div>
+          </div>
+
+          <!-- Feed 动态面板 -->
+          <div id="feedPanel" class="panel" style="display:none;">
+            <section id="feedSection" class="feed-section">
+              <div class="composer">
+                <textarea id="composerInput" placeholder="说点什么..." rows="3"></textarea>
+                <div class="composer-actions">
+                  <input type="file" id="composerFiles" accept="image/*" multiple style="display:none;">
+                  <button id="attachBtn">图片</button>
+                  <button id="postBtn" class="btn-orange">发布</button>
                 </div>
+                <div id="previewArea" class="preview-area"></div>
+              </div>
+
+              <div id="postsList" class="posts-list"></div>
             </section>
-        </div>
+          </div>
+        </section>
+      </div>
     </main>
 
-    <!-- 底部播放栏 - 与分类页面保持一致 -->
-    <footer class="player-bar">
-        <div class="player-left">
-            <div class="channel-cover">E</div>
-            <div class="song-info">
-                <p class="song-name">日常对话 - 打招呼与自我介绍</p>
-                <p class="singer">英语日常对话 - 初级</p>
-            </div>
+    <!-- 替换底部播放栏为 PlayBar.html 版本 -->
+    <aside id="pv-player" class="pv-player-bar" role="region" aria-label="播放器">
+      <div class="pv-inner">
+        <!-- 左侧：封面与标题 -->
+        <div class="pv-left">
+          <div id="pv-cover" class="pv-cover"></div>
+          <div class="pv-meta">
+            <div id="pv-title" class="pv-title">Kalimba (Test Audio)</div>
+            <div id="pv-artist" class="pv-artist">Ninja Tuna</div>
+          </div>
         </div>
-        <div class="player-middle">
-            <div class="control-buttons">
-                <button class="control-btn"><i class="fas fa-step-backward"></i></button>
-                <button class="control-btn play-btn"><i class="fas fa-play-circle"></i></button>
-                <button class="control-btn"><i class="fas fa-step-forward"></i></button>
-                <button class="control-btn"><i class="fas fa-random"></i></button>
-                <div class="speed-control">
-                    <button class="speed-btn">
-                        <i class="fas fa-tachometer-alt"></i>
-                        <span id="currentSpeed">1x</span>
-                    </button>
-                    <div class="speed-menu">
-                        <div class="speed-option" data-rate="0.5">0.5x</div>
-                        <div class="speed-option active" data-rate="1">1x</div>
-                        <div class="speed-option" data-rate="1.5">1.5x</div>
-                        <div class="speed-option" data-rate="2">2x</div>
-                        <div class="speed-option" data-rate="3">3x</div>
-                    </div>
+
+        <!-- 中间：控制与进度 -->
+        <div class="pv-center">
+          <div class="pv-controls">
+            <button id="pv-prev" class="ctrl-btn" title="上一首" aria-label="上一首">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M6 6h2v12H6V6zm3.5 6l8.5 6V6l-8.5 6z"/></svg>
+            </button>
+            <button id="pv-play" class="play-btn" title="播放/暂停" aria-label="播放/暂停">
+              <svg id="play-icon" class="icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            </button>
+            <button id="pv-next" class="ctrl-btn" title="下一首" aria-label="下一首">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M16 6h2v12h-2V6zM6 18l8.5-6L6 6v12z"/></svg>
+            </button>
+
+            <!-- 播放模式 -->
+            <div style="position: relative;">
+              <button id="pv-mode-btn" class="mode-btn" title="播放模式" aria-label="播放模式">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M7 7h8v3l4-4-4-4v3H5v6h2V7zm10 10H9v-3l-4 4 4 4v-3h10v-6h-2v4z"/></svg>
+              </button>
+              <div id="mode-pop" class="popover mode-popover" style="display:none;">
+                <div class="mode-item active" data-mode="single" title="单曲循环">
+                  <svg class="icon" viewBox="0 0 24 24"><path d="M12 5v4l-1.5-1.5C8 10 8 14 10.5 16.5S16 19 18.5 16.5L20 18c-3 3-8 3-11 0S6 9 9 6L12 5z"/></svg>
                 </div>
-            </div>
-            <div class="progress-container">
-                <span class="time current">00:00</span>
-                <div class="progress-bar">
-                    <div class="progress-fill"></div>
+                <div class="mode-item" data-mode="list" title="歌单顺序循环">
+                  <svg class="icon" viewBox="0 0 24 24"><path d="M4 6h12v2H4V6zm0 5h12v2H4v-2zm0 5h8v2H4v-2zm15-7l-3 3h2v4h2v-4h2l-3-3z"/></svg>
                 </div>
-                <span class="time total">00:00</span>
+                <div class="mode-item" data-mode="shuffle" title="歌单乱序循环">
+                  <svg class="icon" viewBox="0 0 24 24"><path d="M16 3h5v5h-2V6.41l-4.29 4.3-1.42-1.42L17.59 5H16V3zM4 6h7l2 2H4V6zm0 6h5l2 2H4v-2zm12 3h1.59l-2.29 2.29 1.42 1.42L20 17.41V19h2v-5h-5v2z"/></svg>
+                </div>
+              </div>
             </div>
+
+            <!-- 倍速 -->
+            <div class="rate-control" style="position: relative;">
+              <button id="pv-rate-btn" class="rate-btn" title="倍速"><span id="rate-text" style="font-size: 12px; font-weight: bold;">1x</span></button>
+              <div id="rate-pop" class="popover rate-popover" style="display:none;">
+                <div class="rate-item" data-rate="0.5">0.5x</div>
+                <div class="rate-item active" data-rate="1">1.0x</div>
+                <div class="rate-item" data-rate="1.5">1.5x</div>
+                <div class="rate-item" data-rate="2">2.0x</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="pv-progress-row">
+            <span id="pv-time-cur" class="time small">00:00</span>
+            <div id="pv-progress" class="pv-progress">
+              <div id="pv-progress-fill" class="pv-progress-fill"></div>
+              <div id="pv-knob" class="pv-knob"></div>
+            </div>
+            <span id="pv-time-total" class="time small">00:00</span>
+          </div>
         </div>
-        <div class="player-right">
-            <button class="control-btn"><i class="fas fa-volume-up"></i></button>
-            <div class="volume-bar">
-                <div class="volume-fill"></div>
-            </div>
-            <div class="playlist-container">
-                <button class="playlist-btn"><i class="fas fa-list"></i></button>
-                <div class="playlist-panel">
-                    <div class="playlist-title">收藏频道列表</div>
-                    <div class="playlist-item active">1. 日常对话 - 打招呼与自我介绍</div>
-                    <div class="playlist-item">2. 日常对话 - 询问与回答</div>
-                    <div class="playlist-item">3. 日常对话 - 告别用语</div>
-                </div>
-            </div>
+
+        <!-- 右侧：音量 -->
+        <div class="pv-right">
+          <button id="pv-mute" class="ctrl-btn" title="静音/取消静音" aria-label="静音">
+            <svg id="vol-icon" class="icon" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3z"/></svg>
+          </button>
+          <div id="pv-volume" class="pv-volume" title="音量">
+            <div class="pv-volume-bar"><div id="pv-volume-fill" class="pv-volume-fill"></div></div>
+          </div>
+          <button id="pv-list-btn" class="ctrl-btn" title="播放列表" aria-label="播放列表">▤</button>
         </div>
-    </footer>
+      </div>
+
+      <!-- 播放列表弹窗（示例） -->
+      <div id="playlist-panel" class="playlist-panel">
+        <div class="playlist-item active" onclick="playIndex(0)">1. Kalimba (Test)</div>
+        <div class="playlist-item" onclick="playIndex(1)">2. Sample MP3 (Test)</div>
+      </div>
+
+      <audio id="pv-audio" preload="metadata"></audio>
+    </aside>
 
     <!-- 创建群组模态框样式 -->
     <style>
@@ -282,15 +357,13 @@
         }
     </style>
 
-    <!-- 播放控制脚本 -->
+    <!-- 页面脚本：保留原有社区页面逻辑（模态框、群组创建） -->
     <script>
         // 处理URL参数，自动显示创建群组模态框
         window.addEventListener('DOMContentLoaded', function() {
-            // 解析URL参数
             const urlParams = new URLSearchParams(window.location.search);
             const createGroup = urlParams.get('createGroup');
-            
-            // 创建群组模态框功能
+
             const createGroupModal = document.createElement('div');
             createGroupModal.className = 'modal-overlay';
             createGroupModal.style.display = 'none';
@@ -318,14 +391,12 @@
             `;
             document.body.appendChild(createGroupModal);
 
-            // 显示模态框（如果URL参数包含createGroup=true）
             if (createGroup === 'true') {
                 setTimeout(() => {
                     createGroupModal.style.display = 'flex';
-                }, 100); // 延迟一小段时间确保页面加载完成
+                }, 100);
             }
 
-            // 页面上的创建群组按钮点击事件
             const createGroupBtn = document.querySelector('.create-group-btn');
             if (createGroupBtn) {
                 createGroupBtn.addEventListener('click', function() {
@@ -333,127 +404,446 @@
                 });
             }
 
-            // 关闭模态框
             createGroupModal.querySelector('.close-btn').addEventListener('click', function() {
                 createGroupModal.style.display = 'none';
             });
 
-            // 取消按钮
             createGroupModal.querySelector('.btn-cancel').addEventListener('click', function() {
                 createGroupModal.style.display = 'none';
             });
 
-            // 点击模态框外部关闭
             createGroupModal.addEventListener('click', function(e) {
                 if (e.target === createGroupModal) {
                     createGroupModal.style.display = 'none';
                 }
             });
 
-            // 创建群组
-            createGroupModal.querySelector('.btn-create').addEventListener('click', function() {
-                const groupName = createGroupModal.querySelector('#groupName').value;
-                const groupDescription = createGroupModal.querySelector('#groupDescription').value;
+            createGroupModal.querySelector('.btn-create').addEventListener('click', async function() {
+              const groupName = createGroupModal.querySelector('#groupName').value;
+              const groupDescription = createGroupModal.querySelector('#groupDescription').value;
 
-                if (groupName) {
-                    // 模拟创建群组
-                    // 生成随机邀请码
-                    const inviteCode = Math.random().toString(36).substring(2, 8).toUpperCase();
-                    
-                    // 创建新的群组项HTML
-                    const newGroupItem = document.createElement('div');
-                    newGroupItem.className = 'group-item';
-                    newGroupItem.innerHTML = `
-                        <div class="group-info">
-                            <h3>${groupName}</h3>
-                            <p>${groupDescription || '暂无描述'}</p>
-                        </div>
-                        <div class="group-buttons">
-                            <span class="members-count">已加入1人</span>
-                            <button class="join-btn" onclick="window.location.href='channel2.html'">加入</button>
-                            <span class="invite-code">邀请码：${inviteCode}</span>
-                        </div>
-                    `;
-                    
-                    // 获取群组列表容器并添加新群组
-                    const groupsGrid = document.querySelector('.groups-grid');
-                    if (groupsGrid) {
-                        groupsGrid.appendChild(newGroupItem);
-                    }
-                    
-                    // 关闭模态框
-                    createGroupModal.style.display = 'none';
-                    
-                    // 可以在这里添加跳转或刷新逻辑
-                    // window.location.href = 'group-management.html';
-                } else {
-                    alert('请输入群组名称');
+              if (!groupName) return alert('请输入群组名称');
+
+              // try backend create, otherwise fallback to client id
+              let createdId = null;
+              try{
+                const res = await fetch('/api/group', {
+                  method: 'POST', headers: {'Content-Type':'application/json'},
+                  body: JSON.stringify({ name: groupName, desc: groupDescription })
+                });
+                if(res.ok){
+                  const json = await res.json();
+                  if(json && json.id) createdId = json.id;
                 }
+              }catch(err){
+                // ignore and fallback
+              }
+              if(!createdId) createdId = 'g' + Date.now();
+
+              const newGroup = { id: createdId, name: groupName, desc: groupDescription || '暂无描述', members: 1, category: '其他' };
+              if(window.sampleGroups && Array.isArray(window.sampleGroups)){
+                window.sampleGroups.unshift(newGroup);
+              } else {
+                sampleGroups.unshift(newGroup);
+              }
+              renderGroups(window.sampleGroups || sampleGroups);
+              createGroupModal.style.display = 'none';
+              // navigate to the group's page
+              window.location.href = `channel2.html?groupId=${encodeURIComponent(createdId)}`;
             });
-        });
-
-        // 音频播放控制代码
-        const audioPlayer = document.getElementById('audioPlayer');
-        const playBtn = document.querySelector('.play-btn');
-        const speedBtn = document.querySelector('.speed-btn');
-        const speedMenu = document.querySelector('.speed-menu');
-        const speedOptions = document.querySelectorAll('.speed-option');
-        const currentSpeed = document.getElementById('currentSpeed');
-        const playlistBtn = document.querySelector('.playlist-btn');
-        const playlistPanel = document.querySelector('.playlist-panel');
-        const playlistItems = document.querySelectorAll('.playlist-item');
-        const progressFill = document.querySelector('.progress-fill');
-        const currentTime = document.querySelector('.time.current');
-
-        playBtn.addEventListener('click', () => {
-            if (audioPlayer.paused) {
-                audioPlayer.play();
-                playBtn.innerHTML = '<i class="fas fa-pause-circle"></i>';
-            } else {
-                audioPlayer.pause();
-                playBtn.innerHTML = '<i class="fas fa-play-circle"></i>';
-            }
-        });
-
-        speedBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            speedMenu.classList.toggle('active');
-        });
-        speedOptions.forEach(option => {
-            option.addEventListener('click', () => {
-                const rate = parseFloat(option.getAttribute('data-rate'));
-                audioPlayer.playbackRate = rate;
-                currentSpeed.textContent = `${rate}x`;
-                speedOptions.forEach(opt => opt.classList.remove('active'));
-                option.classList.add('active');
-                speedMenu.classList.remove('active');
-            });
-        });
-
-        playlistBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            playlistPanel.classList.toggle('active');
-        });
-        playlistItems.forEach(item => {
-            item.addEventListener('click', () => {
-                playlistItems.forEach(i => i.classList.remove('active'));
-                item.classList.add('active');
-                alert(`正在播放：${item.textContent}`);
-            });
-        });
-
-        audioPlayer.addEventListener('timeupdate', () => {
-            const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
-            progressFill.style.width = `${progress}%`;
-            const minutes = Math.floor(audioPlayer.currentTime / 60);
-            const seconds = Math.floor(audioPlayer.currentTime % 60);
-            currentTime.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        });
-
-        document.addEventListener('click', () => {
-            speedMenu.classList.remove('active');
-            playlistPanel.classList.remove('active');
         });
     </script>
+
+    <!-- PlayBar 导航与基础交互（简版） -->
+    <script>
+      (function () {
+        const audio = document.getElementById('pv-audio');
+        const playBtn = document.getElementById('pv-play');
+        const progressWrap = document.getElementById('pv-progress');
+
+        function formatTime(s) {
+          if (!s || isNaN(s) || s <= 0) return '00:00';
+          const m = Math.floor(s / 60), sec = Math.floor(s % 60);
+          return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+        }
+
+        const timeCurEl = document.getElementById('pv-time-cur');
+        const timeTotalEl = document.getElementById('pv-time-total');
+        const progFill = document.getElementById('pv-progress-fill');
+        const pvKnob = document.getElementById('pv-knob');
+
+        function togglePlay() {
+          if (!audio) return;
+          const playIcon = document.getElementById('play-icon');
+          if (audio.paused) {
+            audio.play().catch(()=>{});
+            playBtn.setAttribute('aria-pressed','true');
+            if (playIcon) playIcon.innerHTML = '<path d="M6 5h4v14H6V5zm8 0h4v14h-4V5z"/>';
+          } else {
+            audio.pause();
+            playBtn.setAttribute('aria-pressed','false');
+            if (playIcon) playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+          }
+        }
+        if (playBtn) playBtn.addEventListener('click', (e) => { e.stopPropagation(); togglePlay(); });
+
+        if (audio) {
+          audio.addEventListener('timeupdate', () => {
+            const dur = audio.duration || 0;
+            const cur = audio.currentTime || 0;
+            const pct = dur ? (cur / dur) * 100 : 0;
+            if (progFill) progFill.style.width = pct + '%';
+            if (pvKnob) pvKnob.style.left = pct + '%';
+            if (timeCurEl) timeCurEl.textContent = formatTime(cur);
+            if (timeTotalEl) timeTotalEl.textContent = formatTime(dur);
+          });
+          audio.addEventListener('loadedmetadata', () => {
+            if (timeTotalEl) timeTotalEl.textContent = formatTime(audio.duration);
+          });
+          audio.addEventListener('ended', () => {
+            const playIcon = document.getElementById('play-icon');
+            if (playIcon) playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+            playBtn.setAttribute('aria-pressed','false');
+          });
+        }
+
+        // 点击进度条跳转
+        if (progressWrap) {
+          progressWrap.addEventListener('click', (e) => {
+            if (!audio || !audio.duration) return;
+            const rect = progressWrap.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const p = Math.max(0, Math.min(1, x / rect.width));
+            audio.currentTime = p * audio.duration;
+          });
+        }
+      })();
+    </script>
+
+    <!-- PlayBar 业务脚本（来自 PlayBar.html） -->
+    <script>
+    ;(function () {
+      const playlist = [
+        { title: "Kalimba (Test Audio)", artist: "Ninja Tuna", cover: "", src: "https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3" },
+        { title: "Sample MP3 (700KB)", artist: "Sample Source", cover: "", src: "https://sample.cat/downloads/file_example_MP3_700KB.mp3" }
+      ];
+
+      let currentIndex = 0;
+      let isPlaying = false;
+      let isDraggingProgress = false;
+      let isDraggingVolume = false;
+      let playMode = 'list'; /* single | list | shuffle */
+
+      const audio = document.getElementById('pv-audio');
+      const playBtn = document.getElementById('pv-play');
+      const playIcon = document.getElementById('play-icon');
+      const prevBtn = document.getElementById('pv-prev');
+      const nextBtn = document.getElementById('pv-next');
+      const titleEl = document.getElementById('pv-title');
+      const artistEl = document.getElementById('pv-artist');
+      const coverEl = document.getElementById('pv-cover');
+      const progressEl = document.getElementById('pv-progress');
+      const progressFill = document.getElementById('pv-progress-fill');
+      const knobEl = document.getElementById('pv-knob');
+      const timeCurEl = document.getElementById('pv-time-cur');
+      const timeTotalEl = document.getElementById('pv-time-total');
+      const volEl = document.getElementById('pv-volume');
+      const volFill = document.getElementById('pv-volume-fill');
+      const listBtn = document.getElementById('pv-list-btn');
+      const playlistPanel = document.getElementById('playlist-panel');
+      const rateBtn = document.getElementById('pv-rate-btn');
+      const rateText = document.getElementById('rate-text');
+      const muteBtn = document.getElementById('pv-mute');
+      const volIcon = document.getElementById('vol-icon');
+      const modeBtn = document.getElementById('pv-mode-btn');
+      const modePop = document.getElementById('mode-pop');
+      const ratePop = document.getElementById('rate-pop');
+
+      function loadTrack(index) {
+        const track = playlist[index];
+        titleEl.innerText = track.title;
+        artistEl.innerText = track.artist;
+        coverEl.style.backgroundImage = track.cover ? `url('${track.cover}')` : '';
+        audio.src = track.src;
+        document.querySelectorAll('.playlist-item').forEach((item, i) => item.classList.toggle('active', i === index));
+      }
+      function playTrack() { audio.play().then(() => { isPlaying = true; updatePlayIcon(); }).catch(err => console.error("Play failed:", err)); }
+      function pauseTrack() { audio.pause(); isPlaying = false; updatePlayIcon(); }
+      function togglePlay() { isPlaying ? pauseTrack() : playTrack(); }
+      function updatePlayIcon() {
+        playIcon.setAttribute('viewBox','0 0 24 24');
+        playIcon.innerHTML = isPlaying ? '<path d="M6 5h4v14H6V5zm8 0h4v14h-4V5z"/>' : '<path d="M8 5v14l11-7z"/>';
+      }
+      function formatTime(s) { if (!s || isNaN(s)) return "00:00"; const m = Math.floor(s/60), ss = Math.floor(s%60); return `${m<10?'0':''}${m}:${ss<10?'0':''}${ss}`; }
+      function stopWrap(handler) { return function(e){ e.stopPropagation(); handler(e); }; }
+
+      /* 控件事件（阻止冒泡） */
+      playBtn.addEventListener('click', stopWrap(togglePlay));
+      prevBtn.addEventListener('click', stopWrap(() => prevByMode()));
+      nextBtn.addEventListener('click', stopWrap(() => nextByMode()));
+      muteBtn.addEventListener('click', stopWrap(() => {
+        audio.muted = !audio.muted;
+        if (audio.muted || audio.volume === 0) { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 3l7 7-1.4 1.4L16 7.8V16h-2V8.6L9.4 4 11 2.4 14 3z"/>'; }
+        else if (audio.volume < 0.5) { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 9v6c1.7-0.7 3-2.4 3-4.5S15.7 9.7 14 9z"/>'; }
+        else { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 7v10c3-1 5-3.6 5-7s-2-6-5-7z"/>'; }
+      }));
+
+      /* 模式弹层 */
+      modeBtn.addEventListener('click', stopWrap(() => {
+        ratePop.style.display = 'none';
+        modePop.style.display = modePop.style.display === 'flex' ? 'none' : 'flex';
+      }));
+      modePop.addEventListener('click', stopWrap((e) => {
+        const item = e.target.closest('.mode-item');
+        if (!item) return;
+        playMode = item.getAttribute('data-mode');
+        document.querySelectorAll('#mode-pop .mode-item').forEach(el => el.classList.toggle('active', el === item));
+        modePop.style.display = 'none';
+      }));
+
+      /* 倍速弹层 */
+      rateBtn.addEventListener('click', stopWrap(() => {
+        modePop.style.display = 'none';
+        ratePop.style.display = ratePop.style.display === 'flex' ? 'none' : 'flex';
+      }));
+      ratePop.addEventListener('click', stopWrap((e) => {
+        const item = e.target.closest('.rate-item');
+        if (!item) return;
+        const r = parseFloat(item.getAttribute('data-rate'));
+        audio.playbackRate = r;
+        rateText.innerText = r.toFixed(1) + 'x';
+        document.querySelectorAll('#rate-pop .rate-item').forEach(el => el.classList.toggle('active', el === item));
+        ratePop.style.display = 'none';
+      }));
+
+      /* 点击其他区域关闭弹层 */
+      document.addEventListener('click', (e) => {
+        if (!modeBtn.contains(e.target) && !modePop.contains(e.target)) modePop.style.display = 'none';
+        if (!rateBtn.contains(e.target) && !ratePop.contains(e.target)) ratePop.style.display = 'none';
+      });
+
+      /* 音频事件与切歌模式 */
+      audio.addEventListener('timeupdate', () => {
+        if (isDraggingProgress) return;
+        const percent = (audio.currentTime / audio.duration) * 100;
+        progressFill.style.width = `${percent}%`;
+        knobEl.style.left = `${percent}%`;
+        timeCurEl.innerText = formatTime(audio.currentTime);
+      });
+      audio.addEventListener('loadedmetadata', () => { timeTotalEl.innerText = formatTime(audio.duration); });
+      audio.addEventListener('ended', () => {
+        if (playMode === 'single') { audio.currentTime = 0; playTrack(); }
+        else { nextByMode(); }
+      });
+      function prevByMode() {
+        if (playMode === 'shuffle') currentIndex = Math.floor(Math.random() * playlist.length);
+        else currentIndex = (currentIndex - 1 + playlist.length) % playlist.length;
+        loadTrack(currentIndex); playTrack();
+      }
+      function nextByMode() {
+        if (playMode === 'shuffle') currentIndex = Math.floor(Math.random() * playlist.length);
+        else currentIndex = (currentIndex + 1) % playlist.length;
+        loadTrack(currentIndex); playTrack();
+      }
+
+      /* 进度条拖拽（鼠标/触摸） */
+      function handleProgressInput(clientX) {
+        const rect = progressEl.getBoundingClientRect();
+        let x = clientX - rect.left; x = Math.max(0, Math.min(x, rect.width));
+        const pct = (x / rect.width) * 100; progressFill.style.width = `${pct}%`; knobEl.style.left = `${pct}%`;
+        return (x / rect.width) * audio.duration;
+      }
+      progressEl.addEventListener('mousedown', stopWrap((e) => { isDraggingProgress = true; progressEl.classList.add('dragging'); const t = handleProgressInput(e.clientX); timeCurEl.innerText = formatTime(t); }));
+      document.addEventListener('mousemove', (e) => { if (isDraggingProgress) { e.preventDefault(); const t = handleProgressInput(e.clientX); timeCurEl.innerText = formatTime(t); } });
+      document.addEventListener('mouseup', (e) => { if (isDraggingProgress) { isDraggingProgress = false; progressEl.classList.remove('dragging'); const t = handleProgressInput(e.clientX); if (isFinite(t)) audio.currentTime = t; } });
+
+      function getTouchX(e){ return (e.touches&&e.touches[0]) ? e.touches[0].clientX : (e.changedTouches&&e.changedTouches[0] ? e.changedTouches[0].clientX : 0); }
+      progressEl.addEventListener('touchstart', (e) => { e.stopPropagation(); e.preventDefault(); isDraggingProgress = true; const t = handleProgressInput(getTouchX(e)); timeCurEl.innerText = formatTime(t); }, { passive:false });
+      document.addEventListener('touchmove', (e) => { if (isDraggingProgress) { e.preventDefault(); const t = handleProgressInput(getTouchX(e)); timeCurEl.innerText = formatTime(t); } }, { passive:false });
+      document.addEventListener('touchend', (e) => { if (isDraggingProgress) { isDraggingProgress = false; const t = handleProgressInput(getTouchX(e)); if (isFinite(t)) audio.currentTime = t; } }, { passive:false });
+
+      /* 音量拖拽（鼠标/触摸） */
+      function handleVolumeInput(clientX) {
+        const rect = volEl.getBoundingClientRect();
+        let x = clientX - rect.left; x = Math.max(0, Math.min(x, rect.width));
+        const p = x / rect.width; volFill.style.width = `${p * 100}%`; audio.volume = p;
+        if (p === 0 || audio.muted) { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 3l7 7-1.4 1.4L16 7.8V16h-2V8.6L9.4 4 11 2.4 14 3z"/>'; }
+        else if (p < 0.5) { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 9v6c1.7-0.7 3-2.4 3-4.5S15.7 9.7 14 9z"/>'; }
+        else { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 7v10c3-1 5-3.6 5-7s-2-6-5-7z"/>'; }
+      }
+      volEl.addEventListener('mousedown', stopWrap((e) => { isDraggingVolume = true; handleVolumeInput(e.clientX); }));
+      document.addEventListener('mousemove', (e) => { if (isDraggingVolume) { e.preventDefault(); handleVolumeInput(e.clientX); } });
+      document.addEventListener('mouseup', () => { isDraggingVolume = false; });
+      volEl.addEventListener('touchstart', (e) => { e.stopPropagation(); e.preventDefault(); isDraggingVolume = true; handleVolumeInput(getTouchX(e)); }, { passive:false });
+      document.addEventListener('touchmove', (e) => { if (isDraggingVolume) { e.preventDefault(); handleVolumeInput(getTouchX(e)); } }, { passive:false });
+      document.addEventListener('touchend', () => { isDraggingVolume = false; }, { passive:false });
+
+      /* 简易播放列表开关（示例） */
+      listBtn.addEventListener('click', stopWrap(() => {
+        playlistPanel.style.display = playlistPanel.style.display === 'block' ? 'none' : 'block';
+      }));
+
+      /* 提供给 HTML 的播放列表切换 */
+      window.playIndex = function(index){ currentIndex = index; loadTrack(currentIndex); playTrack(); }
+
+      /* 初始化第一首 */
+      loadTrack(currentIndex);
+    })();
+    </script>
+
+      <!-- 社区页交互脚本（Feed、视图切换、筛选） -->
+      <script>
+      (function(){
+        // 简单 mock 数据，可替换为后端 API 请求
+        const sampleGroups = [
+          { id:1, name:'英语学习群', desc:'口语练习与资源分享', members:128, category:'学习' },
+          { id:2, name:'早起打卡组', desc:'每天早起一起学习', members:64, category:'其他' },
+          { id:3, name:'深度讨论组', desc:'长篇材料讨论', members:32, category:'讨论' }
+        ];
+        // expose for other scripts/pages
+        window.sampleGroups = sampleGroups;
+
+        const samplePosts = [
+          { id:1, author:'小明', text:'刚完成一节发音练习，收获颇丰！', likes:4, time:'1小时前', tags:['学习'] },
+          { id:2, author:'小红', text:'周末组织线上分享，欢迎加入', likes:8, time:'3小时前', tags:['讨论'] }
+        ];
+
+        const groupsGrid = document.getElementById('groupsGrid');
+        const postsList = document.getElementById('postsList');
+        const feedPanel = document.getElementById('feedPanel');
+        const groupsPanel = document.getElementById('groupsPanel');
+        const categoryList = document.getElementById('categoryList');
+        const viewBtns = document.querySelectorAll('.view-btn');
+        const sortSelect = document.getElementById('sortSelect');
+        const filterChips = document.querySelectorAll('.chip');
+        const composerInput = document.getElementById('composerInput');
+        const attachBtn = document.getElementById('attachBtn');
+        const composerFiles = document.getElementById('composerFiles');
+        const previewArea = document.getElementById('previewArea');
+        const channelSearch = document.getElementById('channelSearch');
+        const clearSearch = document.getElementById('clearSearch');
+
+        function escapeHtml(str){
+          return String(str).replace(/[&<>"']/g, function(m){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"})[m]; });
+        }
+
+        function renderGroups(list){
+          groupsGrid.innerHTML = '';
+          list.forEach(g=>{
+            const el = document.createElement('div'); el.className='group-item';
+            el.setAttribute('data-group-id', g.id);
+            el.innerHTML = `<div class="group-info"><h3>${escapeHtml(g.name)}</h3><p>${escapeHtml(g.desc)}</p></div><div class="group-buttons"><span class="members-count">已加入${g.members}人</span><button class="join-btn" data-id="${g.id}">加入</button><span class="invite-code">邀请码：${Math.random().toString(36).slice(2,8).toUpperCase()}</span></div>`;
+            // clicking the group navigates to the chat/detail page for that group
+            el.addEventListener('click', ()=>{
+              window.location.href = `channel2.html?groupId=${encodeURIComponent(g.id)}`;
+            });
+            groupsGrid.appendChild(el);
+          });
+        }
+
+        function renderPosts(list){
+          postsList.innerHTML = '';
+          list.forEach(p=>{
+            const node = document.createElement('div'); node.className='post-card';
+            node.innerHTML = `<div class="post-meta"><span>${escapeHtml(p.author)}</span><span>${escapeHtml(p.time)}</span></div><div class="post-body">${escapeHtml(p.text)}</div><div class="post-actions"><button class="like-btn" data-id="${p.id}">❤ ${p.likes}</button></div>`;
+            postsList.appendChild(node);
+          });
+        }
+
+        // Initial render
+        renderGroups(sampleGroups);
+        renderPosts(samplePosts);
+
+        // Category click: 'feed' shows feed; 'groups' shows all groups; other categories filter groups
+        categoryList.addEventListener('click', (e)=>{
+          const btn = e.target.closest('.category-item'); if(!btn) return;
+          document.querySelectorAll('.category-item').forEach(b=>b.classList.remove('active'));
+          btn.classList.add('active');
+          const cat = btn.getAttribute('data-category');
+          if(cat === 'feed') { feedPanel.style.display='block'; groupsPanel.style.display='none'; }
+          else if(cat === 'groups') { feedPanel.style.display='none'; groupsPanel.style.display='block'; renderGroups(sampleGroups); }
+          else { feedPanel.style.display='none'; groupsPanel.style.display='block'; renderGroups(sampleGroups.filter(g=>g.category===cat)); }
+        });
+
+        // Search box filters groups by name
+        function applySearchFilter(){
+          const q = (channelSearch.value||'').trim().toLowerCase();
+          const activeCatBtn = document.querySelector('.category-item.active');
+          const activeCat = activeCatBtn ? activeCatBtn.getAttribute('data-category') : null;
+          let list = sampleGroups.slice();
+          if(activeCat && activeCat !== 'feed' && activeCat !== 'groups') list = list.filter(g=>g.category===activeCat);
+          if(q) list = list.filter(g=> g.name.toLowerCase().includes(q) || g.desc.toLowerCase().includes(q));
+          renderGroups(list);
+        }
+        channelSearch && channelSearch.addEventListener('input', applySearchFilter);
+        clearSearch && clearSearch.addEventListener('click', ()=>{ if(channelSearch) channelSearch.value=''; applySearchFilter(); });
+
+        // View mode
+        function setViewMode(mode){
+          document.body.classList.remove('view-card','view-list','view-compact');
+          document.body.classList.add('view-'+mode);
+          viewBtns.forEach(b=>b.classList.toggle('active', b.getAttribute('data-mode')===mode));
+          localStorage.setItem('channelViewMode', mode);
+        }
+        viewBtns.forEach(b=> b.addEventListener('click', ()=> setViewMode(b.getAttribute('data-mode'))));
+        const saved = localStorage.getItem('channelViewMode') || 'card'; setViewMode(saved);
+
+        // Sort
+        sortSelect.addEventListener('change', ()=>{
+          const val = sortSelect.value; let sorted = [...sampleGroups];
+          if(val==='new') sorted.sort((a,b)=>b.id-a.id);
+          else if(val==='members') sorted.sort((a,b)=>b.members - a.members).reverse();
+          else if(val==='active') sorted.sort((a,b)=>b.members - a.members).reverse();
+          renderGroups(sorted);
+        });
+
+        // Filter chips (tags) affect groups display
+        filterChips.forEach(ch=> ch.addEventListener('click', ()=>{
+          ch.classList.toggle('active');
+          const active = Array.from(filterChips).filter(c=>c.classList.contains('active')).map(c=>c.getAttribute('data-filter'));
+          if(active.length===0) renderGroups(sampleGroups);
+          else renderGroups(sampleGroups.filter(g=> active.includes(g.category)));
+        }));
+
+        // Join button handler (delegated)
+        groupsGrid.addEventListener('click', (e)=>{
+          const btn = e.target.closest('.join-btn'); if(!btn) return;
+          e.stopPropagation(); // prevent parent group click from firing navigation
+          const id = btn.getAttribute('data-id');
+          btn.textContent = '已加入'; btn.disabled = true; // mock behavior
+        });
+
+        // Post like handler (delegated)
+        postsList.addEventListener('click', (e)=>{
+          const btn = e.target.closest('.like-btn'); if(!btn) return;
+          const id = Number(btn.getAttribute('data-id'));
+          const post = samplePosts.find(p=>p.id===id); if(!post) return;
+          post.likes = (post.likes||0) + 1; renderPosts(samplePosts);
+        });
+
+        // Composer
+        attachBtn.addEventListener('click', ()=> composerFiles.click());
+        composerFiles.addEventListener('change', (e)=>{
+          previewArea.innerHTML='';
+          Array.from(e.target.files).forEach(f=>{
+            const url = URL.createObjectURL(f);
+            const img = document.createElement('img'); img.src = url; previewArea.appendChild(img);
+          });
+        });
+        document.getElementById('postBtn').addEventListener('click', ()=>{
+          const text = (composerInput.value||'').trim(); if(!text) return alert('请输入内容');
+          const newPost = { id:Date.now(), author:'你', text, likes:0, time:'刚刚' };
+          samplePosts.unshift(newPost); renderPosts(samplePosts); composerInput.value=''; previewArea.innerHTML=''; composerFiles.value='';
+        });
+
+        // Ensure initial view based on active category
+        (function initPanels(){
+          const active = document.querySelector('.category-item.active');
+          if(active && active.getAttribute('data-category')==='feed') { feedPanel.style.display='block'; groupsPanel.style.display='none'; }
+          else { feedPanel.style.display='none'; groupsPanel.style.display='block'; }
+        })();
+
+      })();
+      </script>
 </body>
 </html>

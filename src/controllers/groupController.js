@@ -10,18 +10,32 @@ const groupController = {
   async createGroup(req, res, next) {
     try {
       const { name, description } = req.body;
-      const creatorId = req.user.userId;
+      const creatorId = req.user?.id;
+
+      // 验证用户ID
+      if (!creatorId) {
+        return Response.unauthorized(res, '未授权的访问');
+      }
+
+      // 验证输入
+      if (!name || name.trim() === '') {
+        return Response.badRequest(res, '合集名称不能为空');
+      }
 
       // 创建新合集
       const newGroup = await Group.create({
-        name,
-        description,
+        name: name.trim(),
+        description: description?.trim() || '',
         creatorId,
         members: [{ userId: creatorId }],
       });
 
       return Response.success(res, newGroup, '合集创建成功');
     } catch (error) {
+      // 处理特定错误
+      if (error.name === 'ValidationError') {
+        return Response.badRequest(res, '数据验证失败: ' + Object.values(error.errors).map(err => err.message).join(', '));
+      }
       next(error);
     }
   },
@@ -31,7 +45,7 @@ const groupController = {
    */
   async getGroupsByUser(req, res, next) {
     try {
-      const userId = req.user.userId;
+      const userId = req.user.id;
 
       // 查找用户参与的所有合集
       const groups = await Group.find({

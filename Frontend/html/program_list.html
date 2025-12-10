@@ -216,7 +216,7 @@
         .detail-section {
             margin-bottom: 25px;
         }
-        
+
         .detail-section h2 {
             font-size: 18px;
             font-weight: 600;
@@ -225,7 +225,7 @@
             position: relative;
             padding-left: 12px;
         }
-        
+
         .detail-section h2::before {
             content: '';
             position: absolute;
@@ -630,6 +630,171 @@
                 flex-wrap: wrap;
             }
         }
+        
+        /* 学员评价样式 */
+        .reviews-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .overall-rating {
+            display: flex;
+            align-items: center;
+        }
+
+        .rating-stars {
+            color: #ffc107;
+            font-size: 18px;
+            margin-right: 10px;
+        }
+
+        .rating-score {
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+            margin-right: 5px;
+        }
+
+        .rating-count {
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* 评分分布 */
+        .rating-distribution {
+            margin-bottom: 30px;
+        }
+
+        .rating-bar {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .rating-label {
+            width: 30px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 8px;
+            background-color: #f0f0f0;
+            border-radius: 4px;
+            margin: 0 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ffc107, #ff9800);
+            border-radius: 4px;
+        }
+
+        .rating-percentage {
+            width: 40px;
+            font-size: 14px;
+            color: #666;
+            text-align: right;
+        }
+
+        /* 评价列表 */
+        .reviews-list {
+            margin-bottom: 20px;
+        }
+
+        .review-item {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .review-item:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-avatar {
+            width: 30px;
+            height: 30px;
+            background-color: #FF8C00;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 6px;
+        }
+
+        .user-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-weight: bold;
+            color: #333;
+            font-size: 11px;
+        }
+
+        .review-date {
+            color: #999;
+            font-size: 12px;
+        }
+
+        .review-rating {
+            color: #ffc107;
+            font-size: 10px;
+        }
+
+        .review-content {
+            color: #555;
+            line-height: 1.6;
+            font-size: 16px;
+        }
+
+        /* 加载更多按钮 */
+        .load-more-reviews {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .reviews-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .rating-score {
+                font-size: 24px;
+            }
+            
+            .rating-stars {
+                font-size: 16px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -885,8 +1050,136 @@
                     <!-- 学员评价内容 (默认隐藏) -->
                     <div class="tab-content">
                         <div class="detail-section">
-                            <h2>学员评价</h2>
-                            <p>暂无评价内容...</p>
+                            <div class="reviews-header">
+                                <h2>学员评价</h2>
+                                <div class="overall-rating">
+                                    <div class="rating-stars">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star-half-alt"></i>
+                                    </div>
+                                    <span class="rating-score">4.8</span>
+                                    <span class="rating-count">(235 条评价)</span>
+                                </div>
+                            </div>
+                            
+                            <!-- 评分分布 -->
+                            <div class="rating-distribution">
+                                <div class="rating-bar">
+                                    <div class="rating-label">5 星</div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 85%"></div>
+                                    </div>
+                                    <div class="rating-percentage">85%</div>
+                                </div>
+                                <div class="rating-bar">
+                                    <div class="rating-label">4 星</div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 10%"></div>
+                                    </div>
+                                    <div class="rating-percentage">10%</div>
+                                </div>
+                                <div class="rating-bar">
+                                    <div class="rating-label">3 星</div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 3%"></div>
+                                    </div>
+                                    <div class="rating-percentage">3%</div>
+                                </div>
+                                <div class="rating-bar">
+                                    <div class="rating-label">2 星</div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 1%"></div>
+                                    </div>
+                                    <div class="rating-percentage">1%</div>
+                                </div>
+                                <div class="rating-bar">
+                                    <div class="rating-label">1 星</div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 1%"></div>
+                                    </div>
+                                    <div class="rating-percentage">1%</div>
+                                </div>
+                            </div>
+                            
+                            <!-- 评价列表 -->
+                            <div class="reviews-list">
+                                <!-- 评价项 1 -->
+                                <div class="review-item">
+                                    <div class="review-header">
+                                        <div class="user-info">
+                                            <div class="user-avatar">张</div>
+                                            <div class="user-details">
+                                                <div class="user-name">张同学</div>
+                                                <div class="review-date">2023-10-15</div>
+                                            </div>
+                                        </div>
+                                        <div class="review-rating">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                        </div>
+                                    </div>
+                                    <div class="review-content">
+                                        <p>老师的教学方法非常好，课程内容也很丰富，学习起来很轻松。通过这个课程，我的英语水平有了很大的提高，特别是听力和口语方面。强烈推荐！</p>
+                                    </div>
+                                </div>
+                                
+                                <!-- 评价项 2 -->
+                                <div class="review-item">
+                                    <div class="review-header">
+                                        <div class="user-info">
+                                            <div class="user-avatar">李</div>
+                                            <div class="user-details">
+                                                <div class="user-name">李同学</div>
+                                                <div class="review-date">2023-10-10</div>
+                                            </div>
+                                        </div>
+                                        <div class="review-rating">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="far fa-star"></i>
+                                        </div>
+                                    </div>
+                                    <div class="review-content">
+                                        <p>课程内容很实用，老师讲解得很详细，适合各个水平的学生。唯一的不足是课程更新有点慢，希望能加快更新速度。</p>
+                                    </div>
+                                </div>
+                                
+                                <!-- 评价项 3 -->
+                                <div class="review-item">
+                                    <div class="review-header">
+                                        <div class="user-info">
+                                            <div class="user-avatar">王</div>
+                                            <div class="user-details">
+                                                <div class="user-name">王同学</div>
+                                                <div class="review-date">2023-09-28</div>
+                                            </div>
+                                        </div>
+                                        <div class="review-rating">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                        </div>
+                                    </div>
+                                    <div class="review-content">
+                                        <p>非常棒的课程！老师的发音很标准，课程设计很合理，从基础到进阶，循序渐进。学习氛围也很好，同学们都很活跃。</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 查看更多按钮 -->
+                            <div class="load-more-reviews">
+                                <button class="btn-secondary">查看更多评价</button>
+                            </div>
                         </div>
                     </div>
                     

@@ -37,13 +37,13 @@ const authController = {
       // 检查用户是否存在
       const user = await User.findOne({ email });
       if (!user) {
-        return res.status(400).json({ message: 'Invalid credentials' });
+        return res.status(400).json({ message: '用户名或密码错误' });
       }
 
       // 检查密码是否正确
       const isMatch = await user.comparePassword(password);
       if (!isMatch) {
-        return res.status(400).json({ message: 'Invalid credentials' });
+        return res.status(400).json({ message: '用户名或密码错误' });
       }
 
       // 生成 JWT

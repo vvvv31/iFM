@@ -178,51 +178,55 @@ async function handleUpload(event) {
  * 加载用户合集列表
  */
 function loadUserGroups() {
-    fetch('http://localhost:3000/api/group/user', {
-        headers: {
-            'Authorization': `Bearer ${getAuthToken()}`,
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.code === 200) {
-            // 清空现有选项（保留默认选项）
-            const defaultOption = audioGroup.querySelector('option[value=""]');
-            audioGroup.innerHTML = '';
-            
-            // 添加默认选项
-            if (defaultOption) {
-                audioGroup.appendChild(defaultOption);
-            } else {
-                const newDefaultOption = document.createElement('option');
-                newDefaultOption.value = '';
-                newDefaultOption.textContent = '不添加到任何合集';
-                audioGroup.appendChild(newDefaultOption);
+    return new Promise((resolve, reject) => {
+        fetch('http://localhost:3000/api/group/user', {
+            headers: {
+                'Authorization': `Bearer ${getAuthToken()}`,
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.code === 200) {
+                // 清空现有选项（保留默认选项）
+                const defaultOption = audioGroup.querySelector('option[value=""]');
+                audioGroup.innerHTML = '';
+                
+                // 添加默认选项
+                if (defaultOption) {
+                    audioGroup.appendChild(defaultOption);
+                } else {
+                    const newDefaultOption = document.createElement('option');
+                    newDefaultOption.value = '';
+                    newDefaultOption.textContent = '不添加到任何合集';
+                    audioGroup.appendChild(newDefaultOption);
+                }
+                
+                // 添加合集选项
+                data.data.forEach(group => {
+                    const option = document.createElement('option');
+                    option.value = group._id;
+                    option.textContent = group.name;
+                    audioGroup.appendChild(option);
+                });
+            }
+            resolve(data);
+        })
+        .catch(error => {
+            console.error('加载合集列表失败:', error);
+            reject(error);
+        })
+        .finally(() => {
+            // 确保"创建新合集"选项始终在列表底部
+            let createNewOption = audioGroup.querySelector('option[value="create_new"]');
+            if (createNewOption) {
+                createNewOption.remove();
             }
             
-            // 添加合集选项
-            data.data.forEach(group => {
-                const option = document.createElement('option');
-                option.value = group._id;
-                option.textContent = group.name;
-                audioGroup.appendChild(option);
-            });
-        }
-    })
-    .catch(error => {
-        console.error('加载合集列表失败:', error);
-    })
-    .finally(() => {
-        // 确保"创建新合集"选项始终在列表底部
-        let createNewOption = audioGroup.querySelector('option[value="create_new"]');
-        if (createNewOption) {
-            createNewOption.remove();
-        }
-        
-        createNewOption = document.createElement('option');
-        createNewOption.value = 'create_new';
-        createNewOption.textContent = '+ 创建新合集';
-        audioGroup.appendChild(createNewOption);
+            createNewOption = document.createElement('option');
+            createNewOption.value = 'create_new';
+            createNewOption.textContent = '+ 创建新合集';
+            audioGroup.appendChild(createNewOption);
+        });
     });
 }
 
@@ -363,19 +367,23 @@ function getAuthToken() {
  * 初始化创建合集功能
  */
 function initCreateGroupFeature() {
-    const createGroupForm = document.getElementById('create-group-form');
+    const modalOverlay = document.getElementById('modal-overlay');
     const cancelCreateGroupBtn = document.getElementById('cancel-create-group');
     const submitCreateGroupBtn = document.getElementById('submit-create-group');
     const audioGroupSelect = document.getElementById('audio-group');
     
-    // 显示创建合集表单
-    function showCreateGroupForm() {
-        createGroupForm.style.display = 'block';
+    // 显示创建合集模态框
+    function showCreateGroupModal() {
+        modalOverlay.classList.add('active');
+        // 阻止背景滚动
+        document.body.style.overflow = 'hidden';
     }
     
-    // 隐藏创建合集表单
-    function hideCreateGroupForm() {
-        createGroupForm.style.display = 'none';
+    // 隐藏创建合集模态框
+    function hideCreateGroupModal() {
+        modalOverlay.classList.remove('active');
+        // 恢复背景滚动
+        document.body.style.overflow = 'auto';
         // 重置选择为默认选项
         audioGroupSelect.value = '';
         // 清空表单
@@ -383,17 +391,24 @@ function initCreateGroupFeature() {
         document.getElementById('new-group-desc').value = '';
     }
     
-    // 监听合集选择事件
-    audioGroupSelect.addEventListener('change', () => {
-        if (audioGroupSelect.value === 'create_new') {
-            showCreateGroupForm();
-        } else {
-            hideCreateGroupForm();
+    // 点击模态框外部区域关闭模态框
+    modalOverlay.addEventListener('click', (event) => {
+        if (event.target === modalOverlay) {
+            hideCreateGroupModal();
         }
     });
     
-    // 隐藏创建合集表单 - 取消按钮
-    cancelCreateGroupBtn.addEventListener('click', hideCreateGroupForm);
+    // 监听合集选择事件
+    audioGroupSelect.addEventListener('change', () => {
+        if (audioGroupSelect.value === 'create_new') {
+            showCreateGroupModal();
+        } else {
+            hideCreateGroupModal();
+        }
+    });
+    
+    // 隐藏创建合集模态框 - 取消按钮
+    cancelCreateGroupBtn.addEventListener('click', hideCreateGroupModal);
     
     // 提交创建合集请求
     submitCreateGroupBtn.addEventListener('click', async () => {
@@ -406,13 +421,20 @@ function initCreateGroupFeature() {
             return;
         }
         
+        // 检查用户是否已登录
+        const authToken = getAuthToken();
+        if (!authToken) {
+            showMessage('请先登录后再创建合集', 'error');
+            return;
+        }
+        
         try {
             // 发送创建合集请求
             const response = await fetch('http://localhost:3000/api/group/create', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${getAuthToken()}`
+                    'Authorization': `Bearer ${authToken}`
                 },
                 body: JSON.stringify({
                     name: groupName,
@@ -420,14 +442,28 @@ function initCreateGroupFeature() {
                 })
             });
             
+            // 检查响应状态
+            if (!response.ok) {
+                if (response.status === 401) {
+                    showMessage('登录已过期，请重新登录', 'error');
+                    return;
+                }
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
             const data = await response.json();
             
             if (data.code === 200) {
-                // 隐藏创建合集表单
-                hideCreateGroupForm();
+                // 隐藏创建合集模态框
+                hideCreateGroupModal();
                 
-                // 重新加载用户合集列表
-                loadUserGroups();
+                // 重新加载用户合集列表并自动选择新创建的合集
+                loadUserGroups().then(() => {
+                    // 选择新创建的合集
+                    if (data.data && data.data._id) {
+                        audioGroupSelect.value = data.data._id;
+                    }
+                });
                 
                 showMessage('合集创建成功！', 'success');
             } else {
@@ -435,7 +471,13 @@ function initCreateGroupFeature() {
             }
         } catch (error) {
             console.error('创建合集失败:', error);
-            showMessage('创建合集失败，请稍后重试', 'error');
+            if (error.message.includes('401')) {
+                showMessage('登录已过期，请重新登录', 'error');
+            } else if (error.message.includes('NetworkError')) {
+                showMessage('网络错误，请检查网络连接', 'error');
+            } else {
+                showMessage('创建合集失败，请稍后重试', 'error');
+            }
         }
     });
 }

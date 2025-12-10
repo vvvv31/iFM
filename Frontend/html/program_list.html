@@ -216,7 +216,7 @@
         .detail-section {
             margin-bottom: 25px;
         }
-        
+
         .detail-section h2 {
             font-size: 18px;
             font-weight: 600;
@@ -225,7 +225,7 @@
             position: relative;
             padding-left: 12px;
         }
-        
+
         .detail-section h2::before {
             content: '';
             position: absolute;
@@ -630,39 +630,280 @@
                 flex-wrap: wrap;
             }
         }
+        
+        /* 学员评价样式 */
+        .reviews-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
 
-        /* 为固定播放栏预留空间 */
-        body { padding-bottom: 96px; }
+        .overall-rating {
+            display: flex;
+            align-items: center;
+        }
 
-        /* PlayBar（来自 PlayBar.html）样式 */
-        .pv-player-bar { position: fixed; left:0; right:0; bottom:0; width:100%; height:96px; background:#ffffff; border-top:1px solid #e0e0e0; box-shadow:0 -4px 20px rgba(0,0,0,0.08); z-index:29999; display:flex; align-items:center; user-select:none; pointer-events:auto; }
-        .pv-inner { width:100%; max-width:1200px; margin:0 auto; display:grid; grid-template-columns:auto 1fr auto; align-items:center; column-gap:16px; padding:0 24px; height:100%; }
-        .pv-left { display:inline-flex; align-items:center; gap:12px; min-width:240px; }
-        .pv-cover { width:52px; height:52px; border-radius:8px; background:#eee no-repeat center/cover; box-shadow:0 2px 6px rgba(0,0,0,0.1); flex-shrink:0; }
-        .pv-meta { display:flex; flex-direction:column; min-width:0; }
-        .pv-title { font-size:16px; font-weight:700; color:#222; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-        .pv-artist { font-size:12px; color:#666; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-        .pv-center { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; min-width:0; }
-        .pv-controls { display:inline-flex; align-items:center; gap:18px; }
-        .ctrl-btn, .mode-btn, .rate-btn { background:transparent; border:none; cursor:pointer; color:#444; font-size:18px; padding:6px; display:inline-flex; align-items:center; justify-content:center; transition:color 0.2s; }
-        .ctrl-btn:hover, .mode-btn:hover, .rate-btn:hover { color:#ff8c00; }
-        .play-btn { width:44px; height:44px; border-radius:50%; background:#ff8c00; color:#fff; border:none; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 4px 10px rgba(255,140,0,0.30); transition:transform 0.1s, background 0.2s; }
-        .play-btn:hover { background:#e67e00; transform:scale(1.05); }
-        .icon { width:18px; height:18px; fill:currentColor; }
-        .pv-progress-row { display:flex; align-items:center; gap:12px; width:100%; }
-        .time.small { font-size:12px; color:#888; width:48px; text-align:center; font-variant-numeric:tabular-nums; }
-        .pv-progress { position:relative; flex:1; height:6px; background:#eee; border-radius:3px; cursor:pointer; touch-action:none; }
-        .pv-progress-fill { position:absolute; left:0; top:0; bottom:0; background:#ff8c00; border-radius:3px; width:0%; pointer-events:none; }
-        .pv-knob { position:absolute; top:50%; right:-6px; transform:translateY(-50%); width:12px; height:12px; background:#fff; border:2px solid #ff8c00; border-radius:50%; box-shadow:0 1px 4px rgba(0,0,0,0.2); opacity:0; transition:opacity 0.2s; pointer-events:none; }
-        .pv-progress:hover .pv-knob, .pv-progress.dragging .pv-knob { opacity:1; }
-        .pv-right { display:inline-flex; align-items:center; justify-content:flex-end; gap:12px; min-width:240px; }
-        .pv-volume { width:140px; height:20px; display:flex; align-items:center; cursor:pointer; position:relative; }
-        .pv-volume-bar { width:100%; height:4px; background:#eee; border-radius:2px; position:relative; overflow:visible; pointer-events:none; }
-        .pv-volume-fill { height:100%; background:#888; width:50%; border-radius:2px; position:relative; }
-        .playlist-panel { background:#fff; border:1px solid #eee; border-radius:8px; box-shadow:0 8px 30px rgba(0,0,0,0.12); overflow:auto; padding:8px; position:absolute; bottom:110px; right:24px; display:none; }
-        .playlist-item { padding:8px 12px; cursor:pointer; }
-        .playlist-item.active { background:#fff3e0; color:#ff8c00; font-weight:600; }
-        @media (max-width:900px){ .pv-left{min-width:0;} .pv-right{min-width:0;} .pv-inner{grid-template-columns:auto 1fr auto; column-gap:10px; padding:0 12px;} }
+        .rating-stars {
+            color: #ffc107;
+            font-size: 18px;
+            margin-right: 10px;
+        }
+
+        .rating-score {
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+            margin-right: 5px;
+        }
+
+        .rating-count {
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* 评分分布 */
+        .rating-distribution {
+            margin-bottom: 30px;
+        }
+
+        .rating-bar {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .rating-label {
+            width: 30px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 8px;
+            background-color: #f0f0f0;
+            border-radius: 4px;
+            margin: 0 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ffc107, #ff9800);
+            border-radius: 4px;
+        }
+
+        .rating-percentage {
+            width: 40px;
+            font-size: 14px;
+            color: #666;
+            text-align: right;
+        }
+
+        /* 评价列表 */
+        .reviews-list {
+            margin-bottom: 20px;
+        }
+
+        .review-item {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .review-item:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-avatar {
+            width: 30px;
+            height: 30px;
+            background-color: #FF8C00;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 6px;
+        }
+
+        .user-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-weight: bold;
+            color: #333;
+            font-size: 11px;
+        }
+
+        .review-date {
+            color: #999;
+            font-size: 12px;
+        }
+
+        .review-rating {
+            color: #ffc107;
+            font-size: 10px;
+        }
+
+        .review-content {
+            color: #555;
+            line-height: 1.6;
+            font-size: 16px;
+        }
+
+        /* 加载更多按钮 */
+        .load-more-reviews {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .reviews-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .rating-score {
+                font-size: 24px;
+            }
+            
+            .rating-stars {
+                font-size: 16px;
+            }
+        }
+        
+        /* 写评论表单样式 */
+        .write-review {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .write-review h3 {
+            margin-bottom: 20px;
+            font-size: 18px;
+            color: #333;
+        }
+        
+        .review-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .review-field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .review-field label {
+            font-weight: 500;
+            color: #555;
+            font-size: 14px;
+        }
+        
+        .rating-input {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .rating-star {
+            font-size: 24px;
+            color: #ddd;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        
+        .rating-star:hover,
+        .rating-star.active,
+        .rating-star.hovered {
+            color: #ffc107;
+        }
+        
+        #reviewContent {
+            width: 100%;
+            padding: 12px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+            resize: vertical;
+            font-family: inherit;
+            color: #333;
+        }
+        
+        #reviewContent:focus {
+            outline: none;
+            border-color: #FF8C00;
+            box-shadow: 0 0 0 2px rgba(255, 140, 0, 0.1);
+        }
+        
+        #submitReview {
+            padding: 10px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            border-radius: 4px;
+            background-color: #FF8C00;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            align-self: flex-start;
+        }
+        
+        #submitReview:hover {
+            background-color: #ff7000;
+            transform: translateY(-1px);
+        }
+        
+        #submitReview:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .write-review {
+                padding: 15px;
+            }
+            
+            .rating-star {
+                font-size: 20px;
+            }
+            
+            #submitReview {
+                padding: 8px 20px;
+                font-size: 13px;
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
@@ -918,8 +1159,161 @@
                     <!-- 学员评价内容 (默认隐藏) -->
                     <div class="tab-content">
                         <div class="detail-section">
-                            <h2>学员评价</h2>
-                            <p>暂无评价内容...</p>
+                            <div class="reviews-header">
+                                <h2>学员评价</h2>
+                                <div class="overall-rating">
+                                    <div class="rating-stars">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star-half-alt"></i>
+                                    </div>
+                                    <span class="rating-score">4.8</span>
+                                    <span class="rating-count">(235 条评价)</span>
+                                </div>
+                            </div>
+                            
+                            <!-- 写评论表单 -->
+                            <div class="write-review">
+                                <h3>写评论</h3>
+                                <div class="review-form">
+                                    <div class="review-field">
+                                        <label>评分：</label>
+                                        <div class="rating-input">
+                                            <i class="far fa-star rating-star" data-rating="1"></i>
+                                            <i class="far fa-star rating-star" data-rating="2"></i>
+                                            <i class="far fa-star rating-star" data-rating="3"></i>
+                                            <i class="far fa-star rating-star" data-rating="4"></i>
+                                            <i class="far fa-star rating-star" data-rating="5"></i>
+                                        </div>
+                                        <input type="hidden" id="reviewRating" value="0">
+                                    </div>
+                                    <div class="review-field">
+                                        <label>评论内容：</label>
+                                        <textarea id="reviewContent" placeholder="请分享您的学习体验..." rows="5"></textarea>
+                                    </div>
+                                    <div class="review-field">
+                                        <button class="btn-primary" id="submitReview">提交评论</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 评分分布 -->
+                            <div class="rating-distribution">
+                                <div class="rating-bar">
+                                    <div class="rating-label">5 星</div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 85%"></div>
+                                    </div>
+                                    <div class="rating-percentage">85%</div>
+                                </div>
+                                <div class="rating-bar">
+                                    <div class="rating-label">4 星</div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 10%"></div>
+                                    </div>
+                                    <div class="rating-percentage">10%</div>
+                                </div>
+                                <div class="rating-bar">
+                                    <div class="rating-label">3 星</div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 3%"></div>
+                                    </div>
+                                    <div class="rating-percentage">3%</div>
+                                </div>
+                                <div class="rating-bar">
+                                    <div class="rating-label">2 星</div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 1%"></div>
+                                    </div>
+                                    <div class="rating-percentage">1%</div>
+                                </div>
+                                <div class="rating-bar">
+                                    <div class="rating-label">1 星</div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 1%"></div>
+                                    </div>
+                                    <div class="rating-percentage">1%</div>
+                                </div>
+                            </div>
+                            
+                            <!-- 评价列表 -->
+                            <div class="reviews-list">
+                                <!-- 评价项 1 -->
+                                <div class="review-item">
+                                    <div class="review-header">
+                                        <div class="user-info">
+                                            <div class="user-avatar">张</div>
+                                            <div class="user-details">
+                                                <div class="user-name">张同学</div>
+                                                <div class="review-date">2023-10-15</div>
+                                            </div>
+                                        </div>
+                                        <div class="review-rating">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                        </div>
+                                    </div>
+                                    <div class="review-content">
+                                        <p>老师的教学方法非常好，课程内容也很丰富，学习起来很轻松。通过这个课程，我的英语水平有了很大的提高，特别是听力和口语方面。强烈推荐！</p>
+                                    </div>
+                                </div>
+                                
+                                <!-- 评价项 2 -->
+                                <div class="review-item">
+                                    <div class="review-header">
+                                        <div class="user-info">
+                                            <div class="user-avatar">李</div>
+                                            <div class="user-details">
+                                                <div class="user-name">李同学</div>
+                                                <div class="review-date">2023-10-10</div>
+                                            </div>
+                                        </div>
+                                        <div class="review-rating">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="far fa-star"></i>
+                                        </div>
+                                    </div>
+                                    <div class="review-content">
+                                        <p>课程内容很实用，老师讲解得很详细，适合各个水平的学生。唯一的不足是课程更新有点慢，希望能加快更新速度。</p>
+                                    </div>
+                                </div>
+                                
+                                <!-- 评价项 3 -->
+                                <div class="review-item">
+                                    <div class="review-header">
+                                        <div class="user-info">
+                                            <div class="user-avatar">王</div>
+                                            <div class="user-details">
+                                                <div class="user-name">王同学</div>
+                                                <div class="review-date">2023-09-28</div>
+                                            </div>
+                                        </div>
+                                        <div class="review-rating">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                        </div>
+                                    </div>
+                                    <div class="review-content">
+                                        <p>非常棒的课程！老师的发音很标准，课程设计很合理，从基础到进阶，循序渐进。学习氛围也很好，同学们都很活跃。</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 查看更多按钮 -->
+                            <div class="load-more-reviews">
+                                <button class="btn-secondary">查看更多评价</button>
+                            </div>
                         </div>
                     </div>
                     
@@ -997,95 +1391,206 @@
         </div>
     </footer>
 
-    <!-- 替换底部播放栏为 PlayBar.html 版本 -->
-    <aside id="pv-player" class="pv-player-bar" role="region" aria-label="播放器">
-      <div class="pv-inner">
-        <!-- 左侧：封面与标题 -->
-        <div class="pv-left">
-          <div id="pv-cover" class="pv-cover"></div>
-          <div class="pv-meta">
-            <div id="pv-title" class="pv-title">Kalimba (Test Audio)</div>
-            <div id="pv-artist" class="pv-artist">Ninja Tuna</div>
-          </div>
-        </div>
-
-        <!-- 中间：控制与进度 -->
-        <div class="pv-center">
-          <div class="pv-controls">
-            <button id="pv-prev" class="ctrl-btn" title="上一首" aria-label="上一首">
-              <svg class="icon" viewBox="0 0 24 24"><path d="M6 6h2v12H6V6zm3.5 6l8.5 6V6l-8.5 6z"/></svg>
-            </button>
-            <button id="pv-play" class="play-btn" title="播放/暂停" aria-label="播放/暂停">
-              <svg id="play-icon" class="icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-            </button>
-            <button id="pv-next" class="ctrl-btn" title="下一首" aria-label="下一首">
-              <svg class="icon" viewBox="0 0 24 24"><path d="M16 6h2v12h-2V6zM6 18l8.5-6L6 6v12z"/></svg>
-            </button>
-
-            <!-- 播放模式 -->
-            <div style="position: relative;">
-              <button id="pv-mode-btn" class="mode-btn" title="播放模式" aria-label="播放模式">
-                <svg class="icon" viewBox="0 0 24 24"><path d="M7 7h8v3l4-4-4-4v3H5v6h2V7zm10 10H9v-3l-4 4 4 4v-3h10v-6h-2v4z"/></svg>
-              </button>
-              <div id="mode-pop" class="popover mode-popover" style="display:none;">
-                <div class="mode-item active" data-mode="single" title="单曲循环">
-                  <svg class="icon" viewBox="0 0 24 24"><path d="M12 5v4l-1.5-1.5C8 10 8 14 10.5 16.5S16 19 18.5 16.5L20 18c-3 3-8 3-11 0S6 9 9 6L12 5z"/></svg>
-                </div>
-                <div class="mode-item" data-mode="list" title="歌单顺序循环">
-                  <svg class="icon" viewBox="0 0 24 24"><path d="M4 6h12v2H4V6zm0 5h12v2H4v-2zm0 5h8v2H4v-2zm15-7l-3 3h2v4h2v-4h2l-3-3z"/></svg>
-                </div>
-                <div class="mode-item" data-mode="shuffle" title="歌单乱序循环">
-                  <svg class="icon" viewBox="0 0 24 24"><path d="M16 3h5v5h-2V6.41l-4.29 4.3-1.42-1.42L17.59 5H16V3zM4 6h7l2 2H4V6zm0 6h5l2 2H4v-2zm12 3h1.59l-2.29 2.29 1.42 1.42L20 17.41V19h2v-5h-5v2z"/></svg>
-                </div>
-              </div>
+    <!-- 写评论功能 JavaScript -->
+    <script>
+        // 评分星星交互
+        document.addEventListener('DOMContentLoaded', function() {
+            const ratingStars = document.querySelectorAll('.rating-star');
+            const reviewRating = document.getElementById('reviewRating');
+            const reviewContent = document.getElementById('reviewContent');
+            const submitReview = document.getElementById('submitReview');
+            const reviewsList = document.querySelector('.reviews-list');
+            
+            // 星星点击事件
+            ratingStars.forEach(star => {
+                star.addEventListener('click', function() {
+                    const rating = parseInt(this.getAttribute('data-rating'));
+                    setRating(rating);
+                });
+                
+                // 星星悬停效果
+                star.addEventListener('mouseover', function() {
+                    const rating = parseInt(this.getAttribute('data-rating'));
+                    highlightStars(rating, 'hovered');
+                });
+                
+                star.addEventListener('mouseout', function() {
+                    const currentRating = parseInt(reviewRating.value);
+                    highlightStars(currentRating, 'hovered');
+                    setRating(currentRating);
+                });
+            });
+            
+            // 设置评分
+            function setRating(rating) {
+                reviewRating.value = rating;
+                highlightStars(rating, 'active');
+            }
+            
+            // 高亮星星
+            function highlightStars(rating, className) {
+                ratingStars.forEach((star, index) => {
+                    const starRating = parseInt(star.getAttribute('data-rating'));
+                    if (starRating <= rating) {
+                        star.classList.add(className);
+                        star.classList.remove('far');
+                        star.classList.add('fas');
+                    } else {
+                        star.classList.remove(className);
+                        star.classList.remove('fas');
+                        star.classList.add('far');
+                    }
+                });
+            }
+            
+            // 提交评论
+            submitReview.addEventListener('click', function() {
+                const rating = parseInt(reviewRating.value);
+                const content = reviewContent.value.trim();
+                
+                // 表单验证
+                if (rating === 0) {
+                    alert('请先选择评分');
+                    return;
+                }
+                
+                if (content === '') {
+                    alert('请输入评论内容');
+                    return;
+                }
+                
+                // 创建新评论元素
+                const newReview = createReviewElement(rating, content);
+                
+                // 添加到评论列表顶部
+                reviewsList.insertBefore(newReview, reviewsList.firstChild);
+                
+                // 清空表单
+                setRating(0);
+                reviewContent.value = '';
+                
+                // 显示成功提示
+                alert('评论提交成功！');
+                
+                // 更新评论总数
+                updateReviewCount();
+            });
+            
+            // 创建评论元素
+            function createReviewElement(rating, content) {
+                const reviewItem = document.createElement('div');
+                reviewItem.className = 'review-item';
+                
+                // 当前时间
+                const now = new Date();
+                const dateStr = now.getFullYear() + '-' + 
+                               String(now.getMonth() + 1).padStart(2, '0') + '-' + 
+                               String(now.getDate()).padStart(2, '0');
+                
+                // 生成随机用户名（示例）
+                const userNames = ['张同学', '李同学', '王同学', '赵同学', '刘同学', '陈同学'];
+                const randomUser = userNames[Math.floor(Math.random() * userNames.length)];
+                const userInitial = randomUser.charAt(0);
+                
+                // 生成星星HTML
+                let starsHTML = '';
+                for (let i = 1; i <= 5; i++) {
+                    if (i <= rating) {
+                        starsHTML += '<i class="fas fa-star"></i>';
+                    } else {
+                        starsHTML += '<i class="far fa-star"></i>';
+                    }
+                }
+                
+                reviewItem.innerHTML = `
+                    <div class="review-header">
+                        <div class="user-info">
+                            <div class="user-avatar">${userInitial}</div>
+                            <div class="user-details">
+                                <div class="user-name">${randomUser}</div>
+                                <div class="review-date">${dateStr}</div>
+                            </div>
+                        </div>
+                        <div class="review-rating">
+                            ${starsHTML}
+                        </div>
+                    </div>
+                    <div class="review-content">
+                        <p>${content}</p>
+                    </div>
+                `;
+                
+                return reviewItem;
+            }
+            
+            // 更新评论总数
+            function updateReviewCount() {
+                const ratingCount = document.querySelector('.rating-count');
+                if (ratingCount) {
+                    // 从现有文本中提取数字
+                    const currentCount = parseInt(ratingCount.textContent.match(/\d+/)[0]);
+                    ratingCount.textContent = `(${currentCount + 1} 条评价)`;
+                }
+            }
+        });
+    </script>
+    
+    <!-- 底部播放栏 -->
+    <footer class="player-bar">
+        <div class="player-left">
+            <div class="channel-cover">课程</div>
+            <div class="song-info">
+                <p class="song-name">英语日常对话系列</p>
+                <p class="singer">第一节：基础问候语</p>
             </div>
-
-            <!-- 倍速 -->
-            <div class="rate-control" style="position: relative;">
-              <button id="pv-rate-btn" class="rate-btn" title="倍速"><span id="rate-text" style="font-size: 12px; font-weight: bold;">1x</span></button>
-              <div id="rate-pop" class="popover rate-popover" style="display:none;">
-                <div class="rate-item" data-rate="0.5">0.5x</div>
-                <div class="rate-item active" data-rate="1">1.0x</div>
-                <div class="rate-item" data-rate="1.5">1.5x</div>
-                <div class="rate-item" data-rate="2">2.0x</div>
-              </div>
-            </div>
-
-            <!-- 播放列表按钮 -->
-            <button id="pv-list-btn" class="ctrl-btn" title="播放列表" aria-label="播放列表">▤</button>
-          </div>
-
-          <div class="pv-progress-row">
-            <span id="pv-time-cur" class="time small">00:00</span>
-            <div id="pv-progress" class="pv-progress">
-              <div id="pv-progress-fill" class="pv-progress-fill"></div>
-              <div id="pv-knob" class="pv-knob"></div>
-            </div>
-            <span id="pv-time-total" class="time small">00:00</span>
-          </div>
         </div>
-
-        <!-- 右侧：音量 -->
-        <div class="pv-right">
-          <button id="pv-mute" class="ctrl-btn" title="静音/取消静音" aria-label="静音">
-            <svg id="vol-icon" class="icon" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3z"/></svg>
-          </button>
-          <div id="pv-volume" class="pv-volume" title="音量">
-            <div class="pv-volume-bar"><div id="pv-volume-fill" class="pv-volume-fill"></div></div>
-          </div>
+        <div class="player-middle">
+            <div class="control-buttons">
+                <button class="control-btn"><i class="fas fa-step-backward"></i></button>
+                <button class="control-btn play-btn"><i class="fas fa-play-circle"></i></button>
+                <button class="control-btn"><i class="fas fa-step-forward"></i></button>
+                <button class="control-btn"><i class="fas fa-random"></i></button>
+                <div class="speed-control">
+                    <button class="speed-btn">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span id="currentSpeed">1x</span>
+                    </button>
+                    <div class="speed-menu">
+                        <div class="speed-option" data-rate="0.5">0.5x</div>
+                        <div class="speed-option active" data-rate="1">1x</div>
+                        <div class="speed-option" data-rate="1.5">1.5x</div>
+                        <div class="speed-option" data-rate="2">2x</div>
+                        <div class="speed-option" data-rate="3">3x</div>
+                    </div>
+                </div>
+            </div>
+            <div class="progress-container">
+                <span class="time current">00:00</span>
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+                <span class="time total">08:30</span>
+            </div>
         </div>
-      </div>
+        <div class="player-right">
+            <button class="control-btn"><i class="fas fa-volume-up"></i></button>
+            <div class="volume-bar">
+                <div class="volume-fill"></div>
+            </div>
+            <div class="playlist-container">
+                <button class="playlist-btn"><i class="fas fa-list"></i></button>
+                <div class="playlist-panel">
+                    <div class="playlist-title">课程章节列表</div>
+                    <div class="playlist-item active">1. 基础问候语</div>
+                    <div class="playlist-item">2. 自我介绍</div>
+                    <div class="playlist-item">3. 询问个人信息</div>
+                    <div class="playlist-item">4. 谈论天气</div>
+                    <div class="playlist-item">5. 单元复习</div>
+                </div>
+            </div>
+        </div>
+    </footer>
 
-      <!-- 播放列表弹窗（示例） -->
-      <div id="playlist-panel" class="playlist-panel">
-        <div class="playlist-item active" onclick="playIndex(0)">1. Kalimba (Test)</div>
-        <div class="playlist-item" onclick="playIndex(1)">2. Sample MP3 (Test)</div>
-      </div>
-
-      <audio id="pv-audio" preload="metadata"></audio>
-    </aside>
-
-    <!-- 页面脚本：保留原页面逻辑（选项卡/章节/播放按钮） -->
     <script>
         // 课程数据
         const courseData = {
@@ -1232,6 +1737,22 @@
                     audience: ['英语阅读学习者', '准备英语考试的学生', '需要阅读英文资料的专业人士', '英语阅读爱好者'],
                     features: ['精选阅读材料', '系统的阅读技巧', '多种题型练习', '阅读策略指导']
                 }
+            },
+            'pronunciation_correction': {
+                title: '英语发音纠正',
+                description: '纠正英语发音问题，提高口语准确性',
+                level: '初级到中级',
+                lessons: '12集',
+                status: '已完结',
+                plays: '7.2万',
+                rating: '4.8',
+                learners: '3.4万',
+                details: {
+                    intro: '本课程专注于英语发音问题的纠正，通过系统的发音练习和技巧指导，帮助学习者提高英语发音的准确性。',
+                    goals: ['掌握英语元音和辅音的正确发音', '纠正常见的发音错误', '提高口语流利度和准确性', '学习连读和弱读技巧', '培养地道的英语发音习惯'],
+                    audience: ['英语发音不准确的学习者', '想要提高口语发音的人士', '准备英语口语考试的学生', '希望改善英语发音的职场人士'],
+                    features: ['系统的发音训练', '针对性的发音纠正', '丰富的发音练习', '实用的发音技巧']
+                }
             }
         };
 
@@ -1297,11 +1818,9 @@
                 </div>
             `;
 
-            // 更新 PlayBar 显示的标题（左下角）
-            const pvTitle = document.getElementById('pv-title');
-            const pvArtist = document.getElementById('pv-artist');
-            if (pvTitle) pvTitle.textContent = course.title;
-            if (pvArtist) pvArtist.textContent = '课程播放准备就绪';
+            // 更新播放器信息
+            document.querySelector('.song-name').textContent = course.title;
+            document.querySelector('.singer').textContent = '第一节：课程介绍';
         }
 
         // 页面加载时初始化
@@ -1311,24 +1830,39 @@
             // 保持原有的选项卡功能
             document.querySelectorAll('.tab-btn').forEach(button => {
                 button.addEventListener('click', () => {
-                    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+                    // 移除所有按钮的active类
+                    document.querySelectorAll('.tab-btn').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+
+                    // 添加当前按钮的active类
                     button.classList.add('active');
-                    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+                    // 隐藏所有内容
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+
+                    // 显示对应内容
                     const tabContents = document.querySelectorAll('.tab-content');
                     const index = Array.from(button.parentElement.children).indexOf(button);
-                    if (tabContents[index]) tabContents[index].classList.add('active');
+                    if (tabContents[index]) {
+                        tabContents[index].classList.add('active');
+                    }
                 });
             });
 
             // 章节项点击功能
             document.querySelectorAll('.chapter-item').forEach(item => {
                 item.addEventListener('click', () => {
-                    document.querySelectorAll('.chapter-item').forEach(chapter => chapter.classList.remove('active'));
+                    document.querySelectorAll('.chapter-item').forEach(chapter => {
+                        chapter.classList.remove('active');
+                    });
                     item.classList.add('active');
                 });
             });
 
-            // 播放按钮点击功能（更新 PlayBar 标题/时长）
+            // 播放按钮点击功能
             document.querySelectorAll('.play-btn').forEach(button => {
                 button.addEventListener('click', (e) => {
                     e.stopPropagation();
@@ -1336,255 +1870,89 @@
                     const lessonTitle = lessonItem.querySelector('.lesson-title').textContent;
                     const lessonDuration = lessonItem.querySelector('.lesson-duration').textContent;
 
-                    // 更新 PlayBar 标题与总时长显示
-                    const pvTitle = document.getElementById('pv-title');
-                    const pvArtist = document.getElementById('pv-artist');
-                    const totalEl = document.getElementById('pv-time-total');
-                    if (pvTitle) pvTitle.textContent = lessonTitle;
-                    if (pvArtist) pvArtist.textContent = '英语课程';
-                    if (totalEl) totalEl.textContent = lessonDuration;
+                    // 更新播放器信息
+                    document.querySelector('.song-name').textContent = lessonTitle;
+                    document.querySelector('.time.total').textContent = lessonDuration;
 
+                    // 显示提示
                     alert(`开始播放：${lessonTitle}`);
                 });
             });
+
+            // 单元标题点击展开/收起
+            document.querySelectorAll('.unit-header').forEach(header => {
+                header.addEventListener('click', () => {
+                    const unitItem = header.parentElement;
+                    const lessonList = unitItem.querySelector('.lesson-list');
+                    lessonList.style.display = lessonList.style.display === 'none' ? 'block' : 'none';
+                });
+            });
+
+            // 播放器功能（与收藏页面一致）
+            const audioPlayer = document.getElementById('audioPlayer');
+            const playBtn = document.querySelector('.play-btn');
+            const speedBtn = document.querySelector('.speed-btn');
+            const speedMenu = document.querySelector('.speed-menu');
+            const speedOptions = document.querySelectorAll('.speed-option');
+            const currentSpeed = document.getElementById('currentSpeed');
+            const playlistBtn = document.querySelector('.playlist-btn');
+            const playlistPanel = document.querySelector('.playlist-panel');
+            const playlistItems = document.querySelectorAll('.playlist-item');
+            const progressFill = document.querySelector('.progress-fill');
+            const currentTime = document.querySelector('.time.current');
+
+            playBtn.addEventListener('click', () => {
+                if (audioPlayer.paused) {
+                    audioPlayer.play();
+                    playBtn.innerHTML = '<i class="fas fa-pause-circle"></i>';
+                } else {
+                    audioPlayer.pause();
+                    playBtn.innerHTML = '<i class="fas fa-play-circle"></i>';
+                }
+            });
+
+            speedBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                speedMenu.classList.toggle('active');
+            });
+            speedOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    const rate = parseFloat(option.getAttribute('data-rate'));
+                    audioPlayer.playbackRate = rate;
+                    currentSpeed.textContent = `${rate}x`;
+                    speedOptions.forEach(opt => opt.classList.remove('active'));
+                    option.classList.add('active');
+                    speedMenu.classList.remove('active');
+                });
+            });
+
+            playlistBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                playlistPanel.classList.toggle('active');
+            });
+            playlistItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    playlistItems.forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+                    const lessonTitle = item.textContent.replace(/^\d+\.\s*/, '');
+                    document.querySelector('.song-name').textContent = `英语日常对话系列`;
+                    document.querySelector('.singer').textContent = lessonTitle;
+                });
+            });
+
+            audioPlayer.addEventListener('timeupdate', () => {
+                const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+                progressFill.style.width = `${progress}%`;
+                const minutes = Math.floor(audioPlayer.currentTime / 60);
+                const seconds = Math.floor(audioPlayer.currentTime % 60);
+                currentTime.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            });
+
+            document.addEventListener('click', () => {
+                speedMenu.classList.remove('active');
+                playlistPanel.classList.remove('active');
+            });
         });
-    </script>
-
-    <!-- PlayBar 导航与基础交互（简版） -->
-    <script>
-      (function () {
-        const audio = document.getElementById('pv-audio');
-        const playBtn = document.getElementById('pv-play');
-        const progressWrap = document.getElementById('pv-progress');
-
-        function formatTime(s) {
-          if (!s || isNaN(s) || s <= 0) return '00:00';
-          const m = Math.floor(s / 60), sec = Math.floor(s % 60);
-          return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
-        }
-
-        const timeCurEl = document.getElementById('pv-time-cur');
-        const timeTotalEl = document.getElementById('pv-time-total');
-        const progFill = document.getElementById('pv-progress-fill');
-        const pvKnob = document.getElementById('pv-knob');
-
-        function togglePlay() {
-          if (!audio) return;
-          const playIcon = document.getElementById('play-icon');
-          if (audio.paused) {
-            audio.play().catch(()=>{});
-            playBtn.setAttribute('aria-pressed','true');
-            if (playIcon) playIcon.innerHTML = '<path d="M6 5h4v14H6V5zm8 0h4v14h-4V5z"/>';
-          } else {
-            audio.pause();
-            playBtn.setAttribute('aria-pressed','false');
-            if (playIcon) playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
-          }
-        }
-        if (playBtn) playBtn.addEventListener('click', (e) => { e.stopPropagation(); togglePlay(); });
-
-        if (audio) {
-          audio.addEventListener('timeupdate', () => {
-            const dur = audio.duration || 0;
-            const cur = audio.currentTime || 0;
-            const pct = dur ? (cur / dur) * 100 : 0;
-            if (progFill) progFill.style.width = pct + '%';
-            if (pvKnob) pvKnob.style.left = pct + '%';
-            if (timeCurEl) timeCurEl.textContent = formatTime(cur);
-            if (timeTotalEl) timeTotalEl.textContent = formatTime(dur);
-          });
-          audio.addEventListener('loadedmetadata', () => {
-            if (timeTotalEl) timeTotalEl.textContent = formatTime(audio.duration);
-          });
-          audio.addEventListener('ended', () => {
-            const playIcon = document.getElementById('play-icon');
-            if (playIcon) playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
-            playBtn.setAttribute('aria-pressed','false');
-          });
-        }
-
-        // 点击进度条跳转
-        if (progressWrap) {
-          progressWrap.addEventListener('click', (e) => {
-            if (!audio || !audio.duration) return;
-            const rect = progressWrap.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const p = Math.max(0, Math.min(1, x / rect.width));
-            audio.currentTime = p * audio.duration;
-          });
-        }
-      })();
-    </script>
-
-    <!-- PlayBar 业务脚本（来自 PlayBar.html） -->
-    <script>
-    ;(function () {
-      const playlist = [
-        { title: "Kalimba (Test Audio)", artist: "Ninja Tuna", cover: "", src: "https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3" },
-        { title: "Sample MP3 (700KB)", artist: "Sample Source", cover: "", src: "https://sample.cat/downloads/file_example_MP3_700KB.mp3" }
-      ];
-
-      let currentIndex = 0;
-      let isPlaying = false;
-      let isDraggingProgress = false;
-      let isDraggingVolume = false;
-      let playMode = 'list'; /* single | list | shuffle */
-
-      const audio = document.getElementById('pv-audio');
-      const playBtn = document.getElementById('pv-play');
-      const playIcon = document.getElementById('play-icon');
-      const prevBtn = document.getElementById('pv-prev');
-      const nextBtn = document.getElementById('pv-next');
-      const titleEl = document.getElementById('pv-title');
-      const artistEl = document.getElementById('pv-artist');
-      const coverEl = document.getElementById('pv-cover');
-      const progressEl = document.getElementById('pv-progress');
-      const progressFill = document.getElementById('pv-progress-fill');
-      const knobEl = document.getElementById('pv-knob');
-      const timeCurEl = document.getElementById('pv-time-cur');
-      const timeTotalEl = document.getElementById('pv-time-total');
-      const volEl = document.getElementById('pv-volume');
-      const volFill = document.getElementById('pv-volume-fill');
-      const listBtn = document.getElementById('pv-list-btn');
-      const playlistPanel = document.getElementById('playlist-panel');
-      const rateBtn = document.getElementById('pv-rate-btn');
-      const rateText = document.getElementById('rate-text');
-      const muteBtn = document.getElementById('pv-mute');
-      const volIcon = document.getElementById('vol-icon');
-      const modeBtn = document.getElementById('pv-mode-btn');
-      const modePop = document.getElementById('mode-pop');
-      const ratePop = document.getElementById('rate-pop');
-
-      function loadTrack(index) {
-        const track = playlist[index];
-        titleEl.innerText = track.title;
-        artistEl.innerText = track.artist;
-        coverEl.style.backgroundImage = track.cover ? `url('${track.cover}')` : '';
-        audio.src = track.src;
-        document.querySelectorAll('.playlist-item').forEach((item, i) => item.classList.toggle('active', i === index));
-      }
-      function playTrack() { audio.play().then(() => { isPlaying = true; updatePlayIcon(); }).catch(err => console.error("Play failed:", err)); }
-      function pauseTrack() { audio.pause(); isPlaying = false; updatePlayIcon(); }
-      function togglePlay() { isPlaying ? pauseTrack() : playTrack(); }
-      function updatePlayIcon() {
-        playIcon.setAttribute('viewBox','0 0 24 24');
-        playIcon.innerHTML = isPlaying ? '<path d="M6 5h4v14H6V5zm8 0h4v14h-4V5z"/>' : '<path d="M8 5v14l11-7z"/>';
-      }
-      function formatTime(s) { if (!s || isNaN(s)) return "00:00"; const m = Math.floor(s/60), ss = Math.floor(s%60); return `${m<10?'0':''}${m}:${ss<10?'0':''}${ss}`; }
-      function stopWrap(handler) { return function(e){ e.stopPropagation(); handler(e); }; }
-
-      /* 控件事件（阻止冒泡） */
-      playBtn.addEventListener('click', stopWrap(togglePlay));
-      prevBtn.addEventListener('click', stopWrap(() => prevByMode()));
-      nextBtn.addEventListener('click', stopWrap(() => nextByMode()));
-      muteBtn.addEventListener('click', stopWrap(() => {
-        audio.muted = !audio.muted;
-        if (audio.muted || audio.volume === 0) { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 3l7 7-1.4 1.4L16 7.8V16h-2V8.6L9.4 4 11 2.4 14 3z"/>'; }
-        else if (audio.volume < 0.5) { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 9v6c1.7-0.7 3-2.4 3-4.5S15.7 9.7 14 9z"/>'; }
-        else { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 7v10c3-1 5-3.6 5-7s-2-6-5-7z"/>'; }
-      }));
-
-      /* 模式弹层 */
-      modeBtn.addEventListener('click', stopWrap(() => {
-        ratePop.style.display = 'none';
-        modePop.style.display = modePop.style.display === 'flex' ? 'none' : 'flex';
-      }));
-      modePop.addEventListener('click', stopWrap((e) => {
-        const item = e.target.closest('.mode-item');
-        if (!item) return;
-        playMode = item.getAttribute('data-mode');
-        document.querySelectorAll('#mode-pop .mode-item').forEach(el => el.classList.toggle('active', el === item));
-        modePop.style.display = 'none';
-      }));
-
-      /* 倍速弹层 */
-      rateBtn.addEventListener('click', stopWrap(() => {
-        modePop.style.display = 'none';
-        ratePop.style.display = ratePop.style.display === 'flex' ? 'none' : 'flex';
-      }));
-      ratePop.addEventListener('click', stopWrap((e) => {
-        const item = e.target.closest('.rate-item');
-        if (!item) return;
-        const r = parseFloat(item.getAttribute('data-rate'));
-        audio.playbackRate = r;
-        rateText.innerText = r.toFixed(1) + 'x';
-        document.querySelectorAll('#rate-pop .rate-item').forEach(el => el.classList.toggle('active', el === item));
-        ratePop.style.display = 'none';
-      }));
-
-      /* 点击其他区域关闭弹层 */
-      document.addEventListener('click', (e) => {
-        if (!modeBtn.contains(e.target) && !modePop.contains(e.target)) modePop.style.display = 'none';
-        if (!rateBtn.contains(e.target) && !ratePop.contains(e.target)) ratePop.style.display = 'none';
-      });
-
-      /* 音频事件与切歌模式 */
-      audio.addEventListener('timeupdate', () => {
-        if (isDraggingProgress) return;
-        const percent = (audio.currentTime / audio.duration) * 100;
-        progressFill.style.width = `${percent}%`;
-        knobEl.style.left = `${percent}%`;
-        timeCurEl.innerText = formatTime(audio.currentTime);
-      });
-      audio.addEventListener('loadedmetadata', () => { timeTotalEl.innerText = formatTime(audio.duration); });
-      audio.addEventListener('ended', () => {
-        if (playMode === 'single') { audio.currentTime = 0; playTrack(); }
-        else { nextByMode(); }
-      });
-      function prevByMode() {
-        if (playMode === 'shuffle') currentIndex = Math.floor(Math.random() * playlist.length);
-        else currentIndex = (currentIndex - 1 + playlist.length) % playlist.length;
-        loadTrack(currentIndex); playTrack();
-      }
-      function nextByMode() {
-        if (playMode === 'shuffle') currentIndex = Math.floor(Math.random() * playlist.length);
-        else currentIndex = (currentIndex + 1) % playlist.length;
-        loadTrack(currentIndex); playTrack();
-      }
-
-      /* 进度条拖拽（鼠标/触摸） */
-      function handleProgressInput(clientX) {
-        const rect = progressEl.getBoundingClientRect();
-        let x = clientX - rect.left; x = Math.max(0, Math.min(x, rect.width));
-        const pct = (x / rect.width) * 100; progressFill.style.width = `${pct}%`; knobEl.style.left = `${pct}%`;
-        return (x / rect.width) * audio.duration;
-      }
-      progressEl.addEventListener('mousedown', stopWrap((e) => { isDraggingProgress = true; progressEl.classList.add('dragging'); const t = handleProgressInput(e.clientX); timeCurEl.innerText = formatTime(t); }));
-      document.addEventListener('mousemove', (e) => { if (isDraggingProgress) { e.preventDefault(); const t = handleProgressInput(e.clientX); timeCurEl.innerText = formatTime(t); } });
-      document.addEventListener('mouseup', (e) => { if (isDraggingProgress) { isDraggingProgress = false; progressEl.classList.remove('dragging'); const t = handleProgressInput(e.clientX); if (isFinite(t)) audio.currentTime = t; } });
-
-      function getTouchX(e){ return (e.touches&&e.touches[0]) ? e.touches[0].clientX : (e.changedTouches&&e.changedTouches[0] ? e.changedTouches[0].clientX : 0); }
-      progressEl.addEventListener('touchstart', (e) => { e.stopPropagation(); e.preventDefault(); isDraggingProgress = true; const t = handleProgressInput(getTouchX(e)); timeCurEl.innerText = formatTime(t); }, { passive:false });
-      document.addEventListener('touchmove', (e) => { if (isDraggingProgress) { e.preventDefault(); const t = handleProgressInput(getTouchX(e)); timeCurEl.innerText = formatTime(t); } }, { passive:false });
-      document.addEventListener('touchend', (e) => { if (isDraggingProgress) { isDraggingProgress = false; const t = handleProgressInput(getTouchX(e)); if (isFinite(t)) audio.currentTime = t; } }, { passive:false });
-
-      /* 音量拖拽（鼠标/触摸） */
-      function handleVolumeInput(clientX) {
-        const rect = volEl.getBoundingClientRect();
-        let x = clientX - rect.left; x = Math.max(0, Math.min(x, rect.width));
-        const p = x / rect.width; volFill.style.width = `${p * 100}%`; audio.volume = p;
-        if (p === 0 || audio.muted) { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 3l7 7-1.4 1.4L16 7.8V16h-2V8.6L9.4 4 11 2.4 14 3z"/>'; }
-        else if (p < 0.5) { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 9v6c1.7-0.7 3-2.4 3-4.5S15.7 9.7 14 9z"/>'; }
-        else { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 7v10c3-1 5-3.6 5-7s-2-6-5-7z"/>'; }
-      }
-      volEl.addEventListener('mousedown', stopWrap((e) => { isDraggingVolume = true; handleVolumeInput(e.clientX); }));
-      document.addEventListener('mousemove', (e) => { if (isDraggingVolume) { e.preventDefault(); handleVolumeInput(e.clientX); } });
-      document.addEventListener('mouseup', () => { isDraggingVolume = false; });
-      volEl.addEventListener('touchstart', (e) => { e.stopPropagation(); e.preventDefault(); isDraggingVolume = true; handleVolumeInput(getTouchX(e)); }, { passive:false });
-      document.addEventListener('touchmove', (e) => { if (isDraggingVolume) { e.preventDefault(); handleVolumeInput(getTouchX(e)); } }, { passive:false });
-      document.addEventListener('touchend', () => { isDraggingVolume = false; }, { passive:false });
-
-      /* 简易播放列表开关（示例） */
-      listBtn.addEventListener('click', stopWrap(() => {
-        playlistPanel.style.display = playlistPanel.style.display === 'block' ? 'none' : 'block';
-      }));
-
-      /* 提供给 HTML 的播放列表切换 */
-      window.playIndex = function(index){ currentIndex = index; loadTrack(currentIndex); playTrack(); }
-
-      /* 初始化第一首 */
-      loadTrack(currentIndex);
-    })();
     </script>
 </body>
 </html>

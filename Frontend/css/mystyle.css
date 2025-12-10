@@ -21,12 +21,24 @@ body {
 
 /* 头部样式 */
 .header {
-    background-color: #ff8c00;
-    padding: 15px 0;
-    box-shadow: 0 2px 4px rgba(255,140,0,0.1);
-    position: sticky;
+    background-color: #FF8C00;
+    color: #fff;
+    padding: 6px 16px; /* narrower vertically and slightly less horizontal padding */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    position: fixed; /* fixed to top like other pages */
     top: 0;
+    left: 0;
+    right: 0;
     z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Reserve vertical space on pages that opt-in */
+body.has-fixed-header {
+    padding-top: 56px; /* slightly reduced to match narrower header */
 }
 
 .header-content {
@@ -47,41 +59,30 @@ body {
 }
 
 .logo-img {
-    width: 40px;
-    height: 40px;
-    margin-right: 10px;
+    width: 30px;
+    height: 30px;
+    margin-right: 8px;
     border-radius: 50%;
     background-color: white;
 }
 
-/* 导航菜单样式 */
-.nav {
-    margin-left: 30px;
-}
-
-.nav-list {
+/* 导航菜单样式 - match site defaults */
+.main-nav {
     display: flex;
-    list-style: none;
-    gap: 20px;
+    gap: 15px;
 }
 
 .nav-item {
-    margin: 0;
-}
-
-.nav-link {
-    color: white;
+    color: #fff;
     text-decoration: none;
-    font-size: 16px;
-    font-weight: 500;
-    transition: color 0.3s;
-    padding: 5px 0;
+    font-size: 14px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: background-color 0.3s;
 }
 
-.nav-link:hover,
-.nav-item.active .nav-link {
-    color: #fff8e1;
-}
+.nav-item:hover { background-color: rgba(255,255,255,0.2); }
+.nav-item.active { background-color: #fff; color: #FF8C00; font-weight: bold; }
 
 /* 搜索框样式 */
 .search-container {
@@ -956,10 +957,10 @@ a, button, .nav-link, .user-menu-link, .btn-orange, .channel-item, .rank-item,
         gap: 8px;
     }
     
-    .current-time,
-    .total-time {
-        font-size: 11px;
-        min-width: 40px;
+        background-color: white; /* Ensures consistent white background */
+        border-radius: 16px; /* Maintains rounded corners */
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15); /* Adds shadow for depth */
+        animation: fadeIn 0.5s ease-in-out; /* Animation for appearance */
     }
     
     .volume-control {

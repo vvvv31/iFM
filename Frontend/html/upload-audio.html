@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>上传音频 - 星之声</title>
     <link rel="stylesheet" href="../css/style.css">
+<<<<<<< Updated upstream
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="../js/search.js"></script>
     <style>
@@ -22,6 +23,15 @@
         .upload-container {
             max-width: 800px;
             margin: 0 auto 60px;
+=======
+    <link rel="stylesheet" href="../css/mystyle.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="../js/search.js"></script>
+    <style>
+        /* Page-specific styles kept; global reset and body background come from mystyle.css */
+        .upload-container {
+            /* container visuals kept minimal here; sizing moved to mystyle.css */
+>>>>>>> Stashed changes
             padding: 30px;
             background-color: #fff8f0;
             border-radius: 16px;
@@ -405,14 +415,23 @@
         }
     </style>
 </head>
+<<<<<<< Updated upstream
 <body>
     <!-- 音频元素 -->
+=======
+<body class="upload-page has-fixed-header">
+    <!-- 音频元素（保留以供站内脚本复用） -->
+>>>>>>> Stashed changes
     <audio id="audioPlayer" controls style="display: none;">
         <source src="" type="audio/mpeg">
         您的浏览器不支持音频播放
     </audio>
 
+<<<<<<< Updated upstream
     <!-- 顶部导航栏 -->
+=======
+    <!-- 顶部导航栏（与站点其它页面统一） -->
+>>>>>>> Stashed changes
     <header class="header">
         <div class="logo">
             <div class="logo-img"></div>
@@ -442,6 +461,7 @@
         </div>
     </header>
 
+<<<<<<< Updated upstream
     <!-- 上传内容区域 -->
     <main class="main-content">
         <div class="upload-container">
@@ -470,6 +490,21 @@
                     <div id="audio-preview" class="audio-preview">
                         <audio id="audio-player" controls></audio>
                     </div>
+=======
+    <div class="upload-container" style="margin-top:12px;">
+        <h1>上传音频</h1>
+        
+        <!-- 消息显示区域 -->
+        <div id="message" class="message"></div>
+        
+        <form id="upload-form">
+            <!-- 文件选择 -->
+            <div class="form-group">
+                <label for="audio-file">选择音频文件</label>
+                <div class="file-input-wrapper">
+                    <input type="file" id="audio-file" accept="audio/mp3,audio/aac,audio/m4a" class="file-input" required>
+                    <span class="file-input-label">选择音频文件</span>
+>>>>>>> Stashed changes
                 </div>
                 
                 <!-- 音频标题 -->

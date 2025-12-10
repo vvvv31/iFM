@@ -7,7 +7,6 @@ import com.zjsu.yyd.ifmservice.model.user.UpdateUserRequest;
 import com.zjsu.yyd.ifmservice.model.user.User;
 import com.zjsu.yyd.ifmservice.service.UserService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,11 +20,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/api/user")
-@RequiredArgsConstructor
 @Tag(name = "用户模块", description = "提供注册、登录、查询、更新等用户接口")
 public class UserController {
 
     private final UserService userService;
+    
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @Operation(
             summary = "用户注册",

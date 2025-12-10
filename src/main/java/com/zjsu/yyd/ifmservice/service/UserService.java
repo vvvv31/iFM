@@ -3,7 +3,6 @@ package com.zjsu.yyd.ifmservice.service;
 import com.zjsu.yyd.ifmservice.model.user.*;
 import com.zjsu.yyd.ifmservice.repository.UserProfileRepository;
 import com.zjsu.yyd.ifmservice.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
@@ -11,11 +10,16 @@ import java.util.Optional;
 import java.util.ArrayList;
 
 @Service
-@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
     private final UserProfileRepository userProfileRepository;
+
+    // 构造函数
+    public UserService(UserRepository userRepository, UserProfileRepository userProfileRepository) {
+        this.userRepository = userRepository;
+        this.userProfileRepository = userProfileRepository;
+    }
 
     private static final String SALT = "com.ifm";
 

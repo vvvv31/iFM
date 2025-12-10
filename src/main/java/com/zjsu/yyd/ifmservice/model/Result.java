@@ -1,8 +1,5 @@
 package com.zjsu.yyd.ifmservice.model;
 
-import lombok.Data;
-
-@Data
 public class Result<T> {
 
     private int code;
@@ -47,5 +44,30 @@ public class Result<T> {
         r.setMessage(message);
         r.setData(null);
         return r;
+    }
+
+    // Getter and Setter methods
+    public int getCode() {
+        return code;
+    }
+
+    public void setCode(int code) {
+        this.code = code;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public T getData() {
+        return data;
+    }
+
+    public void setData(T data) {
+        this.data = data;
     }
 }

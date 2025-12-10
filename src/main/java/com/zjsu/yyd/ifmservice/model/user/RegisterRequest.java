@@ -2,9 +2,7 @@ package com.zjsu.yyd.ifmservice.model.user;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
-import lombok.Data;
 
-@Data
 public class RegisterRequest {
 
     @NotBlank(message = "phone is required")
@@ -16,4 +14,29 @@ public class RegisterRequest {
     private String password;
 
     private String username;
+
+    // Getter and Setter methods
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
 }

@@ -274,15 +274,13 @@
             clearRegErrors();
         });
 
-        // 关闭按钮 — 隐藏弹窗并跳回首页
+        // 关闭按钮
         closeBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 btn.closest('.auth-container').style.display = 'none';
                 // 清空错误状态
                 clearLoginErrors();
                 clearRegErrors();
-                // 导航回首页，避免停留空白页
-                window.location.href = 'index.html';
             });
         });
 

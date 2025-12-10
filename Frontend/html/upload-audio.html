@@ -683,4 +683,690 @@
 
     <script src="../js/upload-audio.js"></script>
 </body>
+=======
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>上传音频 - 星之声</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="../js/search.js"></script>
+    <style>
+        /* 继承主站风格 - 橙色主题 */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background-color: #ffffff;
+            color: #333;
+            min-height: 100vh;
+            margin: 0;
+            padding-top: 70px; /* 给顶部导航栏留空间 */
+        }
+        
+        /* 上传容器 */
+        .upload-container {
+            max-width: 800px;
+            margin: 0 auto 60px;
+            padding: 30px;
+            background-color: #fff8f0;
+            border-radius: 16px;
+            box-shadow: 0 6px 20px rgba(255, 152, 0, 0.1);
+            border: 1px solid #ffe0b2;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #e65100; /* 深橙色 */
+            font-size: 28px;
+            font-weight: 600;
+        }
+        
+        /* 表单组 */
+        .form-group {
+            margin-bottom: 24px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #ff6d00; /* 橙色 */
+            font-size: 15px;
+        }
+        
+        input[type="text"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #ffcc80;
+            border-radius: 10px;
+            font-size: 15px;
+            box-sizing: border-box;
+            transition: all 0.2s ease;
+            background-color: #fff8e1; /* 浅橙色背景 */
+        }
+        
+        input[type="text"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #ff9800;
+            background-color: white;
+            box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.1);
+        }
+        
+        textarea {
+            height: 120px;
+            resize: vertical;
+            font-family: inherit;
+        }
+        
+        /* 文件上传区域 */
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+        
+        .file-input {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        
+        .file-input-label {
+            display: block;
+            padding: 15px 20px;
+            background-color: #fff3e0; /* 浅橙色 */
+            color: #ff6d00;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            font-size: 15px;
+            border: 2px dashed #ffb74d;
+        }
+        
+        .file-input-label:hover {
+            background-color: #ffecb3;
+            border-color: #ff9800;
+        }
+        
+        /* 文件信息显示 */
+        .file-info {
+            background-color: #fff8e1;
+            border-left: 3px solid #ff9800;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .file-info p {
+            margin: 6px 0;
+            font-size: 14px;
+            color: #555;
+        }
+        
+        /* 音频预览 */
+        .audio-preview {
+            margin: 25px 0;
+            display: none;
+        }
+        
+        .audio-preview audio {
+            width: 100%;
+            border-radius: 10px;
+            background-color: #fff3e0;
+        }
+        
+        /* 进度条 */
+        .progress-container {
+            width: 100%;
+            height: 20px;
+            background-color: #ffe0b2;
+            border-radius: 10px;
+            margin: 25px 0;
+            display: none;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff9800 0%, #ff5722 100%); /* 橙色渐变 */
+            border-radius: 10px;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        /* 上传进度文本 */
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 10;
+        }
+        
+        /* 按钮组 */
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 35px;
+        }
+        
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            flex: 1;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #ff9800 0%, #ff5722 100%); /* 橙色渐变 */
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(255, 152, 0, 0.3);
+        }
+        
+        .btn-secondary {
+            background-color: #fff3e0;
+            color: #ff6d00;
+            border: 1px solid #ffcc80;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #ffecb3;
+        }
+        
+        /* 消息提示 */
+        .message {
+            padding: 16px 20px;
+            margin-bottom: 25px;
+            border-radius: 10px;
+            display: none;
+            font-weight: 500;
+        }
+        
+        .message.success {
+            background-color: #f1f8e9;
+            border-left: 4px solid #8bc34a;
+            color: #33691e;
+        }
+        
+        .message.error {
+            background-color: #ffebee;
+            border-left: 4px solid #f44336;
+            color: #b71c1c;
+        }
+        
+        .message.info {
+            background-color: #fff8e1;
+            border-left: 4px solid #ff9800;
+            color: #e65100;
+        }
+        
+        /* 创建合集表单 */
+        #create-group-form {
+            margin-top: 25px;
+            padding: 25px;
+            background-color: #fff8e1;
+            border-radius: 10px;
+            display: none;
+            border: 1px solid #ffcc80;
+        }
+        
+        #create-group-form h3 {
+            margin-bottom: 20px;
+            color: #e65100;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        /* 橙色选择器样式 */
+        select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='%23ff9800'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+            padding-right: 40px;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .upload-container {
+                margin: 0 20px 60px;
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+        }
+        
+        /* 模态框样式 */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+        }
+        
+        .modal {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+            width: 90%;
+            margin: 0 auto;
+            position: relative;
+            animation: modalFadeIn 0.3s ease;
+        }
+        
+        .modal-content {
+            padding: 30px;
+        }
+        
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* 橙色占位符 */
+        ::placeholder {
+            color: #ffab91;
+            opacity: 0.7;
+        }
+        
+        /* 上传进度条样式 */
+        .progress-container {
+            width: 100%;
+            height: 6px;
+            background-color: #fff3e0;
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 15px 0;
+            position: relative;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background-color: #ff8c00;
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+        
+        .progress-text {
+            position: absolute;
+            right: 0;
+            top: -25px;
+            color: #ff8c00;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        /* 底部播放栏进度条样式 */
+        .player-middle .progress-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            width: 100%;
+            max-width: 500px;
+            height: auto;
+            background: none;
+            margin: 15px 0;
+        }
+        
+        .player-middle .progress-bar {
+            flex: 1;
+            height: 6px;
+            background-color: #fff3e0;
+            border-radius: 3px;
+            overflow: hidden;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .player-middle .progress-bar:hover .progress-fill {
+            height: 100%;
+        }
+        
+        .player-middle .time {
+            color: #ff8c00;
+            font-size: 13px;
+            min-width: 45px;
+            text-align: center;
+        }
+        
+        :-ms-input-placeholder {
+            color: #ffab91;
+        }
+        
+        ::-ms-input-placeholder {
+            color: #ffab91;
+        }
+    </style>
+</head>
+<body>
+    <!-- 音频元素 -->
+    <audio id="audioPlayer" controls style="display: none;">
+        <source src="" type="audio/mpeg">
+        您的浏览器不支持音频播放
+    </audio>
+
+    <!-- 顶部导航栏 -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-img"></div>
+            <span class="logo-text">星之声</span>
+        </div>
+        <nav class="main-nav">
+            <a href="index.html" class="nav-item">首页</a>
+            <a href="category.html" class="nav-item">分类</a>
+            <a href="channel.html" class="nav-item">社区</a>
+        </nav>
+        <div class="search-box">
+            <input type="text" placeholder="搜索课程、频道..." class="search-input" id="homeSearchInput">
+            <button class="search-btn" id="homeSearchBtn"><i class="fas fa-search"></i></button>
+        </div>
+        <div class="user-functions">
+            <a href="my-recent.html" class="func-item">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+            </a>
+            <a href="my-message.html" class="func-item"><i class="fas fa-bell"></i> 消息</a>
+            <a href="my-collect.html" class="func-item"><i class="fas fa-star"></i> 收藏</a>
+            <a href="my-recent.html" class="func-item"><i class="fas fa-history"></i> 历史</a>
+            <a href="my-creator_center.html" class="func-item"><i class="fas fa-pen"></i> 创作中心</a>
+            <a href="login.html"><button class="submit-btn">登录/注册</button></a>
+        </div>
+    </header>
+
+    <!-- 上传内容区域 -->
+    <main class="main-content">
+        <div class="upload-container">
+            <h1>上传音频</h1>
+            
+            <!-- 消息显示区域 -->
+            <div id="message" class="message"></div>
+            
+            <form id="upload-form">
+                <!-- 文件选择 -->
+                <div class="form-group">
+                    <label for="audio-file">选择音频文件</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="audio-file" accept="audio/mp3,audio/aac,audio/m4a" class="file-input" required>
+                        <span class="file-input-label">选择音频文件</span>
+                    </div>
+                    
+                    <!-- 文件信息显示 -->
+                    <div id="file-info" class="file-info">
+                        <p><strong>文件名：</strong><span id="file-name"></span></p>
+                        <p><strong>文件大小：</strong><span id="file-size"></span></p>
+                        <p><strong>时长：</strong><span id="file-duration"></span></p>
+                    </div>
+                    
+                    <!-- 音频预览 -->
+                    <div id="audio-preview" class="audio-preview">
+                        <audio id="audio-player" controls></audio>
+                    </div>
+                </div>
+                
+                <!-- 音频标题 -->
+                <div class="form-group">
+                    <label for="audio-title">音频标题</label>
+                    <input type="text" id="audio-title" placeholder="请输入音频标题" required>
+                </div>
+                
+                <!-- 音频描述 -->
+                <div class="form-group">
+                    <label for="audio-description">音频描述</label>
+                    <textarea id="audio-description" placeholder="请输入音频描述"></textarea>
+                </div>
+                
+                <!-- 合集选择 -->
+                <div class="form-group">
+                    <label for="audio-group">选择合集</label>
+                    <select id="audio-group">
+                        <option value="">不添加到任何合集</option>
+                        <!-- 动态加载合集列表 -->
+                    </select>
+                </div>
+                
+                <!-- 模态框容器 -->
+                <div id="modal-overlay" class="modal-overlay">
+                    <div id="create-group-modal" class="modal">
+                        <div class="modal-content">
+                            <h3>创建新合集</h3>
+                            <div class="form-group">
+                                <label for="new-group-name">合集名称</label>
+                                <input type="text" id="new-group-name" placeholder="请输入合集名称">
+                            </div>
+                            <div class="form-group">
+                                <label for="new-group-desc">合集描述</label>
+                                <textarea id="new-group-desc" placeholder="请输入合集描述"></textarea>
+                            </div>
+                            <div class="btn-group">
+                                <button type="button" id="submit-create-group" class="btn btn-primary">创建</button>
+                                <button type="button" id="cancel-create-group" class="btn btn-secondary">取消</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 上传进度 -->
+                <div id="upload-progress-container" class="progress-container">
+                    <div id="upload-progress-fill" class="progress-fill"></div>
+                    <span id="upload-progress-text" class="progress-text">0%</span>
+                </div>
+                
+                <!-- 表单按钮 -->
+                <div class="btn-group">
+                    <button type="submit" class="btn btn-primary">上传</button>
+                    <button type="button" id="reset-btn" class="btn btn-secondary">重置</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <!-- 底部播放栏 -->
+    <footer class="player-bar">
+        <div class="player-left">
+            <div class="channel-cover">频道</div>
+            <div class="song-info">
+                <p class="song-name">Seasons in</p>
+                <p class="singer">James</p>
+            </div>
+        </div>
+        <div class="player-middle">
+            <div class="control-buttons">
+                <button class="control-btn"><i class="fas fa-step-backward"></i></button>
+                <button class="control-btn play-btn"><i class="fas fa-play-circle"></i></button>
+                <button class="control-btn"><i class="fas fa-step-forward"></i></button>
+                <button class="control-btn"><i class="fas fa-random"></i></button>
+                <div class="speed-control">
+                    <button class="speed-btn">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span id="currentSpeed">1x</span>
+                    </button>
+                    <div class="speed-menu">
+                        <div class="speed-option" data-rate="0.5">0.5x</div>
+                        <div class="speed-option active" data-rate="1">1x</div>
+                        <div class="speed-option" data-rate="1.5">1.5x</div>
+                        <div class="speed-option" data-rate="2">2x</div>
+                        <div class="speed-option" data-rate="3">3x</div>
+                    </div>
+                </div>
+            </div>
+            <div class="progress-container">
+                <span class="time current" id="player-current-time">00:00</span>
+                <div class="progress-bar" id="player-progress-bar">
+                    <div class="progress-fill" id="player-progress-fill"></div>
+                </div>
+                <span class="time total" id="player-total-time">00:00</span>
+            </div>
+        </div>
+        <div class="player-right">
+            <button class="control-btn"><i class="fas fa-volume-up"></i></button>
+            <div class="volume-bar">
+                <div class="volume-fill"></div>
+            </div>
+            <div class="playlist-container">
+                <button class="playlist-btn"><i class="fas fa-list"></i></button>
+                <div class="playlist-panel">
+                    <div class="playlist-title">收藏频道列表</div>
+                    <div class="playlist-item active">1. Seasons in</div>
+                    <div class="playlist-item">2. Seasons in</div>
+                    <div class="playlist-item">3. Seasons in</div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 功能JavaScript（与收藏页面一致） -->
+    <script>
+        const bottomAudioPlayer = document.getElementById('audio-player');
+        const playBtn = document.querySelector('.play-btn');
+        const speedBtn = document.querySelector('.speed-btn');
+        const speedMenu = document.querySelector('.speed-menu');
+        const speedOptions = document.querySelectorAll('.speed-option');
+        const currentSpeed = document.getElementById('currentSpeed');
+        const playlistBtn = document.querySelector('.playlist-btn');
+        const playlistPanel = document.querySelector('.playlist-panel');
+        const playlistItems = document.querySelectorAll('.playlist-item');
+
+        playBtn.addEventListener('click', () => {
+            if (bottomAudioPlayer.paused) {
+                bottomAudioPlayer.play();
+                playBtn.innerHTML = '<i class="fas fa-pause-circle"></i>';
+            } else {
+                bottomAudioPlayer.pause();
+                playBtn.innerHTML = '<i class="fas fa-play-circle"></i>';
+            }
+        });
+
+        speedBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            speedMenu.classList.toggle('active');
+        });
+        speedOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                const rate = parseFloat(option.getAttribute('data-rate'));
+                bottomAudioPlayer.playbackRate = rate;
+                currentSpeed.textContent = `${rate}x`;
+                speedOptions.forEach(opt => opt.classList.remove('active'));
+                option.classList.add('active');
+                speedMenu.classList.remove('active');
+            });
+        });
+
+        playlistBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            playlistPanel.classList.toggle('active');
+        });
+        playlistItems.forEach(item => {
+            item.addEventListener('click', () => {
+                playlistItems.forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                alert(`正在播放：${item.textContent}`);
+            });
+        });
+
+        // 获取进度条元素
+        const playerCurrentTime = document.getElementById('player-current-time');
+        const playerTotalTime = document.getElementById('player-total-time');
+        const playerProgressBar = document.getElementById('player-progress-bar');
+        const playerProgressFill = document.getElementById('player-progress-fill');
+        
+        // 播放进度更新
+        bottomAudioPlayer.addEventListener('timeupdate', () => {
+            const progress = (bottomAudioPlayer.currentTime / bottomAudioPlayer.duration) * 100;
+            playerProgressFill.style.width = `${progress}%`;
+            
+            // 更新当前时间
+            const minutes = Math.floor(bottomAudioPlayer.currentTime / 60);
+            const seconds = Math.floor(bottomAudioPlayer.currentTime % 60);
+            playerCurrentTime.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            // 更新总时间（只需要更新一次）
+            if (bottomAudioPlayer.duration && playerTotalTime.textContent === '00:00') {
+                const totalMinutes = Math.floor(bottomAudioPlayer.duration / 60);
+                const totalSeconds = Math.floor(bottomAudioPlayer.duration % 60);
+                playerTotalTime.textContent = `${totalMinutes.toString().padStart(2, '0')}:${totalSeconds.toString().padStart(2, '0')}`;
+            }
+        });
+        
+        // 音频加载完成时更新总时间
+        bottomAudioPlayer.addEventListener('loadedmetadata', () => {
+            const totalMinutes = Math.floor(bottomAudioPlayer.duration / 60);
+            const totalSeconds = Math.floor(bottomAudioPlayer.duration % 60);
+            playerTotalTime.textContent = `${totalMinutes.toString().padStart(2, '0')}:${totalSeconds.toString().padStart(2, '0')}`;
+        });
+        
+        // 进度条点击跳转功能
+        playerProgressBar.addEventListener('click', (e) => {
+            if (!bottomAudioPlayer.duration) return;
+            
+            const barWidth = playerProgressBar.offsetWidth;
+            const clickPosition = e.offsetX;
+            const percentage = clickPosition / barWidth;
+            const newTime = percentage * bottomAudioPlayer.duration;
+            
+            bottomAudioPlayer.currentTime = newTime;
+        });
+
+        document.addEventListener('click', () => {
+            speedMenu.classList.remove('active');
+            playlistPanel.classList.remove('active');
+        });
+    </script>
+
+    <script src="../js/upload-audio.js"></script>
+</body>
 </html>

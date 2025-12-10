@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>英语课程节目列表 - 星之声</title>
+    <title>课程详情 - 星之声</title>
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="../js/search.js"></script>
@@ -925,12 +925,10 @@
             <a href="category.html" class="nav-item">分类</a>
             <a href="channel.html" class="nav-item">社区</a>
         </nav>
-        <!-- 修复928行：搜索框添加label关联 -->
         <div class="search-box">
             <label for="homeSearchInput" style="display: none;">搜索课程、频道</label>
             <input type="text" id="homeSearchInput" class="search-input" placeholder="搜索课程、频道...">
-            <!-- 修复933行：修正图标标签闭合 -->
-            <button class="search-btn" id="homeSearchBtn"><<i class="fas fa-search"><</i></button>
+            <button class="search-btn" id="homeSearchBtn"><i class="fas fa-search"></i></button>
         </div>
         <div class="user-functions">
             <a href="my-recent.html" class="func-item">
@@ -939,10 +937,10 @@
                     <circle cx="12" cy="7" r="4"></circle>
                 </svg>
             </a>
-            <a href="my-message.html" class="func-item"><<i class="fas fa-bell"><</i> 消息</a>
-            <a href="my-collect.html" class="func-item"><<i class="fas fa-star"><</i> 收藏</a>
-            <a href="my-recent.html" class="func-item"><<i class="fas fa-history"><</i> 历史</a>
-            <a href="my-creator_center.html" class="func-item"><<i class="fas fa-pen"><</i> 创作中心</a>
+            <a href="my-message.html" class="func-item"><i class="fas fa-bell"></i> 消息</a>
+            <a href="my-collect.html" class="func-item"><i class="fas fa-star"></i> 收藏</a>
+            <a href="my-recent.html" class="func-item"><i class="fas fa-history"></i> 历史</a>
+            <a href="my-creator_center.html" class="func-item"><i class="fas fa-pen"></i> 创作中心</a>
             <a href="login.html"><button class="submit-btn">登录/注册</button></a>
         </div>
     </header>
@@ -955,19 +953,19 @@
                 <!-- 课程封面和标题 -->
                 <div class="program-header">
                     <div class="program-cover">
-                        <img src="../images/english_daily.jpg" alt="英语日常对话系列封面" class="cover-image">
+                        <img id="courseImage" src="../images/english_daily.jpg" alt="课程封面" class="cover-image">
                     </div>
                     <div class="program-info">
-                        <h1 class="program-title">英语日常对话系列</h1>
+                        <h1 id="courseTitle" class="program-title">英语日常对话系列</h1>
                         <div class="program-meta">
-                            <span class="meta-item">初级到中级</span>
-                            <span class="meta-item">共20集</span>
-                            <span class="meta-item">已完结</span>
+                            <span id="courseLevel" class="meta-item">初级到中级</span>
+                            <span id="courseEpisodes" class="meta-item">共20集</span>
+                            <span id="courseStatus" class="meta-item">已完结</span>
                         </div>
                         <div class="program-stats">
-                            <span class="stat-item">播放量：12.5万</span>
-                            <span class="stat-item">评分：4.9</span>
-                            <span class="stat-item">学习人数：5.8万</span>
+                            <span class="stat-item">播放量：<span id="playCount">12.5万</span></span>
+                            <span class="stat-item">评分：<span id="courseRating">4.9</span></span>
+                            <span class="stat-item">学习人数：<span id="studentCount">5.8万</span></span>
                         </div>
                         <div class="program-actions">
                             <button class="action-btn btn-primary" onclick="window.location.href='player.html'">立即学习</button>
@@ -990,9 +988,9 @@
                     <div class="tab-content active" id="detail">
                         <div class="detail-section">
                             <h2>课程介绍</h2>
-                            <p>本课程专为想要提升日常英语对话能力的学习者设计，从最基础的问候语到日常生活场景中的实用对话，循序渐进地帮助学习者掌握实用英语。</p>
-                            <p>通过本课程的学习，您将能够：</p>
-                            <ul>
+                            <p id="courseDescription">本课程专为想要提升日常英语对话能力的学习者设计，从最基础的问候语到日常生活场景中的实用对话，循序渐进地帮助学习者掌握实用英语。</p>
+                            <p id="courseObjectives">通过本课程的学习，您将能够：</p>
+                            <ul id="objectivesList">
                                 <li>掌握日常生活中最常用的英语表达</li>
                                 <li>在各种日常场景中自信地进行英语交流</li>
                                 <li>提高听力理解能力和口语表达能力</li>
@@ -1002,7 +1000,7 @@
 
                         <div class="detail-section">
                             <h2>适合人群</h2>
-                            <ul>
+                            <ul id="targetAudience">
                                 <li>英语初级到中级水平的学习者</li>
                                 <li>想要提高日常英语会话能力的学习者</li>
                                 <li>即将出国旅游、学习或工作的人士</li>
@@ -1011,19 +1009,8 @@
                         </div>
 
                         <div class="detail-section">
-                            <h2>学习目标</h2>
-                            <ul>
-                                <li>能够进行基本的问候和自我介绍</li>
-                                <li>掌握在餐厅、商店、机场等场所的常用对话</li>
-                                <li>能够进行简单的社交和交流</li>
-                                <li>理解日常对话中的基本词汇和语法</li>
-                                <li>提高听力理解能力和口语表达流畅度</li>
-                            </ul>
-                        </div>
-
-                        <div class="detail-section">
                             <h2>课程特色</h2>
-                            <ul>
+                            <ul id="courseFeatures">
                                 <li>情景对话：真实生活场景中的对话练习</li>
                                 <li>语音讲解：清晰的发音指导和语调练习</li>
                                 <li>互动练习：丰富的练习活动巩固所学内容</li>
@@ -1037,264 +1024,26 @@
                     <div class="tab-content" id="syllabus">
                         <div class="syllabus-section">
                             <h2>课程大纲</h2>
-
-                            <!-- 第一单元 -->
-                            <div class="unit-item">
-                                <div class="unit-header" onclick="toggleUnit(this)">
-                                    <h3>第一单元：日常问候与自我介绍</h3>
-                                    <span class="unit-duration">5集 · 约45分钟</span>
-                                </div>
-                                <div class="lesson-list show">
-                                    <div class="lesson-item">
-                                        <div class="lesson-info">
-                                            <span class="lesson-number">1.1</span>
-                                            <span class="lesson-title">基础问候语</span>
-                                        </div>
-                                        <span class="lesson-duration">8:30</span>
-                                        <button class="play-btn" onclick="playAudio('audio/1.1.mp3', '基础问候语')">
-                                            <<i class="fas fa-play"><</i>
-                                        </button>
-                                    </div>
-                                    <div class="lesson-item">
-                                        <div class="lesson-info">
-                                            <span class="lesson-number">1.2</span>
-                                            <span class="lesson-title">自我介绍</span>
-                                        </div>
-                                        <span class="lesson-duration">10:15</span>
-                                        <button class="play-btn" onclick="playAudio('audio/1.2.mp3', '自我介绍')">
-                                            <<i class="fas fa-play"><</i>
-                                        </button>
-                                    </div>
-                                    <div class="lesson-item">
-                                        <div class="lesson-info">
-                                            <span class="lesson-number">1.3</span>
-                                            <span class="lesson-title">询问和回答个人信息</span>
-                                        </div>
-                                        <span class="lesson-duration">7:45</span>
-                                        <button class="play-btn" onclick="playAudio('audio/1.3.mp3', '询问和回答个人信息')">
-                                            <<i class="fas fa-play"><</i>
-                                        </button>
-                                    </div>
-                                    <div class="lesson-item">
-                                        <div class="lesson-info">
-                                            <span class="lesson-number">1.4</span>
-                                            <span class="lesson-title">谈论天气和季节</span>
-                                        </div>
-                                        <span class="lesson-duration">9:20</span>
-                                        <button class="play-btn" onclick="playAudio('audio/1.4.mp3', '谈论天气和季节')">
-                                            <<i class="fas fa-play"><</i>
-                                        </button>
-                                    </div>
-                                    <div class="lesson-item">
-                                        <div class="lesson-info">
-                                            <span class="lesson-number">1.5</span>
-                                            <span class="lesson-title">第一单元复习与练习</span>
-                                        </div>
-                                        <span class="lesson-duration">9:05</span>
-                                        <button class="play-btn" onclick="playAudio('audio/1.5.mp3', '第一单元复习与练习')">
-                                            <<i class="fas fa-play"><</i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- 第二单元 -->
-                            <div class="unit-item">
-                                <div class="unit-header" onclick="toggleUnit(this)">
-                                    <h3>第二单元：在餐厅用餐</h3>
-                                    <span class="unit-duration">5集 · 约50分钟</span>
-                                </div>
-                                <div class="lesson-list">
-                                    <div class="lesson-item">
-                                        <div class="lesson-info">
-                                            <span class="lesson-number">2.1</span>
-                                            <span class="lesson-title">预订餐厅和入座</span>
-                                        </div>
-                                        <span class="lesson-duration">10:30</span>
-                                        <button class="play-btn" onclick="playAudio('audio/2.1.mp3', '预订餐厅和入座')">
-                                            <<i class="fas fa-play"><</i>
-                                        </button>
-                                    </div>
-                                    <div class="lesson-item">
-                                        <div class="lesson-info">
-                                            <span class="lesson-number">2.2</span>
-                                            <span class="lesson-title">点餐用语</span>
-                                        </div>
-                                        <span class="lesson-duration">11:15</span>
-                                        <button class="play-btn" onclick="playAudio('audio/2.2.mp3', '点餐用语')">
-                                            <<i class="fas fa-play"><</i>
-                                        </button>
-                                    </div>
-                                    <div class="lesson-item">
-                                        <div class="lesson-info">
-                                            <span class="lesson-number">2.3</span>
-                                            <span class="lesson-title">询问菜品和特殊要求</span>
-                                        </div>
-                                        <span class="lesson-duration">9:45</span>
-                                        <button class="play-btn" onclick="playAudio('audio/2.3.mp3', '询问菜品和特殊要求')">
-                                            <<i class="fas fa-play"><</i>
-                                        </button>
-                                    </div>
-                                    <div class="lesson-item">
-                                        <div class="lesson-info">
-                                            <span class="lesson-number">2.4</span>
-                                            <span class="lesson-title">用餐过程中的交流</span>
-                                        </div>
-                                        <span class="lesson-duration">9:30</span>
-                                        <button class="play-btn" onclick="playAudio('audio/2.4.mp3', '用餐过程中的交流')">
-                                            <<i class="fas fa-play"><</i>
-                                        </button>
-                                    </div>
-                                    <div class="lesson-item">
-                                        <div class="lesson-info">
-                                            <span class="lesson-number">2.5</span>
-                                            <span class="lesson-title">结账和感谢</span>
-                                        </div>
-                                        <span class="lesson-duration">9:00</span>
-                                        <button class="play-btn" onclick="playAudio('audio/2.5.mp3', '结账和感谢')">
-                                            <<i class="fas fa-play"><</i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- 第三单元 -->
-                            <div class="unit-item">
-                                <div class="unit-header" onclick="toggleUnit(this)">
-                                    <h3>第三单元：购物场景对话</h3>
-                                    <span class="unit-duration">5集 · 约48分钟</span>
-                                </div>
-                                <div class="lesson-list">
-                                    <div class="lesson-item">
-                                        <div class="lesson-info">
-                                            <span class="lesson-number">3.1</span>
-                                            <span class="lesson-title">询问商品和价格</span>
-                                        </div>
-                                        <span class="lesson-duration">9:40</span>
-                                        <button class="play-btn" onclick="playAudio('audio/3.1.mp3', '询问商品和价格')">
-                                            <<i class="fas fa-play"><</i>
-                                        </button>
-                                    </div>
-                                    <div class="lesson-item">
-                                        <div class="lesson-info">
-                                            <span class="lesson-number">3.2</span>
-                                            <span class="lesson-title">讨论尺寸和颜色</span>
-                                        </div>
-                                        <span class="lesson-duration">10:10</span>
-                                        <button class="play-btn" onclick="playAudio('audio/3.2.mp3', '讨论尺寸和颜色')">
-                                            <<i class="fas fa-play"><</i>
-                                        </button>
-                                    </div>
-                                    <div class="lesson-item">
-                                        <div class="lesson-info">
-                                            <span class="lesson-number">3.3</span>
-                                            <span class="lesson-title">试穿和试用</span>
-                                        </div>
-                                        <span class="lesson-duration">8:50</span>
-                                        <button class="play-btn" onclick="playAudio('audio/3.3.mp3', '试穿和试用')">
-                                            <<i class="fas fa-play"><</i>
-                                        </button>
-                                    </div>
-                                    <div class="lesson-item">
-                                        <div class="lesson-info">
-                                            <span class="lesson-number">3.4</span>
-                                            <span class="lesson-title">讨价还价和优惠</span>
-                                        </div>
-                                        <span class="lesson-duration">10:20</span>
-                                        <button class="play-btn" onclick="playAudio('audio/3.4.mp3', '讨价还价和优惠')">
-                                            <<i class="fas fa-play"><</i>
-                                        </button>
-                                    </div>
-                                    <div class="lesson-item">
-                                        <div class="lesson-info">
-                                            <span class="lesson-number">3.5</span>
-                                            <span class="lesson-title">付款和包装</span>
-                                        </div>
-                                        <span class="lesson-duration">9:00</span>
-                                        <button class="play-btn" onclick="playAudio('audio/3.5.mp3', '付款和包装')">
-                                            <<i class="fas fa-play"><</i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- 第四单元 -->
-                            <div class="unit-item">
-                                <div class="unit-header" onclick="toggleUnit(this)">
-                                    <h3>第四单元：出行与交通</h3>
-                                    <span class="unit-duration">5集 · 约52分钟</span>
-                                </div>
-                                <div class="lesson-list">
-                                    <div class="lesson-item">
-                                        <div class="lesson-info">
-                                            <span class="lesson-number">4.1</span>
-                                            <span class="lesson-title">询问路线和方向</span>
-                                        </div>
-                                        <span class="lesson-duration">10:30</span>
-                                        <button class="play-btn" onclick="playAudio('audio/4.1.mp3', '询问路线和方向')">
-                                            <<i class="fas fa-play"><</i>
-                                        </button>
-                                    </div>
-                                    <div class="lesson-item">
-                                        <div class="lesson-info">
-                                            <span class="lesson-number">4.2</span>
-                                            <span class="lesson-title">公共交通用语</span>
-                                        </div>
-                                        <span class="lesson-duration">11:15</span>
-                                        <button class="play-btn" onclick="playAudio('audio/4.2.mp3', '公共交通用语')">
-                                            <<i class="fas fa-play"><</i>
-                                        </button>
-                                    </div>
-                                    <div class="lesson-item">
-                                        <div class="lesson-info">
-                                            <span class="lesson-number">4.3</span>
-                                            <span class="lesson-title">出租车与网约车</span>
-                                        </div>
-                                        <span class="lesson-duration">9:45</span>
-                                        <button class="play-btn" onclick="playAudio('audio/4.3.mp3', '出租车与网约车')">
-                                            <<i class="fas fa-play"><</i>
-                                        </button>
-                                    </div>
-                                    <div class="lesson-item">
-                                        <div class="lesson-info">
-                                            <span class="lesson-number">4.4</span>
-                                            <span class="lesson-title">机场与航班</span>
-                                        </div>
-                                        <span class="lesson-duration">11:20</span>
-                                        <button class="play-btn" onclick="playAudio('audio/4.4.mp3', '机场与航班')">
-                                            <<i class="fas fa-play"><</i>
-                                        </button>
-                                    </div>
-                                    <div class="lesson-item">
-                                        <div class="lesson-info">
-                                            <span class="lesson-number">4.5</span>
-                                            <span class="lesson-title">酒店住宿相关对话</span>
-                                        </div>
-                                        <span class="lesson-duration">9:30</span>
-                                        <button class="play-btn" onclick="playAudio('audio/4.5.mp3', '酒店住宿相关对话')">
-                                            <<i class="fas fa-play"><</i>
-                                        </button>
-                                    </div>
-                                </div>
+                            <div id="courseSyllabus">
+                                <!-- 大纲内容将通过JavaScript动态生成 -->
                             </div>
                         </div>
                     </div>
 
-                    <!-- 学员评价内容（修复1285行：添加隐藏input关联label） -->
+                    <!-- 学员评价内容 -->
                     <div class="tab-content" id="reviews">
                         <div class="write-review">
                             <h3>写下您的评价</h3>
                             <form class="review-form">
                                 <div class="review-field">
                                     <label for="rating">您的评分</label>
-                                    <!-- 核心修复：添加id=rating的隐藏input，关联label -->
                                     <input type="hidden" id="rating" name="rating" value="0">
                                     <div class="rating-input">
-                                        <span class="rating-star" data-rating="1" onclick="setRating(1)"><<i class="fas fa-star"><</i></span>
-                                        <span class="rating-star" data-rating="2" onclick="setRating(2)"><<i class="fas fa-star"><</i></span>
-                                        <span class="rating-star" data-rating="3" onclick="setRating(3)"><<i class="fas fa-star"><</i></span>
-                                        <span class="rating-star" data-rating="4" onclick="setRating(4)"><<i class="fas fa-star"><</i></span>
-                                        <span class="rating-star" data-rating="5" onclick="setRating(5)"><<i class="fas fa-star"><</i></span>
+                                        <span class="rating-star" data-rating="1" onclick="setRating(1)"><i class="fas fa-star"></i></span>
+                                        <span class="rating-star" data-rating="2" onclick="setRating(2)"><i class="fas fa-star"></i></span>
+                                        <span class="rating-star" data-rating="3" onclick="setRating(3)"><i class="fas fa-star"></i></span>
+                                        <span class="rating-star" data-rating="4" onclick="setRating(4)"><i class="fas fa-star"></i></span>
+                                        <span class="rating-star" data-rating="5" onclick="setRating(5)"><i class="fas fa-star"></i></span>
                                     </div>
                                 </div>
                                 <div class="review-field">
@@ -1308,11 +1057,11 @@
                         <div class="reviews-header">
                             <div class="overall-rating">
                                 <div class="rating-stars">
-                                    <<i class="fas fa-star"><</i>
-                                    <<i class="fas fa-star"><</i>
-                                    <<i class="fas fa-star"><</i>
-                                    <<i class="fas fa-star"><</i>
-                                    <<i class="fas fa-star-half-alt"><</i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
                                 </div>
                                 <div>
                                     <span class="rating-score">4.9</span>
@@ -1370,11 +1119,11 @@
                                         </div>
                                     </div>
                                     <div class="review-rating">
-                                        <<i class="fas fa-star"><</i>
-                                        <<i class="fas fa-star"><</i>
-                                        <<i class="fas fa-star"><</i>
-                                        <<i class="fas fa-star"><</i>
-                                        <<i class="fas fa-star"><</i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
                                     </div>
                                 </div>
                                 <div class="review-content">
@@ -1392,37 +1141,15 @@
                                         </div>
                                     </div>
                                     <div class="review-rating">
-                                        <<i class="fas fa-star"><</i>
-                                        <<i class="fas fa-star"><</i>
-                                        <<i class="fas fa-star"><</i>
-                                        <<i class="fas fa-star"><</i>
-                                        <<i class="fas fa-star-half-alt"><</i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star-half-alt"></i>
                                     </div>
                                 </div>
                                 <div class="review-content">
                                     作为英语初学者，这个课程帮了我很大的忙。每节课时长适中，内容循序渐进，很容易跟上。如果能有配套的练习材料就更好了。
-                                </div>
-                            </div>
-
-                            <div class="review-item">
-                                <div class="review-header">
-                                    <div class="user-info">
-                                        <div class="user-avatar">张</div>
-                                        <div class="user-details">
-                                            <span class="user-name">张伟</span>
-                                            <span class="review-date">2023-09-10</span>
-                                        </div>
-                                    </div>
-                                    <div class="review-rating">
-                                        <<i class="fas fa-star"><</i>
-                                        <<i class="fas fa-star"><</i>
-                                        <<i class="fas fa-star"><</i>
-                                        <<i class="fas fa-star"><</i>
-                                        <<i class="far fa-star"><</i>
-                                    </div>
-                                </div>
-                                <div class="review-content">
-                                    课程内容很实用，特别是餐厅和购物部分对我帮助很大。建议增加一些练习题来巩固所学内容，这样记忆会更深刻。
                                 </div>
                             </div>
                         </div>
@@ -1453,20 +1180,6 @@
                                 答：可以，课程讨论区支持提问，老师会定期回复，也可以与其他学习者交流讨论。</li>
                             </ul>
                         </div>
-
-                        <div class="detail-section">
-                            <h2>购买与支付问题</h2>
-                            <ul>
-                                <li><strong>问：课程的价格是多少？有优惠活动吗？</strong><br>
-                                答：本课程原价99元，新用户首次购买可享受7折优惠，定期会有节日促销活动，敬请关注。</li>
-
-                                <li><strong>问：支持哪些支付方式？</strong><br>
-                                答：支持微信支付、支付宝、银行卡等多种支付方式，安全便捷。</li>
-
-                                <li><strong>问：购买后可以退款吗？</strong><br>
-                                答：如果购买后未学习超过20%的内容，7天内可申请退款，超过期限或学习进度则不支持退款。</li>
-                            </ul>
-                        </div>
                     </div>
                 </div>
             </section>
@@ -1474,68 +1187,13 @@
             <!-- 右侧章节侧边栏 -->
             <aside class="chapter-sidebar">
                 <div class="chapter-header">
-                    <button class="back-button">
-                        <<i class="fas fa-arrow-left"><</i>
+                    <button class="back-button" onclick="window.history.back()">
+                        <i class="fas fa-arrow-left"></i>
                     </button>
                     <h2>课程章节</h2>
                 </div>
-                <div class="chapter-list">
-                    <div class="chapter-item active">
-                        <span class="chapter-number">1</span>
-                        <div class="chapter-content">
-                            <h3 class="chapter-title">日常问候与自我介绍</h3>
-                        </div>
-                        <span class="chapter-duration">45分钟</span>
-                    </div>
-                    <div class="chapter-item">
-                        <span class="chapter-number">2</span>
-                        <div class="chapter-content">
-                            <h3 class="chapter-title">在餐厅用餐</h3>
-                        </div>
-                        <span class="chapter-duration">50分钟</span>
-                    </div>
-                    <div class="chapter-item">
-                        <span class="chapter-number">3</span>
-                        <div class="chapter-content">
-                            <h3 class="chapter-title">购物场景对话</h3>
-                        </div>
-                        <span class="chapter-duration">48分钟</span>
-                    </div>
-                    <div class="chapter-item">
-                        <span class="chapter-number">4</span>
-                        <div class="chapter-content">
-                            <h3 class="chapter-title">出行与交通</h3>
-                        </div>
-                        <span class="chapter-duration">52分钟</span>
-                    </div>
-                    <div class="chapter-item">
-                        <span class="chapter-number">5</span>
-                        <div class="chapter-content">
-                            <h3 class="chapter-title">日常服务场景</h3>
-                        </div>
-                        <span class="chapter-duration">46分钟</span>
-                    </div>
-                    <div class="chapter-item">
-                        <span class="chapter-number">6</span>
-                        <div class="chapter-content">
-                            <h3 class="chapter-title">健康与医疗</h3>
-                        </div>
-                        <span class="chapter-duration">42分钟</span>
-                    </div>
-                    <div class="chapter-item">
-                        <span class="chapter-number">7</span>
-                        <div class="chapter-content">
-                            <h3 class="chapter-title">社交与娱乐</h3>
-                        </div>
-                        <span class="chapter-duration">55分钟</span>
-                    </div>
-                    <div class="chapter-item">
-                        <span class="chapter-number">8</span>
-                        <div class="chapter-content">
-                            <h3 class="chapter-title">课程总结与复习</h3>
-                        </div>
-                        <span class="chapter-duration">30分钟</span>
-                    </div>
+                <div class="chapter-list" id="chapterList">
+                    <!-- 章节内容将通过JavaScript动态生成 -->
                 </div>
             </aside>
         </div>
@@ -1557,8 +1215,345 @@
     </footer>
 
     <script>
-        // 标签切换功能
+        // 课程数据
+        const courseData = {
+            '1': {
+                title: '商务英语会话技巧',
+                description: '本课程专为商务人士设计，涵盖商务会议、谈判、邮件沟通等场景，帮助您在国际商务环境中自信地进行英语交流。',
+                level: '中级到高级',
+                episodes: '15集',
+                status: '已完结',
+                playCount: '8.3万',
+                rating: '4.8',
+                studentCount: '3.2万',
+                image: '../images/business_english.jpg',
+                objectives: '通过本课程的学习，您将能够：',
+                objectivesList: [
+                    '掌握商务会议中的常用表达和礼仪',
+                    '能够进行商务谈判和合同讨论',
+                    '熟练撰写商务邮件和报告',
+                    '理解不同文化背景下的商务礼仪',
+                    '提高跨文化商务沟通能力'
+                ],
+                targetAudience: [
+                    '商务人士和职场精英',
+                    '需要与国际客户沟通的专业人士',
+                    '准备进入外企工作的求职者',
+                    '商务英语专业的学生',
+                    '希望提升商务英语能力的学习者'
+                ],
+                features: [
+                    '真实商务场景模拟',
+                    '专业商务词汇讲解',
+                    '跨文化沟通技巧',
+                    '商务礼仪指导',
+                    '实际案例分析'
+                ],
+                syllabus: [
+                    { unit: '商务会议', lessons: ['会议准备与安排', '会议主持与发言', '讨论与决议', '会议纪要撰写'], duration: '40分钟' },
+                    { unit: '商务谈判', lessons: ['谈判策略与技巧', '价格与条款讨论', '合同谈判要点', '谈判礼仪'], duration: '45分钟' },
+                    { unit: '商务邮件', lessons: ['邮件格式与结构', '正式与非正式邮件', '邮件语气与措辞', '邮件回复技巧'], duration: '35分钟' }
+                ],
+                chapters: [
+                    { title: '商务会议技巧', duration: '40分钟' },
+                    { title: '商务谈判策略', duration: '45分钟' },
+                    { title: '商务邮件写作', duration: '35分钟' },
+                    { title: '商务演讲技巧', duration: '38分钟' },
+                    { title: '跨文化商务沟通', duration: '42分钟' }
+                ]
+            },
+            '2': {
+                title: '日常英语口语600句',
+                description: '精选600个最常用的英语口语句子，涵盖日常生活的各个方面，帮助您快速提升英语口语表达能力。',
+                level: '初级到中级',
+                episodes: '30集',
+                status: '已完结',
+                playCount: '15.6万',
+                rating: '4.9',
+                studentCount: '7.8万',
+                image: '../images/daily_english.jpg',
+                objectives: '通过本课程的学习，您将能够：',
+                objectivesList: [
+                    '掌握日常生活中的基础英语表达',
+                    '能够进行简单的日常对话',
+                    '提高英语听力和口语反应速度',
+                    '积累常用词汇和句型',
+                    '建立英语交流的自信心'
+                ],
+                targetAudience: [
+                    '英语初学者',
+                    '想要提高日常英语能力的学习者',
+                    '准备出国旅游的人士',
+                    '需要基础英语交流能力的学习者',
+                    '希望快速提升口语的学习者'
+                ],
+                features: [
+                    '600个实用口语句子',
+                    '生活场景分类教学',
+                    '真人发音示范',
+                    '对话练习与模仿',
+                    '渐进式学习难度'
+                ],
+                syllabus: [
+                    { unit: '基础问候与介绍', lessons: ['问候语', '自我介绍', '询问近况', '告别用语'], duration: '35分钟' },
+                    { unit: '家庭与日常生活', lessons: ['家庭介绍', '日常活动', '生活习惯', '时间表达'], duration: '40分钟' },
+                    { unit: '饮食与购物', lessons: ['餐厅点餐', '食物偏好', '购物对话', '价格询问'], duration: '38分钟' }
+                ],
+                chapters: [
+                    { title: '基础问候与介绍', duration: '35分钟' },
+                    { title: '家庭与日常生活', duration: '40分钟' },
+                    { title: '饮食与购物对话', duration: '38分钟' },
+                    { title: '旅行与交通', duration: '42分钟' },
+                    { title: '健康与医疗', duration: '36分钟' }
+                ]
+            },
+            '3': {
+                title: '英语听力进阶训练',
+                description: '系统化的英语听力训练课程，从基础听力技巧到高级听力理解，帮助您全面提升英语听力能力。',
+                level: '初级到高级',
+                episodes: '25集',
+                status: '已完结',
+                playCount: '11.2万',
+                rating: '4.7',
+                studentCount: '4.5万',
+                image: '../images/listening_training.jpg',
+                objectives: '通过本课程的学习，您将能够：',
+                objectivesList: [
+                    '提高英语听力理解能力',
+                    '掌握不同口音的英语听力技巧',
+                    '提高听力反应速度和准确度',
+                    '学会听力笔记技巧',
+                    '能够听懂各种场景的英语对话'
+                ],
+                targetAudience: [
+                    '需要提高英语听力的学习者',
+                    '准备英语考试（雅思、托福等）的学生',
+                    '需要听懂英语会议或讲座的专业人士',
+                    '英语教师和培训师',
+                    '希望全面提升英语能力的学习者'
+                ],
+                features: [
+                    '系统化听力训练体系',
+                    '多种口音听力练习',
+                    '真实场景听力材料',
+                    '听力技巧讲解',
+                    '渐进式难度设置'
+                ],
+                syllabus: [
+                    { unit: '基础听力技巧', lessons: ['数字与时间', '基础词汇识别', '简单对话理解', '听力笔记基础'], duration: '30分钟' },
+                    { unit: '中级听力训练', lessons: ['对话主旨理解', '细节信息捕捉', '长对话听力', '不同口音识别'], duration: '45分钟' },
+                    { unit: '高级听力挑战', lessons: ['讲座与演讲', '新闻听力', '学术英语听力', '快速听力反应'], duration: '50分钟' }
+                ],
+                chapters: [
+                    { title: '基础听力技巧', duration: '30分钟' },
+                    { title: '中级听力训练', duration: '45分钟' },
+                    { title: '高级听力挑战', duration: '50分钟' },
+                    { title: '考试听力技巧', duration: '42分钟' },
+                    { title: '实战听力应用', duration: '38分钟' }
+                ]
+            },
+            '4': {
+                title: '旅游英语实用对话',
+                description: '专为旅行者设计的英语课程，涵盖机场、酒店、餐厅、购物等旅行场景，让您的出国旅行更加顺畅。',
+                level: '初级到中级',
+                episodes: '20集',
+                status: '已完结',
+                playCount: '9.8万',
+                rating: '4.8',
+                studentCount: '4.1万',
+                image: '../images/travel_english.jpg',
+                objectives: '通过本课程的学习，您将能够：',
+                objectivesList: [
+                    '掌握旅行中的基本英语交流',
+                    '能够独立完成旅行相关事务',
+                    '理解旅行中的英语指示和说明',
+                    '提高旅行中的应急英语能力',
+                    '增强出国旅行的自信心'
+                ],
+                targetAudience: [
+                    '准备出国旅行的人士',
+                    '喜欢自由行的旅行者',
+                    '需要短期出国的工作者',
+                    '旅行行业从业人员',
+                    '希望学习实用旅行英语的学习者'
+                ],
+                features: [
+                    '真实旅行场景模拟',
+                    '实用旅行词汇',
+                    '应急英语表达',
+                    '文化差异提示',
+                    '互动对话练习'
+                ],
+                syllabus: [
+                    { unit: '机场与航班', lessons: ['值机与登机', '安检与海关', '航班信息查询', '行李托运'], duration: '38分钟' },
+                    { unit: '酒店住宿', lessons: ['酒店预订', '入住与退房', '房间服务', '问题处理'], duration: '35分钟' },
+                    { unit: '餐厅与饮食', lessons: ['餐厅预订', '点餐与结账', '食物偏好表达', '特殊饮食要求'], duration: '32分钟' }
+                ],
+                chapters: [
+                    { title: '机场与航班', duration: '38分钟' },
+                    { title: '酒店住宿', duration: '35分钟' },
+                    { title: '餐厅与饮食', duration: '32分钟' },
+                    { title: '交通与出行', duration: '40分钟' },
+                    { title: '购物与娱乐', duration: '36分钟' }
+                ]
+            },
+            '5': {
+                title: '职场英语沟通技巧',
+                description: '针对职场环境的英语沟通课程，帮助您提升工作中的英语表达能力，建立良好的职业形象。',
+                level: '中级到高级',
+                episodes: '18集',
+                status: '已完结',
+                playCount: '7.5万',
+                rating: '4.7',
+                studentCount: '3.0万',
+                image: '../images/workplace_english.jpg',
+                objectives: '通过本课程的学习，您将能够：',
+                objectivesList: [
+                    '提升职场英语沟通能力',
+                    '掌握职业场合的英语表达',
+                    '提高英语演讲和展示技巧',
+                    '学会有效的职场英语写作',
+                    '建立专业的职业英语形象'
+                ],
+                targetAudience: [
+                    '职场人士',
+                    '需要英语工作环境的人员',
+                    '准备进入外企的求职者',
+                    '希望提升职业英语能力的学习者',
+                    '管理人员和团队领导'
+                ],
+                features: [
+                    '职场真实场景',
+                    '专业沟通技巧',
+                    '商务礼仪指导',
+                    '职业形象建立',
+                    '实用案例分析'
+                ],
+                syllabus: [
+                    { unit: '职场交流', lessons: ['同事沟通', '会议发言', '电话沟通', '邮件往来'], duration: '42分钟' },
+                    { unit: '工作报告', lessons: ['工作汇报', '项目展示', '数据说明', '建议提出'], duration: '45分钟' },
+                    { unit: '职业发展', lessons: ['面试英语', '薪资谈判', '职业规划', '升职沟通'], duration: '40分钟' }
+                ],
+                chapters: [
+                    { title: '职场日常交流', duration: '42分钟' },
+                    { title: '工作报告与展示', duration: '45分钟' },
+                    { title: '职业发展与面试', duration: '40分钟' },
+                    { title: '团队协作与管理', duration: '38分钟' },
+                    { title: '跨部门沟通', duration: '36分钟' }
+                ]
+            }
+            // 其他课程数据可以继续添加...
+        };
+
+        // 页面加载时根据URL参数设置课程内容
         document.addEventListener('DOMContentLoaded', function() {
+            // 从URL获取课程ID
+            const urlParams = new URLSearchParams(window.location.search);
+            const courseId = urlParams.get('id') || '1';
+            const courseName = urlParams.get('course') || '英语课程';
+
+            // 获取课程数据，如果没有对应ID则使用第一个课程
+            const course = courseData[courseId] || courseData['1'];
+
+            // 更新页面标题
+            document.title = course.title + ' - 星之声';
+
+            // 更新课程信息
+            document.getElementById('courseTitle').textContent = course.title;
+            document.getElementById('courseImage').src = course.image;
+            document.getElementById('courseImage').alt = course.title + '封面';
+            document.getElementById('courseDescription').textContent = course.description;
+            document.getElementById('courseLevel').textContent = course.level;
+            document.getElementById('courseEpisodes').textContent = course.episodes;
+            document.getElementById('courseStatus').textContent = course.status;
+            document.getElementById('playCount').textContent = course.playCount;
+            document.getElementById('courseRating').textContent = course.rating;
+            document.getElementById('studentCount').textContent = course.studentCount;
+            document.getElementById('courseObjectives').textContent = course.objectives;
+
+            // 更新学习目标列表
+            const objectivesList = document.getElementById('objectivesList');
+            objectivesList.innerHTML = '';
+            course.objectivesList.forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = item;
+                objectivesList.appendChild(li);
+            });
+
+            // 更新适合人群列表
+            const targetAudience = document.getElementById('targetAudience');
+            targetAudience.innerHTML = '';
+            course.targetAudience.forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = item;
+                targetAudience.appendChild(li);
+            });
+
+            // 更新课程特色列表
+            const courseFeatures = document.getElementById('courseFeatures');
+            courseFeatures.innerHTML = '';
+            course.features.forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = item;
+                courseFeatures.appendChild(li);
+            });
+
+            // 更新课程大纲
+            const courseSyllabus = document.getElementById('courseSyllabus');
+            courseSyllabus.innerHTML = '';
+            course.syllabus.forEach((unit, unitIndex) => {
+                const unitItem = document.createElement('div');
+                unitItem.className = 'unit-item';
+
+                const unitHeader = document.createElement('div');
+                unitHeader.className = 'unit-header';
+                unitHeader.onclick = function() { toggleUnit(this); };
+                unitHeader.innerHTML = `
+                    <h3>第${unitIndex + 1}单元：${unit.unit}</h3>
+                    <span class="unit-duration">${unit.lessons.length}集 · 约${unit.duration}</span>
+                `;
+
+                const lessonList = document.createElement('div');
+                lessonList.className = 'lesson-list' + (unitIndex === 0 ? ' show' : '');
+
+                unit.lessons.forEach((lesson, lessonIndex) => {
+                    const lessonItem = document.createElement('div');
+                    lessonItem.className = 'lesson-item';
+                    lessonItem.innerHTML = `
+                        <div class="lesson-info">
+                            <span class="lesson-number">${unitIndex + 1}.${lessonIndex + 1}</span>
+                            <span class="lesson-title">${lesson}</span>
+                        </div>
+                        <span class="lesson-duration">${Math.floor(Math.random() * 5) + 8}:${Math.floor(Math.random() * 60).toString().padStart(2, '0')}</span>
+                        <button class="play-btn" onclick="playAudio('audio/sample.mp3', '${lesson}')">
+                            <i class="fas fa-play"></i>
+                        </button>
+                    `;
+                    lessonList.appendChild(lessonItem);
+                });
+
+                unitItem.appendChild(unitHeader);
+                unitItem.appendChild(lessonList);
+                courseSyllabus.appendChild(unitItem);
+            });
+
+            // 更新章节列表
+            const chapterList = document.getElementById('chapterList');
+            chapterList.innerHTML = '';
+            course.chapters.forEach((chapter, index) => {
+                const chapterItem = document.createElement('div');
+                chapterItem.className = 'chapter-item' + (index === 0 ? ' active' : '');
+                chapterItem.innerHTML = `
+                    <span class="chapter-number">${index + 1}</span>
+                    <div class="chapter-content">
+                        <h3 class="chapter-title">${chapter.title}</h3>
+                    </div>
+                    <span class="chapter-duration">${chapter.duration}</span>
+                `;
+                chapterList.appendChild(chapterItem);
+            });
+
+            // 标签切换功能
             const tabBtns = document.querySelectorAll('.tab-btn');
             const tabContents = document.querySelectorAll('.tab-content');
 

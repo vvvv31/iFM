@@ -47,7 +47,73 @@
         .playlist-panel { background:#fff; border:1px solid #eee; border-radius:8px; box-shadow:0 8px 30px rgba(0,0,0,0.12); overflow:auto; padding:8px; position:absolute; bottom:110px; right:24px; display:none; }
         .playlist-item { padding:8px 12px; cursor:pointer; }
         .playlist-item.active { background:#fff3e0; color:#ff8c00; font-weight:600; }
+
+        /* 频道卡片点击效果 */
+        .channel-card {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .channel-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        .channel-card:active {
+            transform: translateY(-2px);
+            transition: transform 0.1s;
+        }
+
         @media (max-width: 900px) { .pv-left{min-width:0;} .pv-right{min-width:0;} .pv-inner{grid-template-columns:auto 1fr auto; column-gap:10px; padding:0 12px;} }
+
+        /* 新增：最近收听页面特定样式 */
+        .content-block {
+            margin-bottom: 30px;
+        }
+
+        .content-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #FF8C00;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #FFEDCC;
+        }
+
+        .channel-thumbnail {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            padding: 10px;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            border: 1px dashed #ddd;
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            color: #ddd;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
@@ -108,14 +174,94 @@
             <button class="tab" onclick="window.location.href='my-collect.html'">收藏</button>
             <button class="tab" onclick="window.location.href='my-subscribe.html'">订阅</button>
             <button class="tab" onclick="window.location.href='my-message.html'">私信</button>
-            <button class="tab" onclick="window.location.href='my-creator_center.html'">创作者中心</button>                 
+            <button class="tab" onclick="window.location.href='my-creator_center.html'">创作者中心</button>
         </section>
+
+        <!-- 今天 -->
         <section class="content-block">
             <div class="content-title">今天</div>
             <div class="channel-cards">
-                <div class="channel-card">频道</div>
-                <div class="channel-card">频道</div>
-                <div class="channel-card">频道</div>
+                <div class="channel-card" data-course-id="1" onclick="goToProgramList(this)">
+                    <div class="channel-thumbnail">商务英语会话技巧</div>
+                </div>
+                <div class="channel-card" data-course-id="2" onclick="goToProgramList(this)">
+                    <div class="channel-thumbnail">日常英语口语600句</div>
+                </div>
+                <div class="channel-card" data-course-id="3" onclick="goToProgramList(this)">
+                    <div class="channel-thumbnail">英语听力进阶训练</div>
+                </div>
+                <div class="channel-card" data-course-id="4" onclick="goToProgramList(this)">
+                    <div class="channel-thumbnail">旅游英语实用对话</div>
+                </div>
+                <div class="channel-card" data-course-id="5" onclick="goToProgramList(this)">
+                    <div class="channel-thumbnail">职场英语沟通技巧</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 昨天 -->
+        <section class="content-block">
+            <div class="content-title">昨天</div>
+            <div class="channel-cards">
+                <div class="channel-card" data-course-id="2" onclick="goToProgramList(this)">
+                    <div class="channel-thumbnail">日常英语口语600句</div>
+                </div>
+                <div class="channel-card" data-course-id="3" onclick="goToProgramList(this)">
+                    <div class="channel-thumbnail">英语听力进阶训练</div>
+                </div>
+                <div class="channel-card" data-course-id="4" onclick="goToProgramList(this)">
+                    <div class="channel-thumbnail">旅游英语实用对话</div>
+                </div>
+                <div class="channel-card" data-course-id="5" onclick="goToProgramList(this)">
+                    <div class="channel-thumbnail">职场英语沟通技巧</div>
+                </div>
+                <div class="channel-card" data-course-id="1" onclick="goToProgramList(this)">
+                    <div class="channel-thumbnail">商务英语会话技巧</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 最近7天 -->
+        <section class="content-block">
+            <div class="content-title">最近7天</div>
+            <div class="channel-cards">
+                <div class="channel-card" data-course-id="3" onclick="goToProgramList(this)">
+                    <div class="channel-thumbnail">英语听力进阶训练</div>
+                </div>
+                <div class="channel-card" data-course-id="4" onclick="goToProgramList(this)">
+                    <div class="channel-thumbnail">旅游英语实用对话</div>
+                </div>
+                <div class="channel-card" data-course-id="5" onclick="goToProgramList(this)">
+                    <div class="channel-thumbnail">职场英语沟通技巧</div>
+                </div>
+                <div class="channel-card" data-course-id="1" onclick="goToProgramList(this)">
+                    <div class="channel-thumbnail">商务英语会话技巧</div>
+                </div>
+                <div class="channel-card" data-course-id="2" onclick="goToProgramList(this)">
+                    <div class="channel-thumbnail">日常英语口语600句</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 更早 -->
+        <section class="content-block">
+            <div class="content-title">更早</div>
+            <div class="channel-cards">
+                <div class="channel-card" data-course-id="4" onclick="goToProgramList(this)">
+                    <div class="channel-thumbnail">旅游英语实用对话</div>
+                </div>
+                <div class="channel-card" data-course-id="5" onclick="goToProgramList(this)">
+                    <div class="channel-thumbnail">职场英语沟通技巧</div>
+                </div>
+                <div class="channel-card" data-course-id="1" onclick="goToProgramList(this)">
+                    <div class="channel-thumbnail">商务英语会话技巧</div>
+                </div>
+                <div class="channel-card" data-course-id="2" onclick="goToProgramList(this)">
+                    <div class="channel-thumbnail">日常英语口语600句</div>
+                </div>
+                <div class="channel-card" data-course-id="3" onclick="goToProgramList(this)">
+                    <div class="channel-thumbnail">英语听力进阶训练</div>
+                </div>
             </div>
         </section>
     </main>
@@ -375,6 +521,42 @@
       /* 初始化第一首 */
       loadTrack(currentIndex);
     })();
+    </script>
+
+    <!-- 跳转函数脚本 -->
+    <script>
+    // 跳转到节目列表页面的函数
+    function goToProgramList(element) {
+        // 获取课程ID
+        const courseId = element.getAttribute('data-course-id');
+
+        // 根据课程ID决定跳转（传递课程名称作为参数）
+        const courses = {
+            '1': '商务英语会话技巧',
+            '2': '日常英语口语600句',
+            '3': '英语听力进阶训练',
+            '4': '旅游英语实用对话',
+            '5': '职场英语沟通技巧'
+        };
+
+        const courseName = courses[courseId] || '英语课程';
+
+        // 跳转到program_list.html，传递课程ID和课程名称作为URL参数
+        window.location.href = `program_list.html?course=${encodeURIComponent(courseName)}&id=${courseId}`;
+    }
+
+    // 为卡片添加鼠标悬停效果
+    document.addEventListener('DOMContentLoaded', function() {
+        const cards = document.querySelectorAll('.channel-card');
+
+        cards.forEach(card => {
+            // 添加点击效果
+            card.addEventListener('click', function(e) {
+                e.preventDefault();
+                goToProgramList(this);
+            });
+        });
+    });
     </script>
 </body>
 </html>

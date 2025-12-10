@@ -9,23 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="../js/search.js"></script>
     <script src="../js/script.js" defer></script>
-    <style>
-        /* 新增样式：确保内容不被底部播放栏遮挡 */
-        .main.channel-main {
-            padding-bottom: 90px;
-        }
-
-        /* 底部播放栏固定定位 */
-        .player-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            background-color: white;
-            border-top: 1px solid #FFDAB9;
-        }
-    </style>
+    <!-- channel styles moved to ../css/channel.css -->
 </head>
 <body>
     <!-- 音频元素 -->
@@ -67,59 +51,89 @@
     <!-- 主要内容区域 - 保持原有布局 -->
     <main class="main channel-main">
         <div class="container channel-container">
-            <!-- 左侧搜索和群组搜索 -->
+            <!-- 左侧分类栏 -->
             <aside class="channel-sidebar">
-                <!-- 搜索框 -->
-                <div class="channel-search">
-                    <div class="search-box">
-                        <input type="text" placeholder="输入邀请码" class="invite-search">
-                        <button class="close-btn">×</button>
-                    </div>
+                <div class="channel-categories">
+                    <h4>分类</h4>
+                    <ul class="category-list" id="categoryList">
+                        <li data-cat="feed" class="active">动态</li>
+                        <li data-cat="groups">群组</li>
+                        <li data-cat="discussion">讨论区</li>
+                        <li data-cat="events">活动</li>
+                        <li data-cat="study">学习资料</li>
+                    </ul>
                 </div>
 
-                <!-- 创建群组按钮 -->
+                <!-- 搜索和创建 -->
+                <div class="channel-search">
+                    <div class="search-box">
+                        <input type="text" placeholder="输入邀请码或关键词" class="invite-search" id="channelSearch">
+                        <button class="close-btn" id="clearSearch">×</button>
+                    </div>
+                </div>
                 <button class="create-group-btn">创建群组</button>
             </aside>
 
-            <!-- 右侧群组列表 -->
+            <!-- 右侧群组 / Feed 列表 -->
             <section class="groups-section">
-                <div class="groups-grid">
-                    <!-- 群组项 -->
-                    <div class="group-item">
-                        <div class="group-info">
-                            <h3>群组名字</h3>
-                            <p>简介</p>
-                        </div>
-                        <div class="group-buttons">
-                            <span class="members-count">已加入n人</span>
-                            <button class="join-btn" onclick="window.location.href='channel2.html'">加入</button>
-                            <span class="invite-code">邀请码：xxxx</span>
-                        </div>
+                <div class="groups-header">
+                    <div class="groups-header-left">
+                        <span id="groupsCount"> </span>
                     </div>
-                    <div class="group-item">
-                        <div class="group-info">
-                            <h3>群组名字</h3>
-                            <p>简介</p>
+                    <div class="groups-header-right">
+                        <div class="filter-bar">
+                            <select id="sortSelect" aria-label="排序">
+                                <option value="new">按时间（新）</option>
+                                <option value="active">按活跃度</option>
+                                <option value="members">按成员数</option>
+                            </select>
+                            <div class="filter-chips" id="filterChips">
+                                <div class="chip" data-filter-type="tag" data-value="讨论">讨论</div>
+                                <div class="chip" data-filter-type="tag" data-value="学习">学习</div>
+                                <div class="chip" data-filter-type="tag" data-value="其他">其他</div>
+                            </div>
                         </div>
-                        <div class="group-buttons">
-                            <span class="members-count">已加入n人</span>
-                            <button class="join-btn" onclick="window.location.href='channel2.html'">加入</button>
-                            <span class="invite-code">邀请码：xxxx</span>
-                        </div>
-                    </div>
-                    <div class="group-item">
-                        <div class="group-info">
-                            <h3>群组名字</h3>
-                            <p>简介</p>
-                        </div>
-                        <div class="group-buttons">
-                            <span class="members-count">已加入n人</span>
-                            <button class="join-btn" onclick="window.location.href='channel2.html'">加入</button>
-                            <span class="invite-code">邀请码：xxxx</span>
+                        <div class="view-toggle" role="tablist" aria-label="视图切换">
+                            <button class="view-btn active" data-view="card" title="卡片视图">▦</button>
+                            <button class="view-btn" data-view="list" title="列表视图">☰</button>
+                            <button class="view-btn" data-view="compact" title="紧凑视图">≡</button>
                         </div>
                     </div>
                 </div>
+                <div class="groups-grid view-card" id="groupsGrid">
+                    <!-- 群组项由JS渲染 -->
+                </div>
+                <!-- Feed section (hidden unless feed selected) -->
+                <div class="feed-section" id="feedSection" style="display:none;">
+                    <div class="composer" id="postComposer">
+                        <textarea id="composerInput" placeholder="分享你的动态..." rows="3"></textarea>
+                        <div class="composer-actions">
+                            <input type="file" id="composerFiles" accept="image/*" multiple style="display:none;">
+                            <button id="attachBtn">图片</button>
+                            <button id="postBtn" class="submit-btn">发布</button>
+                        </div>
+                        <div class="composer-preview" id="composerPreview"></div>
+                    </div>
+                    <div class="posts-list" id="postsList"></div>
+                </div>
             </section>
+        </div>
+
+        <!-- 群组详情模态 -->
+        <div class="group-detail-overlay" id="groupDetailOverlay">
+            <div class="group-detail">
+                <div class="header">
+                    <strong id="detailTitle">群组名称</strong>
+                    <button class="close-btn" id="closeGroupDetail">×</button>
+                </div>
+                <div class="content">
+                    <p id="detailDesc">群组简介</p>
+                    <div class="group-members" id="detailMembers"></div>
+                    <div style="margin-top:12px; text-align:right;">
+                        <button class="btn-create" id="joinGroupBtn">加入群组</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
 
@@ -398,6 +412,243 @@
         const speedBtn = document.querySelector('.speed-btn');
         const speedMenu = document.querySelector('.speed-menu');
         const speedOptions = document.querySelectorAll('.speed-option');
+        
+        // ====== Channel groups rendering and interactions ======
+        document.addEventListener('DOMContentLoaded', () => {
+            const sampleGroups = [
+                { id: 'g1', title: '英语学习群', desc: '练习口语与听力', members: ['小明','小红','Tom'], category: 'groups', invite: 'ABCD01', tags:['学习'], lang:'en', region:'global', active: 78, created: '2025-11-20' },
+                { id: 'g2', title: '商务英语讨论', desc: '每日商务话题讨论', members: ['Alice','Bob'], category: 'discussion', invite: 'BUSI22', tags:['讨论'], lang:'en', region:'global', active: 102, created: '2025-12-01' },
+                { id: 'g3', title: '口语速成班', desc: '集中训练发音与表达', members: ['Lucy','张三','李四'], category: 'groups', invite: 'SPEAK9', tags:['学习'], lang:'cn', region:'china', active: 34, created: '2025-10-05' }
+            ];
+
+            const groupsGrid = document.getElementById('groupsGrid');
+            const categoryList = document.getElementById('categoryList');
+            const channelSearch = document.getElementById('channelSearch');
+            const feedSection = document.getElementById('feedSection');
+            const postsList = document.getElementById('postsList');
+            const composerInput = document.getElementById('composerInput');
+            const composerFiles = document.getElementById('composerFiles');
+            const attachBtn = document.getElementById('attachBtn');
+            const postBtn = document.getElementById('postBtn');
+            const composerPreview = document.getElementById('composerPreview');
+
+            // sample posts
+            const samplePosts = [
+                { id: 'p1', user: '小明', avatar: '小', text: '刚加入一个口语群，大家一起练习吧', images: [], likes: 3, liked:false, comments: [], created: '2025-12-09' },
+                { id: 'p2', user: 'Alice', avatar: 'A', text: '分享一段商务演讲练习音频', images: [], likes: 10, liked:false, comments: [], created: '2025-12-10' }
+            ];
+
+            function renderPosts() {
+                postsList.innerHTML = '';
+                samplePosts.forEach(p => {
+                    const el = document.createElement('div');
+                    el.className = 'post-card';
+                    el.innerHTML = `
+                        <div class="post-meta">
+                            <div class="post-avatar">${p.avatar}</div>
+                            <div><strong>${p.user}</strong><div style="font-size:12px;color:#999">${p.created}</div></div>
+                        </div>
+                        <div class="post-content">${p.text}</div>
+                        <div class="post-media">${p.images.map(img => `<img src="${img}"/>`).join('')}</div>
+                        <div class="post-actions">
+                            <button class="like-btn" data-id="${p.id}">❤ ${p.likes}</button>
+                            <button class="comment-btn" data-id="${p.id}">💬 ${p.comments.length}</button>
+                        </div>
+                    `;
+                    postsList.appendChild(el);
+                });
+            }
+
+            // composer handlers
+            attachBtn.addEventListener('click', () => composerFiles.click());
+            composerFiles.addEventListener('change', (e) => {
+                composerPreview.innerHTML = '';
+                Array.from(e.target.files).slice(0,4).forEach(f => {
+                    const url = URL.createObjectURL(f);
+                    const img = document.createElement('img'); img.src = url; composerPreview.appendChild(img);
+                });
+            });
+            postBtn.addEventListener('click', () => {
+                const text = composerInput.value.trim();
+                if (!text && composerFiles.files.length === 0) { alert('请输入内容或上传图片'); return; }
+                const images = Array.from(composerFiles.files).slice(0,4).map(f => URL.createObjectURL(f));
+                const newPost = { id: 'p' + (samplePosts.length+1), user: '你', avatar: '你', text, images, likes:0, liked:false, comments:[], created: new Date().toISOString().slice(0,10) };
+                samplePosts.unshift(newPost);
+                composerInput.value = '';
+                composerFiles.value = '';
+                composerPreview.innerHTML = '';
+                renderPosts();
+            });
+
+            // delegate post actions
+            postsList.addEventListener('click', (e) => {
+                const like = e.target.closest('.like-btn');
+                if (like) {
+                    const id = like.getAttribute('data-id');
+                    const p = samplePosts.find(x => x.id === id);
+                    if (p) { p.liked = !p.liked; p.likes += p.liked ? 1 : -1; renderPosts(); }
+                }
+                const comment = e.target.closest('.comment-btn');
+                if (comment) { alert('评论面板（mock）'); }
+            });
+
+            // view mode: 'card' | 'list' | 'compact'
+            let viewMode = localStorage.getItem('channel_view') || 'card';
+            const viewButtons = document.querySelectorAll('.view-btn');
+
+            function setViewMode(mode) {
+                viewMode = mode;
+                localStorage.setItem('channel_view', mode);
+                groupsGrid.classList.remove('view-card','view-list','view-compact');
+                groupsGrid.classList.add('view-' + mode);
+                viewButtons.forEach(b => b.classList.toggle('active', b.getAttribute('data-view') === mode));
+            }
+
+            viewButtons.forEach(b => b.addEventListener('click', () => setViewMode(b.getAttribute('data-view'))));
+
+            const activeFilters = { tags: new Set(), langs: new Set(), regions: new Set() };
+            const sortSelect = document.getElementById('sortSelect');
+            const filterChips = document.getElementById('filterChips');
+
+            // chip toggle
+            filterChips.addEventListener('click', (e) => {
+                const chip = e.target.closest('.chip');
+                if (!chip) return;
+                const type = chip.getAttribute('data-filter-type');
+                const val = chip.getAttribute('data-value');
+                chip.classList.toggle('active');
+                if (chip.classList.contains('active')) {
+                    if (type === 'tag') activeFilters.tags.add(val);
+                    if (type === 'lang') activeFilters.langs.add(val);
+                    if (type === 'region') activeFilters.regions.add(val);
+                } else {
+                    if (type === 'tag') activeFilters.tags.delete(val);
+                    if (type === 'lang') activeFilters.langs.delete(val);
+                    if (type === 'region') activeFilters.regions.delete(val);
+                }
+                const active = categoryList.querySelector('li.active');
+                const cat = active ? active.getAttribute('data-cat') : 'all';
+                renderGroups(cat, channelSearch.value || '');
+            });
+
+            sortSelect.addEventListener('change', () => { const active = categoryList.querySelector('li.active'); const cat = active ? active.getAttribute('data-cat') : 'all'; renderGroups(cat, channelSearch.value || ''); });
+
+            function renderGroups(filterCat = 'all', keyword = '') {
+                groupsGrid.innerHTML = '';
+                let items = sampleGroups.filter(g => (filterCat === 'all' || g.category === filterCat) && (keyword === '' || (g.title + g.desc).toLowerCase().includes(keyword.toLowerCase())) );
+                // apply chips filters
+                if (activeFilters.tags.size > 0) {
+                    items = items.filter(g => g.tags && Array.from(activeFilters.tags).every(t => g.tags.includes(t)));
+                }
+                if (activeFilters.langs.size > 0) {
+                    items = items.filter(g => activeFilters.langs.has(g.lang));
+                }
+                if (activeFilters.regions.size > 0) {
+                    items = items.filter(g => activeFilters.regions.has(g.region));
+                }
+                // sorting
+                const sortBy = sortSelect.value;
+                if (sortBy === 'members') items.sort((a,b) => b.members.length - a.members.length);
+                else if (sortBy === 'active') items.sort((a,b) => (b.active||0) - (a.active||0));
+                else items.sort((a,b) => new Date(b.created) - new Date(a.created));
+                document.getElementById('groupsCount').textContent = `${items.length} 个群组`;
+                if (items.length === 0) {
+                    groupsGrid.innerHTML = '<div class="group-item">暂无相关群组</div>';
+                    return;
+                }
+                items.forEach(g => {
+                    const el = document.createElement('div');
+                    el.className = 'group-item';
+                    el.innerHTML = `
+                        <div class="group-cover">${(g.title||'').slice(0,1)}</div>
+                        <div class="group-info">
+                            <h3>${g.title}</h3>
+                            <p>${g.desc}</p>
+                            <div class="group-meta">活跃:${g.active || 0} · 成员:${g.members.length} · ${g.lang === 'cn' ? '中文' : '英文'}</div>
+                        </div>
+                        <div class="group-buttons">
+                            <span class="members-count">已加入${g.members.length}人</span>
+                            <button class="join-btn" data-id="${g.id}">加入</button>
+                            <button class="detail-btn" data-id="${g.id}">查看</button>
+                            <span class="invite-code">邀请码：${g.invite}</span>
+                        </div>
+                    `;
+                    groupsGrid.appendChild(el);
+                });
+                // ensure view class set
+                setViewMode(viewMode);
+            }
+
+            // initial render - respect active category (feed is now default)
+            const active = categoryList.querySelector('li.active');
+            const initialCat = active ? active.getAttribute('data-cat') : 'groups';
+            if (initialCat === 'feed') {
+                feedSection.style.display = 'block';
+                document.getElementById('groupsGrid').style.display = 'none';
+                renderPosts();
+            } else {
+                renderGroups(initialCat, channelSearch.value || '');
+            }
+
+            // category click
+            categoryList.addEventListener('click', (e) => {
+                const li = e.target.closest('li');
+                if (!li) return;
+                Array.from(categoryList.children).forEach(c => c.classList.remove('active'));
+                li.classList.add('active');
+                const cat = li.getAttribute('data-cat') || 'all';
+                if (cat === 'feed') {
+                    // show feed
+                    feedSection.style.display = 'block';
+                    document.getElementById('groupsGrid').style.display = 'none';
+                    renderPosts();
+                } else {
+                    feedSection.style.display = 'none';
+                    document.getElementById('groupsGrid').style.display = '';
+                    renderGroups(cat, channelSearch.value || '');
+                }
+            });
+
+            // search
+            channelSearch.addEventListener('input', () => {
+                const active = categoryList.querySelector('li.active');
+                const cat = active ? active.getAttribute('data-cat') : 'all';
+                renderGroups(cat, channelSearch.value || '');
+            });
+
+            document.getElementById('clearSearch').addEventListener('click', () => { channelSearch.value = ''; renderGroups(); });
+
+            // delegate join/detail buttons
+            groupsGrid.addEventListener('click', (e) => {
+                const join = e.target.closest('.join-btn');
+                const detail = e.target.closest('.detail-btn');
+                if (join) {
+                    const id = join.getAttribute('data-id');
+                    // simple join action: redirect to channel2 for now
+                    window.location.href = 'channel2.html?group=' + encodeURIComponent(id);
+                }
+                if (detail) {
+                    const id = detail.getAttribute('data-id');
+                    const g = sampleGroups.find(x => x.id === id);
+                    if (g) {
+                        document.getElementById('detailTitle').textContent = g.title;
+                        document.getElementById('detailDesc').textContent = g.desc;
+                        const membersEl = document.getElementById('detailMembers');
+                        membersEl.innerHTML = '';
+                        g.members.forEach(m => { const mEl = document.createElement('div'); mEl.className = 'group-member'; mEl.textContent = m; membersEl.appendChild(mEl); });
+                        document.getElementById('groupDetailOverlay').style.display = 'flex';
+                    }
+                }
+            });
+
+            document.getElementById('closeGroupDetail').addEventListener('click', () => { document.getElementById('groupDetailOverlay').style.display = 'none'; });
+
+            // create-group button - reuse modal created earlier
+            const createGroupBtn = document.querySelector('.create-group-btn');
+            if (createGroupBtn) {
+                createGroupBtn.addEventListener('click', () => { const url = new URL(window.location); url.searchParams.set('createGroup', 'true'); window.location.href = url.toString(); });
+            }
+        });
         const currentSpeed = document.getElementById('currentSpeed');
         const playlistBtn = document.querySelector('.playlist-btn');
         const playlistPanel = document.querySelector('.playlist-panel');

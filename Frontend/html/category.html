@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="../css/category.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="../js/search.js"></script>
+    <script src="../js/category.js"></script>
     <script src="../js/script.js" defer></script>
     <style>
         /* 新增样式：确保内容不被底部播放栏遮挡 */
@@ -82,30 +83,38 @@
             <!-- 类型过滤 -->
             <div class="filter-group">
                 <span class="filter-label">类型：</span>
-                <div class="filter-options">
-                    <button class="filter-option active">频道</button>
-                    <button class="filter-option">直播</button>
+                <div class="filter-options" id="typeOptions">
+                    <button class="filter-option active" data-type="audio">音频</button>
+                    <button class="filter-option" data-type="live">直播</button>
                 </div>
             </div>
 
             <!-- 种类过滤 -->
             <div class="filter-group">
                 <span class="filter-label">种类：</span>
-                <div class="filter-options">
-                    <button class="filter-option">电影</button>
-                    <button class="filter-option">小说</button>
-                    <button class="filter-option active">学习资料</button>
-                    <button class="filter-option">音乐</button>
+                <!-- 音频专属种类（默认显示） -->
+                <div class="filter-options" id="audioCategories" style="display: flex;">
+                    <button class="filter-option active">音乐</button>
                     <button class="filter-option">演讲</button>
+                    <button class="filter-option">有声书</button>
+                    <button class="filter-option">播客剧</button>
+                </div>
+                <!-- 直播专属种类（默认隐藏） -->
+                <div class="filter-options" id="liveCategories" style="display: none;">
+                    <button class="filter-option active">实时访谈</button>
+                    <button class="filter-option">直播讲座</button>
+                    <button class="filter-option">互动演出</button>
+                    <button class="filter-option">答疑直播</button>
                 </div>
             </div>
 
             <!-- 排序选项 -->
             <div class="filter-group">
                 <span class="filter-label">排序：</span>
-                <div class="filter-options">
-                    <button class="filter-option active">默认</button>
-                    <button class="filter-option">热度</button>
+                <div class="filter-options" id="sortOptions">
+                    <!-- 原“默认”→改为“时间”，添加data-sort属性标记排序类型 -->
+                    <button class="filter-option active" data-sort="time">时间</button>
+                    <button class="filter-option" data-sort="popularity">热度</button>
                 </div>
             </div>
         </div>

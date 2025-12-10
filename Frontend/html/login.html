@@ -360,88 +360,37 @@
         }
 
         // 处理登录提交
-        async function handleLogin() {
+        function handleLogin() {
             const isPhoneValid = validateLoginPhone();
             const isPwdValid = validateLoginPwd();
 
             if (isPhoneValid && isPwdValid) {
-                try {
-                    // 发送真实登录请求
-                    const response = await fetch('http://localhost:3000/api/auth/login', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            email: loginPhone.value.trim(), // 注意：后端使用email字段，但前端输入的是手机号
-                            password: loginPwd.value
-                        })
-                    });
-                    
-                    const data = await response.json();
-                    
-                    if (response.ok) {
-                        // 登录成功，存储令牌
-                        localStorage.setItem('authToken', data.token);
-                        alert(`登录成功！欢迎回来！`);
-                        
-                        // 跳转到主页或上传页面
-                        window.location.href = '../html/upload-audio.html';
-                    } else {
-                        // 登录失败
-                        alert(`登录失败: ${data.message || '用户名或密码错误'}`);
-                    }
-                } catch (error) {
-                    console.error('登录请求失败:', error);
-                    alert('登录失败，请检查网络连接或稍后重试');
-                }
+                // 这里可替换为真实登录请求
+                alert(`登录成功！欢迎回来，${loginPhone.value}！`);
+                // 清空表单
+                loginPhone.value = '';
+                loginPwd.value = '';
             }
         }
 
         // 处理注册提交
-        async function handleRegister() {
+        function handleRegister() {
             const isUsernameValid = validateRegUsername();
             const isPhoneValid = validateRegPhone();
             const isPwdValid = validateRegPwd();
             const isRepwdValid = validateRegRepwd();
 
             if (isUsernameValid && isPhoneValid && isPwdValid && isRepwdValid) {
-                try {
-                    // 发送真实注册请求
-                    const response = await fetch('http://localhost:3000/api/auth/register', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            username: regUsername.value.trim(),
-                            email: regPhone.value.trim(), // 注意：后端使用email字段，但前端输入的是手机号
-                            password: regPwd.value
-                        })
-                    });
-                    
-                    const data = await response.json();
-                    
-                    if (response.ok) {
-                        // 注册成功
-                        alert(`注册成功！请登录`);
-                        
-                        // 清空表单并切换到登录界面
-                        regUsername.value = '';
-                        regPhone.value = '';
-                        regPwd.value = '';
-                        regRepwd.value = '';
-                        registerContainer.style.display = 'none';
-                        loginContainer.style.display = 'block';
-                        loginPhone.value = regPhone.value; // 自动填充手机号
-                    } else {
-                        // 注册失败
-                        alert(`注册失败: ${data.message || '注册信息无效'}`);
-                    }
-                } catch (error) {
-                    console.error('注册请求失败:', error);
-                    alert('注册失败，请检查网络连接或稍后重试');
-                }
+                // 这里可替换为真实注册请求
+                alert(`注册成功！手机号：${regPhone.value}，请登录`);
+                // 清空表单并切换到登录界面
+                regUsername.value = '';
+                regPhone.value = '';
+                regPwd.value = '';
+                regRepwd.value = '';
+                registerContainer.style.display = 'none';
+                loginContainer.style.display = 'block';
+                loginPhone.value = regPhone.value; // 自动填充手机号
             }
         }
 

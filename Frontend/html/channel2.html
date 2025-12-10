@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="../js/search.js"></script>
     <style>
-        /* 统一橙色主题样式 */
+        /* 统一橙色主题样式（原文件保留） */
         :root {
             --orange-primary: #ff6b35;
             --orange-light: #ff9d6f;
@@ -21,881 +21,183 @@
             --text-secondary: #666666;
             --text-light: #999999;
         }
-        
-        /* 主内容区样式 */
-        .main.channel-main {
-            padding: 20px 0;
-            background: #f9f9f9;
-            min-height: calc(100vh - 120px);
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-        
-        /* 群聊布局样式 */
-        .channel-layout {
-            display: flex;
-            gap: 20px;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            min-height: 600px;
-        }
-        
-        /* 左侧群组列表 */
-        .channel-sidebar {
-            width: 280px;
-            background: white;
-            padding: 20px 0;
-            border-right: 1px solid var(--gray-border);
-        }
-        
-        .channel-search {
-            padding: 0 20px 20px 20px;
-            border-bottom: 1px solid var(--gray-border);
-        }
-        
-        .search-wrapper {
-            display: flex;
-            align-items: center;
-            background: var(--gray-light);
-            border-radius: 8px;
-            padding: 8px 12px;
-        }
-        
-        .search-wrapper i {
-            color: var(--text-light);
-            margin-right: 8px;
-        }
-        
-        .channel-search-input {
-            flex: 1;
-            border: none;
-            background: transparent;
-            font-size: 14px;
-            color: var(--text-primary);
-        }
-        
-        .channel-search-input::placeholder {
-            color: var(--text-light);
-        }
-        
-        .create-group-btn {
-            margin: 20px;
-            width: calc(100% - 40px);
-            background: linear-gradient(135deg, #ff6b35 0%, #ff9d6f 100%);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 12px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .create-group-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
-        }
-        
-        /* 群组列表项 - 可点击样式 */
-        .group-item {
-            display: flex;
-            align-items: center;
-            padding: 12px 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            border-bottom: 1px solid var(--gray-border);
-            text-decoration: none;
-            color: inherit;
-        }
-        
-        .group-item:last-child {
-            border-bottom: none;
-        }
-        
-        .group-item:hover {
-            background: var(--gray-light);
-            transform: translateX(5px);
-        }
-        
-        .group-item.active {
-            background: linear-gradient(135deg, #ff6b35 0%, #ff9d6f 100%);
-        }
-        
-        .group-item.active::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 3px;
-            background: white;
-        }
-        
-        .group-item img {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-right: 12px;
-            border: 2px solid white;
-        }
-        
-        .group-item.active img {
-            border-color: white;
-            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
-        }
-        
-        .group-info {
-            flex: 1;
-            min-width: 0;
-        }
-        
-        .group-info h4 {
-            margin: 0 0 4px 0;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-primary);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        
-        .group-item.active .group-info h4 {
-            color: white;
-            font-weight: 700;
-        }
-        
-        .group-info p {
-            margin: 0;
-            font-size: 12px;
-            color: var(--text-light);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        
-        .group-item.active .group-info p {
-            color: rgba(255, 255, 255, 0.9);
-        }
-        
-        .message-count {
-            background: linear-gradient(135deg, #ff6b35 0%, #ff9d6f 100%);
-            color: white;
-            font-size: 11px;
-            font-weight: 600;
-            min-width: 18px;
-            height: 18px;
-            border-radius: 9px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0 5px;
-        }
-        
-        .group-item.active .message-count {
-            background: white;
-            color: #ff6b35;
-        }
-        
-        .message-time {
-            font-size: 11px;
-            color: var(--text-light);
-            margin-left: 5px;
-        }
-        
-        .group-item.active .message-time {
-            color: rgba(255, 255, 255, 0.8);
-        }
-        
-        .group-list-mobile {
-            display: none;
-        }
-        
-        /* 中间聊天区域 */
-        .group-list {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            background: white;
-        }
-        
-        .group-header {
-            padding: 20px;
-            border-bottom: 1px solid var(--gray-border);
-            background: white;
-            position: relative;
-        }
-        
-        .group-header h2 {
-            margin: 0;
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--text-primary);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .group-header h2::before {
-            content: '\f0c0';
-            font-family: 'Font Awesome 5 Free';
-            font-weight: 900;
-            color: var(--orange-primary);
-        }
-        
-        .group-stats {
-            margin-top: 8px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .member-count {
-            font-size: 13px;
-            color: var(--text-secondary);
-            background: var(--gray-light);
-            padding: 4px 10px;
-            border-radius: 12px;
-        }
-        
-        /* 聊天消息区域 - 模仿图片格式 */
-        .chat-messages {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            background: white;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-        
-        /* 消息项基本样式 */
-        .message-item {
-            display: flex;
-            position: relative;
-        }
-        
-        /* 他人消息 - 头像在左侧 */
-        .message-item.other-message {
-            flex-direction: row;
-        }
-        
-        /* 自己消息 - 头像在右侧 */
-        .message-item.own-message {
-            flex-direction: row-reverse;
-        }
-        
-        /* 消息头像 */
-        .message-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 14px;
-            color: white;
-            flex-shrink: 0;
-            margin: 0 10px;
-        }
-        
-        /* 他人头像 - 橙色渐变 */
-        .other-message .message-avatar {
-            background: linear-gradient(135deg, #ff6b35 0%, #ff9d6f 100%);
-        }
-        
-        /* 自己头像 - 蓝色渐变区分 */
-        .own-message .message-avatar {
-            background: linear-gradient(135deg, #4285F4 0%, #8AB4F8 100%);
-        }
-        
-        /* 消息内容包装器 */
-        .message-content-wrapper {
-            max-width: 65%;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        /* 他人消息内容 */
-        .other-message .message-content-wrapper {
-            align-items: flex-start;
-        }
-        
-        /* 自己消息内容 */
-        .own-message .message-content-wrapper {
-            align-items: flex-end;
-        }
-        
-        /* 消息信息行 */
-        .message-info {
-            display: flex;
-            align-items: center;
-            margin-bottom: 5px;
-            gap: 8px;
-        }
-        
-        /* 发送者名字 */
-        .message-sender {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-        
-        /* 消息时间 */
-        .message-time {
-            font-size: 11px;
-            color: var(--text-light);
-        }
-        
-        /* 消息气泡 */
-        .message-bubble {
-            padding: 12px 16px;
-            border-radius: 18px;
-            position: relative;
-            max-width: 100%;
-            word-break: break-word;
-            line-height: 1.5;
-            min-width: 60px;
-        }
-        
-        /* 他人气泡 - 橙底白字 */
-        .other-message .message-bubble {
-            background: linear-gradient(135deg, #ff6b35 0%, #ff9d6f 100%);
-            color: white;
-            border-top-left-radius: 4px;
-        }
-        
-        /* 自己气泡 - 白底橙字 */
-        .own-message .message-bubble {
-            background: white;
-            color: #ff6b35;
-            border: 1px solid #ff6b35;
-            border-top-right-radius: 4px;
-        }
-        
-        /* 气泡三角形指示器 */
-        .other-message .message-bubble::before {
-            content: '';
-            position: absolute;
-            left: -8px;
-            top: 14px;
-            width: 0;
-            height: 0;
-            border-top: 6px solid transparent;
-            border-right: 8px solid #ff6b35;
-            border-bottom: 6px solid transparent;
-        }
-        
-        .own-message .message-bubble::before {
-            content: '';
-            position: absolute;
-            right: -8px;
-            top: 14px;
-            width: 0;
-            height: 0;
-            border-top: 6px solid transparent;
-            border-left: 8px solid #ff6b35;
-            border-bottom: 6px solid transparent;
-        }
-        
-        /* 消息文本 */
-        .message-text {
-            font-size: 14px;
-            line-height: 1.5;
-        }
-        
-        /* 英文文本样式 */
-        .english-text {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            letter-spacing: 0.3px;
-        }
-        
-        /* 中英混合文本 */
-        .bilingual-text {
-            line-height: 1.6;
-        }
-        
-        /* 系统消息样式 */
-        .system-message {
-            display: flex;
-            justify-content: center;
-            margin: 8px 0;
-        }
-        
-        .system-message .message-bubble {
-            background: #f0f0f0;
-            color: var(--text-secondary);
-            font-size: 12px;
-            padding: 6px 12px;
-            border-radius: 12px;
-            max-width: 80%;
-            text-align: center;
-        }
-        
-        .system-message .message-bubble::before {
-            display: none;
-        }
-        
-        /* 英语学习相关样式 */
-        .vocabulary-highlight {
-            color: #4285F4;
-            font-weight: 600;
-            background: rgba(66, 133, 244, 0.1);
-            padding: 2px 6px;
-            border-radius: 4px;
-            margin: 0 2px;
-        }
-        
-        .grammar-note {
-            font-style: italic;
-            color: #666;
-            font-size: 12px;
-            margin-top: 4px;
-            border-left: 3px solid #ff6b35;
-            padding-left: 8px;
-        }
-        
-        /* 群组跳转样式 */
-        .group-switch-indicator {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(255, 255, 255, 0.95);
-            color: #ff6b35;
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            z-index: 10;
-            animation: fadeInOut 2s ease;
-        }
-        
-        @keyframes fadeInOut {
-            0% { opacity: 0; transform: translateY(-10px); }
-            20% { opacity: 1; transform: translateY(0); }
-            80% { opacity: 1; transform: translateY(0); }
-            100% { opacity: 0; transform: translateY(-10px); }
-        }
-        
-        .group-switch-indicator i {
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-        
-        /* 消息输入区域 */
-        .message-input-area {
-            padding: 20px;
-            border-top: 1px solid var(--gray-border);
-            background: white;
-            display: flex;
-            align-items: flex-end;
-            gap: 10px;
-        }
-        
-        .message-input-controls {
-            display: flex;
-            gap: 8px;
-        }
-        
-        .voice-btn, .emoji-btn {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            border: 1px solid var(--gray-border);
-            background: white;
-            color: var(--orange-primary);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .voice-btn:hover, .emoji-btn:hover {
-            background: var(--gray-light);
-        }
-        
-        .message-input {
-            flex: 1;
-            min-height: 40px;
-            max-height: 120px;
-            padding: 10px 15px;
-            border: 1px solid var(--gray-border);
-            border-radius: 20px;
-            font-size: 14px;
-            resize: none;
-            font-family: inherit;
-        }
-        
-        .message-input:focus {
-            outline: none;
-            border-color: var(--orange-primary);
-        }
-        
-        .send-btn {
-            background: linear-gradient(135deg, #ff6b35 0%, #ff9d6f 100%);
-            color: white;
-            border: none;
-            border-radius: 20px;
-            padding: 10px 25px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .send-btn:hover {
-            background: linear-gradient(135deg, #ff9d6f 0%, #ffbc9a 100%);
-        }
-        
-        /* 右侧群组信息 */
-        .group-info-sidebar {
-            width: 260px;
-            background: white;
-            border-left: 1px solid var(--gray-border);
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .group-info-header {
-            padding: 20px;
-            border-bottom: 1px solid var(--gray-border);
-            display: flex;
-            gap: 10px;
-        }
-        
-        .group-search-btn, .group-files-btn {
-            flex: 1;
-            background: white;
-            border: 1px solid var(--gray-border);
-            border-radius: 6px;
-            padding: 8px 12px;
-            color: var(--orange-primary);
-            font-size: 13px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .group-search-btn:hover, .group-files-btn:hover {
-            background: var(--gray-light);
-        }
-        
-        .group-info-content {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-        }
-        
-        .info-section {
-            margin-bottom: 25px;
-        }
-        
-        .info-section h3 {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 15px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid var(--gray-border);
-        }
-        
-        .info-item {
-            margin-bottom: 15px;
-        }
-        
-        .info-item h4 {
-            font-size: 12px;
-            color: var(--text-light);
-            margin-bottom: 5px;
-        }
-        
-        .info-item p {
-            font-size: 14px;
-            color: var(--text-primary);
-            line-height: 1.5;
-        }
-        
-        .member-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        
-        .member-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .member-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #ff6b35 0%, #ff9d6f 100%);
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 11px;
-            font-weight: 600;
-        }
-        
-        .member-avatar.online::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            width: 8px;
-            height: 8px;
-            background: var(--orange-primary);
-            border-radius: 50%;
-            border: 2px solid white;
-        }
-        
-        .member-name {
-            font-size: 13px;
-            color: var(--text-primary);
-        }
-        
-        .invite-code-section {
-            margin-top: 30px;
-        }
-        
-        .invite-code {
-            background: linear-gradient(135deg, #ff6b35 0%, #ff9d6f 100%);
-            color: white;
-            text-align: center;
-            padding: 12px;
-            border-radius: 8px;
-            font-weight: 600;
-            letter-spacing: 1px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 14px;
-        }
-        
-        .invite-code:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
-        }
-
-        .delete-group-btn {
-            margin-top: 10px;
-            padding: 8px 16px;
-            background-color: #ff4d4f;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            font-size: 14px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            width: 100%;
-        }
-
-        .delete-group-btn:hover {
-            background-color: #ff7875;
-        }
-        
-        /* 移动端适配 */
+        .main.channel-main { padding: 20px 0; background: #f9f9f9; min-height: calc(100vh - 120px); }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        .channel-layout { display: flex; gap: 20px; background: white; border-radius: 15px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); overflow: hidden; min-height: 600px; }
+        .channel-sidebar { width: 280px; background: white; padding: 20px 0; border-right: 1px solid var(--gray-border); }
+        .channel-search { padding: 0 20px 20px 20px; border-bottom: 1px solid var(--gray-border); }
+        .search-wrapper { display: flex; align-items: center; background: var(--gray-light); border-radius: 8px; padding: 8px 12px; }
+        .search-wrapper i { color: var(--text-light); margin-right: 8px; }
+        .channel-search-input { flex: 1; border: none; background: transparent; font-size: 14px; color: var(--text-primary); }
+        .channel-search-input::placeholder { color: var(--text-light); }
+        .create-group-btn { margin: 20px; width: calc(100% - 40px); background: linear-gradient(135deg, #ff6b35 0%, #ff9d6f 100%); color: white; border: none; border-radius: 8px; padding: 12px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
+        .create-group-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3); }
+        .group-item { display: flex; align-items: center; padding: 12px 20px; cursor: pointer; transition: all 0.3s ease; position: relative; border-bottom: 1px solid var(--gray-border); text-decoration: none; color: inherit; }
+        .group-item:last-child { border-bottom: none; }
+        .group-item:hover { background: var(--gray-light); transform: translateX(5px); }
+        .group-item.active { background: linear-gradient(135deg, #ff6b35 0%, #ff9d6f 100%); }
+        .group-item.active::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: white; }
+        .group-item img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; margin-right: 12px; border: 2px solid white; }
+        .group-item.active img { border-color: white; box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3); }
+        .group-info { flex: 1; min-width: 0; }
+        .group-info h4 { margin: 0 0 4px 0; font-size: 14px; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .group-item.active .group-info h4 { color: white; font-weight: 700; }
+        .group-info p { margin: 0; font-size: 12px; color: var(--text-light); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .group-item.active .group-info p { color: rgba(255, 255, 255, 0.9); }
+        .message-count { background: linear-gradient(135deg, #ff6b35 0%, #ff9d6f 100%); color: white; font-size: 11px; font-weight: 600; min-width: 18px; height: 18px; border-radius: 9px; display: flex; align-items: center; justify-content: center; padding: 0 5px; }
+        .group-item.active .message-count { background: white; color: #ff6b35; }
+        .message-time { font-size: 11px; color: var(--text-light); margin-left: 5px; }
+        .group-item.active .message-time { color: rgba(255, 255, 255, 0.8); }
+        .group-list-mobile { display: none; }
+        .group-list { flex: 1; display: flex; flex-direction: column; background: white; }
+        .group-header { padding: 20px; border-bottom: 1px solid var(--gray-border); background: white; position: relative; }
+        .group-header h2 { margin: 0; font-size: 18px; font-weight: 600; color: var(--text-primary); display: flex; align-items: center; gap: 8px; }
+        .group-header h2::before { content: '\f0c0'; font-family: 'Font Awesome 5 Free'; font-weight: 900; color: var(--orange-primary); }
+        .group-stats { margin-top: 8px; display: flex; align-items: center; gap: 15px; }
+        .member-count { font-size: 13px; color: var(--text-secondary); background: var(--gray-light); padding: 4px 10px; border-radius: 12px; }
+        .chat-messages { flex: 1; padding: 20px; overflow-y: auto; background: white; display: flex; flex-direction: column; gap: 16px; }
+        .message-item { display: flex; position: relative; }
+        .message-item.other-message { flex-direction: row; }
+        .message-item.own-message { flex-direction: row-reverse; }
+        .message-avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; color: white; flex-shrink: 0; margin: 0 10px; }
+        .other-message .message-avatar { background: linear-gradient(135deg, #ff6b35 0%, #ff9d6f 100%); }
+        .own-message .message-avatar { background: linear-gradient(135deg, #4285F4 0%, #8AB4F8 100%); }
+        .message-content-wrapper { max-width: 65%; display: flex; flex-direction: column; }
+        .other-message .message-content-wrapper { align-items: flex-start; }
+        .own-message .message-content-wrapper { align-items: flex-end; }
+        .message-info { display: flex; align-items: center; margin-bottom: 5px; gap: 8px; }
+        .message-sender { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+        .message-time { font-size: 11px; color: var(--text-light); }
+        .message-bubble { padding: 12px 16px; border-radius: 18px; position: relative; max-width: 100%; word-break: break-word; line-height: 1.5; min-width: 60px; }
+        .other-message .message-bubble { background: linear-gradient(135deg, #ff6b35 0%, #ff9d6f 100%); color: white; border-top-left-radius: 4px; }
+        .own-message .message-bubble { background: white; color: #ff6b35; border: 1px solid #ff6b35; border-top-right-radius: 4px; }
+        .other-message .message-bubble::before { content: ''; position: absolute; left: -8px; top: 14px; width: 0; height: 0; border-top: 6px solid transparent; border-right: 8px solid #ff6b35; border-bottom: 6px solid transparent; }
+        .own-message .message-bubble::before { content: ''; position: absolute; right: -8px; top: 14px; width: 0; height: 0; border-top: 6px solid transparent; border-left: 8px solid #ff6b35; border-bottom: 6px solid transparent; }
+        .message-text { font-size: 14px; line-height: 1.5; }
+        .english-text { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; letter-spacing: 0.3px; }
+        .bilingual-text { line-height: 1.6; }
+        .system-message { display: flex; justify-content: center; margin: 8px 0; }
+        .system-message .message-bubble { background: #f0f0f0; color: var(--text-secondary); font-size: 12px; padding: 6px 12px; border-radius: 12px; max-width: 80%; text-align: center; }
+        .system-message .message-bubble::before { display: none; }
+        .vocabulary-highlight { color: #4285F4; font-weight: 600; background: rgba(66, 133, 244, 0.1); padding: 2px 6px; border-radius: 4px; margin: 0 2px; }
+        .grammar-note { font-style: italic; color: #666; font-size: 12px; margin-top: 4px; border-left: 3px solid #ff6b35; padding-left: 8px; }
+        .group-switch-indicator { position: absolute; top: 20px; right: 20px; background: rgba(255, 255, 255, 0.95); color: #ff6b35; padding: 8px 15px; border-radius: 20px; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); z-index: 10; animation: fadeInOut 2s ease; }
+        @keyframes fadeInOut { 0% { opacity: 0; transform: translateY(-10px); } 20% { opacity: 1; transform: translateY(0); } 80% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-10px); } }
+        .group-switch-indicator i { animation: spin 1s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .message-input-area { padding: 20px; border-top: 1px solid var(--gray-border); background: white; display: flex; align-items: flex-end; gap: 10px; }
+        .message-input-controls { display: flex; gap: 8px; }
+        .voice-btn, .emoji-btn { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--gray-border); background: white; color: var(--orange-primary); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .voice-btn:hover, .emoji-btn:hover { background: var(--gray-light); }
+        .message-input { flex: 1; min-height: 40px; max-height: 120px; padding: 10px 15px; border: 1px solid var(--gray-border); border-radius: 20px; font-size: 14px; resize: none; font-family: inherit; }
+        .message-input:focus { outline: none; border-color: var(--orange-primary); }
+        .send-btn { background: var(--orange-gradient); color: white; border: none; border-radius: 20px; padding: 10px 25px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
+        .send-btn:hover { background: linear-gradient(135deg, #ff9d6f 0%, #ffbc9a 100%); }
+        .group-info-sidebar { width: 260px; background: white; border-left: 1px solid var(--gray-border); display: flex; flex-direction: column; }
+        .group-info-header { padding: 20px; border-bottom: 1px solid var(--gray-border); display: flex; gap: 10px; }
+        .group-search-btn, .group-files-btn { flex: 1; background: white; border: 1px solid var(--gray-border); border-radius: 6px; padding: 8px 12px; color: var(--orange-primary); font-size: 13px; cursor: pointer; transition: all 0.3s ease; }
+        .group-search-btn:hover, .group-files-btn:hover { background: var(--gray-light); }
+        .group-info-content { flex: 1; padding: 20px; overflow-y: auto; }
+        .info-section { margin-bottom: 25px; }
+        .info-section h3 { font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 15px; padding-bottom: 8px; border-bottom: 1px solid var(--gray-border); }
+        .info-item { margin-bottom: 15px; }
+        .info-item h4 { font-size: 12px; color: var(--text-light); margin-bottom: 5px; }
+        .info-item p { font-size: 14px; color: var(--text-primary); line-height: 1.5; }
+        .member-list { display: flex; flex-direction: column; gap: 10px; }
+        .member-item { display: flex; align-items: center; gap: 10px; }
+        .member-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #ff6b35 0%, #ff9d6f 100%); position: relative; display: flex; align-items: center; justify-content: center; color: white; font-size: 11px; font-weight: 600; }
+        .member-avatar.online::after { content: ''; position: absolute; bottom: 0; right: 0; width: 8px; height: 8px; background: var(--orange-primary); border-radius: 50%; border: 2px solid white; }
+        .member-name { font-size: 13px; color: var(--text-primary); }
+        .invite-code-section { margin-top: 30px; }
+        .invite-code { background: var(--orange-gradient); color: white; text-align: center; padding: 12px; border-radius: 8px; font-weight: 600; letter-spacing: 1px; cursor: pointer; transition: all 0.3s ease; font-size: 14px; }
+        .invite-code:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3); }
         @media (max-width: 768px) {
-            .container {
-                padding: 10px;
-            }
-            
-            .channel-layout {
-                flex-direction: column;
-            }
-            
-            .channel-sidebar {
-                width: 100%;
-                padding: 15px 0;
-            }
-            
-            .group-info-sidebar {
-                width: 100%;
-            }
-            
-            .group-items {
-                display: none;
-            }
-            
-            .group-list-mobile {
-                display: block;
-            }
-            
-            .message-content-wrapper {
-                max-width: 75%;
-            }
-            
-            .message-input-area {
-                padding: 15px;
-            }
+            .container { padding: 10px; }
+            .channel-layout { flex-direction: column; }
+            .channel-sidebar { width: 100%; padding: 15px 0; }
+            .group-info-sidebar { width: 100%; }
+            .group-items { display: none; }
+            .group-list-mobile { display: block; }
+            .message-content-wrapper { max-width: 75%; }
+            .message-input-area { padding: 15px; }
         }
-        
-        /* 移动端切换按钮 */
-        .mobile-toggle {
-            display: none;
-            position: fixed;
-            bottom: 80px;
-            right: 20px;
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #ff6b35 0%, #ff9d6f 100%);
-            color: white;
-            border: none;
-            cursor: pointer;
-            z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-        }
-        
-        @media (max-width: 768px) {
-            .mobile-toggle {
-                display: block;
-            }
-            
-            .channel-sidebar,
-            .group-info-sidebar {
-                display: none;
-            }
-        }
-        
-        /* 底部播放栏样式 */
-        .player-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: white;
-            border-top: 1px solid #e0e0e0;
-            padding: 10px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            z-index: 1000;
-        }
-        /* 创建学习群组模态框样式 */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
+        .mobile-toggle { display: none; position: fixed; bottom: 80px; right: 20px; width: 56px; height: 56px; border-radius: 50%; background: var(--orange-gradient); color: white; border: none; cursor: pointer; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        @media (max-width: 768px) { .mobile-toggle { display: block; } .channel-sidebar, .group-info-sidebar { display: none; } }
 
-        .modal {
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            width: 90%;
-            max-width: 400px;
-            padding: 20px;
-        }
+        /* 页面底部只保留新 PlayBar，预留高度 */
+        body { padding-bottom: 110px; }
 
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
+        /* ==== PlayBar.html 样式（统一播放栏） ==== */
+        #pv-player.pv-player-bar {
+          position: fixed; left: 0; right: 0; bottom: 0;
+          width: 100%; height: 96px; background: #ffffff;
+          border-top: 1px solid #e0e0e0; box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+          z-index: 29999; display: flex; align-items: center; user-select: none; pointer-events: auto;
         }
-
-        .modal-title {
-            margin: 0;
-            color: var(--text-primary);
-            font-size: 18px;
-            font-weight: 600;
+        #pv-player .pv-inner {
+          width: 100%; max-width: 1200px; margin: 0 auto;
+          display: grid; grid-template-columns: auto 1fr auto;
+          align-items: center; column-gap: 16px; padding: 0 24px; height: 100%;
         }
+        #pv-player .pv-left { display: inline-flex; align-items: center; gap: 12px; min-width: 240px; }
+        #pv-player .pv-cover { width: 52px; height: 52px; border-radius: 8px; background: #eee no-repeat center/cover; box-shadow: 0 2px 6px rgba(0,0,0,0.1); flex-shrink: 0; }
+        #pv-player .pv-meta { display: flex; flex-direction: column; min-width: 0; }
+        #pv-player .pv-title { font-size: 16px; font-weight: 700; color: #222; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        #pv-player .pv-artist { font-size: 12px; color: #666; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        .close-btn {
-            background: none;
-            border: none;
-            font-size: 24px;
-            color: var(--text-secondary);
-            cursor: pointer;
+        #pv-player .pv-center { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-width: 0; }
+        #pv-player .pv-controls { display: inline-flex; align-items: center; gap: 18px; }
+        #pv-player .ctrl-btn, #pv-player .mode-btn, #pv-player .rate-btn {
+          background: transparent; border: none; cursor: pointer; color: #444;
+          font-size: 18px; padding: 6px; display: inline-flex; align-items: center; justify-content: center; transition: color 0.2s;
         }
+        #pv-player .ctrl-btn:hover, #pv-player .mode-btn:hover, #pv-player .rate-btn:hover { color: #ff8c00; }
+        #pv-player .play-btn { width: 44px; height: 44px; border-radius: 50%; background: #ff8c00; color: #fff; border: none; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 10px rgba(255,140,0,0.30); transition: transform 0.1s, background 0.2s; }
+        #pv-player .play-btn:hover { background: #e67e00; transform: scale(1.05); }
+        #pv-player .icon { width: 18px; height: 18px; fill: currentColor; }
 
-        .form-group {
-            margin-bottom: 15px;
-        }
+        #pv-player .pv-progress-row { display: flex; align-items: center; gap: 12px; width: 100%; }
+        #pv-player .time.small { font-size: 12px; color: #888; width: 48px; text-align: center; font-variant-numeric: tabular-nums; }
+        #pv-player .pv-progress { position: relative; flex: 1; height: 6px; background: #eee; border-radius: 3px; cursor: pointer; touch-action: none; }
+        #pv-player .pv-progress::before { content: ''; position: absolute; top: -10px; bottom: -10px; left: 0; right: 0; z-index: 1; }
+        #pv-player .pv-progress-fill { position: absolute; left: 0; top: 0; bottom: 0; background: #ff8c00; border-radius: 3px; width: 0%; pointer-events: none; }
+        #pv-player .pv-knob { position: absolute; top: 50%; right: -6px; transform: translateY(-50%); width: 12px; height: 12px; background: #fff; border: 2px solid #ff8c00; border-radius: 50%; box-shadow: 0 1px 4px rgba(0,0,0,0.2); opacity: 0; transition: opacity 0.2s; pointer-events: none; }
+        #pv-player .pv-progress:hover .pv-knob, #pv-player .pv-progress.dragging .pv-knob { opacity: 1; }
 
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            color: var(--text-primary);
-            font-weight: 500;
-        }
+        #pv-player .pv-right { display: inline-flex; align-items: center; justify-content: flex-end; gap: 12px; min-width: 240px; }
+        #pv-player .pv-volume { width: 140px; height: 20px; display: flex; align-items: center; cursor: pointer; position: relative; }
+        #pv-player .pv-volume-bar { width: 100%; height: 4px; background: #eee; border-radius: 2px; position: relative; overflow: visible; pointer-events: none; }
+        #pv-player .pv-volume-fill { height: 100%; background: #888; width: 50%; border-radius: 2px; position: relative; }
+        #pv-player .pv-volume-fill::after { content: ''; position: absolute; right: -5px; top: 50%; transform: translateY(-50%); width: 10px; height: 10px; background: #fff; border: 1px solid #888; border-radius: 50%; opacity: 0; transition: opacity 0.2s; }
+        #pv-player .pv-volume:hover .pv-volume-fill::after { opacity: 1; }
 
-        .form-group input,
-        .form-group textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
-        }
+        /* 弹层：循环模式与倍速 */
+        #pv-player .popover { position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); background: #fff; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 10px 24px rgba(0,0,0,0.12); padding: 8px; z-index: 30000; display: none; }
+        #pv-player .popover.show { display: flex; }
+        #pv-player .mode-popover { gap: 10px; align-items: center; }
+        #pv-player .mode-item { width: 40px; height: 40px; border-radius: 8px; border: 1px solid #eee; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: #444; }
+        #pv-player .mode-item:hover { color: #ff8c00; border-color: #ffeed6; background: #fff9f0; }
+        #pv-player .mode-item.active { color: #fff; background: #ff8c00; border-color: #ff8c00; }
+        #pv-player .rate-popover { flex-direction: column; min-width: 140px; }
+        #pv-player .rate-item { padding: 8px 12px; font-size: 14px; color: #333; cursor: pointer; border-radius: 6px; }
+        #pv-player .rate-item:hover { background: #f7f7f7; }
+        #pv-player .rate-item.active { color: #ff8c00; font-weight: 700; background: #fff4e6; }
 
-        .form-group textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-
-        .modal-footer {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .btn-cancel,
-        .btn-create {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 4px;
-            font-size: 14px;
-            cursor: pointer;
-        }
-
-        .btn-cancel {
-            background-color: #f5f5f5;
-            color: var(--text-primary);
-        }
-
-        .btn-create {
-            background-color: var(--orange-light);
-            color: white;
+        @media (max-width: 900px) {
+          #pv-player .pv-left { min-width: 0; }
+          #pv-player .pv-right { min-width: 0; }
+          #pv-player .pv-inner { grid-template-columns: auto 1fr auto; column-gap: 10px; padding: 0 12px; }
         }
     </style>
 </head>
 <body>
-    <!-- 音频元素 -->
+    <!-- 音频元素（原文件保留） -->
     <audio id="audioPlayer" controls style="display: none;">
         <source src="" type="audio/mpeg">
         您的浏览器不支持音频播放
     </audio>
 
-    <!-- 顶部导航栏 -->
+    <!-- 顶部导航栏（原文件保留） -->
     <header class="header">
         <div class="logo">
             <div class="logo-img"></div>
@@ -925,7 +227,7 @@
         </div>
     </header>
 
-    <!-- 主要内容区域 -->
+    <!-- 主要内容区域（原文件保留） -->
     <main class="main channel-main">
         <div class="container">
             <div class="channel-layout">
@@ -1135,7 +437,6 @@
                         </div>
                         <div class="invite-code-section">
                             <div class="invite-code" onclick="copyInviteCode()">#ENGLISH789</div>
-                            <button class="delete-group-btn" onclick="deleteCurrentGroup()">删除群组</button>
                         </div>
                     </div>
                 </aside>
@@ -1143,106 +444,112 @@
         </div>
     </main>
 
-    <!-- 移动端切换按钮 -->
+    <!-- 移动端切换按钮（原文件保留） -->
     <button class="mobile-toggle" id="mobileToggle">
         <i class="fas fa-bars"></i>
     </button>
 
-    <!-- 底部播放栏 -->
-    <footer class="player-bar">
-        <div class="player-left">
-            <div class="channel-cover">英语频道</div>
-            <div class="song-info">
-                <p class="song-name">English Conversation</p>
-                <p class="singer">BBC Learning</p>
-            </div>
+    <!-- 统一播放栏：PlayBar（已删除旧 footer，仅保留此播放栏） -->
+    <aside id="pv-player" class="pv-player-bar" role="region" aria-label="播放器">
+      <div class="pv-inner">
+        <!-- 左侧：封面与标题 -->
+        <div class="pv-left">
+          <div id="pv-cover" class="pv-cover"></div>
+          <div class="pv-meta">
+            <div id="pv-title" class="pv-title">Loading...</div>
+            <div id="pv-artist" class="pv-artist">Artist</div>
+          </div>
         </div>
-        <div class="player-middle">
-            <div class="control-buttons">
-                <button class="control-btn"><i class="fas fa-step-backward"></i></button>
-                <button class="control-btn play-btn"><i class="fas fa-play-circle"></i></button>
-                <button class="control-btn"><i class="fas fa-step-forward"></i></button>
-                <button class="control-btn"><i class="fas fa-random"></i></button>
-                <div class="speed-control">
-                    <button class="speed-btn">
-                        <i class="fas fa-tachometer-alt"></i>
-                        <span id="currentSpeed">1x</span>
-                    </button>
-                    <div class="speed-menu">
-                        <div class="speed-option" data-rate="0.5">0.5x</div>
-                        <div class="speed-option active" data-rate="1">1x</div>
-                        <div class="speed-option" data-rate="1.5">1.5x</div>
-                        <div class="speed-option" data-rate="2">2x</div>
-                        <div class="speed-option" data-rate="3">3x</div>
-                    </div>
-                </div>
-            </div>
-            <div class="progress-container">
-                <span class="time current">00:00</span>
-                <div class="progress-bar">
-                    <div class="progress-fill"></div>
-                </div>
-                <span class="time total">02:30</span>
-            </div>
-        </div>
-        <div class="player-right">
-            <button class="control-btn"><i class="fas fa-volume-up"></i></button>
-            <div class="volume-bar">
-                <div class="volume-fill"></div>
-            </div>
-            <div class="playlist-container">
-                <button class="playlist-btn"><i class="fas fa-list"></i></button>
-                <div class="playlist-panel">
-                    <div class="playlist-title">英语学习列表</div>
-                    <div class="playlist-item active">1. Daily Conversation</div>
-                    <div class="playlist-item">2. Business English</div>
-                    <div class="playlist-item">3. IELTS Speaking</div>
-                </div>
-            </div>
-        </div>
-    </footer>
 
+        <!-- 中间：控制与进度 -->
+        <div class="pv-center">
+          <div class="pv-controls">
+            <button id="pv-prev" class="ctrl-btn" title="上一首" aria-label="上一首">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M6 6h2v12H6V6zm3.5 6l8.5 6V6l-8.5 6z"/></svg>
+            </button>
+            <button id="pv-play" class="play-btn" title="播放/暂停" aria-label="播放/暂停">
+              <svg id="play-icon" class="icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            </button>
+            <button id="pv-next" class="ctrl-btn" title="下一首" aria-label="下一首">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M16 6h2v12h-2V6zM6 18l8.5-6L6 6v12z"/></svg>
+            </button>
+
+            <!-- 循环模式按钮 + 弹层 -->
+            <div style="position: relative;">
+              <button id="pv-mode-btn" class="mode-btn" title="播放模式" aria-label="播放模式">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M7 7h8v3l4-4-4-4v3H5v6h2V7zm10 10H9v-3l-4 4 4 4v-3h10v-6h-2v4z"/></svg>
+              </button>
+              <div id="mode-pop" class="popover mode-popover">
+                <div class="mode-item active" data-mode="single" title="单曲循环">
+                  <svg class="icon" viewBox="0 0 24 24"><path d="M12 5v4l-1.5-1.5C8 10 8 14 10.5 16.5S16 19 18.5 16.5L20 18c-3 3-8 3-11 0S6 9 9 6L12 5z"/></svg>
+                </div>
+                <div class="mode-item" data-mode="list" title="歌单顺序循环">
+                  <svg class="icon" viewBox="0 0 24 24"><path d="M4 6h12v2H4V6zm0 5h12v2H4v-2zm0 5h8v2H4v-2zm15-7l-3 3h2v4h2v-4h2l-3-3z"/></svg>
+                </div>
+                <div class="mode-item" data-mode="shuffle" title="歌单乱序循环">
+                  <svg class="icon" viewBox="0 0 24 24"><path d="M16 3h5v5h-2V6.41l-4.29 4.3-1.42-1.42L17.59 5H16V3zM4 6h7l2 2H4V6zm0 6h5l2 2H4v-2zm12 3h1.59l-2.29 2.29 1.42 1.42L20 17.41V19h2v-5h-5v2z"/></svg>
+                </div>
+              </div>
+            </div>
+
+            <!-- 倍速按钮 + 弹层 -->
+            <div class="rate-control" style="position: relative;">
+              <button id="pv-rate-btn" class="rate-btn" title="倍速"><span id="rate-text" style="font-size: 12px; font-weight: bold;">1x</span></button>
+              <div id="rate-pop" class="popover rate-popover">
+                <div class="rate-item" data-rate="0.5">0.5x</div>
+                <div class="rate-item active" data-rate="1">1.0x</div>
+                <div class="rate-item" data-rate="1.5">1.5x</div>
+                <div class="rate-item" data-rate="2">2.0x</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="pv-progress-row">
+            <span id="pv-time-cur" class="time small">00:00</span>
+            <div id="pv-progress" class="pv-progress">
+              <div id="pv-progress-fill" class="pv-progress-fill"></div>
+              <div id="pv-knob" class="pv-knob"></div>
+            </div>
+            <span id="pv-time-total" class="time small">00:00</span>
+          </div>
+        </div>
+
+        <!-- 右侧：音量 + 列表 -->
+        <div class="pv-right">
+          <button id="pv-mute" class="ctrl-btn" title="静音/取消静音" aria-label="静音">
+            <svg id="vol-icon" class="icon" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3z"/></svg>
+          </button>
+          <div id="pv-volume" class="pv-volume">
+            <div class="pv-volume-bar"><div id="pv-volume-fill" class="pv-volume-fill"></div></div>
+          </div>
+          <button id="pv-list-btn" class="ctrl-btn" title="播放列表" aria-label="播放列表">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M3 5h18v2H3V5zm0 6h12v2H3v-2zm0 6h8v2H3v-2z"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- PlayBar 播放列表弹窗 -->
+      <div id="playlist-panel" class="playlist-panel" style="display:none;">
+        <div class="playlist-item active" onclick="playIndex(0)">1. Kalimba (Test)</div>
+        <div class="playlist-item" onclick="playIndex(1)">2. Sample MP3 (Test)</div>
+      </div>
+
+      <!-- PlayBar 核心音频 -->
+      <audio id="pv-audio" preload="metadata"></audio>
+    </aside>
+
+    <!-- 原业务脚本（原文件保留） -->
     <script>
-        // 英语学习群组数据
         const groupData = {
             1: {
                 name: "英语口语练习",
                 description: "每日英语口语练习，提升沟通能力，欢迎所有英语学习者加入！",
                 memberCount: 36,
                 messages: [
-                    {
-                        sender: "系统",
-                        text: "Welcome to English Speaking Practice Group! 🌟",
-                        time: "09:30",
-                        isSystem: true
-                    },
-                    {
-                        sender: "English Learner",
-                        avatar: "EN",
-                        text: "Good morning everyone! How was your weekend?",
-                        time: "09:45",
-                        isOwn: false,
-                        englishText: true,
-                        grammarNote: "过去式疑问句"
-                    },
-                    {
-                        sender: "Teaching Assistant",
-                        avatar: "TE",
-                        text: "My weekend was great! I watched an English movie and practiced listening skills.",
-                        time: "09:48",
-                        isOwn: false,
-                        englishText: true,
-                        grammarNote: "过去简单式 + 并列句"
-                    },
-                    {
-                        sender: "我",
-                        avatar: "ME",
-                        text: "I had a productive weekend too! I learned some new vocabulary about travel.",
-                        time: "09:50",
-                        isOwn: true,
-                        englishText: true,
-                        vocabulary: ["vocabulary"]
-                    }
+                    { sender: "系统", text: "Welcome to English Speaking Practice Group! 🌟", time: "09:30", isSystem: true },
+                    { sender: "English Learner", avatar: "EN", text: "Good morning everyone! How was your weekend?", time: "09:45", isOwn: false, englishText: true, grammarNote: "过去式疑问句" },
+                    { sender: "Teaching Assistant", avatar: "TE", text: "My weekend was great! I watched an English movie and practiced listening skills.", time: "09:48", isOwn: false, englishText: true, grammarNote: "过去简单式 + 并列句" },
+                    { sender: "我", avatar: "ME", text: "I had a productive weekend too! I learned some new vocabulary about travel.", time: "09:50", isOwn: true, englishText: true, vocabulary: ["vocabulary"] }
                 ],
                 onlineMembers: ["English Learner", "Teaching Assistant", "Fluency Master", "Grammar Guru", "IELTS Expert"],
                 allMembers: ["English Learner", "Teaching Assistant", "Fluency Master", "Grammar Guru", "IELTS Expert", "TOEFL Student", "Business English", "Conversation Partner"],
@@ -1254,29 +561,9 @@
                 description: "托福考试备考交流，分享学习经验和备考技巧",
                 memberCount: 28,
                 messages: [
-                    {
-                        sender: "系统",
-                        text: "TOEFL备考小组 - 互相鼓励，共同进步！",
-                        time: "昨天 14:20",
-                        isSystem: true
-                    },
-                    {
-                        sender: "TOEFL Master",
-                        avatar: "TM",
-                        text: "Has anyone taken the TOEFL reading section recently? Any tips?",
-                        time: "昨天 14:35",
-                        isOwn: false,
-                        englishText: true
-                    },
-                    {
-                        sender: "我",
-                        avatar: "ME",
-                        text: "I find that skimming the questions first really helps with time management.",
-                        time: "昨天 15:10",
-                        isOwn: true,
-                        englishText: true,
-                        vocabulary: ["skimming", "time management"]
-                    }
+                    { sender: "系统", text: "TOEFL备考小组 - 互相鼓励，共同进步！", time: "昨天 14:20", isSystem: true },
+                    { sender: "TOEFL Master", avatar: "TM", text: "Has anyone taken the TOEFL reading section recently? Any tips?", time: "昨天 14:35", isOwn: false, englishText: true },
+                    { sender: "我", avatar: "ME", text: "I find that skimming the questions first really helps with time management.", time: "昨天 15:10", isOwn: true, englishText: true, vocabulary: ["skimming", "time management"] }
                 ],
                 onlineMembers: ["TOEFL Master", "Reading Expert", "Listening Pro"],
                 allMembers: ["TOEFL Master", "Reading Expert", "Listening Pro", "Writing Coach", "Speaking Tutor"],
@@ -1288,23 +575,8 @@
                 description: "商务英语学习与实践，提升职场英语能力",
                 memberCount: 22,
                 messages: [
-                    {
-                        sender: "Business Pro",
-                        avatar: "BP",
-                        text: "How to professionally decline a meeting invitation?",
-                        time: "周一 10:30",
-                        isOwn: false,
-                        englishText: true
-                    },
-                    {
-                        sender: "我",
-                        avatar: "ME",
-                        text: "You can say: 'Thank you for the invitation, but I have a scheduling conflict.'",
-                        time: "周一 11:15",
-                        isOwn: true,
-                        englishText: true,
-                        vocabulary: ["scheduling conflict"]
-                    }
+                    { sender: "Business Pro", avatar: "BP", text: "How to professionally decline a meeting invitation?", time: "周一 10:30", isOwn: false, englishText: true },
+                    { sender: "我", avatar: "ME", text: "You can say: 'Thank you for the invitation, but I have a scheduling conflict.'", time: "周一 11:15", isOwn: true, englishText: true, vocabulary: ["scheduling conflict"] }
                 ],
                 onlineMembers: ["Business Pro", "Corporate Trainer", "Negotiation Expert"],
                 allMembers: ["Business Pro", "Corporate Trainer", "Negotiation Expert", "Presentation Coach", "Email Specialist"],
@@ -1316,24 +588,8 @@
                 description: "英文原著阅读分享，提高阅读理解和词汇量",
                 memberCount: 45,
                 messages: [
-                    {
-                        sender: "Bookworm",
-                        avatar: "BW",
-                        text: "Just finished 'The Great Gatsby'. The symbolism is fascinating!",
-                        time: "上周五 16:20",
-                        isOwn: false,
-                        englishText: true,
-                        vocabulary: ["symbolism"]
-                    },
-                    {
-                        sender: "我",
-                        avatar: "ME",
-                        text: "I'm currently reading '1984'. The political themes are very thought-provoking.",
-                        time: "上周五 16:45",
-                        isOwn: true,
-                        englishText: true,
-                        vocabulary: ["thought-provoking"]
-                    }
+                    { sender: "Bookworm", avatar: "BW", text: "Just finished 'The Great Gatsby'. The symbolism is fascinating!", time: "上周五 16:20", isOwn: false, englishText: true, vocabulary: ["symbolism"] },
+                    { sender: "我", avatar: "ME", text: "I'm currently reading '1984'. The political themes are very thought-provoking.", time: "上周五 16:45", isOwn: true, englishText: true, vocabulary: ["thought-provoking"] }
                 ],
                 onlineMembers: ["Bookworm", "Literature Lover", "Vocabulary Builder"],
                 allMembers: ["Bookworm", "Literature Lover", "Vocabulary Builder", "Classic Reader", "Modern Fiction Fan"],
@@ -1342,328 +598,188 @@
             }
         };
 
-        // 当前激活的群组ID
         let currentGroupId = 1;
 
-        // 初始化页面
         function initializePage() {
-            // 检查URL参数
             const urlParams = new URLSearchParams(window.location.search);
             const groupIdFromUrl = urlParams.get('group');
-            
             if (groupIdFromUrl && groupData[groupIdFromUrl]) {
                 currentGroupId = parseInt(groupIdFromUrl);
             }
-            
             loadGroupData(currentGroupId);
             setupEventListeners();
         }
 
-        // 显示切换指示器
         function showSwitchIndicator() {
             const indicator = document.getElementById('switchIndicator');
             indicator.style.display = 'flex';
-            setTimeout(() => {
-                indicator.style.display = 'none';
-            }, 2000);
+            setTimeout(() => { indicator.style.display = 'none'; }, 2000);
         }
 
-        // 群组跳转函数
         function switchGroup(groupId) {
             if (groupId !== currentGroupId) {
                 currentGroupId = groupId;
                 loadGroupData(groupId);
-                
-                // 更新URL但不刷新页面
                 const newUrl = window.location.pathname + '?group=' + groupId;
-                window.history.pushState({ groupId: groupId }, '', newUrl);
+                window.history.pushState({ groupId }, '', newUrl);
             }
         }
 
-        // 处理词汇高亮
         function highlightVocabulary(text, vocabulary) {
             if (!vocabulary || vocabulary.length === 0) return text;
-            
             let highlightedText = text;
             vocabulary.forEach(word => {
                 const regex = new RegExp(`\\b${word}\\b`, 'gi');
-                highlightedText = highlightedText.replace(regex, 
-                    `<span class="vocabulary-highlight">${word}</span>`);
+                highlightedText = highlightedText.replace(regex, `<span class="vocabulary-highlight">${word}</span>`);
             });
             return highlightedText;
         }
 
-        // 加载群组数据
         function loadGroupData(groupId) {
             const group = groupData[groupId];
             if (!group) return;
 
-            // 显示切换指示器
             showSwitchIndicator();
 
-            // 更新群组信息
             document.getElementById('currentGroupName').textContent = group.name;
             document.getElementById('currentMemberCount').textContent = `成员: ${group.memberCount}`;
             document.getElementById('groupName').textContent = group.name;
             document.getElementById('groupDescription').textContent = group.description;
             document.getElementById('todayTopic').textContent = group.todayTopic;
 
-            // 更新聊天消息
             const chatMessages = document.getElementById('chatMessages');
             chatMessages.innerHTML = '';
-            
             group.messages.forEach(message => {
-                let messageElement;
-                
+                let el;
                 if (message.isSystem) {
-                    // 系统消息
-                    messageElement = document.createElement('div');
-                    messageElement.className = 'system-message';
-                    
-                    messageElement.innerHTML = `
-                        <div class="message-bubble">
-                            <div class="message-text">${message.text}</div>
-                        </div>
-                    `;
+                    el = document.createElement('div');
+                    el.className = 'system-message';
+                    el.innerHTML = `<div class="message-bubble"><div class="message-text">${message.text}</div></div>`;
                 } else {
-                    // 普通消息
-                    messageElement = document.createElement('div');
-                    messageElement.className = `message-item ${message.isOwn ? 'own-message' : 'other-message'}`;
-                    
+                    el = document.createElement('div');
+                    el.className = `message-item ${message.isOwn ? 'own-message' : 'other-message'}`;
                     const shortName = message.avatar || message.sender.substring(0, 2);
                     const englishClass = message.englishText ? 'english-text' : '';
                     const bilingualClass = message.bilingual ? 'bilingual-text' : '';
                     const textClass = `${englishClass} ${bilingualClass}`.trim();
-                    
-                    // 处理词汇高亮
                     let processedText = message.text;
-                    if (message.vocabulary) {
-                        processedText = highlightVocabulary(message.text, message.vocabulary);
-                    }
-                    
-                    let grammarNoteHTML = '';
-                    if (message.grammarNote) {
-                        grammarNoteHTML = `<div class="grammar-note">${message.grammarNote}</div>`;
-                    }
-                    
-                    messageElement.innerHTML = `
+                    if (message.vocabulary) processedText = highlightVocabulary(message.text, message.vocabulary);
+                    const grammarNoteHTML = message.grammarNote ? `<div class="grammar-note">${message.grammarNote}</div>` : '';
+                    el.innerHTML = `
                         <div class="message-avatar">${shortName}</div>
                         <div class="message-content-wrapper">
-                            <div class="message-info">
-                                <span class="message-sender">${message.sender}</span>
-                                <span class="message-time">${message.time}</span>
-                            </div>
-                            <div class="message-bubble">
-                                <div class="message-text ${textClass}">${processedText}</div>
-                                ${grammarNoteHTML}
-                            </div>
-                        </div>
-                    `;
+                            <div class="message-info"><span class="message-sender">${message.sender}</span><span class="message-time">${message.time}</span></div>
+                            <div class="message-bubble"><div class="message-text ${textClass}">${processedText}</div>${grammarNoteHTML}</div>
+                        </div>`;
                 }
-                
-                chatMessages.appendChild(messageElement);
+                chatMessages.appendChild(el);
             });
-
-            // 滚动到底部
             chatMessages.scrollTop = chatMessages.scrollHeight;
 
-            // 更新在线成员
             const onlineMembers = document.getElementById('onlineMembers');
             onlineMembers.innerHTML = '';
             document.getElementById('onlineCount').textContent = `(${group.onlineMembers.length})`;
-            
             group.onlineMembers.forEach(member => {
                 const shortName = member.substring(0, 2);
-                const memberElement = document.createElement('div');
-                memberElement.className = 'member-item';
-                memberElement.innerHTML = `
-                    <div class="member-avatar online">${shortName}</div>
-                    <span class="member-name">${member}</span>
-                `;
-                onlineMembers.appendChild(memberElement);
+                const mEl = document.createElement('div');
+                mEl.className = 'member-item';
+                mEl.innerHTML = `<div class="member-avatar online">${shortName}</div><span class="member-name">${member}</span>`;
+                onlineMembers.appendChild(mEl);
             });
 
-            // 更新群组列表的激活状态
             updateGroupListActiveState(groupId);
         }
 
-        // 更新群组列表的激活状态
         function updateGroupListActiveState(activeGroupId) {
-            // 桌面端群组列表
             const desktopItems = document.querySelectorAll('.group-items .group-item');
             desktopItems.forEach(item => {
-                const groupId = parseInt(item.getAttribute('data-group-id'));
-                const group = groupData[groupId];
-                
-                if (groupId === activeGroupId) {
+                const gid = parseInt(item.getAttribute('data-group-id'));
+                const group = groupData[gid];
+                if (gid === activeGroupId) {
                     item.classList.add('active');
-                    // 清除未读消息数
                     if (group.unreadCount > 0) {
                         group.unreadCount = 0;
-                        const countElement = item.querySelector('.message-count');
-                        if (countElement) {
-                            countElement.remove();
-                        }
+                        const c = item.querySelector('.message-count'); if (c) c.remove();
                     }
                 } else {
                     item.classList.remove('active');
-                    // 显示未读消息数
                     if (group.unreadCount > 0) {
-                        let countElement = item.querySelector('.message-count');
-                        if (!countElement) {
-                            countElement = document.createElement('span');
-                            countElement.className = 'message-count';
-                            item.appendChild(countElement);
-                        }
-                        countElement.textContent = group.unreadCount;
+                        let c = item.querySelector('.message-count');
+                        if (!c) { c = document.createElement('span'); c.className = 'message-count'; item.appendChild(c); }
+                        c.textContent = group.unreadCount;
                     } else {
-                        const countElement = item.querySelector('.message-count');
-                        if (countElement) {
-                            countElement.remove();
-                        }
+                        const c = item.querySelector('.message-count'); if (c) c.remove();
                     }
                 }
             });
 
-            // 移动端群组列表
             const mobileItems = document.querySelectorAll('.group-list-mobile .group-item');
             mobileItems.forEach(item => {
-                const groupId = parseInt(item.getAttribute('data-group-id'));
-                const group = groupData[groupId];
-                
-                if (groupId === activeGroupId) {
+                const gid = parseInt(item.getAttribute('data-group-id'));
+                const group = groupData[gid];
+                if (gid === activeGroupId) {
                     item.classList.add('active');
-                    // 清除未读消息数
                     if (group.unreadCount > 0) {
                         group.unreadCount = 0;
-                        const countElement = item.querySelector('.message-count');
-                        if (countElement) {
-                            countElement.remove();
-                        }
+                        const c = item.querySelector('.message-count'); if (c) c.remove();
                     }
                 } else {
                     item.classList.remove('active');
-                    // 显示未读消息数
                     if (group.unreadCount > 0) {
-                        let countElement = item.querySelector('.message-count');
-                        if (!countElement) {
-                            countElement = document.createElement('span');
-                            countElement.className = 'message-count';
-                            item.appendChild(countElement);
-                        }
-                        countElement.textContent = group.unreadCount;
+                        let c = item.querySelector('.message-count');
+                        if (!c) { c = document.createElement('span'); c.className = 'message-count'; item.appendChild(c); }
+                        c.textContent = group.unreadCount;
                     }
                 }
             });
         }
 
-        // 设置事件监听器
         function setupEventListeners() {
-            // 群组搜索
-            const groupSearch = document.getElementById('groupSearch');
-            groupSearch.addEventListener('input', function(e) {
-                const searchTerm = e.target.value.toLowerCase();
-                const groupItems = document.querySelectorAll('.group-item');
-                
-                groupItems.forEach(item => {
-                    const groupName = item.querySelector('.group-info h4').textContent.toLowerCase();
-                    const groupDesc = item.querySelector('.group-info p').textContent.toLowerCase();
-                    
-                    if (groupName.includes(searchTerm) || groupDesc.includes(searchTerm)) {
-                        item.style.display = 'flex';
-                    } else {
-                        item.style.display = 'none';
-                    }
+            document.getElementById('groupSearch').addEventListener('input', function(e) {
+                const term = e.target.value.toLowerCase();
+                document.querySelectorAll('.group-item').forEach(item => {
+                    const name = item.querySelector('.group-info h4').textContent.toLowerCase();
+                    const desc = item.querySelector('.group-info p')?.textContent.toLowerCase() || '';
+                    item.style.display = (name.includes(term) || desc.includes(term)) ? 'flex' : 'none';
                 });
             });
 
-            // 创建群组按钮的事件监听器已移至模态框实现部分
+            document.getElementById('createGroupBtn').addEventListener('click', function() {
+                const groupName = prompt('请输入新群组名称：');
+                if (groupName) alert(`已创建群组：${groupName}\n功能开发中...`);
+            });
 
-            // 查看成员按钮
             window.showGroupMembers = function() {
                 const group = groupData[currentGroupId];
-                const memberList = group.allMembers.join(', ');
-                alert(`群组 ${group.name} 的所有成员：\n${memberList}`);
+                alert(`群组 ${group.name} 的所有成员：\n${group.allMembers.join(', ')}`);
             };
 
-            // 打开学习资源
-            window.openResource = function(resourceType) {
-                const resourceNames = {
-                    'speaking': '口语练习素材',
-                    'listening': '听力资源库',
-                    'video': '视频教程'
-                };
-                alert(`正在打开 ${resourceNames[resourceType]}...`);
+            window.openResource = function(type) {
+                const names = { speaking: '口语练习素材', listening: '听力资源库', video: '视频教程' };
+                alert(`正在打开 ${names[type]}...`);
             };
 
-            // 群内搜索
             window.searchInGroup = function() {
-                const searchTerm = prompt('在群聊中搜索：');
-                if (searchTerm) {
-                    alert(`正在搜索："${searchTerm}"\n功能开发中...`);
-                }
+                const term = prompt('在群聊中搜索：');
+                if (term) alert(`正在搜索："${term}"\n功能开发中...`);
             };
 
-            // 查看群文件
-            window.showGroupFiles = function() {
-                alert('群文件功能开发中...');
-            }
+            window.showGroupFiles = function() { alert('群文件功能开发中...'); };
+        }
 
-            // 删除当前群组
-            window.deleteCurrentGroup = function() {
-                if (confirm('确定要删除当前群组吗？此操作不可恢复！')) {
-                    // 从groupData中删除当前群组
-                    delete groupData[currentGroupId];
-
-                    // 从桌面端群组列表中移除
-                    const desktopItems = document.querySelectorAll('.group-items .group-item');
-                    desktopItems.forEach(item => {
-                        const groupId = parseInt(item.getAttribute('data-group-id'));
-                        if (groupId === currentGroupId) {
-                            item.remove();
-                        }
-                    });
-
-                    // 从移动端群组列表中移除
-                    const mobileItems = document.querySelectorAll('.group-list-mobile .group-item');
-                    mobileItems.forEach(item => {
-                        const groupId = parseInt(item.getAttribute('data-group-id'));
-                        if (groupId === currentGroupId) {
-                            item.remove();
-                        }
-                    });
-
-                    // 选择第一个可用的群组作为当前群组
-                    const remainingGroupIds = Object.keys(groupData).map(id => parseInt(id));
-                    if (remainingGroupIds.length > 0) {
-                        // 如果还有其他群组，切换到第一个
-                        switchGroup(remainingGroupIds[0]);
-                    } else {
-                        // 如果没有群组了，显示提示
-                        alert('所有群组已删除！');
-                        // 这里可以添加无群组时的默认显示内容
-                     }
-                 }
-             }
-         }
-
-        // 复制邀请码
         function copyInviteCode() {
-            const inviteCode = document.querySelector('.invite-code').textContent;
-            navigator.clipboard.writeText(inviteCode).then(() => {
-                const originalText = document.querySelector('.invite-code').textContent;
-                document.querySelector('.invite-code').textContent = 'Copied! (已复制)';
-                setTimeout(() => {
-                    document.querySelector('.invite-code').textContent = originalText;
-                }, 2000);
+            const el = document.querySelector('.invite-code');
+            const code = el.textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                const orig = el.textContent;
+                el.textContent = 'Copied! (已复制)';
+                setTimeout(() => { el.textContent = orig; }, 2000);
             });
         }
 
-        // 移动端切换按钮功能
         document.addEventListener('DOMContentLoaded', function() {
-            // 初始化页面
             initializePage();
-            
+
             const mobileToggle = document.getElementById('mobileToggle');
             const channelSidebar = document.querySelector('.channel-sidebar');
             const groupInfoSidebar = document.querySelector('.group-info-sidebar');
@@ -1672,7 +788,6 @@
 
             mobileToggle.addEventListener('click', function() {
                 toggleState = (toggleState + 1) % 3;
-
                 if (toggleState === 0) {
                     channelSidebar.style.display = 'none';
                     groupInfoSidebar.style.display = 'none';
@@ -1690,249 +805,149 @@
                     mobileToggle.innerHTML = '<i class="fas fa-user-friends"></i>';
                 }
             });
-
-            // 播放器功能
-            const audioPlayer = document.getElementById('audioPlayer');
-            const playBtn = document.querySelector('.play-btn');
-            const speedBtn = document.querySelector('.speed-btn');
-            const speedMenu = document.querySelector('.speed-menu');
-            const speedOptions = document.querySelectorAll('.speed-option');
-            const currentSpeed = document.getElementById('currentSpeed');
-            const playlistBtn = document.querySelector('.playlist-btn');
-            const playlistPanel = document.querySelector('.playlist-panel');
-            const playlistItems = document.querySelectorAll('.playlist-item');
-            const progressFill = document.querySelector('.progress-fill');
-            const currentTime = document.querySelector('.time.current');
-            const totalTime = document.querySelector('.time.total');
-
-            playBtn.addEventListener('click', () => {
-                if (audioPlayer.paused) {
-                    audioPlayer.play();
-                    playBtn.innerHTML = '<i class="fas fa-pause-circle"></i>';
-                } else {
-                    audioPlayer.pause();
-                    playBtn.innerHTML = '<i class="fas fa-play-circle"></i>';
-                }
-            });
-
-            speedBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                speedMenu.classList.toggle('active');
-            });
-            speedOptions.forEach(option => {
-                option.addEventListener('click', () => {
-                    const rate = parseFloat(option.getAttribute('data-rate'));
-                    audioPlayer.playbackRate = rate;
-                    currentSpeed.textContent = `${rate}x`;
-                    speedOptions.forEach(opt => opt.classList.remove('active'));
-                    option.classList.add('active');
-                    speedMenu.classList.remove('active');
-                });
-            });
-
-            playlistBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                playlistPanel.classList.toggle('active');
-            });
-            playlistItems.forEach(item => {
-                item.addEventListener('click', () => {
-                    playlistItems.forEach(i => i.classList.remove('active'));
-                    item.classList.add('active');
-                    console.log(`Now playing: ${item.textContent} - English learning audio`);
-                });
-            });
-
-            audioPlayer.addEventListener('timeupdate', () => {
-                const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
-                progressFill.style.width = `${progress}%`;
-                const minutes = Math.floor(audioPlayer.currentTime / 60);
-                const seconds = Math.floor(audioPlayer.currentTime % 60);
-                currentTime.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-            });
-
-            document.addEventListener('click', () => {
-                speedMenu.classList.remove('active');
-                playlistPanel.classList.remove('active');
-            });
-
-            // 消息发送功能
-            const messageInput = document.getElementById('messageInput');
-            const sendBtn = document.getElementById('sendBtn');
-            
-            sendBtn.addEventListener('click', sendMessage);
-            messageInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    sendMessage();
-                }
-            });
-
-            function sendMessage() {
-                const text = messageInput.value.trim();
-                if (text) {
-                    const newMessage = {
-                        sender: "我",
-                        avatar: "ME",
-                        text: text,
-                        time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }),
-                        isOwn: true,
-                        englishText: /[a-zA-Z]/.test(text),
-                        bilingual: /[\u4e00-\u9fa5]/.test(text) && /[a-zA-Z]/.test(text)
-                    };
-
-                    if (groupData[currentGroupId]) {
-                        groupData[currentGroupId].messages.push(newMessage);
-                        loadGroupData(currentGroupId);
-                        messageInput.value = '';
-                        
-                        // 模拟自动回复
-                        setTimeout(() => {
-                            const autoReplies = [
-                                { sender: "AI Tutor", avatar: "AI", text: "Great effort! Remember to use complete sentences.", englishText: true },
-                                { sender: "Language Partner", avatar: "LP", text: "Good job! I understood your message clearly.", englishText: true },
-                                { sender: "Grammar Checker", avatar: "GC", text: "Nice try! Pay attention to verb tenses.", englishText: true }
-                            ];
-                            const randomReply = autoReplies[Math.floor(Math.random() * autoReplies.length)];
-                            randomReply.time = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
-                            randomReply.isOwn = false;
-                            
-                            groupData[currentGroupId].messages.push(randomReply);
-                            loadGroupData(currentGroupId);
-                        }, 1000);
-                    }
-                }
-            }
-
-            // 处理浏览器后退/前进按钮
-            window.addEventListener('popstate', function(event) {
-                if (event.state && event.state.groupId) {
-                    currentGroupId = event.state.groupId;
-                    loadGroupData(currentGroupId);
-                }
-            });
         });
+    </script>
 
-        // 创建群组模态框功能
-        const createGroupModal = document.createElement('div');
-        createGroupModal.className = 'modal-overlay';
-        createGroupModal.style.display = 'none';
-        createGroupModal.innerHTML = `
-            <div class="modal">
-                <div class="modal-header">
-                    <h2 class="modal-title">创建学习群组</h2>
-                    <button class="close-btn">&times;</button>
-                </div>
-                <div class="modal-content">
-                    <div class="form-group">
-                        <label for="groupName">群组名称</label>
-                        <input type="text" id="groupName" placeholder="请输入群组名称" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="groupDescription">群组描述</label>
-                        <textarea id="groupDescription" placeholder="请输入群组描述（可选）"></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn-cancel">取消</button>
-                    <button class="btn-create">创建</button>
-                </div>
-            </div>
-        `;
-        document.body.appendChild(createGroupModal);
+    <!-- PlayBar 业务脚本（统一播放器逻辑） -->
+    <script>
+    ;(function () {
+      const playlist = [
+        { title: "Kalimba (Test Audio)", artist: "Ninja Tuna", cover: "", src: "https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3" },
+        { title: "Sample MP3 (700KB)", artist: "Sample Source", cover: "", src: "https://sample.cat/downloads/file_example_MP3_700KB.mp3" }
+      ];
+      let currentIndex = 0, isPlaying = false, isDraggingProgress = false, isDraggingVolume = false, playMode = 'list';
 
-        // 显示模态框
-        document.getElementById('createGroupBtn').addEventListener('click', function() {
-            createGroupModal.style.display = 'flex';
-        });
+      const audio = document.getElementById('pv-audio');
+      const playBtn = document.getElementById('pv-play');
+      const playIcon = document.getElementById('play-icon');
+      const prevBtn = document.getElementById('pv-prev');
+      const nextBtn = document.getElementById('pv-next');
+      const titleEl = document.getElementById('pv-title');
+      const artistEl = document.getElementById('pv-artist');
+      const coverEl = document.getElementById('pv-cover');
+      const progressEl = document.getElementById('pv-progress');
+      const progressFill = document.getElementById('pv-progress-fill');
+      const knobEl = document.getElementById('pv-knob');
+      const timeCurEl = document.getElementById('pv-time-cur');
+      const timeTotalEl = document.getElementById('pv-time-total');
+      const volEl = document.getElementById('pv-volume');
+      const volFill = document.getElementById('pv-volume-fill');
+      const listBtn = document.getElementById('pv-list-btn');
+      const playlistPanel = document.getElementById('playlist-panel');
+      const rateBtn = document.getElementById('pv-rate-btn');
+      const rateText = document.getElementById('rate-text');
+      const muteBtn = document.getElementById('pv-mute');
+      const volIcon = document.getElementById('vol-icon');
+      const modeBtn = document.getElementById('pv-mode-btn');
+      const modePop = document.getElementById('mode-pop');
+      const ratePop = document.getElementById('rate-pop');
 
-        // 关闭模态框
-        createGroupModal.querySelector('.close-btn').addEventListener('click', function() {
-            createGroupModal.style.display = 'none';
-        });
+      function loadTrack(index) {
+        const t = playlist[index];
+        titleEl.innerText = t.title; artistEl.innerText = t.artist;
+        coverEl.style.backgroundImage = t.cover ? `url('${t.cover}')` : '';
+        audio.src = t.src;
+        document.querySelectorAll('#pv-player .playlist-item').forEach((item, i) => item.classList.toggle('active', i === index));
+      }
+      function playTrack() { audio.play().then(() => { isPlaying = true; updatePlayIcon(); }).catch(err => console.error("Play failed:", err)); }
+      function pauseTrack() { audio.pause(); isPlaying = false; updatePlayIcon(); }
+      function togglePlay() { isPlaying ? pauseTrack() : playTrack(); }
+      function updatePlayIcon() { playIcon.setAttribute('viewBox','0 0 24 24'); playIcon.innerHTML = isPlaying ? '<path d="M6 5h4v14H6V5zm8 0h4v14h-4V5z"/>' : '<path d="M8 5v14l11-7z"/>'; }
+      function formatTime(s) { if (!s || isNaN(s)) return "00:00"; const m = Math.floor(s/60), ss = Math.floor(s%60); return `${m<10?'0':''}${m}:${ss<10?'0':''}${ss}`; }
+      function stopWrap(handler) { return function(e){ e.stopPropagation(); handler(e); }; }
 
-        // 取消按钮
-        createGroupModal.querySelector('.btn-cancel').addEventListener('click', function() {
-            createGroupModal.style.display = 'none';
-        });
+      playBtn.addEventListener('click', stopWrap(togglePlay));
+      prevBtn.addEventListener('click', stopWrap(() => prevByMode()));
+      nextBtn.addEventListener('click', stopWrap(() => nextByMode()));
+      muteBtn.addEventListener('click', stopWrap(() => {
+        audio.muted = !audio.muted;
+        if (audio.muted || audio.volume === 0) volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 3l7 7-1.4 1.4L16 7.8V16h-2V8.6L9.4 4 11 2.4 14 3z"/>';
+        else if (audio.volume < 0.5) volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 9v6c1.7-0.7 3-2.4 3-4.5S15.7 9.7 14 9z"/>';
+        else volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 7v10c3-1 5-3.6 5-7s-2-6-5-7z"/>';
+      }));
 
-        // 点击模态框外部关闭
-        createGroupModal.addEventListener('click', function(e) {
-            if (e.target === createGroupModal) {
-                createGroupModal.style.display = 'none';
-            }
-        });
+      /* 循环模式弹层 */
+      modeBtn.addEventListener('click', stopWrap(() => { ratePop.classList.remove('show'); modePop.classList.toggle('show'); }));
+      modePop.addEventListener('click', stopWrap((e) => {
+        const item = e.target.closest('.mode-item'); if (!item) return;
+        playMode = item.getAttribute('data-mode');
+        document.querySelectorAll('#pv-player #mode-pop .mode-item').forEach(el => el.classList.toggle('active', el === item));
+        modePop.classList.remove('show');
+      }));
 
-        // 创建群组
-        createGroupModal.querySelector('.btn-create').addEventListener('click', function() {
-            const groupName = createGroupModal.querySelector('#groupName').value;
-            const groupDescription = createGroupModal.querySelector('#groupDescription').value;
+      /* 倍速弹层 */
+      rateBtn.addEventListener('click', stopWrap(() => { modePop.classList.remove('show'); ratePop.classList.toggle('show'); }));
+      ratePop.addEventListener('click', stopWrap((e) => {
+        const item = e.target.closest('.rate-item'); if (!item) return;
+        const r = parseFloat(item.getAttribute('data-rate'));
+        audio.playbackRate = r; rateText.innerText = r.toFixed(1) + 'x';
+        document.querySelectorAll('#pv-player #rate-pop .rate-item').forEach(el => el.classList.toggle('active', el === item));
+        ratePop.classList.remove('show');
+      }));
 
-            if (groupName) {
-                // 模拟创建群组
-                const newGroupId = 'group_' + Date.now();
+      document.addEventListener('click', (e) => {
+        if (!modeBtn.contains(e.target) && !modePop.contains(e.target)) modePop.classList.remove('show');
+        if (!rateBtn.contains(e.target) && !ratePop.contains(e.target)) ratePop.classList.remove('show');
+      });
 
-                // 更新群组数据
-                groupData[newGroupId] = {
-                    name: groupName,
-                    description: groupDescription,
-                    memberCount: 3,
-                    messages: [
-                        {
-                            sender: "系统",
-                            text: `欢迎加入 ${groupName} 群组！🌟`,
-                            time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
-                            isSystem: true
-                        }
-                    ],
-                    onlineMembers: ['您', '其他成员1', '其他成员2'],
-                    allMembers: ['您', '其他成员1', '其他成员2'],
-                    unreadCount: 1,
-                    todayTopic: "暂无话题"
-                };
+      audio.addEventListener('timeupdate', () => {
+        if (isDraggingProgress) return;
+        const percent = (audio.currentTime / audio.duration) * 100;
+        progressFill.style.width = `${percent}%`; knobEl.style.left = `${percent}%`;
+        timeCurEl.innerText = formatTime(audio.currentTime);
+      });
+      audio.addEventListener('loadedmetadata', () => { timeTotalEl.innerText = formatTime(audio.duration); });
+      audio.addEventListener('ended', () => { if (playMode === 'single') { audio.currentTime = 0; playTrack(); } else { nextByMode(); } });
 
-                // 更新群组列表UI
-                // 生成随机头像ID（1-4）
-                const avatarId = Math.floor(Math.random() * 4) + 1;
-                const avatarSrc = `images/english-group${avatarId}.png`;
-                
-                // 创建群组项HTML
-                const groupItemHTML = `
-                    <img src="${avatarSrc}" alt="群组头像">
-                    <div class="group-info">
-                        <h4>${groupName}</h4>
-                        <p>${groupDescription || '暂无描述'}</p>
-                    </div>
-                `;
-                
-                // 添加到移动端群组列表
-                const mobileGroupList = document.querySelector('.group-list-mobile');
-                if (mobileGroupList) {
-                    const newMobileGroupItem = document.createElement('div');
-                    newMobileGroupItem.className = 'group-item';
-                    newMobileGroupItem.setAttribute('onclick', `switchGroup('${newGroupId}')`);
-                    newMobileGroupItem.innerHTML = groupItemHTML;
-                    mobileGroupList.appendChild(newMobileGroupItem);
-                }
-                
-                // 添加到桌面端群组列表
-                const desktopGroupItems = document.querySelector('.group-items');
-                if (desktopGroupItems) {
-                    const newDesktopGroupItem = document.createElement('div');
-                    newDesktopGroupItem.className = 'group-item';
-                    newDesktopGroupItem.setAttribute('onclick', `switchGroup('${newGroupId}')`);
-                    newDesktopGroupItem.innerHTML = groupItemHTML;
-                    desktopGroupItems.appendChild(newDesktopGroupItem);
-                }
+      function prevByMode() {
+        if (playMode === 'shuffle') currentIndex = Math.floor(Math.random() * playlist.length);
+        else currentIndex = (currentIndex - 1 + playlist.length) % playlist.length;
+        loadTrack(currentIndex); playTrack();
+      }
+      function nextByMode() {
+        if (playMode === 'shuffle') currentIndex = Math.floor(Math.random() * playlist.length);
+        else currentIndex = (currentIndex + 1) % playlist.length;
+        loadTrack(currentIndex); playTrack();
+      }
 
-                // 关闭模态框
-                createGroupModal.style.display = 'none';
+      function handleProgressInput(clientX) {
+        const rect = progressEl.getBoundingClientRect();
+        let x = clientX - rect.left; x = Math.max(0, Math.min(x, rect.width));
+        const pct = (x / rect.width) * 100; progressFill.style.width = `${pct}%`; knobEl.style.left = `${pct}%`;
+        return (x / rect.width) * audio.duration;
+      }
+      progressEl.addEventListener('mousedown', stopWrap((e) => { isDraggingProgress = true; progressEl.classList.add('dragging'); const t = handleProgressInput(e.clientX); timeCurEl.innerText = formatTime(t); }));
+      document.addEventListener('mousemove', (e) => { if (isDraggingProgress) { e.preventDefault(); const t = handleProgressInput(e.clientX); timeCurEl.innerText = formatTime(t); } });
+      document.addEventListener('mouseup', (e) => { if (isDraggingProgress) { isDraggingProgress = false; progressEl.classList.remove('dragging'); const t = handleProgressInput(e.clientX); if (isFinite(t)) audio.currentTime = t; } });
 
-                
+      function getTouchX(e){ return (e.touches&&e.touches[0]) ? e.touches[0].clientX : (e.changedTouches&&e.changedTouches[0] ? e.changedTouches[0].clientX : 0); }
+      progressEl.addEventListener('touchstart', (e) => { e.stopPropagation(); e.preventDefault(); isDraggingProgress = true; const t = handleProgressInput(getTouchX(e)); timeCurEl.innerText = formatTime(t); }, { passive:false });
+      document.addEventListener('touchmove', (e) => { if (isDraggingProgress) { e.preventDefault(); const t = handleProgressInput(getTouchX(e)); timeCurEl.innerText = formatTime(t); } }, { passive:false });
+      document.addEventListener('touchend', (e) => { if (isDraggingProgress) { isDraggingProgress = false; const t = handleProgressInput(getTouchX(e)); if (isFinite(t)) audio.currentTime = t; } }, { passive:false });
 
-            } else {
-                alert('请输入群组名称');
-            }
-        });
+      function handleVolumeInput(clientX) {
+        const rect = volEl.getBoundingClientRect();
+        let x = clientX - rect.left; x = Math.max(0, Math.min(x, rect.width));
+        const p = x / rect.width; volFill.style.width = `${p * 100}%`; audio.volume = p;
+        if (p === 0 || audio.muted) volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 3l7 7-1.4 1.4L16 7.8V16h-2V8.6L9.4 4 11 2.4 14 3z"/>';
+        else if (p < 0.5) volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 9v6c1.7-0.7 3-2.4 3-4.5S15.7 9.7 14 9z"/>';
+        else volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 7v10c3-1 5-3.6 5-7s-2-6-5-7z"/>';
+      }
+      volEl.addEventListener('mousedown', stopWrap((e) => { isDraggingVolume = true; handleVolumeInput(e.clientX); }));
+      document.addEventListener('mousemove', (e) => { if (isDraggingVolume) { e.preventDefault(); handleVolumeInput(e.clientX); } });
+      document.addEventListener('mouseup', () => { isDraggingVolume = false; });
+      volEl.addEventListener('touchstart', (e) => { e.stopPropagation(); e.preventDefault(); isDraggingVolume = true; handleVolumeInput(getTouchX(e)); }, { passive:false });
+      document.addEventListener('touchmove', (e) => { if (isDraggingVolume) { e.preventDefault(); handleVolumeInput(getTouchX(e)); } }, { passive:false });
+      document.addEventListener('touchend', () => { isDraggingVolume = false; }, { passive:false });
+
+      listBtn.addEventListener('click', stopWrap(() => {
+        playlistPanel.style.display = playlistPanel.style.display === 'block' ? 'none' : 'block';
+      }));
+
+      window.playIndex = function(index){ currentIndex = index; loadTrack(currentIndex); playTrack(); }
+
+      loadTrack(currentIndex);
+    })();
     </script>
 </body>
 </html>

@@ -10,7 +10,7 @@
     <script src="../js/search.js"></script>
 </head>
 <body>
-    <!-- 音频元素 -->
+    <!-- 音频元素（保留，以防其他页面或全局脚本需要） -->
     <audio id="audioPlayer" controls style="display: none;">
         <source src="" type="audio/mpeg">
         您的浏览器不支持音频播放
@@ -211,7 +211,8 @@
         </div>
     </main>
 
-    <!-- 底部播放栏（与收藏页面一致） -->
+    <!-- 底部播放栏（与收藏页面一致） — 整段注释掉 -->
+    <!--
     <footer class="player-bar">
         <div class="player-left">
             <div class="channel-cover">直播</div>
@@ -264,8 +265,10 @@
             </div>
         </div>
     </footer>
+    -->
 
-    <!-- 功能JavaScript -->
+    <!-- 功能JavaScript（聊天保留；播放栏相关 JS 整段注释掉） -->
+    <!--
     <script>
         const audioPlayer = document.getElementById('audioPlayer');
         const playBtn = document.querySelector('.play-btn');
@@ -333,8 +336,11 @@
             speedMenu.classList.remove('active');
             playlistPanel.classList.remove('active');
         });
+    </script>
+    -->
 
-        // 聊天功能
+    <!-- 聊天功能（保留） -->
+    <script>
         const chatInput = document.querySelector('.chat-input');
         const chatSendBtn = document.querySelector('.chat-input-area .btn-orange');
         const chatMessages = document.querySelector('.chat-messages');

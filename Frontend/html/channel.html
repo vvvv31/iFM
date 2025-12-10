@@ -177,8 +177,222 @@
         </div>
     </footer>
 
+    <!-- 创建群组模态框样式 -->
+    <style>
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        .modal {
+            background-color: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            overflow: hidden;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            background-color: #FFDAB9;
+            color: #333;
+        }
+        .modal-title {
+            margin: 0;
+            font-size: 20px;
+        }
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #333;
+        }
+        .modal-content {
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            padding: 16px;
+            background-color: #f5f5f5;
+        }
+        .btn-cancel,
+        .btn-create {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn-cancel {
+            background-color: #ccc;
+            color: #333;
+        }
+        .btn-create {
+            background-color: #FF6B35;
+            color: white;
+        }
+        .btn-create:hover {
+            background-color: #E55A2A;
+        }
+        .create-group-btn {
+            background-color: #FF6B35;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-bottom: 16px;
+        }
+        .create-group-btn:hover {
+            background-color: #E55A2A;
+        }
+    </style>
+
     <!-- 播放控制脚本 -->
     <script>
+        // 处理URL参数，自动显示创建群组模态框
+        window.addEventListener('DOMContentLoaded', function() {
+            // 解析URL参数
+            const urlParams = new URLSearchParams(window.location.search);
+            const createGroup = urlParams.get('createGroup');
+            
+            // 创建群组模态框功能
+            const createGroupModal = document.createElement('div');
+            createGroupModal.className = 'modal-overlay';
+            createGroupModal.style.display = 'none';
+            createGroupModal.innerHTML = `
+                <div class="modal">
+                    <div class="modal-header">
+                        <h2 class="modal-title">创建学习群组</h2>
+                        <button class="close-btn">&times;</button>
+                    </div>
+                    <div class="modal-content">
+                        <div class="form-group">
+                            <label for="groupName">群组名称</label>
+                            <input type="text" id="groupName" placeholder="请输入群组名称" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="groupDescription">群组描述</label>
+                            <textarea id="groupDescription" placeholder="请输入群组描述（可选）"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn-cancel">取消</button>
+                        <button class="btn-create">创建</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(createGroupModal);
+
+            // 显示模态框（如果URL参数包含createGroup=true）
+            if (createGroup === 'true') {
+                setTimeout(() => {
+                    createGroupModal.style.display = 'flex';
+                }, 100); // 延迟一小段时间确保页面加载完成
+            }
+
+            // 页面上的创建群组按钮点击事件
+            const createGroupBtn = document.querySelector('.create-group-btn');
+            if (createGroupBtn) {
+                createGroupBtn.addEventListener('click', function() {
+                    createGroupModal.style.display = 'flex';
+                });
+            }
+
+            // 关闭模态框
+            createGroupModal.querySelector('.close-btn').addEventListener('click', function() {
+                createGroupModal.style.display = 'none';
+            });
+
+            // 取消按钮
+            createGroupModal.querySelector('.btn-cancel').addEventListener('click', function() {
+                createGroupModal.style.display = 'none';
+            });
+
+            // 点击模态框外部关闭
+            createGroupModal.addEventListener('click', function(e) {
+                if (e.target === createGroupModal) {
+                    createGroupModal.style.display = 'none';
+                }
+            });
+
+            // 创建群组
+            createGroupModal.querySelector('.btn-create').addEventListener('click', function() {
+                const groupName = createGroupModal.querySelector('#groupName').value;
+                const groupDescription = createGroupModal.querySelector('#groupDescription').value;
+
+                if (groupName) {
+                    // 模拟创建群组
+                    // 生成随机邀请码
+                    const inviteCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+                    
+                    // 创建新的群组项HTML
+                    const newGroupItem = document.createElement('div');
+                    newGroupItem.className = 'group-item';
+                    newGroupItem.innerHTML = `
+                        <div class="group-info">
+                            <h3>${groupName}</h3>
+                            <p>${groupDescription || '暂无描述'}</p>
+                        </div>
+                        <div class="group-buttons">
+                            <span class="members-count">已加入1人</span>
+                            <button class="join-btn" onclick="window.location.href='channel2.html'">加入</button>
+                            <span class="invite-code">邀请码：${inviteCode}</span>
+                        </div>
+                    `;
+                    
+                    // 获取群组列表容器并添加新群组
+                    const groupsGrid = document.querySelector('.groups-grid');
+                    if (groupsGrid) {
+                        groupsGrid.appendChild(newGroupItem);
+                    }
+                    
+                    // 关闭模态框
+                    createGroupModal.style.display = 'none';
+                    
+                    // 可以在这里添加跳转或刷新逻辑
+                    // window.location.href = 'group-management.html';
+                } else {
+                    alert('请输入群组名称');
+                }
+            });
+        });
+
+        // 音频播放控制代码
         const audioPlayer = document.getElementById('audioPlayer');
         const playBtn = document.querySelector('.play-btn');
         const speedBtn = document.querySelector('.speed-btn');

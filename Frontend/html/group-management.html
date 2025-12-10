@@ -115,7 +115,7 @@
             <div class="content-title">输入邀请码</div>
             <div class="invite-form">
                 <input type="text" placeholder="请输入6位邀请码" class="invite-input">
-                <button class="create-btn">创建群组</button>
+                <button class="create-btn">加入群组</button>
             </div>
         </section>
 
@@ -123,7 +123,7 @@
         <section class="content-block">
             <div class="section-header">
                 <h3>我的群组</h3>
-                <button class="create-btn">创建新群组</button>
+                <button class="create-btn" onclick="window.location.href='channel.html?createGroup=true'">创建新群组</button>
             </div>
             
             <div class="groups-grid">
@@ -520,14 +520,14 @@
         });
         
         // 创建按钮功能
-        document.querySelectorAll('.create-btn').forEach(btn => {
-            if (!btn.closest('.invite-form')) {
-                btn.addEventListener('click', function() {
-                    const sectionTitle = this.closest('.section-header')?.querySelector('h3')?.textContent || '新项目';
-                    alert(`开始创建${sectionTitle}`);
-                });
-            }
-        });
+        // document.querySelectorAll('.create-btn').forEach(btn => {
+        //     if (!btn.closest('.invite-form')) {
+        //         btn.addEventListener('click', function() {
+        //             const sectionTitle = this.closest('.section-header')?.querySelector('h3')?.textContent || '新项目';
+        //             alert(`开始创建${sectionTitle}`);
+        //         });
+        //     }
+        //});
     </script>
 </body>
 </html>

@@ -93,63 +93,77 @@
         </div>
     </header>
 
-    <!-- 主要内容区域 - 保持原有布局 -->
+    <!-- 主要内容区域：分类侧栏 + 群组列表 / 动态 Feed -->
     <main class="main channel-main">
-        <div class="container channel-container">
-            <!-- 左侧搜索和群组搜索 -->
-            <aside class="channel-sidebar">
-                <!-- 搜索框 -->
-                <div class="channel-search">
-                    <div class="search-box">
-                        <input type="text" placeholder="输入邀请码" class="invite-search">
-                        <button class="close-btn">×</button>
-                    </div>
-                </div>
+      <div class="container channel-container">
+        <!-- 左侧分类与快捷操作 -->
+        <aside class="channel-sidebar">
+          <div class="channel-search">
+            <div class="search-box">
+              <input type="text" placeholder="搜索频道/群组" id="channelSearch" class="invite-search">
+              <button class="close-btn" id="clearSearch">×</button>
+            </div>
+          </div>
 
-                <!-- 创建群组按钮 -->
-                <button class="create-group-btn">创建群组</button>
-            </aside>
+          <div class="category-list" id="categoryList">
+            <button class="category-item active" data-category="feed">动态</button>
+            <button class="category-item" data-category="groups">群组</button>
+            <button class="category-item" data-category="讨论">讨论</button>
+            <button class="category-item" data-category="学习">学习</button>
+            <button class="category-item" data-category="其他">其他</button>
+          </div>
 
-            <!-- 右侧群组列表 -->
-            <section class="groups-section">
-                <div class="groups-grid">
-                    <!-- 群组项 -->
-                    <div class="group-item">
-                        <div class="group-info">
-                            <h3>群组名字</h3>
-                            <p>简介</p>
-                        </div>
-                        <div class="group-buttons">
-                            <span class="members-count">已加入n人</span>
-                            <button class="join-btn" onclick="window.location.href='channel2.html'">加入</button>
-                            <span class="invite-code">邀请码：xxxx</span>
-                        </div>
-                    </div>
-                    <div class="group-item">
-                        <div class="group-info">
-                            <h3>群组名字</h3>
-                            <p>简介</p>
-                        </div>
-                        <div class="group-buttons">
-                            <span class="members-count">已加入n人</span>
-                            <button class="join-btn" onclick="window.location.href='channel2.html'">加入</button>
-                            <span class="invite-code">邀请码：xxxx</span>
-                        </div>
-                    </div>
-                    <div class="group-item">
-                        <div class="group-info">
-                            <h3>群组名字</h3>
-                            <p>简介</p>
-                        </div>
-                        <div class="group-buttons">
-                            <span class="members-count">已加入n人</span>
-                            <button class="join-btn" onclick="window.location.href='channel2.html'">加入</button>
-                            <span class="invite-code">邀请码：xxxx</span>
-                        </div>
-                    </div>
+          <button class="create-group-btn">创建群组</button>
+        </aside>
+
+        <!-- 右侧主视图区（工具栏 + 列表或 Feed） -->
+        <section class="groups-section">
+          <div class="channel-controls">
+            <div class="left-controls">
+              <div class="view-toggle" role="tablist" aria-label="视图切换">
+                <button class="view-btn" data-mode="card" title="卡片视图">▦</button>
+                <button class="view-btn" data-mode="list" title="列表视图">≡</button>
+                <button class="view-btn" data-mode="compact" title="紧凑视图">☰</button>
+              </div>
+              <div class="filter-chips" id="filterChips">
+                <button class="chip" data-filter="讨论">讨论</button>
+                <button class="chip" data-filter="学习">学习</button>
+                <button class="chip" data-filter="其他">其他</button>
+              </div>
+            </div>
+            <div class="right-controls">
+              <label for="sortSelect">排序：</label>
+              <select id="sortSelect">
+                <option value="active">活跃度</option>
+                <option value="new">最新</option>
+                <option value="members">成员数</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- 群组列表面板 -->
+          <div id="groupsPanel" class="panel">
+            <div id="groupsGrid" class="groups-grid"></div>
+          </div>
+
+          <!-- Feed 动态面板 -->
+          <div id="feedPanel" class="panel" style="display:none;">
+            <section id="feedSection" class="feed-section">
+              <div class="composer">
+                <textarea id="composerInput" placeholder="说点什么..." rows="3"></textarea>
+                <div class="composer-actions">
+                  <input type="file" id="composerFiles" accept="image/*" multiple style="display:none;">
+                  <button id="attachBtn">图片</button>
+                  <button id="postBtn" class="btn-orange">发布</button>
                 </div>
+                <div id="previewArea" class="preview-area"></div>
+              </div>
+
+              <div id="postsList" class="posts-list"></div>
             </section>
-        </div>
+          </div>
+        </section>
+      </div>
     </main>
 
     <!-- 替换底部播放栏为 PlayBar.html 版本 -->
@@ -672,5 +686,110 @@
       loadTrack(currentIndex);
     })();
     </script>
+
+      <!-- 社区页交互脚本（Feed、视图切换、筛选） -->
+      <script>
+      (function(){
+        // 简单 mock 数据，可替换为后端 API 请求
+        const sampleGroups = [
+          { id:1, name:'英语学习群', desc:'口语练习与资源分享', members:128, category:'学习' },
+          { id:2, name:'早起打卡组', desc:'每天早起一起学习', members:64, category:'其他' },
+          { id:3, name:'深度讨论组', desc:'长篇材料讨论', members:32, category:'讨论' }
+        ];
+
+        const samplePosts = [
+          { id:1, author:'小明', text:'刚完成一节发音练习，收获颇丰！', likes:4, time:'1小时前', tags:['学习'] },
+          { id:2, author:'小红', text:'周末组织线上分享，欢迎加入', likes:8, time:'3小时前', tags:['讨论'] }
+        ];
+
+        const groupsGrid = document.getElementById('groupsGrid');
+        const postsList = document.getElementById('postsList');
+        const feedPanel = document.getElementById('feedPanel');
+        const groupsPanel = document.getElementById('groupsPanel');
+        const categoryList = document.getElementById('categoryList');
+        const viewBtns = document.querySelectorAll('.view-btn');
+        const sortSelect = document.getElementById('sortSelect');
+        const filterChips = document.querySelectorAll('.chip');
+        const composerInput = document.getElementById('composerInput');
+        const attachBtn = document.getElementById('attachBtn');
+        const composerFiles = document.getElementById('composerFiles');
+        const previewArea = document.getElementById('previewArea');
+
+        function renderGroups(list){
+          groupsGrid.innerHTML = '';
+          list.forEach(g=>{
+            const el = document.createElement('div'); el.className='group-item';
+            el.innerHTML = `<div class="group-info"><h3>${g.name}</h3><p>${g.desc}</p></div><div class="group-buttons"><span class="members-count">已加入${g.members}人</span><button class="join-btn">加入</button><span class="invite-code">邀请码：${Math.random().toString(36).slice(2,8).toUpperCase()}</span></div>`;
+            groupsGrid.appendChild(el);
+          });
+        }
+
+        function renderPosts(list){
+          postsList.innerHTML = '';
+          list.forEach(p=>{
+            const node = document.createElement('div'); node.className='post-card';
+            node.innerHTML = `<div class="post-meta"><span>${p.author}</span><span>${p.time}</span></div><div class="post-body">${p.text}</div><div class="post-actions"><button class="like-btn">❤ ${p.likes}</button></div>`;
+            postsList.appendChild(node);
+          });
+        }
+
+        // Initial render
+        renderGroups(sampleGroups);
+        renderPosts(samplePosts);
+
+        // Category click
+        categoryList.addEventListener('click', (e)=>{
+          const btn = e.target.closest('.category-item'); if(!btn) return;
+          document.querySelectorAll('.category-item').forEach(b=>b.classList.remove('active'));
+          btn.classList.add('active');
+          const cat = btn.getAttribute('data-category');
+          if(cat === 'feed') { feedPanel.style.display='block'; groupsPanel.style.display='none'; }
+          else { feedPanel.style.display='none'; groupsPanel.style.display='block'; }
+        });
+
+        // View mode
+        function setViewMode(mode){
+          document.body.classList.remove('view-card','view-list','view-compact');
+          document.body.classList.add('view-'+mode);
+          viewBtns.forEach(b=>b.classList.toggle('active', b.getAttribute('data-mode')===mode));
+          localStorage.setItem('channelViewMode', mode);
+        }
+        viewBtns.forEach(b=> b.addEventListener('click', ()=> setViewMode(b.getAttribute('data-mode'))));
+        const saved = localStorage.getItem('channelViewMode') || 'card'; setViewMode(saved);
+
+        // Sort
+        sortSelect.addEventListener('change', ()=>{
+          const val = sortSelect.value; let sorted = [...sampleGroups];
+          if(val==='new') sorted.sort((a,b)=>b.id-a.id);
+          else if(val==='members') sorted.sort((a,b)=>b.members-b.members);
+          else sorted = sorted; // active sort mock
+          renderGroups(sorted);
+        });
+
+        // Filter chips
+        filterChips.forEach(ch=> ch.addEventListener('click', ()=>{
+          ch.classList.toggle('active');
+          const active = Array.from(filterChips).filter(c=>c.classList.contains('active')).map(c=>c.getAttribute('data-filter'));
+          if(active.length===0) renderGroups(sampleGroups);
+          else renderGroups(sampleGroups.filter(g=> active.includes(g.category)));
+        }));
+
+        // Composer
+        attachBtn.addEventListener('click', ()=> composerFiles.click());
+        composerFiles.addEventListener('change', (e)=>{
+          previewArea.innerHTML='';
+          Array.from(e.target.files).forEach(f=>{
+            const url = URL.createObjectURL(f);
+            const img = document.createElement('img'); img.src = url; previewArea.appendChild(img);
+          });
+        });
+        document.getElementById('postBtn').addEventListener('click', ()=>{
+          const text = composerInput.value.trim(); if(!text) return alert('请输入内容');
+          const newPost = { id:Date.now(), author:'你', text, likes:0, time:'刚刚' };
+          samplePosts.unshift(newPost); renderPosts(samplePosts); composerInput.value=''; previewArea.innerHTML=''; composerFiles.value='';
+        });
+
+      })();
+      </script>
 </body>
 </html>

@@ -127,9 +127,9 @@ body { margin: 0; padding-bottom: 96px; font-family: system-ui, -apple-system, S
     <div class="pv-inner">
       <!-- 左侧：封面与标题（最左） -->
       <div class="pv-left">
-        <div id="pv-cover" class="pv-cover"></div>
+        <div id="pv-cover" class="pv-cover" role="button" tabindex="0" aria-label="打开播放页面"></div>
         <div class="pv-meta">
-          <div id="pv-title" class="pv-title">Kalimba (Test Audio)</div>
+          <div id="pv-title" class="pv-title" role="button" tabindex="0">Kalimba (Test Audio)</div>
           <div id="pv-artist" class="pv-artist">Ninja Tuna</div>
         </div>
       </div>
@@ -375,6 +375,44 @@ listBtn.addEventListener('click', stopWrap(() => {
 
 /* 提供给 HTML 的播放列表切换 */
 window.playIndex = function(index){ currentIndex = index; loadTrack(currentIndex); playTrack(); }
+
+/* 新增：当用户点击封面或标题时，跳转到 player.html 并携带当前 playlist 和索引信息 */
+function openPlayerPageWithData(openInNewTab = false) {
+  try {
+    const params = new URLSearchParams();
+    params.set('course', titleEl.innerText || '');
+    params.set('chapterIndex', String(currentIndex || 0));
+    const safePlaylist = playlist.map((p, i) => ({
+      id: p.id || ('p' + i),
+      title: p.title || (`Track ${i+1}`),
+      src: p.src || '',
+      duration: p.durationText || p.duration || ''
+    }));
+    params.set('chapters', encodeURIComponent(JSON.stringify(safePlaylist)));
+    const url = 'player.html?' + params.toString();
+    if (openInNewTab) window.open(url, '_blank');
+    else window.location.href = url;
+  } catch (err) {
+    try {
+      const params = new URLSearchParams();
+      params.set('course', titleEl.innerText || '');
+      params.set('chapterIndex', String(currentIndex || 0));
+      const url = 'player.html?' + params.toString();
+      if (openInNewTab) window.open(url, '_blank');
+      else window.location.href = url;
+    } catch (_) { /* ignore */ }
+  }
+}
+
+/* 给封面与标题绑定点击事件（支持键盘回车） */
+if (coverEl) {
+  coverEl.addEventListener('click', stopWrap(() => openPlayerPageWithData(false)));
+  coverEl.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openPlayerPageWithData(false); } });
+}
+if (titleEl) {
+  titleEl.addEventListener('click', stopWrap(() => openPlayerPageWithData(false)));
+  titleEl.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openPlayerPageWithData(false); } });
+}
 
 /* 初始化第一首 */
 loadTrack(currentIndex);

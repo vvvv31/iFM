@@ -20,15 +20,7 @@
     }
 
     body { margin:0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background:#fff; color:#333; }
-    /* Header styles (keep consistent with homepage) */
-    .header {
-      display:flex;
-      align-items:center;
-      gap:20px;
-      padding:12px 20px;
-      border-bottom:1px solid #eee;
-      background: #fff;
-    }
+    .header { display:flex; align-items:center; gap:20px; padding:12px 20px; border-bottom:1px solid #eee; background: #fff; }
     .logo { display:flex; align-items:center; gap:8px; }
     .logo-img { width:36px; height:36px; border-radius:6px; background:#ffefd5; }
     .logo-text { font-weight:700; font-size:18px; color:#333; }
@@ -44,12 +36,7 @@
 
     main.main-content.player-main { padding: 20px; max-width: 1300px; margin: 0 auto; }
 
-    .player-container {
-      display: grid;
-      grid-template-columns: var(--left-w) 1fr var(--right-w);
-      gap: var(--gap);
-      align-items: start;
-    }
+    .player-container { display: grid; grid-template-columns: var(--left-w) 1fr var(--right-w); gap: var(--gap); align-items: start; }
 
     .chapter-sidebar, .recommend-sidebar { background:#fff; border-radius:8px; box-shadow:0 6px 18px rgba(0,0,0,0.05); padding:12px; }
     .sidebar-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
@@ -83,26 +70,32 @@
       position: relative;
       overflow: hidden;
     }
-    .player-content.subtitle-mode .album-image {
-      width: var(--album-rect-expanded-width);
-      height: var(--album-height);
-      border-radius: 10px;
-      box-shadow: 0 0 0 12px rgba(255,160,0,0.06) inset;
-    }
     .inner-art { transition: opacity 180ms ease; }
-    .player-content.subtitle-mode .inner-art { opacity: 0; pointer-events: none; }
-
     .subtitle-panel { position:absolute; left:12px; right:12px; top:12px; bottom:12px; background: rgba(255,255,255,0.96); border-radius:8px; padding:10px; display:flex; flex-direction:column; gap:8px; box-shadow:0 8px 20px rgba(0,0,0,0.06); overflow:hidden; }
-    .subtitle-panel .panel-top { display:flex; align-items:center; justify-content:space-between; }
-    .subtitle-panel .panel-title { font-weight:700; color:#333; }
-    .subtitle-panel .close-subtitle { border:0; background:transparent; cursor:pointer; font-size:18px; color:#666; }
-    .subtitle-panel .lines { flex:1; overflow:auto; padding-right:6px; }
-    .subtitle-line { padding:8px 10px; border-radius:6px; font-size:14px; color:#333; }
-    .subtitle-line.active { background:#fff3df; color:#ff7a00; font-weight:700; }
 
-    .player-controls-large { display:flex; gap:12px; align-items:center; }
-    .control-btn-large { background:transparent; border:0; font-size:20px; cursor:pointer; }
-    .play-btn-large { font-size:24px; border:0; background:transparent; cursor:pointer; }
+    /* Controls layout: volume above buttons; main controls centered; mode left of prev; rate right of next */
+    .player-controls-large { display:flex; flex-direction:column; gap:8px; align-items:center; width:100%; }
+    .controls-top { display:flex; align-items:center; justify-content:center; gap:12px; width:100%; }
+    .controls-top .volume-wrap { display:flex; gap:8px; align-items:center; }
+    .controls-bottom { display:flex; align-items:center; justify-content:center; gap:16px; width:100%; }
+    .control-side { display:flex; align-items:center; gap:8px; min-width:72px; justify-content:center; }
+    .control-btn-large { background:transparent; border:0; font-size:20px; cursor:pointer; color:#444; display:inline-flex; align-items:center; justify-content:center; padding:6px; }
+    .play-btn-large { font-size:32px; border:0; background:transparent; cursor:pointer; color:#ff8c00; display:inline-flex; align-items:center; justify-content:center; padding:6px; }
+    .mini-btn { background:transparent; border:0; cursor:pointer; color:#444; padding:6px; border-radius:6px; display:inline-flex; align-items:center; justify-content:center; }
+    .mini-btn:hover { color:#ff8c00; background:#fff8f0; }
+    .mode-popover, .rate-popover { position:absolute; bottom:calc(100% + 8px); left:50%; transform:translateX(-50%); background:#fff; border:1px solid #ddd; border-radius:8px; box-shadow:0 10px 24px rgba(0,0,0,0.12); padding:8px; display:none; z-index:1000; }
+    .popover.show { display:flex; }
+    .mode-options { display:flex; gap:8px; }
+    .mode-item { width:40px; height:40px; border-radius:8px; border:1px solid #eee; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; color:#444; }
+    .mode-item:hover { color:#ff8c00; border-color:#ffeed6; background:#fff9f0; }
+    .mode-item.active { color:#fff; background:#ff8c00; border-color:#ff8c00; }
+    .rate-list { display:flex; flex-direction:column; min-width:120px; }
+    .rate-item { padding:8px 12px; cursor:pointer; border-radius:6px; color:#333; }
+    .rate-item:hover { background:#f7f7f7; }
+    .rate-item.active { color:#ff8c00; font-weight:700; background:#fff4e6; }
+
+    .volume-bar { width:260px; max-width:80vw; height:8px; background:#eee; border-radius:8px; position:relative; cursor:pointer; overflow:hidden; }
+    .volume-fill { height:100%; background:#ffb74d; width:50%; }
 
     .progress-container-large { display:flex; align-items:center; gap:12px; width:100%; }
     .progress-bar-large { flex:1; height:8px; background:#f1f1f1; border-radius:8px; overflow:hidden; position:relative; }
@@ -120,7 +113,7 @@
   <!-- Audio element used by player -->
   <audio id="audioPlayer" preload="metadata" style="display:none;"></audio>
 
-  <!-- TOP NAV (copied from homepage) -->
+  <!-- TOP NAV -->
   <header class="header">
     <div class="logo">
       <div class="logo-img"></div>
@@ -185,10 +178,59 @@
             </div>
           </div>
 
+          <!-- Controls: volume on top, main buttons below with mode left and rate right -->
           <div class="player-controls-large">
-            <button class="control-btn-large prev-btn" id="page-prev" title="上一章"><i class="fas fa-step-backward"></i></button>
-            <button class="play-btn-large play-active" id="page-play" title="播放/暂停"><i class="fas fa-play-circle"></i></button>
-            <button class="control-btn-large next-btn" id="page-next" title="下一章"><i class="fas fa-step-forward"></i></button>
+            <div class="controls-top">
+              <div class="volume-wrap">
+                <button id="muteBtn" class="mini-btn" title="静音/取消静音" aria-label="静音">
+                  <svg id="volIcon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3z"/></svg>
+                </button>
+                <div id="volBar" class="volume-bar" title="音量">
+                  <div id="volFill" class="volume-fill"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="controls-bottom">
+              <!-- play mode (left of prev) -->
+              <div class="control-side" style="position:relative;">
+                <div style="position:relative;">
+                  <button id="modeBtn" class="mini-btn" title="播放模式" aria-label="播放模式">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M7 7h8v3l4-4-4-4v3H5v6h2V7zm10 10H9v-3l-4 4 4 4v-3h10v-6h-2v4z"/></svg>
+                  </button>
+                  <div id="modePop" class="mode-popover" aria-hidden="true">
+                    <div class="mode-options">
+                      <div class="mode-item" data-mode="single" title="单曲循环">1</div>
+                      <div class="mode-item active" data-mode="list" title="列表循环">L</div>
+                      <div class="mode-item" data-mode="shuffle" title="随机">S</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- prev / play / next (center) -->
+              <div style="display:flex; align-items:center; gap:12px;">
+                <button class="control-btn-large prev-btn" id="page-prev" title="上一章"><i class="fas fa-step-backward"></i></button>
+                <button class="play-btn-large play-active" id="page-play" title="播放/暂停"><i class="fas fa-play-circle"></i></button>
+                <button class="control-btn-large next-btn" id="page-next" title="下一章"><i class="fas fa-step-forward"></i></button>
+              </div>
+
+              <!-- rate (right of next) -->
+              <div class="control-side" style="position:relative;">
+                <div style="position:relative;">
+                  <button id="rateBtn" class="mini-btn" title="倍速" aria-label="倍速"><span id="rateText" style="font-weight:700; font-size:13px;">1x</span></button>
+                  <div id="ratePop" class="rate-popover" aria-hidden="true">
+                    <div class="rate-list">
+                      <div class="rate-item" data-rate="0.5">0.5x</div>
+                      <div class="rate-item active" data-rate="1">1.0x</div>
+                      <div class="rate-item" data-rate="1.25">1.25x</div>
+                      <div class="rate-item" data-rate="1.5">1.5x</div>
+                      <div class="rate-item" data-rate="2">2.0x</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div class="progress-container-large">
@@ -220,7 +262,7 @@
 
   <script>
   (function () {
-    // API endpoints - adjust to your backend
+    // API endpoints placeholder (kept for backward compatibility)
     const API = {
       course: (id) => `/api/course/${encodeURIComponent(id)}`,
       chapterAudio: (cid) => `/api/chapter/${encodeURIComponent(cid)}/audio`,
@@ -247,214 +289,41 @@
     const innerArt = document.getElementById('innerArt');
     const subtitlePlaceholder = document.getElementById('subtitlePlaceholder');
 
+    // New controls
+    const modeBtn = document.getElementById('modeBtn');
+    const modePop = document.getElementById('modePop');
+    const rateBtn = document.getElementById('rateBtn');
+    const ratePop = document.getElementById('ratePop');
+    const rateText = document.getElementById('rateText');
+    const muteBtn = document.getElementById('muteBtn');
+    const volBar = document.getElementById('volBar');
+    const volFill = document.getElementById('volFill');
+    const volIcon = document.getElementById('volIcon');
+
     // Local state
     let playlist = []; // [{ id, title, src, durationText }]
     let index = 0;
-    let subtitleMode = false;
+    let playMode = 'list'; // 'single' | 'list' | 'shuffle'
+    let entrySource = 'unknown'; // 'program' | 'playbar' | 'fallback'
 
     function escapeHtml(str) { return String(str || '').replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m])); }
-    function getCourseId() { const params = new URLSearchParams(location.search); const q = params.get('course'); if (q) return q; const main = document.getElementById('playerPage'); if (main && main.dataset && main.dataset.courseId) return main.dataset.courseId; return 'demo'; }
 
-    async function loadCourse(courseId) {
-      if (!courseId) return;
-      try {
-        const res = await fetch(API.course(courseId), { credentials: 'same-origin' });
-        if (!res.ok) throw new Error('course fetch failed ' + res.status);
-        const data = await res.json();
-        const course = data.data || data.course || data;
-        courseTitleEl.textContent = course.title || '未命名课程';
-        const authorName = (course.author && course.author.name) || course.authorName || '';
-        const authorId = (course.author && course.author.id) || course.authorId || '';
-        courseAuthorEl.innerHTML = authorName ? `作者：<a href="/author/${authorId}">${escapeHtml(authorName)}</a>` : '';
-
-        const chapters = course.chapters || course.sections || course.list || [];
-        playlist = chapters.map(ch => ({
-          id: ch.id || ch.chapterId || ch.sid || String(Math.random()).slice(2),
-          title: ch.title || ch.name || '未命名章节',
-          src: ch.audioUrl || ch.src || '',
-          durationText: ch.duration || ch.length || ch.time || ''
-        }));
-
-        renderChapterList();
-        const recs = course.recommendations || course.recs || await loadRecommendations(courseId);
-        renderRecommendations(recs || []);
-        if (playlist.length && !playlist[0].src) {
-          await preloadChapterAudioInfo([playlist[0]]);
-        }
-      } catch (err) {
-        console.error('loadCourse error', err);
-      }
+    // Support both 'id' (program_list.openPlayer) and 'course' param (other code)
+    function getUrlCourseId() {
+      const params = new URLSearchParams(location.search);
+      return params.get('id') || params.get('course') || null;
+    }
+    function getUrlChapter() {
+      const params = new URLSearchParams(location.search);
+      return params.get('chapter') || params.get('chapterTitle') || null;
     }
 
-    async function loadRecommendations(courseId) {
-      try {
-        const res = await fetch(API.recommendations(courseId), { credentials: 'same-origin' });
-        if (!res.ok) return null;
-        const j = await res.json();
-        return j.data || j.list || j.recommendations || j;
-      } catch (err) {
-        console.warn('loadRecommendations failed', err);
-        return null;
-      }
+    // --- utilities for UI ---
+    function formatTime(sec) {
+      if (!sec || isNaN(sec) || sec <= 0) return '00:00';
+      const m = Math.floor(sec / 60), s = Math.floor(sec % 60);
+      return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
     }
-
-    function renderChapterList() {
-      chapterListEl.innerHTML = '';
-      playlist.forEach((ch, i) => {
-        const item = document.createElement('div');
-        item.className = 'chapter-item' + (i === 0 ? ' active' : '');
-        item.dataset.trackId = ch.id;
-        item.dataset.trackSrc = ch.src || '';
-        const anchor = document.createElement('a');
-        anchor.className = 'chapter-link';
-        anchor.href = `/course/${encodeURIComponent(getCourseId())}/chapter/${encodeURIComponent(ch.id)}`;
-        anchor.innerHTML = `<span style="width:28px;flex:0 0 28px">${i+1}.</span><span style="flex:1">${escapeHtml(ch.title)}</span><span style="margin-left:8px">${escapeHtml(ch.durationText || '')}</span>`;
-        item.appendChild(anchor);
-
-        item.addEventListener('click', async (ev) => {
-          if (ev.ctrlKey || ev.metaKey || ev.shiftKey) return;
-          ev.preventDefault();
-          ev.stopPropagation();
-          await playTrackByIndex(i);
-        });
-
-        chapterListEl.appendChild(item);
-      });
-    }
-
-    function renderRecommendations(recs) {
-      recommendListEl.innerHTML = '';
-      if (!recs || !recs.length) {
-        recommendListEl.innerHTML = '<div class="recommend-item placeholder">暂无推荐</div>';
-        return;
-      }
-      recs.forEach(r => {
-        const item = document.createElement('div');
-        item.className = 'recommend-item';
-        item.dataset.courseId = r.id || r.courseId || r.uid || '';
-        item.innerHTML = `
-          <div class="recommend-cover">${escapeHtml((r.shortTitle||r.title||'')[0]||'R')}</div>
-          <div class="recommend-info"><h4>${escapeHtml(r.title||r.name||'')}</h4><p>${escapeHtml(r.subtitle||r.level||'')}</p></div>
-          <div style="margin-left:auto"><button class="play-now-btn" title="打开并播放">播放</button></div>
-        `;
-        const playNowBtn = item.querySelector('.play-now-btn');
-        item.addEventListener('click', (e) => {
-          e.stopPropagation();
-          const cid = item.dataset.courseId;
-          if (!cid) return;
-          loadCourse(cid).then(() => {
-            if (playlist.length) playTrackByIndex(0);
-          });
-          if (history && history.replaceState) {
-            const params = new URLSearchParams(location.search);
-            params.set('course', cid);
-            params.delete('chapter');
-            history.replaceState({}, '', location.pathname + '?' + params.toString());
-          }
-        });
-        playNowBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          const cid = item.dataset.courseId;
-          if (!cid) return;
-          loadCourse(cid).then(() => { if (playlist.length) playTrackByIndex(0); });
-          if (history && history.replaceState) {
-            const params = new URLSearchParams(location.search);
-            params.set('course', cid);
-            params.delete('chapter');
-            history.replaceState({}, '', location.pathname + '?' + params.toString());
-          }
-        });
-        recommendListEl.appendChild(item);
-      });
-    }
-
-    async function preloadChapterAudioInfo(chapters) {
-      for (const ch of chapters) {
-        if (!ch.src || !ch.src.trim()) {
-          try {
-            const res = await fetch(API.chapterAudio(ch.id), { credentials: 'same-origin' });
-            if (!res.ok) continue;
-            const j = await res.json();
-            const payload = j.data || j || {};
-            const src = payload.src || payload.url || payload.streamUrl || '';
-            const durationSeconds = payload.durationSeconds || payload.duration || null;
-            if (src) ch.src = src;
-            if (durationSeconds && !ch.durationText) {
-              const m = Math.floor(durationSeconds / 60), s = Math.floor(durationSeconds % 60);
-              ch.durationText = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-            }
-          } catch (err) {
-            console.warn('preloadChapterAudioInfo error', err);
-          }
-        }
-      }
-      renderChapterList();
-    }
-
-    async function playTrackByIndex(i, pushHistory = true) {
-      if (i < 0 || i >= playlist.length) return;
-      index = i;
-      highlightChapterUI(index);
-      updateNowPlayingUI(index);
-      const track = playlist[index];
-      if (track.src && track.src.trim()) {
-        audio.src = track.src;
-        audio.load();
-      } else {
-        try {
-          const res = await fetch(API.chapterAudio(track.id), { credentials: 'same-origin' });
-          if (res.ok) {
-            const j = await res.json();
-            const payload = j.data || j || {};
-            const src = payload.src || payload.url || payload.streamUrl || '';
-            const durationSeconds = payload.durationSeconds || payload.duration || null;
-            if (src) {
-              track.src = src;
-              audio.src = src;
-              audio.load();
-            }
-            if (durationSeconds && !track.durationText) {
-              const m = Math.floor(durationSeconds / 60), s = Math.floor(durationSeconds % 60);
-              track.durationText = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-              renderChapterList();
-            }
-          }
-        } catch (err) {
-          console.warn('fetch chapter audio failed', err);
-        }
-      }
-
-      try {
-        const p = audio.play();
-        if (p && typeof p.then === 'function') await p;
-      } catch (err) {
-        try { audio.load(); const p2 = audio.play(); if (p2 && typeof p2.then === 'function') await p2; } catch (_) {}
-      }
-
-      if (pushHistory && history && history.replaceState) {
-        const params = new URLSearchParams(location.search);
-        params.set('course', getCourseId());
-        params.set('chapter', playlist[index].id);
-        history.replaceState({}, '', location.pathname + '?' + params.toString());
-      }
-    }
-
-    function highlightChapterUI(i) {
-      const items = Array.from(chapterListEl.querySelectorAll('.chapter-item'));
-      items.forEach((el, idx) => el.classList.toggle('active', idx === i));
-    }
-
-    function updateNowPlayingUI(i) {
-      const t = playlist[i];
-      if (t) {
-        nowPlaying.textContent = `正在播放：${t.title}`;
-        nowDuration.textContent = `时长：${t.durationText || ''}`;
-      } else {
-        nowPlaying.textContent = '未播放';
-        nowDuration.textContent = '';
-      }
-    }
-
     function refreshProgress() {
       const dur = audio.duration || 0;
       const cur = audio.currentTime || 0;
@@ -467,12 +336,173 @@
       timeTotal.textContent = formatTime(dur);
     }
 
-    function formatTime(sec) {
-      if (!sec || isNaN(sec) || sec <= 0) return '00:00';
-      const m = Math.floor(sec / 60), s = Math.floor(sec % 60);
-      return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    // Render chapter list from current playlist
+    function renderChapterList() {
+      chapterListEl.innerHTML = '';
+      if (!playlist || !playlist.length) {
+        chapterListEl.innerHTML = '<div class="chapter-item placeholder">暂无章节</div>';
+        return;
+      }
+      playlist.forEach((ch, i) => {
+        const item = document.createElement('div');
+        item.className = 'chapter-item' + (i === index ? ' active' : '');
+        // dataset usage with camelCase property names
+        item.dataset.trackId = ch.id;
+        item.dataset.trackSrc = ch.src || '';
+        item.innerHTML = `<span style="width:28px;flex:0 0 28px">${i+1}.</span><div style="flex:1;min-width:0"><div style="font-size:14px;color:#000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeHtml(ch.title)}</div></div><span style="margin-left:8px;color:#ff8c00">${escapeHtml(ch.durationText || '')}</span>`;
+        item.addEventListener('click', function(e){ e.stopPropagation(); playTrackByIndex(i); });
+        chapterListEl.appendChild(item);
+      });
     }
 
+    function renderRecommendations(seedTitle) {
+      // Generate 4 random recommendations (simple synthetic)
+      const samples = [
+        '流利口语训练营', '地道英语听力', '商务商务口语进阶', '旅行英语速成', '职场沟通实战', '每日一句英语', '英语发音强化'
+      ];
+      const recs = [];
+      for (let i=0;i<4;i++){
+        const t = samples[Math.floor(Math.random()*samples.length)];
+        recs.push({ id: 'rec-' + Math.random().toString(36).slice(2,8), title: `${t} ${Math.floor(Math.random()*100)+1}`, subtitle: seedTitle ? `Based on ${seedTitle}` : '推荐课程', shortTitle: t.slice(0,1) });
+      }
+      recommendListEl.innerHTML = '';
+      recs.forEach(r => {
+        const item = document.createElement('div');
+        item.className = 'recommend-item';
+        item.innerHTML = `<div class="recommend-cover">${escapeHtml((r.shortTitle||r.title||'')[0]||'R')}</div>
+                          <div class="recommend-info"><h4 style="margin:0;font-size:14px">${escapeHtml(r.title)}</h4><p style="margin:4px 0 0 0;color:#666">${escapeHtml(r.subtitle||'')}</p></div>
+                          <div style="margin-left:auto"><button class="play-now-btn" data-id="${escapeHtml(r.id)}">播放</button></div>`;
+        const btn = item.querySelector('.play-now-btn');
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          // open same page with this fake course id to simulate navigation
+          const params = new URLSearchParams();
+          params.set('course', r.title);
+          params.set('id', r.id);
+          location.href = location.pathname + '?' + params.toString();
+        });
+        recommendListEl.appendChild(item);
+      });
+    }
+
+    // --- play / pause / next / prev using playlist ---
+    async function playTrackByIndex(i, pushHistory = false) {
+      if (i < 0 || i >= playlist.length) return;
+      index = i;
+      highlightChapterUI(index);
+      updateNowPlayingUI(index);
+      const track = playlist[index];
+      if (track.src) {
+        audio.src = track.src;
+        try { audio.load(); } catch(e){}
+      }
+      try {
+        const p = audio.play();
+        if (p && typeof p.then === 'function') await p;
+      } catch (err) {
+        try { audio.load(); const p2 = audio.play(); if (p2 && typeof p2.then === 'function') await p2; } catch (_) {}
+      }
+      if (pushHistory && history && history.replaceState) {
+        const params = new URLSearchParams(location.search);
+        params.set('course', getUrlCourseId() || '');
+        params.set('chapter', playlist[index].id || '');
+        history.replaceState({}, '', location.pathname + '?' + params.toString());
+      }
+    }
+    function prevByMode() {
+      if (playMode === 'shuffle') currentIndex = Math.floor(Math.random() * playlist.length);
+      else index = (index - 1 + playlist.length) % playlist.length;
+      playTrackByIndex(index);
+    }
+    function nextByMode() {
+      if (playMode === 'shuffle') index = Math.floor(Math.random() * playlist.length);
+      else index = (index + 1) % playlist.length;
+      playTrackByIndex(index);
+    }
+    function highlightChapterUI(i) {
+      const items = Array.from(chapterListEl.querySelectorAll('.chapter-item'));
+      items.forEach((el, idx) => el.classList.toggle('active', idx === i));
+    }
+    function updateNowPlayingUI(i) {
+      const t = playlist[i];
+      if (t) {
+        nowPlaying.textContent = `正在播放：${t.title}`;
+        nowDuration.textContent = `时长：${t.durationText || ''}`;
+        courseTitleEl.textContent = t.title;
+        // set subtitle as artist if available
+        courseAuthorEl.innerHTML = t.artist ? `作者：${escapeHtml(t.artist)}` : '';
+      } else {
+        nowPlaying.textContent = '未播放';
+        nowDuration.textContent = '';
+      }
+      renderChapterList();
+    }
+
+    // --- UI: volume / mute / rate / mode wiring ---
+    function updateVolIcon() {
+      if (audio.muted || audio.volume === 0) {
+        volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM16 7l-2 2 2 2 2-2-2-2z"/>';
+      } else if (audio.volume < 0.5) {
+        volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 9v6c1.7-0.7 3-2.4 3-4.5S15.7 9.7 14 9z"/>';
+      } else {
+        volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 7v10c3-1 5-3.6 5-7s-2-6-5-7z"/>';
+      }
+    }
+    function setVolume(p) {
+      p = Math.max(0, Math.min(1, p));
+      audio.volume = p;
+      audio.muted = false;
+      volFill.style.width = (p * 100) + '%';
+      updateVolIcon();
+    }
+    function toggleMute() {
+      audio.muted = !audio.muted;
+      updateVolIcon();
+      if (audio.muted) volFill.style.width = '0%';
+      else volFill.style.width = (audio.volume * 100) + '%';
+    }
+    function setPlaybackRate(r) {
+      audio.playbackRate = r;
+      rateText.textContent = r.toFixed(2).replace(/\.00$/, '') + 'x';
+    }
+    function setPlayMode(mode) {
+      playMode = mode;
+      const items = Array.from(modePop.querySelectorAll('.mode-item'));
+      items.forEach(it => it.classList.toggle('active', it.getAttribute('data-mode') === mode));
+    }
+
+    function wireMiniControls() {
+      modeBtn && modeBtn.addEventListener('click', (e) => { e.stopPropagation(); ratePop.classList.remove('show'); modePop.classList.toggle('show'); });
+      modePop && modePop.addEventListener('click', (e) => { e.stopPropagation(); const item = e.target.closest('.mode-item'); if (!item) return; setPlayMode(item.getAttribute('data-mode')); modePop.classList.remove('show'); });
+
+      rateBtn && rateBtn.addEventListener('click', (e) => { e.stopPropagation(); modePop.classList.remove('show'); ratePop.classList.toggle('show'); });
+      ratePop && ratePop.addEventListener('click', (e) => { e.stopPropagation(); const item = e.target.closest('.rate-item'); if (!item) return; const r = parseFloat(item.getAttribute('data-rate')); setPlaybackRate(r); Array.from(ratePop.querySelectorAll('.rate-item')).forEach(el => el.classList.toggle('active', el === item)); ratePop.classList.remove('show'); });
+
+      document.addEventListener('click', (e) => { if (!modeBtn.contains(e.target) && !modePop.contains(e.target)) modePop.classList.remove('show'); if (!rateBtn.contains(e.target) && !ratePop.contains(e.target)) ratePop.classList.remove('show'); });
+
+      muteBtn && muteBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleMute(); });
+
+      if (volBar) {
+        let dragging = false;
+        const rectToPercent = (clientX) => {
+          const rect = volBar.getBoundingClientRect();
+          let x = clientX - rect.left;
+          x = Math.max(0, Math.min(rect.width, x));
+          return x / rect.width;
+        };
+        volBar.addEventListener('pointerdown', (e) => { e.preventDefault(); dragging = true; volBar.setPointerCapture && volBar.setPointerCapture(e.pointerId); setVolume(rectToPercent(e.clientX)); });
+        document.addEventListener('pointermove', (e) => { if (!dragging) return; setVolume(rectToPercent(e.clientX)); });
+        document.addEventListener('pointerup', (e) => { if (!dragging) return; dragging = false; });
+        volBar.addEventListener('click', (e) => { setVolume(((e.clientX - volBar.getBoundingClientRect().left) / volBar.getBoundingClientRect().width)); });
+      }
+
+      if (typeof audio.volume === 'number') setVolume(audio.volume || 0.6); else setVolume(0.6);
+      setPlaybackRate(audio.playbackRate || 1);
+      setPlayMode(playMode);
+      updateVolIcon();
+    }
+
+    // Progress seek handlers
     function onProgressClick(e) {
       if (!audio.duration) return;
       const rect = progressBar.getBoundingClientRect();
@@ -482,67 +512,225 @@
       refreshProgress();
     }
 
-    // subtitle minimal handlers for album click
-    const sampleSubs = [{ t: 0, text: 'Hello' }];
-    function createSubtitlePanel(lines = sampleSubs) {
-      const panel = document.createElement('div');
-      panel.className = 'subtitle-panel';
-      const top = document.createElement('div'); top.className = 'panel-top';
-      const title = document.createElement('div'); title.className = 'panel-title'; title.textContent = '字幕模式';
-      const closeBtn = document.createElement('button'); closeBtn.className = 'close-subtitle'; closeBtn.type='button'; closeBtn.innerHTML = '&#10005;';
-      closeBtn.addEventListener('click', (e) => { e.stopPropagation(); closeSubtitlePanel(); });
-      top.appendChild(title); top.appendChild(closeBtn); panel.appendChild(top);
-      const linesWrap = document.createElement('div'); linesWrap.className = 'lines';
-      lines.forEach((ln, idx) => { const d = document.createElement('div'); d.className = 'subtitle-line'; d.textContent = ln.text; d.dataset.t = ln.t; linesWrap.appendChild(d); });
-      panel.appendChild(linesWrap);
-      return panel;
-    }
-    function openSubtitlePanel(chapterId) {
-      subtitlePlaceholder.innerHTML = '';
-      const panel = createSubtitlePanel();
-      subtitlePlaceholder.appendChild(panel);
-      subtitlePlaceholder.style.display = 'block';
-      subtitlePlaceholder.setAttribute('aria-hidden', 'false');
-    }
-    function closeSubtitlePanel() {
-      subtitlePlaceholder.innerHTML = '';
-      subtitlePlaceholder.style.display = 'none';
-      subtitlePlaceholder.setAttribute('aria-hidden', 'true');
+    // Ended behavior according to playMode
+    function onEndedHandle() {
+      if (playMode === 'single') {
+        audio.currentTime = 0;
+        audio.play();
+      } else if (playMode === 'shuffle') {
+        if (!playlist.length) return;
+        const next = Math.floor(Math.random() * playlist.length);
+        playTrackByIndex(next);
+      } else {
+        if (index < playlist.length - 1) playTrackByIndex(index + 1);
+      }
     }
 
-    // album click toggles subtitle panel
-    albumImage && albumImage.addEventListener('click', (e) => {
-      if (subtitlePlaceholder.style.display === 'block') closeSubtitlePanel();
-      else openSubtitlePanel();
-    });
+    // --- Entry detection & initialization ---
+    // Try to detect if we were opened from PlayBar (same-origin opener with element ids used in PlayBar.html)
+    function tryLoadFromOpener() {
+      if (!window.opener) return false;
+      try {
+        const op = window.opener;
+        // check for pv-audio or pv-title
+        const opAudio = op.document && op.document.getElementById && op.document.getElementById('pv-audio');
+        const opTitle = op.document && op.document.getElementById && op.document.getElementById('pv-title');
+        if (!opAudio && !opTitle) return false;
+        // compose a track from opener state
+        const title = opTitle ? (opTitle.textContent || opTitle.innerText || '') : '';
+        const artistEl = op.document.getElementById('pv-artist');
+        const artist = artistEl ? (artistEl.textContent || artistEl.innerText || '') : '';
+        const coverEl = op.document.getElementById('pv-cover');
+        const cover = coverEl ? (coverEl.style.backgroundImage || '') : '';
+        const src = opAudio ? (opAudio.currentSrc || opAudio.src || '') : '';
+        const rate = opAudio ? (opAudio.playbackRate || 1) : 1;
+        const vol = opAudio ? (opAudio.volume || 0.6) : 0.6;
+        // create playlist from opener's playlist items if available
+        let opPlaylist = [];
+        try {
+          // if opener has a playlist variable or elements, try to read them
+          if (Array.isArray(op.playlist) && op.playlist.length) opPlaylist = op.playlist.map((p,i)=>({ id: p.id||('op-'+i), title: p.title||('Track '+(i+1)), artist: p.artist||'', src: p.src||'', durationText: p.durationText||'' }));
+          else {
+            // fallback: single track extracted above
+            opPlaylist = [{ id: 'opener-0', title: title || '来自播放栏的音频', artist: artist, src: src, durationText: '' }];
+          }
+        } catch (e) {
+          opPlaylist = [{ id: 'opener-0', title: title || '来自播放栏的音频', artist: artist, src: src, durationText: '' }];
+        }
+        playlist = opPlaylist;
+        index = 0;
+        // set UI
+        courseTitleEl.textContent = playlist[0].title || '来自播放栏的音频';
+        courseAuthorEl.innerHTML = playlist[0].artist ? `作者：${escapeHtml(playlist[0].artist)}` : '';
+        renderChapterList();
+        renderRecommendations(playlist[0].title);
+        // set audio from opener if available
+        if (playlist[0].src) {
+          audio.src = playlist[0].src;
+        } else if (opAudio && opAudio.currentSrc) {
+          audio.src = opAudio.currentSrc;
+        }
+        // adopt rate/volume
+        try { setPlaybackRate(rate); setVolume(vol); } catch(e){}
+        entrySource = 'playbar';
+        return true;
+      } catch (err) {
+        // cross-origin or other error -> cannot read opener
+        return false;
+      }
+    }
 
+    // Parse chapters param if provided in URL (encoded JSON)
+    function parseChaptersParam() {
+      const params = new URLSearchParams(location.search);
+      const chaptersParam = params.get('chapters');
+      if (!chaptersParam) return null;
+      try {
+        const decoded = decodeURIComponent(chaptersParam);
+        const parsed = JSON.parse(decoded);
+        if (!Array.isArray(parsed)) return null;
+        // Normalize to expected track objects
+        const normalized = parsed.map((ch, i) => {
+          if (typeof ch === 'string') {
+            return { id: 'ch-' + i, title: ch, src: '', durationText: '' };
+          }
+          return {
+            id: ch.id || ch.chapterId || ('ch-' + i),
+            title: ch.title || ch.name || ch[0] || ('章节 ' + (i + 1)),
+            src: ch.src || ch.audioUrl || ch.url || '',
+            durationText: ch.duration || ch.durationText || ch.time || ''
+          };
+        });
+        return normalized;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    // If URL contains course id -> program_list entry
+    async function loadFromProgramEntry(courseIdFromUrl) {
+      // We'll try to load from URL-embedded chapters (if provided), else call API, else synthesize.
+      entrySource = 'program';
+      const params = new URLSearchParams(location.search);
+      const courseParamName = params.get('course');
+      if (courseParamName) courseTitleEl.textContent = courseParamName;
+
+      // 1) If chapters param present -> use it (serialized by program_list)
+      const urlChapters = parseChaptersParam();
+      const urlChapterIndex = parseInt(params.get('chapterIndex') || params.get('chapter') || '0', 10) || 0;
+      if (urlChapters && urlChapters.length) {
+        playlist = urlChapters;
+        index = Math.min(Math.max(0, urlChapterIndex), playlist.length - 1);
+        // display course title from params (if provided) or fallback to generated from first chapter
+        courseTitleEl.textContent = courseParamName || (playlist[0] && playlist[0].title) || ('课程 ' + courseIdFromUrl);
+        courseAuthorEl.innerHTML = '';
+        renderChapterList();
+        renderRecommendations(courseTitleEl.textContent || '');
+        // set audio to selected chapter if it has src
+        if (playlist[index] && playlist[index].src) audio.src = playlist[index].src;
+        // update now-playing display to selected chapter (without auto-playing)
+        updateNowPlayingUI(index);
+        return;
+      }
+
+      // 2) Try API fetch by courseId
+      try {
+        const res = await fetch(API.course(courseIdFromUrl), { credentials: 'same-origin' });
+        if (res.ok) {
+          const data = await res.json();
+          const course = data.data || data.course || data;
+          if (course.title) courseTitleEl.textContent = course.title;
+          if (course.author && course.author.name) courseAuthorEl.innerHTML = `作者：<a href="/author/${course.author.id}">${escapeHtml(course.author.name)}</a>`;
+          const chapters = course.chapters || course.sections || course.list || [];
+          playlist = chapters.map((ch, i) => ({ id: ch.id || ('c-'+i), title: ch.title || ch.name || ('章节 '+(i+1)), src: ch.audioUrl||ch.src||'', durationText: ch.duration||ch.durationText||'' }));
+          if (!playlist.length) {
+            // synthesize a few sample tracks when API returns none
+            playlist = [
+              { id:'s1', title: course.title + ' - 第1节', src: '', durationText: '12:34' },
+              { id:'s2', title: course.title + ' - 第2节', src: '', durationText: '09:08' }
+            ];
+          }
+          index = Math.min(Math.max(0, urlChapterIndex), playlist.length - 1);
+          renderChapterList();
+          renderRecommendations(course.title || courseParamName || '');
+          // set audio to selected chapter if it has src
+          if (playlist[index] && playlist[index].src) audio.src = playlist[index].src;
+          updateNowPlayingUI(index);
+          return;
+        }
+      } catch (err) {
+        // ignore and fallback to synthetic
+      }
+
+      // 3) fallback synthetic content
+      const courseTitle = params.get('course') || ('课程 ' + courseIdFromUrl);
+      courseTitleEl.textContent = courseTitle;
+      courseAuthorEl.innerHTML = '';
+      playlist = [];
+      for (let i=0;i<8;i++){
+        playlist.push({ id:'synth-'+i, title:`${courseTitle} - 第${i+1}节`, src:'', durationText: `${8 + Math.floor(Math.random()*10)}:${String(Math.floor(Math.random()*60)).padStart(2,'0')}` });
+      }
+      index = Math.min(Math.max(0, urlChapterIndex), playlist.length - 1);
+      renderChapterList();
+      renderRecommendations(courseTitle);
+      if (playlist[index] && playlist[index].src) audio.src = playlist[index].src;
+      updateNowPlayingUI(index);
+    }
+
+    // Initialization sequence
     async function init() {
-      const courseId = getCourseId();
-      await loadCourse(courseId);
+      wireMiniControls();
 
+      // Decide entry source:
+      // 1) If URL has course/id -> program entry (including chapters param)
+      // 2) else if opener is available and same-origin with recognizable elements -> playbar entry
+      // 3) else fallback to demo program (synth)
+      const urlCourseId = getUrlCourseId();
+      if (urlCourseId) {
+        await loadFromProgramEntry(urlCourseId);
+      } else {
+        const loadedFromOpener = tryLoadFromOpener();
+        if (!loadedFromOpener) {
+          entrySource = 'fallback';
+          // fallback: show a demo playlist (two sample files) similar to PlayBar.html
+          playlist = [
+            { title: "Kalimba (Test Audio)", artist: "Ninja Tuna", cover: "", src: "https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3", durationText: "00:30" },
+            { title: "Sample MP3 (700KB)", artist: "Sample Source", cover: "", src: "https://sample.cat/downloads/file_example_MP3_700KB.mp3", durationText: "00:24" }
+          ];
+          index = 0;
+          courseTitleEl.textContent = playlist[0].title;
+          courseAuthorEl.innerHTML = `作者：${escapeHtml(playlist[0].artist)}`;
+          renderChapterList();
+          renderRecommendations(playlist[0].title);
+          if (playlist[0].src) audio.src = playlist[0].src;
+        }
+      }
+
+      // wire main control buttons
       playBtn && playBtn.addEventListener('click', async (e) => {
         e.stopPropagation();
         if (audio.paused) {
           try { const p = audio.play(); if (p && typeof p.then === 'function') await p; } catch (err) { try { audio.load(); const p2 = audio.play(); if (p2 && typeof p2.then === 'function') await p2; } catch (_) {} }
         } else audio.pause();
       });
-
       prevBtn && prevBtn.addEventListener('click', (e) => { e.stopPropagation(); if (index > 0) playTrackByIndex(index - 1); });
       nextBtn && nextBtn.addEventListener('click', (e) => { e.stopPropagation(); if (index < playlist.length - 1) playTrackByIndex(index + 1); });
 
       audio.addEventListener('timeupdate', refreshProgress);
       audio.addEventListener('loadedmetadata', refreshProgress);
-      audio.addEventListener('ended', () => { if (index < playlist.length - 1) playTrackByIndex(index + 1); });
+      audio.removeEventListener('ended', onEndedHandle);
+      audio.addEventListener('ended', onEndedHandle);
 
       progressBar && progressBar.addEventListener('click', onProgressClick);
 
-      // progress bar is clickable for seeking
+      // Display initial now-playing (already updated in loaders, but ensure UI is in sync)
+      updateNowPlayingUI(index);
     }
 
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 
-    // expose for debugging
-    window.PlayerPage = { loadCourse, playTrackByIndex, getPlaylist: () => playlist, getCurrent: () => ({ index, track: playlist[index] }) };
+    // expose small API for debugging
+    window.PlayerPage = { playlist, getCurrent: () => ({ index, track: playlist[index] }), setPlayMode, setPlaybackRate, setVolume };
   })();
   </script>
 </body>

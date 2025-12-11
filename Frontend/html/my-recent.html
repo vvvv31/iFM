@@ -3,15 +3,132 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的-最近收听 - 星之声</title>
+    <title>我的-私信 - 星之声</title>
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="../js/search.js"></script>
     <style>
+        /* 私信页面特有样式（保留原样） */
+        .message-area {
+            display: flex;
+            gap: 20px;
+            min-height: 500px;
+        }
+        .message-list {
+            width: 280px;
+            background-color: #FFF8DC;
+            border: 1px solid #FFDAB9;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .msg-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #FFDAB9;
+            transition: background-color 0.3s;
+        }
+        .msg-item:hover { background-color: #FFEDCC; }
+        .msg-item.active { background-color: #FF8C00; color: #fff; }
+        .msg-item.active .avatar { background-color: #fff; }
+        .msg-item .avatar-wrapper { width: 40px; height: 40px; margin-right: 12px; }
+        .msg-item .avatar { width: 36px; height: 36px; background-color: #FF8C00; }
+        .msg-item span { font-size: 14px; font-weight: bold; }
+
+        .chat-window {
+            flex: 1;
+            background-color: #fff;
+            border: 1px solid #FFDAB9;
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .chat-header {
+            background-color: #FF8C00;
+            color: #fff;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #FFDAB9;
+        }
+        .chat-header .avatar-wrapper { width: 40px; height: 40px; margin-right: 12px; }
+        .chat-header .avatar { width: 36px; height: 36px; background-color: #fff; }
+        .chat-header span { font-size: 16px; font-weight: bold; }
+
+        .chat-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background-color: #FFF8DC;
+        }
+        .chat-message {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+        .chat-message.received {
+            background-color: #fff;
+            border: 1px solid #FFDAB9;
+            color: #333;
+            margin-right: auto;
+        }
+        .chat-message.sent {
+            background-color: #FF8C00;
+            color: #fff;
+            margin-left: auto;
+        }
+        .chat-message .time {
+            display: block;
+            font-size: 11px;
+            color: #999;
+            margin-top: 5px;
+            text-align: right;
+        }
+        .chat-message.sent .time { color: rgba(255, 255, 255, 0.8); }
+
+        .chat-input-area {
+            padding: 15px 20px;
+            border-top: 1px solid #FFDAB9;
+            background-color: #fff;
+            display: flex;
+            gap: 10px;
+        }
+        .chat-input-area input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #FFDAB9;
+            border-radius: 20px;
+            outline: none;
+            font-size: 14px;
+        }
+        .chat-input-area button {
+            background-color: #FF8C00;
+            color: #fff;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        .chat-input-area button:hover { background-color: #ff6b00; }
+
+        /* 响应式设计（保留原样） */
+        @media (max-width: 768px) {
+            .message-area { flex-direction: column; }
+            .message-list { width: 100%; max-height: 200px; overflow-y: auto; }
+            .chat-window { min-height: 400px; }
+        }
+
         /* 为固定播放栏预留空间 */
         body { padding-bottom: 96px; }
 
-        /* PlayBar（来自 PlayBar.html）样式 */
+        /* PlayBar（来自 PlayBar.html）样式：完整替换播放栏相关样式 */
         .pv-player-bar {
           position: fixed; left: 0; right: 0; bottom: 0;
           width: 100%; height: 96px; background: #ffffff;
@@ -20,110 +137,103 @@
         }
         .pv-inner {
           width: 100%; max-width: 1200px; margin: 0 auto;
-          display: grid; grid-template-columns: auto 1fr auto; align-items: center;
-          column-gap: 16px; padding: 0 24px; height: 100%;
+          display: grid;
+          grid-template-columns: auto 1fr auto; /* 左侧自适应，中间占满，右侧自适应 */
+          align-items: center;
+          column-gap: 16px;
+          padding: 0 24px;
+          height: 100%;
         }
         .pv-left { display: inline-flex; align-items: center; gap: 12px; min-width: 240px; }
-        .pv-cover { width: 52px; height: 52px; border-radius: 8px; background: #eee no-repeat center/cover; box-shadow: 0 2px 6px rgba(0,0,0,0.1); flex-shrink: 0; }
+        .pv-cover {
+          width: 52px; height: 52px; border-radius: 8px;
+          background: #eee no-repeat center/cover;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+          flex-shrink: 0;
+        }
         .pv-meta { display: flex; flex-direction: column; min-width: 0; }
-        .pv-title { font-size: 16px; font-weight: 700; color: #222; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .pv-artist { font-size: 12px; color: #666; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .pv-center { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-width: 0; }
-        .pv-controls { display: inline-flex; align-items: center; gap: 18px; }
-        .ctrl-btn, .mode-btn, .rate-btn { background: transparent; border: none; cursor: pointer; color: #444; font-size: 18px; padding: 6px; display: inline-flex; align-items: center; justify-content: center; transition: color 0.2s; }
+        .pv-title {
+          font-size: 16px; font-weight: 700; color: #222;
+          white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .pv-artist {
+          font-size: 12px; color: #666; margin-top: 2px;
+          white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .pv-center {
+          display: flex; flex-direction: column; align-items: center; justify-content: center;
+          gap: 8px; min-width: 0;
+        }
+        .pv-controls {
+          display: inline-flex; align-items: center; gap: 18px;
+        }
+        .ctrl-btn, .mode-btn, .rate-btn {
+          background: transparent; border: none; cursor: pointer; color: #444;
+          font-size: 18px; padding: 6px; display: inline-flex; align-items: center; justify-content: center; transition: color 0.2s;
+        }
         .ctrl-btn:hover, .mode-btn:hover, .rate-btn:hover { color: #ff8c00; }
-        .play-btn { width: 44px; height: 44px; border-radius: 50%; background: #ff8c00; color: #fff; border: none; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 10px rgba(255,140,0,0.30); transition: transform 0.1s, background 0.2s; }
+        .play-btn {
+          width: 44px; height: 44px; border-radius: 50%; background: #ff8c00; color: #fff; border: none;
+          display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
+          box-shadow: 0 4px 10px rgba(255,140,0,0.30); transition: transform 0.1s, background 0.2s;
+        }
         .play-btn:hover { background: #e67e00; transform: scale(1.05); }
         .icon { width: 18px; height: 18px; fill: currentColor; }
+
+        /* 进度条行 */
         .pv-progress-row { display: flex; align-items: center; gap: 12px; width: 100%; }
         .time.small { font-size: 12px; color: #888; width: 48px; text-align: center; font-variant-numeric: tabular-nums; }
         .pv-progress { position: relative; flex: 1; height: 6px; background: #eee; border-radius: 3px; cursor: pointer; touch-action: none; }
+        .pv-progress::before { content: ''; position: absolute; top: -10px; bottom: -10px; left: 0; right: 0; z-index: 1; }
         .pv-progress-fill { position: absolute; left: 0; top: 0; bottom: 0; background: #ff8c00; border-radius: 3px; width: 0%; pointer-events: none; }
         .pv-knob { position: absolute; top: 50%; right: -6px; transform: translateY(-50%); width: 12px; height: 12px; background: #fff; border: 2px solid #ff8c00; border-radius: 50%; box-shadow: 0 1px 4px rgba(0,0,0,0.2); opacity: 0; transition: opacity 0.2s; pointer-events: none; }
+        .pv-progress:hover .pv-knob, .pv-progress.dragging .pv-knob { opacity: 1; }
+
+        /* 右侧：音量 + 歌单 */
         .pv-right { display: inline-flex; align-items: center; justify-content: flex-end; gap: 12px; min-width: 240px; }
         .pv-volume { width: 140px; height: 20px; display: flex; align-items: center; cursor: pointer; position: relative; }
         .pv-volume-bar { width: 100%; height: 4px; background: #eee; border-radius: 2px; position: relative; overflow: visible; pointer-events: none; }
         .pv-volume-fill { height: 100%; background: #888; width: 50%; border-radius: 2px; position: relative; }
-        .playlist-panel { background:#fff; border:1px solid #eee; border-radius:8px; box-shadow:0 8px 30px rgba(0,0,0,0.12); overflow:auto; padding:8px; position:absolute; bottom:110px; right:24px; display:none; }
-        .playlist-item { padding:8px 12px; cursor:pointer; }
-        .playlist-item.active { background:#fff3e0; color:#ff8c00; font-weight:600; }
+        .pv-volume-fill::after { content: ''; position: absolute; right: -5px; top: 50%; transform: translateY(-50%); width: 10px; height: 10px; background: #fff; border: 1px solid #888; border-radius: 50%; opacity: 0; transition: opacity 0.2s; }
+        .pv-volume:hover .pv-volume-fill::after { opacity: 1; }
 
-        /* 频道卡片点击效果 */
-        .channel-card {
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border-radius: 12px;
-            overflow: hidden;
+        /* 弹层：循环模式与倍速菜单 */
+        .popover {
+          position: absolute; bottom: 100%;
+          left: 50%; transform: translateX(-50%);
+          background: #fff; border: 1px solid #ddd; border-radius: 8px;
+          box-shadow: 0 10px 24px rgba(0,0,0,0.12);
+          padding: 8px; z-index: 30000; display: none;
         }
-
-        .channel-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        .popover.show { display: flex; }
+        .mode-popover { gap: 10px; align-items: center; }
+        .mode-item {
+          width: 40px; height: 40px; border-radius: 8px; border: 1px solid #eee;
+          display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: #444;
         }
+        .mode-item:hover { color: #ff8c00; border-color: #ffeed6; background: #fff9f0; }
+        .mode-item.active { color: #fff; background: #ff8c00; border-color: #ff8c00; }
+        .rate-popover { flex-direction: column; min-width: 140px; }
+        .rate-item { padding: 8px 12px; font-size: 14px; color: #333; cursor: pointer; border-radius: 6px; }
+        .rate-item:hover { background: #f7f7f7; }
+        .rate-item.active { color: #ff8c00; font-weight: 700; background: #fff4e6; }
 
-        .channel-card:active {
-            transform: translateY(-2px);
-            transition: transform 0.1s;
-        }
-
-        @media (max-width: 900px) { .pv-left{min-width:0;} .pv-right{min-width:0;} .pv-inner{grid-template-columns:auto 1fr auto; column-gap:10px; padding:0 12px;} }
-
-        /* 新增：最近收听页面特定样式 */
-        .content-block {
-            margin-bottom: 30px;
-        }
-
-        .content-title {
-            font-size: 16px;
-            font-weight: bold;
-            color: #FF8C00;
-            margin-bottom: 15px;
-            padding-bottom: 8px;
-            border-bottom: 2px solid #FFEDCC;
-        }
-
-        .channel-thumbnail {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            font-weight: bold;
-            color: #333;
-            padding: 10px;
-            text-align: center;
-            line-height: 1.4;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: #999;
-            background-color: #f9f9f9;
-            border-radius: 8px;
-            border: 1px dashed #ddd;
-        }
-
-        .empty-state i {
-            font-size: 48px;
-            margin-bottom: 15px;
-            color: #ddd;
-        }
-
-        .empty-state p {
-            font-size: 14px;
+        /* 响应式 */
+        @media (max-width: 900px) {
+          .pv-left { min-width: 0; }
+          .pv-right { min-width: 0; }
+          .pv-inner { grid-template-columns: auto 1fr auto; column-gap: 10px; padding: 0 12px; }
         }
     </style>
 </head>
 <body>
-    <!-- 音频元素（控制倍速/播放） -->
+    <!-- 音频元素（保留原页面其它脚本可能使用） -->
     <audio id="audioPlayer" controls style="display: none;">
         <source src="" type="audio/mpeg">
         您的浏览器不支持音频播放
     </audio>
 
-    <!-- 顶部导航栏 -->
+    <!-- 顶部导航栏（保留原样） -->
     <header class="header">
         <div class="logo">
             <div class="logo-img"></div>
@@ -153,7 +263,7 @@
         </div>
     </header>
 
-    <!-- 主要内容区 -->
+    <!-- 主要内容区（保留原样） -->
     <main class="main-content">
         <section class="user-info">
             <div class="avatar-wrapper">
@@ -170,81 +280,92 @@
             </div>
         </section>
         <section class="tab-bar">
-            <button class="tab active" onclick="window.location.href='my-recent.html'">最近收听</button>
+            <button class="tab" onclick="window.location.href='my-recent.html'">最近收听</button>
             <button class="tab" onclick="window.location.href='my-collect.html'">收藏</button>
-            <button class="tab" onclick="window.location.href='my-message.html'">私信</button>
+            <button class="tab active" onclick="window.location.href='my-message.html'">私信</button>
             <button class="tab" onclick="window.location.href='my-creator_center.html'">创作者中心</button>
             <button class="tab" onclick="window.location.href='my-works.html'">我的作品</button>
         </section>
-
-        <!-- 今天 -->
         <section class="content-block">
-            <div class="content-title">今天</div>
-            <div class="channel-cards">
-                <!-- 今天收听的课程 -->
-                <div class="channel-card" data-course-id="2" onclick="goToProgramList(this)">
-                    <div class="channel-thumbnail">日常英语口语600句</div>
+            <div class="message-area">
+                <div class="message-list">
+                    <div class="msg-item active">
+                        <div class="avatar-wrapper">
+                            <div class="avatar"></div>
+                        </div>
+                        <span>xx老师</span>
+                    </div>
+                    <div class="msg-item">
+                        <div class="avatar-wrapper">
+                            <div class="avatar"></div>
+                        </div>
+                        <span>学生2</span>
+                    </div>
+                    <div class="msg-item">
+                        <div class="avatar-wrapper">
+                            <div class="avatar"></div>
+                        </div>
+                        <span>同学A</span>
+                    </div>
+                    <div class="msg-item">
+                        <div class="avatar-wrapper">
+                            <div class="avatar"></div>
+                        </div>
+                        <span>同学B</span>
+                    </div>
+                    <div class="msg-item">
+                        <div class="avatar-wrapper">
+                            <div class="avatar"></div>
+                        </div>
+                        <span>同学C</span>
+                    </div>
                 </div>
-                <div class="channel-card" data-course-id="5" onclick="goToProgramList(this)">
-                    <div class="channel-thumbnail">职场英语沟通技巧</div>
-                </div>
-            </div>
-        </section>
-
-        <!-- 昨天 -->
-        <section class="content-block">
-            <div class="content-title">昨天</div>
-            <div class="channel-cards">
-                <!-- 昨天收听的课程 -->
-                <div class="channel-card" data-course-id="1" onclick="goToProgramList(this)">
-                    <div class="channel-thumbnail">商务英语会话技巧</div>
-                </div>
-                <div class="channel-card" data-course-id="3" onclick="goToProgramList(this)">
-                    <div class="channel-thumbnail">英语听力进阶训练</div>
-                </div>
-            </div>
-        </section>
-
-        <!-- 最近7天 -->
-        <section class="content-block">
-            <div class="content-title">最近7天</div>
-            <div class="channel-cards">
-                <!-- 最近7天收听的课程 -->
-                <div class="channel-card" data-course-id="4" onclick="goToProgramList(this)">
-                    <div class="channel-thumbnail">旅游英语实用对话</div>
-                </div>
-                <div class="channel-card" data-course-id="2" onclick="goToProgramList(this)">
-                    <div class="channel-thumbnail">日常英语口语600句</div>
-                </div>
-                <div class="channel-card" data-course-id="1" onclick="goToProgramList(this)">
-                    <div class="channel-thumbnail">商务英语会话技巧</div>
-                </div>
-            </div>
-        </section>
-
-        <!-- 更早 -->
-        <section class="content-block">
-            <div class="content-title">更早</div>
-            <div class="channel-cards">
-                <!-- 更早收听的课程 -->
-                <div class="channel-card" data-course-id="3" onclick="goToProgramList(this)">
-                    <div class="channel-thumbnail">英语听力进阶训练</div>
-                </div>
-                <div class="channel-card" data-course-id="5" onclick="goToProgramList(this)">
-                    <div class="channel-thumbnail">职场英语沟通技巧</div>
+                <div class="chat-window">
+                    <div class="chat-header">
+                        <div class="avatar-wrapper">
+                            <div class="avatar"></div>
+                        </div>
+                        <span>xx老师</span>
+                    </div>
+                    <div class="chat-content">
+                        <div class="chat-message received">
+                            你应该知道班级邀请码是多少吧
+                            <span class="time">2025.11.22 15:03</span>
+                        </div>
+                        <div class="chat-message sent">
+                            老师，邀请码是2025ABC
+                            <span class="time">2025.11.22 15:05</span>
+                        </div>
+                        <div class="chat-message received">
+                            好的，已经收到了。记得按时完成本周的听力作业
+                            <span class="time">2025.11.22 15:06</span>
+                        </div>
+                        <div class="chat-message sent">
+                            好的老师，我正在收听《Seasons in》这首练习
+                            <span class="time">2025.11.22 15:08</span>
+                        </div>
+                        <div class="chat-message received">
+                            这首曲子很适合听力训练，继续加油！
+                            <span class="time">2025.11.22 15:10</span>
+                        </div>
+                    </div>
+                    <div class="chat-input-area">
+                        <input type="text" placeholder="请输入消息..." id="messageInput">
+                        <button id="sendBtn">发送</button>
+                    </div>
                 </div>
             </div>
         </section>
     </main>
 
-    <!-- 替换底部播放栏为 PlayBar.html 版本 -->
-    <aside id="pv-player" class="pv-player-bar" role="region" aria-label="播放器">
+    <!-- 底部播放栏（完全替换为 PlayBar.html 结构） -->
+    <aside id="pv-player" class="pv-player-bar">
       <div class="pv-inner">
         <!-- 左侧：封面与标题 -->
         <div class="pv-left">
-          <div id="pv-cover" class="pv-cover"></div>
+          <div id="pv-cover" class="pv-cover" role="button" tabindex="0" aria-label="打开播放页面"></div>
           <div class="pv-meta">
-            <div id="pv-title" class="pv-title">Kalimba (Test Audio)</div>
+            <div id="pv-title" class="pv-title" role="button" tabindex="0">Kalimba (Test Audio)</div>
             <div id="pv-artist" class="pv-artist">Ninja Tuna</div>
           </div>
         </div>
@@ -262,12 +383,12 @@
               <svg class="icon" viewBox="0 0 24 24"><path d="M16 6h2v12h-2V6zM6 18l8.5-6L6 6v12z"/></svg>
             </button>
 
-            <!-- 播放模式 -->
+            <!-- 循环模式按钮 + 弹层 -->
             <div style="position: relative;">
               <button id="pv-mode-btn" class="mode-btn" title="播放模式" aria-label="播放模式">
                 <svg class="icon" viewBox="0 0 24 24"><path d="M7 7h8v3l4-4-4-4v3H5v6h2V7zm10 10H9v-3l-4 4 4 4v-3h10v-6h-2v4z"/></svg>
               </button>
-              <div id="mode-pop" class="popover mode-popover" style="display:none;">
+              <div id="mode-pop" class="popover mode-popover">
                 <div class="mode-item active" data-mode="single" title="单曲循环">
                   <svg class="icon" viewBox="0 0 24 24"><path d="M12 5v4l-1.5-1.5C8 10 8 14 10.5 16.5S16 19 18.5 16.5L20 18c-3 3-8 3-11 0S6 9 9 6L12 5z"/></svg>
                 </div>
@@ -280,10 +401,10 @@
               </div>
             </div>
 
-            <!-- 倍速 -->
+            <!-- 倍速按钮 + 弹层 -->
             <div class="rate-control" style="position: relative;">
               <button id="pv-rate-btn" class="rate-btn" title="倍速"><span id="rate-text" style="font-size: 12px; font-weight: bold;">1x</span></button>
-              <div id="rate-pop" class="popover rate-popover" style="display:none;">
+              <div id="rate-pop" class="popover rate-popover">
                 <div class="rate-item" data-rate="0.5">0.5x</div>
                 <div class="rate-item active" data-rate="1">1.0x</div>
                 <div class="rate-item" data-rate="1.5">1.5x</div>
@@ -307,15 +428,17 @@
           <button id="pv-mute" class="ctrl-btn" title="静音/取消静音" aria-label="静音">
             <svg id="vol-icon" class="icon" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3z"/></svg>
           </button>
-          <div id="pv-volume" class="pv-volume" title="音量">
+          <div id="pv-volume" class="pv-volume">
             <div class="pv-volume-bar"><div id="pv-volume-fill" class="pv-volume-fill"></div></div>
           </div>
-          <button id="pv-list-btn" class="ctrl-btn" title="播放列表" aria-label="播放列表">▤</button>
+          <button id="pv-list-btn" class="ctrl-btn" title="播放列表" aria-label="播放列表">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M3 5h18v2H3V5zm0 6h12v2H3v-2zm0 6h8v2H3v-2z"/></svg>
+          </button>
         </div>
       </div>
 
       <!-- 播放列表弹窗（示例） -->
-      <div id="playlist-panel" class="playlist-panel">
+      <div id="playlist-panel" class="playlist-panel" style="display:none;">
         <div class="playlist-item active" onclick="playIndex(0)">1. Kalimba (Test)</div>
         <div class="playlist-item" onclick="playIndex(1)">2. Sample MP3 (Test)</div>
       </div>
@@ -323,9 +446,10 @@
       <audio id="pv-audio" preload="metadata"></audio>
     </aside>
 
-    <!-- PlayBar 业务脚本（来自 PlayBar.html） -->
+    <!-- 播放栏脚本（完整替换为 PlayBar.html 逻辑，其他页面脚本保留） -->
     <script>
     ;(function () {
+      /* 两个样例音频 */
       const playlist = [
         { title: "Kalimba (Test Audio)", artist: "Ninja Tuna", cover: "", src: "https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3" },
         { title: "Sample MP3 (700KB)", artist: "Sample Source", cover: "", src: "https://sample.cat/downloads/file_example_MP3_700KB.mp3" }
@@ -374,8 +498,8 @@
       function pauseTrack() { audio.pause(); isPlaying = false; updatePlayIcon(); }
       function togglePlay() { isPlaying ? pauseTrack() : playTrack(); }
       function updatePlayIcon() {
-        playIcon.setAttribute('viewBox','0 0 24 24');
-        playIcon.innerHTML = isPlaying ? '<path d="M6 5h4v14H6V5zm8 0h4v14h-4V5z"/>' : '<path d="M8 5v14l11-7z"/>';
+        if (isPlaying) { playIcon.setAttribute('viewBox','0 0 24 24'); playIcon.innerHTML = '<path d="M6 5h4v14H6V5zm8 0h4v14h-4V5z"/>'; }
+        else { playIcon.setAttribute('viewBox','0 0 24 24'); playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>'; }
       }
       function formatTime(s) { if (!s || isNaN(s)) return "00:00"; const m = Math.floor(s/60), ss = Math.floor(s%60); return `${m<10?'0':''}${m}:${ss<10?'0':''}${ss}`; }
       function stopWrap(handler) { return function(e){ e.stopPropagation(); handler(e); }; }
@@ -393,21 +517,21 @@
 
       /* 模式弹层 */
       modeBtn.addEventListener('click', stopWrap(() => {
-        ratePop.style.display = 'none';
-        modePop.style.display = modePop.style.display === 'flex' ? 'none' : 'flex';
+        ratePop.classList.remove('show');
+        modePop.classList.toggle('show');
       }));
       modePop.addEventListener('click', stopWrap((e) => {
         const item = e.target.closest('.mode-item');
         if (!item) return;
         playMode = item.getAttribute('data-mode');
         document.querySelectorAll('#mode-pop .mode-item').forEach(el => el.classList.toggle('active', el === item));
-        modePop.style.display = 'none';
+        modePop.classList.remove('show');
       }));
 
       /* 倍速弹层 */
       rateBtn.addEventListener('click', stopWrap(() => {
-        modePop.style.display = 'none';
-        ratePop.style.display = ratePop.style.display === 'flex' ? 'none' : 'flex';
+        modePop.classList.remove('show');
+        ratePop.classList.toggle('show');
       }));
       ratePop.addEventListener('click', stopWrap((e) => {
         const item = e.target.closest('.rate-item');
@@ -416,13 +540,13 @@
         audio.playbackRate = r;
         rateText.innerText = r.toFixed(1) + 'x';
         document.querySelectorAll('#rate-pop .rate-item').forEach(el => el.classList.toggle('active', el === item));
-        ratePop.style.display = 'none';
+        ratePop.classList.remove('show');
       }));
 
       /* 点击其他区域关闭弹层 */
       document.addEventListener('click', (e) => {
-        if (!modeBtn.contains(e.target) && !modePop.contains(e.target)) modePop.style.display = 'none';
-        if (!rateBtn.contains(e.target) && !ratePop.contains(e.target)) ratePop.style.display = 'none';
+        if (!modeBtn.contains(e.target) && !modePop.contains(e.target)) modePop.classList.remove('show');
+        if (!rateBtn.contains(e.target) && !ratePop.contains(e.target)) ratePop.classList.remove('show');
       });
 
       /* 音频事件与切歌模式 */
@@ -489,45 +613,159 @@
       /* 提供给 HTML 的播放列表切换 */
       window.playIndex = function(index){ currentIndex = index; loadTrack(currentIndex); playTrack(); }
 
+      /* 新增：点击封面或标题跳转 player.html 携带数据 */
+      function openPlayerPageWithData(openInNewTab = false) {
+        try {
+          const params = new URLSearchParams();
+          params.set('course', titleEl.innerText || '');
+          params.set('chapterIndex', String(currentIndex || 0));
+          const safePlaylist = playlist.map((p, i) => ({
+            id: p.id || ('p' + i),
+            title: p.title || (`Track ${i+1}`),
+            src: p.src || '',
+            duration: p.durationText || p.duration || ''
+          }));
+          params.set('chapters', encodeURIComponent(JSON.stringify(safePlaylist)));
+          const url = 'player.html?' + params.toString();
+          if (openInNewTab) window.open(url, '_blank');
+          else window.location.href = url;
+        } catch (err) {
+          try {
+            const params = new URLSearchParams();
+            params.set('course', titleEl.innerText || '');
+            params.set('chapterIndex', String(currentIndex || 0));
+            const url = 'player.html?' + params.toString();
+            if (openInNewTab) window.open(url, '_blank');
+            else window.location.href = url;
+          } catch (_) { /* ignore */ }
+        }
+      }
+      if (coverEl) {
+        coverEl.addEventListener('click', stopWrap(() => openPlayerPageWithData(false)));
+        coverEl.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openPlayerPageWithData(false); } });
+      }
+      if (titleEl) {
+        titleEl.addEventListener('click', stopWrap(() => openPlayerPageWithData(false)));
+        titleEl.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openPlayerPageWithData(false); } });
+      }
+
       /* 初始化第一首 */
       loadTrack(currentIndex);
     })();
     </script>
 
-    <!-- 跳转函数脚本 -->
+    <!-- 保留私信页面交互脚本（与播放栏无关） -->
     <script>
-    // 跳转到节目列表页面的函数
-    function goToProgramList(element) {
-        // 获取课程ID
-        const courseId = element.getAttribute('data-course-id');
+        // 解析URL参数
+        function getURLParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
 
-        // 根据课程ID决定跳转（传递课程名称作为参数）
-        const courses = {
-            '1': '商务英语会话技巧',
-            '2': '日常英语口语600句',
-            '3': '英语听力进阶训练',
-            '4': '旅游英语实用对话',
-            '5': '职场英语沟通技巧'
-        };
+        let msgItems = document.querySelectorAll('.msg-item');
+        const messageInput = document.getElementById('messageInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const chatContent = document.querySelector('.chat-content');
+        const chatHeaderName = document.querySelector('.chat-header span');
 
-        const courseName = courses[courseId] || '英语课程';
+        // 页面加载时检查URL参数
+        window.addEventListener('DOMContentLoaded', () => {
+            const username = getURLParameter('username');
+            if (username) {
+                let found = false;
+                msgItems.forEach(item => {
+                    const itemName = item.querySelector('span').textContent;
+                    if (itemName === username) {
+                        item.click(); // 自动点击对应的消息列表项
+                        found = true;
+                    }
+                });
 
-        // 跳转到program_list.html，传递课程ID和课程名称作为URL参数
-        window.location.href = `program_list.html?course=${encodeURIComponent(courseName)}&id=${courseId}`;
-    }
+                if (!found) {
+                    const messageList = document.querySelector('.message-list');
+                    const newMsgItem = document.createElement('div');
+                    newMsgItem.className = 'msg-item active';
+                    newMsgItem.innerHTML = `
+                        <div class="avatar-wrapper">
+                            <div class="avatar"></div>
+                        </div>
+                        <span>${username}</span>
+                    `;
+                    msgItems.forEach(item => item.classList.remove('active'));
+                    messageList.appendChild(newMsgItem);
+                    msgItems = document.querySelectorAll('.msg-item');
+                    newMsgItem.addEventListener('click', () => {
+                        msgItems.forEach(item => item.classList.remove('active'));
+                        newMsgItem.classList.add('active');
+                        const name = newMsgItem.querySelector('span').textContent;
+                        chatHeaderName.textContent = name;
+                        chatContent.innerHTML = `<div class="chat-message received">
+                            开始与${name}的对话
+                            <span class="time">${getCurrentTime()}</span>
+                        </div>`;
+                        chatContent.scrollTop = chatContent.scrollHeight;
+                    });
+                    chatHeaderName.textContent = username;
+                    chatContent.innerHTML = `<div class="chat-message received">
+                        开始与${username}的对话
+                        <span class="time">${getCurrentTime()}</span>
+                    </div>`;
+                    chatContent.scrollTop = chatContent.scrollHeight;
+                }
+            }
+        });
 
-    // 为卡片添加鼠标悬停效果
-    document.addEventListener('DOMContentLoaded', function() {
-        const cards = document.querySelectorAll('.channel-card');
-
-        cards.forEach(card => {
-            // 添加点击效果
-            card.addEventListener('click', function(e) {
-                e.preventDefault();
-                goToProgramList(this);
+        // 切换对话
+        msgItems.forEach(item => {
+            item.addEventListener('click', () => {
+                msgItems.forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                const name = item.querySelector('span').textContent;
+                document.querySelector('.chat-header span').textContent = name;
+                chatContent.innerHTML = `<div class="chat-message received">
+                    开始与${name}的对话
+                    <span class="time">${getCurrentTime()}</span>
+                </div>`;
+                chatContent.scrollTop = chatContent.scrollHeight;
             });
         });
-    });
+
+        // 发送消息
+        sendBtn.addEventListener('click', sendMessage);
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') { sendMessage(); }
+        });
+
+        function sendMessage() {
+            const message = messageInput.value.trim();
+            if (message === '') return;
+            const newMessage = document.createElement('div');
+            newMessage.className = 'chat-message sent';
+            newMessage.innerHTML = `${message}<span class="time">${getCurrentTime()}</span>`;
+            chatContent.appendChild(newMessage);
+            messageInput.value = '';
+            chatContent.scrollTop = chatContent.scrollHeight;
+
+            setTimeout(() => {
+                const replies = ['好的，收到了','明白了，谢谢','我会注意的','这个建议不错','继续努力'];
+                const randomReply = replies[Math.floor(Math.random() * replies.length)];
+                const replyMessage = document.createElement('div');
+                replyMessage.className = 'chat-message received';
+                replyMessage.innerHTML = `${randomReply}<span class="time">${getCurrentTime()}</span>`;
+                chatContent.appendChild(replyMessage);
+                chatContent.scrollTop = chatContent.scrollHeight;
+            }, 3000);
+        }
+
+        function getCurrentTime() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = (now.getMonth() + 1).toString().padStart(2, '0');
+            const day = now.getDate().toString().padStart(2, '0');
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            return `${year}.${month}.${day} ${hours}:${minutes}`;
+        }
     </script>
 </body>
 </html>

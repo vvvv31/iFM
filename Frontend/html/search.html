@@ -214,9 +214,9 @@
       <div class="pv-inner">
         <!-- 左侧：封面与标题 -->
         <div class="pv-left">
-          <div id="pv-cover" class="pv-cover"></div>
+          <div id="pv-cover" class="pv-cover" role="button" tabindex="0" aria-label="打开播放页面"></div>
           <div class="pv-meta">
-            <div id="pv-title" class="pv-title">Kalimba (Test Audio)</div>
+            <div id="pv-title" class="pv-title" role="button" tabindex="0">Kalimba (Test Audio)</div>
             <div id="pv-artist" class="pv-artist">Ninja Tuna</div>
           </div>
         </div>
@@ -302,7 +302,7 @@
     <script src="../js/search.js"></script>
     <script src="../js/script.js"></script>
 
-    <!-- 页面自身逻辑 -->
+    <!-- 页面自身逻辑（保留原有） -->
     <script>
       // 搜索结果页专属脚本：解析URL参数并展示
       function getSearchKeyword() {
@@ -321,18 +321,18 @@
       // 课程ID映射表 - 确保search.js中的mockCourses与program_list.html中的courseData对应
       const courseIdMap = {
         // search.js中的id: program_list.html中的id
-        1: '1',  // 商务英语会话技巧
-        2: '2',  // 日常英语口语600句
-        3: '3',  // 英语听力进阶训练
-        4: '6',  // 英语写作技巧提升
-        5: '7',  // 零基础英语入门
-        6: '8',  // 英语语法精讲
-        7: '9',  // 旅游英语口语
-        8: '10', // 英语发音纠正
-        9: '11', // 英语面试技巧
-        10: '12', // 考研英语阅读理解
-        11: '13', // 少儿英语启蒙
-        12: '14'  // 职场英语沟通
+        1: '1',
+        2: '2',
+        3: '3',
+        4: '6',
+        5: '7',
+        6: '8',
+        7: '9',
+        8: '10',
+        9: '11',
+        10: '12',
+        11: '13',
+        12: '14'
       };
 
       // 重写搜索结果显示函数，确保点击可以跳转到正确的课程详情页
@@ -350,8 +350,6 @@
                   e.stopPropagation();
                   const courseId = this.getAttribute('data-course-id');
                   const mappedId = courseIdMap[courseId] || courseId;
-
-                  // 跳转到课程详情页
                   window.location.href = `program_list.html?id=${mappedId}`;
                 });
               });
@@ -365,15 +363,12 @@
           window.updateSearchResults = function(courses, keyword) {
             originalUpdateSearchResults.call(this, courses, keyword);
 
-            // 重绑定点击事件
             setTimeout(() => {
               document.querySelectorAll('#search-results-grid .channel-card').forEach(card => {
                 card.addEventListener('click', function(e) {
                   e.stopPropagation();
                   const courseId = this.getAttribute('data-course-id');
                   const mappedId = courseIdMap[courseId] || courseId;
-
-                  // 跳转到课程详情页
                   window.location.href = `program_list.html?id=${mappedId}`;
                 });
               });
@@ -388,9 +383,10 @@
       });
     </script>
 
-    <!-- PlayBar 播放栏脚本（原样拷贝并可运行） -->
+    <!-- PlayBar 播放栏脚本（完整来自 PlayBar.html） -->
     <script>
     ;(function () {
+    /* 两个样例音频 */
     const playlist = [
       { title: "Kalimba (Test Audio)", artist: "Ninja Tuna", cover: "", src: "https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3" },
       { title: "Sample MP3 (700KB)", artist: "Sample Source", cover: "", src: "https://sample.cat/downloads/file_example_MP3_700KB.mp3" }
@@ -400,7 +396,7 @@
     let isPlaying = false;
     let isDraggingProgress = false;
     let isDraggingVolume = false;
-    let playMode = 'list';
+    let playMode = 'list'; /* single | list | shuffle */
 
     const audio = document.getElementById('pv-audio');
     const playBtn = document.getElementById('pv-play');
@@ -445,6 +441,7 @@
     function formatTime(s) { if (!s || isNaN(s)) return "00:00"; const m = Math.floor(s/60), ss = Math.floor(s%60); return `${m<10?'0':''}${m}:${ss<10?'0':''}${ss}`; }
     function stopWrap(handler) { return function(e){ e.stopPropagation(); handler(e); }; }
 
+    /* 控件事件（阻止冒泡） */
     playBtn.addEventListener('click', stopWrap(togglePlay));
     prevBtn.addEventListener('click', stopWrap(() => prevByMode()));
     nextBtn.addEventListener('click', stopWrap(() => nextByMode()));
@@ -455,6 +452,7 @@
       else { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 7v10c3-1 5-3.6 5-7s-2-6-5-7z"/>'; }
     }));
 
+    /* 模式弹层 */
     modeBtn.addEventListener('click', stopWrap(() => {
       ratePop.classList.remove('show');
       modePop.classList.toggle('show');
@@ -467,6 +465,7 @@
       modePop.classList.remove('show');
     }));
 
+    /* 倍速弹层 */
     rateBtn.addEventListener('click', stopWrap(() => {
       modePop.classList.remove('show');
       ratePop.classList.toggle('show');
@@ -481,11 +480,13 @@
       ratePop.classList.remove('show');
     }));
 
+    /* 点击其他区域关闭弹层 */
     document.addEventListener('click', (e) => {
       if (!modeBtn.contains(e.target) && !modePop.contains(e.target)) modePop.classList.remove('show');
       if (!rateBtn.contains(e.target) && !ratePop.contains(e.target)) ratePop.classList.remove('show');
     });
 
+    /* 音频事件与切歌模式 */
     audio.addEventListener('timeupdate', () => {
       if (isDraggingProgress) return;
       const percent = (audio.currentTime / audio.duration) * 100;
@@ -509,6 +510,7 @@
       loadTrack(currentIndex); playTrack();
     }
 
+    /* 进度条拖拽（鼠标/触摸） */
     function handleProgressInput(clientX) {
       const rect = progressEl.getBoundingClientRect();
       let x = clientX - rect.left; x = Math.max(0, Math.min(x, rect.width));
@@ -524,6 +526,7 @@
     document.addEventListener('touchmove', (e) => { if (isDraggingProgress) { e.preventDefault(); const t = handleProgressInput(getTouchX(e)); timeCurEl.innerText = formatTime(t); } }, { passive:false });
     document.addEventListener('touchend', (e) => { if (isDraggingProgress) { isDraggingProgress = false; const t = handleProgressInput(getTouchX(e)); if (isFinite(t)) audio.currentTime = t; } }, { passive:false });
 
+    /* 音量拖拽（鼠标/触摸） */
     function handleVolumeInput(clientX) {
       const rect = volEl.getBoundingClientRect();
       let x = clientX - rect.left; x = Math.max(0, Math.min(x, rect.width));
@@ -539,12 +542,49 @@
     document.addEventListener('touchmove', (e) => { if (isDraggingVolume) { e.preventDefault(); handleVolumeInput(getTouchX(e)); } }, { passive:false });
     document.addEventListener('touchend', () => { isDraggingVolume = false; }, { passive:false });
 
+    /* 简易播放列表开关（示例） */
     listBtn.addEventListener('click', stopWrap(() => {
       playlistPanel.style.display = playlistPanel.style.display === 'block' ? 'none' : 'block';
     }));
 
-    window.playIndex = function(index){ currentIndex = index; loadTrack(currentIndex); playTrack(); }
+    /* 封面/标题跳转到 player.html（保留自 PlayBar.html） */
+    function openPlayerPageWithData(openInNewTab = false) {
+      try {
+        const params = new URLSearchParams();
+        params.set('course', titleEl.innerText || '');
+        params.set('chapterIndex', String(currentIndex || 0));
+        const safePlaylist = playlist.map((p, i) => ({
+          id: p.id || ('p' + i),
+          title: p.title || (`Track ${i+1}`),
+          src: p.src || '',
+          duration: p.durationText || p.duration || ''
+        }));
+        params.set('chapters', encodeURIComponent(JSON.stringify(safePlaylist)));
+        const url = 'player.html?' + params.toString();
+        if (openInNewTab) window.open(url, '_blank');
+        else window.location.href = url;
+      } catch (err) {
+        try {
+          const params = new URLSearchParams();
+          params.set('course', titleEl.innerText || '');
+          params.set('chapterIndex', String(currentIndex || 0));
+          const url = 'player.html?' + params.toString();
+          if (openInNewTab) window.open(url, '_blank');
+          else window.location.href = url;
+        } catch (_) { /* ignore */ }
+      }
+    }
 
+    if (coverEl) {
+      coverEl.addEventListener('click', stopWrap(() => openPlayerPageWithData(false)));
+      coverEl.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openPlayerPageWithData(false); } });
+    }
+    if (titleEl) {
+      titleEl.addEventListener('click', stopWrap(() => openPlayerPageWithData(false)));
+      titleEl.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openPlayerPageWithData(false); } });
+    }
+
+    /* 初始化第一首 */
     loadTrack(currentIndex);
     })();
     </script>

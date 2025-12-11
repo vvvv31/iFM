@@ -80,6 +80,130 @@
         .preview-area img { width:100%; height:100px; object-fit:cover; display:block; border-radius:10px; }
         .preview-area button { position:absolute; top:4px; right:4px; width:24px; height:24px; background:rgba(0,0,0,.55); color:#fff; border:none; border-radius:50%; cursor:pointer; font-size:14px; display:flex; align-items:center; justify-content:center; transition:background .2s; }
         .preview-area button:hover { background:rgba(0,0,0,.75); }
+
+        /* 动态卡片样式 */
+        .posts-list { display:flex; flex-direction:column; gap:12px; }
+        .post-card { background:#fff; border:1px solid #f0f0f0; border-radius:12px; padding:16px; transition:box-shadow .2s; }
+        .post-card:hover { box-shadow:0 4px 16px rgba(0,0,0,.08); }
+        .post-header { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+        .post-header .avatar { width:44px; height:44px; border-radius:50%; background:linear-gradient(135deg,#ff9800,#ff5722); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:18px; flex-shrink:0; }
+        .post-author .author-name { font-weight:600; font-size:15px; color:#333; }
+        .post-author .post-time { font-size:12px; color:#999; margin-top:2px; }
+        .post-body { font-size:15px; line-height:1.7; color:#333; margin-bottom:12px; word-wrap:break-word; }
+        .post-body .hashtag { color:#ff8c00; font-weight:500; cursor:pointer; }
+        .post-body .hashtag:hover { text-decoration:underline; }
+        .post-images { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:12px; border-radius:8px; overflow:hidden; }
+        .post-images img { width:100%; aspect-ratio:1; object-fit:cover; cursor:pointer; transition:transform .2s; }
+        .post-images img:hover { transform:scale(1.02); }
+        .post-actions { display:flex; gap:24px; padding-top:12px; border-top:1px solid #f5f5f5; }
+        .action-btn { background:none; border:none; color:#666; font-size:14px; cursor:pointer; display:flex; align-items:center; gap:6px; padding:6px 12px; border-radius:20px; transition:all .2s; }
+        .action-btn:hover { background:#fff3e0; color:#ff8c00; }
+        .action-btn.liked { color:#ff5722; }
+        .action-btn.liked i { color:#ff5722; }
+        .action-btn i { font-size:16px; }
+
+        /* 评论区样式 */
+        .comments-section { margin-top:12px; padding-top:12px; border-top:1px solid #f0f0f0; }
+        .comments-list { display:flex; flex-direction:column; gap:12px; margin-bottom:12px; }
+        .comment-item { display:flex; gap:10px; }
+        .comment-item.reply-item { margin-left:36px; padding-left:10px; border-left:2px solid #ffe0b2; }
+        .comment-avatar { width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,#ffb74d,#ff9800); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:13px; flex-shrink:0; }
+        .comment-content { flex:1; min-width:0; }
+        .comment-header { display:flex; align-items:center; gap:8px; margin-bottom:4px; }
+        .comment-author { font-weight:600; font-size:13px; color:#333; }
+        .comment-time { font-size:12px; color:#999; }
+        .comment-text { font-size:14px; color:#333; line-height:1.5; margin-bottom:6px; word-wrap:break-word; }
+        .comment-text .mention { color:#ff8c00; font-weight:500; }
+        .comment-actions { display:flex; gap:12px; }
+        .comment-actions button { background:none; border:none; color:#999; font-size:12px; cursor:pointer; display:flex; align-items:center; gap:4px; padding:2px 6px; border-radius:4px; transition:all .2s; }
+        .comment-actions button:hover { color:#ff8c00; background:#fff3e0; }
+        .comment-like-btn.liked { color:#ff5722 !important; }
+        .comment-like-btn i { font-size:12px; }
+        .replies-list { margin-top:10px; display:flex; flex-direction:column; gap:8px; }
+        .comment-composer { display:flex; gap:10px; align-items:center; background:#f9f9f9; padding:10px; border-radius:8px; }
+        .comment-input { flex:1; border:1px solid #e0e0e0; border-radius:20px; padding:8px 14px; font-size:13px; outline:none; transition:border-color .2s; }
+        .comment-input:focus { border-color:#ff9800; }
+        .comment-submit-btn { background:linear-gradient(135deg,#ff9800,#ff5722); color:#fff; border:none; padding:8px 16px; border-radius:20px; font-size:13px; cursor:pointer; transition:transform .15s; }
+        .comment-submit-btn:hover { transform:scale(1.02); }
+
+        /* 热门推荐侧边栏 */
+        .channel-container { display:grid; grid-template-columns:280px 1fr 260px; gap:20px; }
+        .hot-sidebar { display:flex; flex-direction:column; gap:16px; }
+        .hot-section { background:#fff; border:1px solid #ffe0b2; border-radius:12px; padding:16px; }
+        .hot-title { font-size:15px; font-weight:700; color:#ff6d00; margin:0 0 12px 0; display:flex; align-items:center; gap:8px; }
+        .hot-title i { color:#ff9800; }
+        .hot-list { display:flex; flex-direction:column; gap:10px; }
+        .hot-item { display:flex; align-items:center; gap:10px; padding:8px; border-radius:8px; cursor:pointer; transition:background .2s; }
+        .hot-item:hover { background:#fff8f0; }
+        .hot-rank { width:24px; height:24px; background:#ff9800; color:#fff; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; flex-shrink:0; }
+        .hot-rank.gold { background:linear-gradient(135deg,#ffd700,#ffb300); }
+        .hot-rank.silver { background:linear-gradient(135deg,#c0c0c0,#9e9e9e); }
+        .hot-rank.bronze { background:linear-gradient(135deg,#cd7f32,#8b4513); }
+        .hot-info { flex:1; min-width:0; }
+        .hot-name { font-size:14px; font-weight:600; color:#333; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .hot-desc { font-size:12px; color:#999; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .hot-members { font-size:12px; color:#ff8c00; font-weight:500; white-space:nowrap; }
+
+        /* 左侧栏：已加入群组 */
+        .channel-sidebar { background:#fff; border:1px solid #ffe0b2; border-radius:12px; padding:16px; height:fit-content; }
+        .sidebar-title { font-size:15px; font-weight:700; color:#ff6d00; margin:0 0 12px 0; display:flex; align-items:center; gap:8px; }
+        .sidebar-title i { color:#ff9800; }
+        .joined-groups-list { display:flex; flex-direction:column; gap:6px; max-height:300px; overflow-y:auto; margin-bottom:12px; }
+        .joined-group-item { display:flex; align-items:center; gap:10px; padding:10px; background:#fff; border:1px solid #f0f0f0; border-radius:10px; cursor:pointer; transition:all .2s; }
+        .joined-group-item:hover { background:#fff8f0; border-color:#ff9800; }
+        .joined-group-item.active { background:#fff3e0; border-color:#ff9800; }
+        .jg-avatar { width:36px; height:36px; border-radius:8px; background:linear-gradient(135deg,#ff9800,#ff6d00); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:14px; flex-shrink:0; }
+        .jg-info { flex:1; min-width:0; }
+        .jg-name { font-size:14px; font-weight:600; color:#333; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .jg-members { font-size:12px; color:#999; }
+        .jg-unread { background:#ff5722; color:#fff; font-size:11px; padding:2px 6px; border-radius:10px; }
+
+        /* 加入群组区块 */
+        .join-group-section { margin-top:16px; padding-top:16px; border-top:1px solid #f0f0f0; }
+        .join-title { font-size:14px; font-weight:600; color:#ff6d00; margin:0 0 10px 0; display:flex; align-items:center; gap:6px; }
+        .join-title i { color:#ff9800; font-size:13px; }
+        .invite-code-form { display:flex; gap:8px; }
+        .invite-code-input { flex:1; padding:10px 12px; border:1px solid #e0e0e0; border-radius:8px; font-size:14px; text-transform:uppercase; letter-spacing:1px; outline:none; transition:border-color .2s; }
+        .invite-code-input:focus { border-color:#ff9800; }
+        .invite-code-input::placeholder { text-transform:none; letter-spacing:normal; color:#999; }
+        .join-code-btn { padding:8px 12px; background:linear-gradient(135deg,#ff9800,#ff5722); color:#fff; border:none; border-radius:8px; font-size:12px; font-weight:600; cursor:pointer; transition:transform .15s; white-space:nowrap; }
+        .join-code-btn:hover { transform:scale(1.02); }
+
+        /* 中间区域：Tab 切换按钮 */
+        .tab-chips { display:flex; gap:8px; margin-left:12px; }
+        .tab-chip { padding:8px 20px; border:1px solid #ffe0b2; border-radius:8px; background:#fff; font-size:14px; font-weight:600; cursor:pointer; transition:all .2s; color:#666; }
+        .tab-chip:hover { border-color:#ff9800; background:#fff8f0; }
+        .tab-chip.active { background:#ff9800; color:#fff; border-color:#ff9800; }
+
+        /* 活动面板样式 */
+        .activity-section { padding:10px 0; }
+        .topics-title { font-size:16px; font-weight:700; color:#333; margin:0 0 16px 0; display:flex; align-items:center; gap:8px; }
+        .topics-title i { color:#ff9800; }
+        .topics-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:24px; }
+        .topic-card { background:#fff; border:1px solid #f0f0f0; border-radius:12px; padding:16px; display:flex; align-items:center; gap:12px; cursor:pointer; transition:all .2s; }
+        .topic-card:hover { border-color:#ff9800; background:#fff8f0; transform:translateY(-2px); box-shadow:0 4px 12px rgba(255,152,0,.15); }
+        .topic-icon { font-size:28px; }
+        .topic-info { flex:1; }
+        .topic-name { font-size:14px; font-weight:600; color:#ff6d00; margin-bottom:4px; }
+        .topic-count { font-size:12px; color:#999; }
+        .ongoing-activities { margin-top:20px; }
+        .activity-list { display:flex; flex-direction:column; gap:12px; }
+        .activity-card { background:#fff; border:1px solid #f0f0f0; border-radius:12px; padding:16px; transition:all .2s; }
+        .activity-card:hover { border-color:#ffe0b2; box-shadow:0 4px 12px rgba(0,0,0,.06); }
+        .activity-badge { display:inline-block; padding:3px 8px; border-radius:4px; font-size:11px; font-weight:600; background:#e8f5e9; color:#4caf50; margin-bottom:8px; }
+        .activity-badge.hot { background:#fff3e0; color:#ff9800; }
+        .activity-badge.new { background:#e3f2fd; color:#2196f3; }
+        .activity-title { font-size:16px; font-weight:700; color:#333; margin-bottom:6px; }
+        .activity-desc { font-size:13px; color:#666; margin-bottom:10px; line-height:1.5; }
+        .activity-meta { display:flex; gap:16px; font-size:12px; color:#999; margin-bottom:12px; }
+        .activity-meta i { margin-right:4px; color:#ffb74d; }
+        .activity-join-btn { padding:8px 20px; background:linear-gradient(135deg,#ff9800,#ff5722); color:#fff; border:none; border-radius:20px; font-size:13px; font-weight:600; cursor:pointer; transition:all .2s; }
+        .activity-join-btn:hover { transform:scale(1.02); box-shadow:0 4px 12px rgba(255,152,0,.3); }
+        .activity-join-btn.joined { background:#e0e0e0; color:#999; cursor:default; }
+        .activity-join-btn.joined:hover { transform:none; box-shadow:none; }
+
+        @media (max-width:1100px) { .channel-container { grid-template-columns:240px 1fr; } .hot-sidebar { display:none; } .topics-grid { grid-template-columns:repeat(2,1fr); } }
+        @media (max-width:768px) { .channel-container { grid-template-columns:1fr; } .channel-sidebar { display:none; } .topics-grid { grid-template-columns:1fr; } }
     </style>
 </head>
 <body>
@@ -122,47 +246,43 @@
     <!-- 主要内容区域：分类侧栏 + 群组列表 / 动态 Feed -->
     <main class="main channel-main">
       <div class="container channel-container">
-        <!-- 左侧分类与快捷操作 -->
+        <!-- 左侧：已加入的群组列表 -->
         <aside class="channel-sidebar">
-          <div class="channel-search">
-            <div class="search-box">
-              <input type="text" placeholder="搜索频道/群组" id="channelSearch" class="invite-search">
-              <button class="close-btn" id="clearSearch">×</button>
-            </div>
-            <div style="margin-top:8px; display:flex; align-items:center; gap:8px;">
-              <input type="checkbox" id="myGroupsOnly" />
-              <label for="myGroupsOnly" style="font-size:13px;">只看我加入的群组</label>
+          <h3 class="sidebar-title"><i class="fas fa-users"></i> 已加入的群组</h3>
+          <div class="joined-groups-list" id="joinedGroupsList">
+            <!-- 由 JS 渲染 -->
+          </div>
+          <button class="create-group-btn">+ 创建群组</button>
+          
+          <!-- 加入群组 -->
+          <div class="join-group-section">
+            <h4 class="join-title"><i class="fas fa-sign-in-alt"></i> 加入群组</h4>
+            <div class="invite-code-form">
+              <input type="text" id="inviteCodeInput" class="invite-code-input" placeholder="输入邀请码" maxlength="8" />
+              <button id="joinByCodeBtn" class="join-code-btn">加入</button>
             </div>
           </div>
-
-          <div class="category-list" id="categoryList">
-            <button class="category-item active" data-category="feed">动态</button>
-            <button class="category-item" data-category="groups">群组</button>
-            <button class="category-item" data-category="学习">学习</button>
-            <button class="category-item" data-category="其他">其他</button>
-          </div>
-
-          <button class="create-group-btn">创建群组</button>
         </aside>
 
-        <!-- 右侧主视图区（工具栏 + 列表或 Feed） -->
+        <!-- 中间主视图区（工具栏 + 列表或 Feed） -->
         <section class="groups-section">
           <div class="channel-controls">
             <div class="left-controls">
-              <div class="view-toggle" role="tablist" aria-label="视图切换">
-                <button class="view-btn" data-mode="card" title="卡片视图">▦</button>
-                <button class="view-btn" data-mode="list" title="列表视图">≡</button>
-                <button class="view-btn" data-mode="compact" title="紧凑视图">☰</button>
-              </div>
-              <div class="filter-chips" id="filterChips">
-                <!-- 讨论已合并入群组，不再单独展示 -->
-                <button class="chip" data-filter="学习">学习</button>
-                <button class="chip" data-filter="其他">其他</button>
+              <div class="tab-chips">
+                <button class="tab-chip active" data-tab="feed">动态</button>
+                <button class="tab-chip" data-tab="groups">群组</button>
+                <button class="tab-chip" data-tab="activity">活动</button>
               </div>
             </div>
             <div class="right-controls">
-              <label for="sortSelect">排序：</label>
-              <select id="sortSelect">
+              <span class="sort-label">排序：</span>
+              <!-- 动态排序 -->
+              <select id="feedSortSelect">
+                <option value="new">最新</option>
+                <option value="hot">最热</option>
+              </select>
+              <!-- 群组排序 -->
+              <select id="groupSortSelect" style="display:none;">
                 <option value="active">活跃度</option>
                 <option value="new">最新</option>
                 <option value="members">成员数</option>
@@ -175,8 +295,65 @@
             <div id="groupsGrid" class="groups-grid"></div>
           </div>
 
+          <!-- 活动面板 -->
+          <div id="activityPanel" class="panel" style="display:none;">
+            <div class="activity-section">
+              <div class="hot-topics">
+                <h4 class="topics-title"><i class="fas fa-fire"></i> 热门活动</h4>
+                <div class="topics-grid">
+                  <div class="topic-card" data-topic="每日一句">
+                    <div class="topic-icon">💬</div>
+                    <div class="topic-info">
+                      <div class="topic-name">#每日一句#</div>
+                      <div class="topic-count">1.2万人参与</div>
+                    </div>
+                  </div>
+                  <div class="topic-card" data-topic="打卡挑战">
+                    <div class="topic-icon">✅</div>
+                    <div class="topic-info">
+                      <div class="topic-name">#打卡挑战#</div>
+                      <div class="topic-count">5.1千人参与</div>
+                    </div>
+                  </div>
+                  <div class="topic-card" data-topic="英语学习">
+                    <div class="topic-icon">📚</div>
+                    <div class="topic-info">
+                      <div class="topic-name">#英语学习#</div>
+                      <div class="topic-count">8.5千人参与</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="ongoing-activities">
+                <h4 class="topics-title"><i class="fas fa-calendar-alt"></i> 进行中的活动</h4>
+                <div class="activity-list">
+                  <div class="activity-card">
+                    <div class="activity-badge">进行中</div>
+                    <div class="activity-title">21天早起打卡挑战</div>
+                    <div class="activity-desc">连续21天早起7点前打卡，养成早起好习惯</div>
+                    <div class="activity-meta">
+                      <span><i class="fas fa-users"></i> 328人参与</span>
+                      <span><i class="fas fa-clock"></i> 还剩15天结束</span>
+                    </div>
+                    <button class="activity-join-btn">立即参加</button>
+                  </div>
+                  <div class="activity-card">
+                    <div class="activity-badge hot">火爆</div>
+                    <div class="activity-title">每日一句英文</div>
+                    <div class="activity-desc">每天学一句地道英文表达，积少成多</div>
+                    <div class="activity-meta">
+                      <span><i class="fas fa-users"></i> 1.2万人参与</span>
+                      <span><i class="fas fa-clock"></i> 长期活动</span>
+                    </div>
+                    <button class="activity-join-btn joined">已参加</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- Feed 动态面板 -->
-          <div id="feedPanel" class="panel" style="display:none;">
+          <div id="feedPanel" class="panel">
             <section id="feedSection" class="feed-section">
               <div class="composer">
                 <textarea id="composerInput" placeholder="说点什么..." rows="3"></textarea>
@@ -192,6 +369,65 @@
             </section>
           </div>
         </section>
+
+        <!-- 热门推荐侧边栏 -->
+        <aside class="hot-sidebar">
+          <div class="hot-section">
+            <h3 class="hot-title"><i class="fas fa-fire"></i> 热门推荐</h3>
+            <div class="hot-list" id="hotGroupsList">
+              <div class="hot-item">
+                <div class="hot-rank">1</div>
+                <div class="hot-info">
+                  <div class="hot-name">英语学习群</div>
+                  <div class="hot-desc">口语练习与资源分享</div>
+                </div>
+                <div class="hot-members">128人</div>
+              </div>
+              <div class="hot-item">
+                <div class="hot-rank">2</div>
+                <div class="hot-info">
+                  <div class="hot-name">早起打卡组</div>
+                  <div class="hot-desc">每天早起一起学习</div>
+                </div>
+                <div class="hot-members">64人</div>
+              </div>
+              <div class="hot-item">
+                <div class="hot-rank">3</div>
+                <div class="hot-info">
+                  <div class="hot-name">深度讨论组</div>
+                  <div class="hot-desc">长篇材料讨论</div>
+                </div>
+                <div class="hot-members">32人</div>
+              </div>
+            </div>
+          </div>
+          <div class="hot-section">
+            <h3 class="hot-title"><i class="fas fa-chart-line"></i> 活跃排行</h3>
+            <div class="hot-list">
+              <div class="hot-item">
+                <div class="hot-rank gold">1</div>
+                <div class="hot-info">
+                  <div class="hot-name">小明</div>
+                  <div class="hot-desc">发布了12条动态</div>
+                </div>
+              </div>
+              <div class="hot-item">
+                <div class="hot-rank silver">2</div>
+                <div class="hot-info">
+                  <div class="hot-name">小红</div>
+                  <div class="hot-desc">发布了8条动态</div>
+                </div>
+              </div>
+              <div class="hot-item">
+                <div class="hot-rank bronze">3</div>
+                <div class="hot-info">
+                  <div class="hot-name">小华</div>
+                  <div class="hot-desc">发布了5条动态</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </aside>
       </div>
     </main>
 
@@ -733,25 +969,125 @@
         window.sampleGroups = sampleGroups;
 
         // simulate current user's joined groups (ids)
-        const myJoinedGroupIds = new Set([1]); // simulate user has joined group with id=1
+        const myJoinedGroupIds = new Set([1, 2, 3]); // user joined groups 1, 2, and 3
+
+        // Render joined groups in left sidebar
+        function renderJoinedGroups(){
+          const container = document.getElementById('joinedGroupsList');
+          if(!container) return;
+          const joined = sampleGroups.filter(g => myJoinedGroupIds.has(g.id));
+          container.innerHTML = joined.map(g => `
+            <div class="joined-group-item" data-id="${g.id}">
+              <div class="jg-avatar">${escapeHtml((g.name||'').slice(0,1))}</div>
+              <div class="jg-info">
+                <div class="jg-name">${escapeHtml(g.name)}</div>
+                <div class="jg-members">${g.members}人</div>
+              </div>
+            </div>
+          `).join('');
+          // click to navigate
+          container.querySelectorAll('.joined-group-item').forEach(el => {
+            el.addEventListener('click', ()=>{
+              window.location.href = `channel2.html?groupId=${el.dataset.id}`;
+            });
+          });
+        }
 
         const samplePosts = [
-          { id:1, author:'小明', text:'刚完成一节发音练习，收获颇丰！', likes:4, time:'1小时前', tags:['学习'] },
-          { id:2, author:'小红', text:'周末组织线上分享，欢迎加入', likes:8, time:'3小时前', tags:['群组'] }
+          { id:1, author:'小明', avatar:'M', text:'刚完成一节发音练习，收获颇丰！今天终于掌握了 th 的发音技巧，感觉自己又进步了一点点~ 🎉 #英语学习#', likes:24, time:'10分钟前', tags:['英语学习'],
+            comments:[
+              { id:101, author:'小红', avatar:'H', text:'加油！th的发音确实很难，我也练了很久', time:'8分钟前', likes:3 },
+              { id:102, author:'英语达人', avatar:'E', text:'可以试试把舌头放在牙齿之间，然后轻轻吹气，效果会更好', time:'6分钟前', likes:8, replies:[
+                { id:1021, author:'小明', avatar:'M', text:'谢谢大神指点！我试试看', time:'4分钟前', likes:2 },
+                { id:1022, author:'小红', avatar:'H', text:'这个技巧我也学到了！', time:'3分钟前', likes:1 }
+              ]},
+              { id:103, author:'发音教练', avatar:'F', text:'th有两种发音：清辅音/θ/和浊辅音/ð/，要注意区分哦', time:'2分钟前', likes:15 }
+            ]
+          },
+          { id:2, author:'小红', avatar:'H', text:'周末组织线上分享会，主题是《如何提升英语听力》，欢迎大家参加！时间：周六晚8点，腾讯会议。 #英语学习#', likes:42, time:'1小时前', tags:['英语学习'],
+            comments:[
+              { id:201, author:'学霸小姐', avatar:'X', text:'已报名！期待周六的分享', time:'50分钟前', likes:5 },
+              { id:202, author:'小华', avatar:'H', text:'会议号是多少？', time:'45分钟前', likes:2, replies:[
+                { id:2021, author:'小红', avatar:'H', text:'会议号：888-666-999，周六见~', time:'40分钟前', likes:3 }
+              ]},
+              { id:203, author:'早起鸟', avatar:'Z', text:'太棒了，正好需要提升听力！已加日历提醒', time:'30分钟前', likes:3 },
+              { id:204, author:'英语达人', avatar:'E', text:'听力提升最重要的是精听+泛听结合', time:'20分钟前', likes:12, replies:[
+                { id:2041, author:'小红', avatar:'H', text:'对！这次分享会也会讲到这个方法', time:'15分钟前', likes:2 }
+              ]},
+              { id:205, author:'托福战友', avatar:'T', text:'能录屏吗？周六可能有事', time:'10分钟前', likes:4 }
+            ]
+          },
+          { id:3, author:'英语达人', avatar:'E', text:'今日单词打卡 Day 45 ✅\n\ntranscend - 超越，胜过\nperseverance - 坚持不懈\nresilience - 韧性，恢复力\n\n每天积累，必有所成！加油加油 💪 #打卡挑战# #每日一句#', likes:89, time:'2小时前', tags:['打卡挑战','每日一句'],
+            comments:[
+              { id:301, author:'小明', avatar:'M', text:'跟着打卡！perseverance 这个词很棒，我要用到作文里', time:'1小时50分钟前', likes:12 },
+              { id:302, author:'商务精英', avatar:'S', text:'resilience 在商务场景里经常用到！比如 organizational resilience', time:'1小时40分钟前', likes:6, replies:[
+                { id:3021, author:'英语达人', avatar:'E', text:'没错！还有 financial resilience 也很常见', time:'1小时30分钟前', likes:4 }
+              ]},
+              { id:303, author:'单词狂人', avatar:'D', text:'Day 45！太厉害了，我才坚持到Day 7就放弃了😭', time:'1小时前', likes:8, replies:[
+                { id:3031, author:'英语达人', avatar:'E', text:'没关系，重新开始就好！关键是找到适合自己的节奏', time:'50分钟前', likes:15 },
+                { id:3032, author:'小红', avatar:'H', text:'可以加入我们的打卡群，互相监督', time:'40分钟前', likes:6 }
+              ]},
+              { id:304, author:'学霸小姐', avatar:'X', text:'这三个词都是托福高频词！收藏了', time:'30分钟前', likes:10 }
+            ]
+          },
+          { id:4, author:'小华', avatar:'H', text:'分享一个学习英语的小技巧：看美剧的时候先关字幕看一遍，然后开英文字幕再看一遍，最后开中文字幕核对。这样可以大大提升听力！ #英语学习#', likes:156, time:'3小时前', tags:['英语学习'],
+            comments:[
+              { id:401, author:'小红', avatar:'H', text:'这个方法太实用了！收藏了📌', time:'2小时50分钟前', likes:15 },
+              { id:402, author:'英语达人', avatar:'E', text:'推荐看《Friends》，对话简单又地道，而且很搞笑', time:'2小时40分钟前', likes:22, replies:[
+                { id:4021, author:'小华', avatar:'H', text:'正在看！确实很适合学英语，Ross太搞笑了', time:'2小时30分钟前', likes:3 },
+                { id:4022, author:'美剧迷', avatar:'M', text:'还推荐《Modern Family》，日常对话超多', time:'2小时前', likes:8 }
+              ]},
+              { id:403, author:'新手小白', avatar:'X', text:'请问一集要看三遍吗？感觉好花时间', time:'1小时前', likes:5, replies:[
+                { id:4031, author:'小华', avatar:'H', text:'不用每集都这样，选几集精看就好，其他泛听', time:'50分钟前', likes:12 }
+              ]},
+              { id:404, author:'听力弱鸡', avatar:'T', text:'关字幕完全听不懂怎么办😢', time:'30分钟前', likes:7, replies:[
+                { id:4041, author:'英语达人', avatar:'E', text:'可以先开英文字幕，慢慢过渡到关字幕', time:'20分钟前', likes:9 },
+                { id:4042, author:'小华', avatar:'H', text:'选简单的剧开始，比如动画片', time:'10分钟前', likes:4 }
+              ]}
+            ]
+          },
+          { id:5, author:'学霸小姐', avatar:'X', text:'托福备考第30天，今天做了两套听力真题，正确率终于突破25题了！🎉 感谢群里大家的鼓励，继续加油！ #打卡挑战# #英语学习#', likes:67, time:'5小时前', tags:['打卡挑战','英语学习'],
+            comments:[
+              { id:501, author:'小明', avatar:'M', text:'厉害！求分享学习方法', time:'4小时前', likes:8, replies:[
+                { id:5011, author:'学霸小姐', avatar:'X', text:'主要是每天坚持做TPO，错题反复听3遍以上', time:'3小时前', likes:12 }
+              ]},
+              { id:502, author:'英语达人', avatar:'E', text:'25题已经很棒了，继续保持！', time:'3小时前', likes:6 },
+              { id:503, author:'托福战友', avatar:'T', text:'我也在备考，互相鼓励！你用的什么资料？', time:'2小时前', likes:4, replies:[
+                { id:5031, author:'学霸小姐', avatar:'X', text:'TPO + 考满分的精听，效果不错', time:'1小时前', likes:7 }
+              ]}
+            ]
+          },
+          { id:6, author:'商务精英', avatar:'S', text:'今天的商务英语课程很棒！学习了怎么写专业的英文邮件，老师说的几个开头结尾的模板很实用！已经整理成笔记，需要的同学私信我~ #英语学习#', likes:45, time:'昨天 22:30', tags:['英语学习'],
+            comments:[
+              { id:601, author:'职场新人', avatar:'Z', text:'求笔记！私信你了', time:'昨天 22:45', likes:3 },
+              { id:602, author:'小红', avatar:'H', text:'我也想要！商务邮件真的很重要', time:'昨天 23:00', likes:5 },
+              { id:603, author:'外企员工', avatar:'W', text:'补充一个技巧：开头用 I hope this email finds you well 很加分', time:'今天 08:00', likes:18, replies:[
+                { id:6031, author:'商务精英', avatar:'S', text:'对对！老师也提到了这个', time:'今天 09:00', likes:2 },
+                { id:6032, author:'小明', avatar:'M', text:'学到了，马上用起来', time:'今天 10:00', likes:1 }
+              ]}
+            ]
+          },
+          { id:7, author:'早起鸟', avatar:'Z', text:'早安！☀️ 连续早起打卡第21天 ✅\n今日学习计划：\n✅ 背50个单词\n⬜ 听力练习1小时\n⬜ 口语跟读30分钟\n\n一起加油吧！ #打卡挑战#', likes:38, time:'今天 06:30', tags:['打卡挑战'],
+            comments:[
+              { id:701, author:'小明', avatar:'M', text:'早安！一起加油💪', time:'今天 06:35', likes:5 },
+              { id:702, author:'学霸小姐', avatar:'X', text:'超自律！向你学习', time:'今天 07:00', likes:4 },
+              { id:703, author:'夜猫子', avatar:'Y', text:'我刚睡下你就起来了😂佩服佩服', time:'今天 06:40', likes:15, replies:[
+                { id:7031, author:'早起鸟', avatar:'Z', text:'哈哈早睡早起身体好~', time:'今天 06:45', likes:3 }
+              ]},
+              { id:704, author:'英语达人', avatar:'E', text:'21天习惯养成！厉害👍', time:'今天 07:30', likes:8 }
+            ]
+          }
         ];
 
         const groupsGrid = document.getElementById('groupsGrid');
         const postsList = document.getElementById('postsList');
         const feedPanel = document.getElementById('feedPanel');
         const groupsPanel = document.getElementById('groupsPanel');
-        const categoryList = document.getElementById('categoryList');
         const viewBtns = document.querySelectorAll('.view-btn');
-        const sortSelect = document.getElementById('sortSelect');
         const filterChips = document.querySelectorAll('.chip');
         const composerInput = document.getElementById('composerInput');
         
-        const channelSearch = document.getElementById('channelSearch');
-        const clearSearch = document.getElementById('clearSearch');
+        const tabChips = document.querySelectorAll('.tab-chip');
 
         function escapeHtml(str){
           return String(str).replace(/[&<>"']/g, function(m){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"})[m]; });
@@ -771,46 +1107,230 @@
           });
         }
 
-        // filter helper: applies search text and my-groups-only filter
-        function applyGroupFilters(){
-          const q = (channelSearch.value || '').trim().toLowerCase();
-          const myOnly = document.getElementById('myGroupsOnly').checked;
-          const filtered = sampleGroups.filter(g=>{
-            if (myOnly && !myJoinedGroupIds.has(g.id)) return false;
-            if (!q) return true;
-            return (g.name && g.name.toLowerCase().includes(q)) || (g.desc && g.desc.toLowerCase().includes(q));
+        // Tab switching: Feed vs Groups vs Activity
+        const feedSortSelect = document.getElementById('feedSortSelect');
+        const groupSortSelect = document.getElementById('groupSortSelect');
+        const activityPanel = document.getElementById('activityPanel');
+        
+        tabChips.forEach(chip => {
+          chip.addEventListener('click', ()=>{
+            tabChips.forEach(c => c.classList.remove('active'));
+            chip.classList.add('active');
+            const tab = chip.dataset.tab;
+            if(tab === 'feed') {
+              feedPanel.style.display = 'block';
+              groupsPanel.style.display = 'none';
+              activityPanel.style.display = 'none';
+              feedSortSelect.style.display = 'inline-block';
+              groupSortSelect.style.display = 'none';
+            } else if(tab === 'groups') {
+              feedPanel.style.display = 'none';
+              groupsPanel.style.display = 'block';
+              activityPanel.style.display = 'none';
+              feedSortSelect.style.display = 'none';
+              groupSortSelect.style.display = 'inline-block';
+              renderGroups(sampleGroups);
+            } else if(tab === 'activity') {
+              feedPanel.style.display = 'none';
+              groupsPanel.style.display = 'none';
+              activityPanel.style.display = 'block';
+              feedSortSelect.style.display = 'none';
+              groupSortSelect.style.display = 'none';
+            }
           });
-          renderGroups(filtered);
-        }
-
-        // wire up instant search and checkbox
-        channelSearch.addEventListener('input', applyGroupFilters);
-        document.getElementById('myGroupsOnly').addEventListener('change', applyGroupFilters);
-        clearSearch.addEventListener('click', ()=>{ channelSearch.value=''; applyGroupFilters(); });
+        });
 
         // initial render
-        applyGroupFilters();
+        renderJoinedGroups();
+
+        // Helper to render hashtags
+        function renderTextWithTags(text){
+          return escapeHtml(text).replace(/#([^#\s]+)#/g, '<span class="hashtag">#$1#</span>').replace(/\n/g, '<br>');
+        }
+
+        // Helper to render comment text with @mentions highlighted
+        function renderCommentText(text){
+          return escapeHtml(text).replace(/@(\S+)/g, '<span class="mention">@$1</span>');
+        }
+
+        // Helper to render a single comment (with optional replies)
+        function renderComment(c, postId, isReply = false){
+          const replies = c.replies || [];
+          return `
+            <div class="comment-item ${isReply ? 'reply-item' : ''}" data-comment-id="${c.id}">
+              <div class="comment-avatar">${escapeHtml(c.avatar || c.author.slice(0,1))}</div>
+              <div class="comment-content">
+                <div class="comment-header">
+                  <span class="comment-author">${escapeHtml(c.author)}</span>
+                  <span class="comment-time">${escapeHtml(c.time)}</span>
+                </div>
+                <div class="comment-text">${renderCommentText(c.text)}</div>
+                <div class="comment-actions">
+                  <button class="comment-like-btn" data-id="${c.id}"><i class="far fa-heart"></i> ${c.likes || 0}</button>
+                  <button class="reply-btn" data-post-id="${postId}" data-reply-to="${c.author}">回复</button>
+                </div>
+                ${replies.length ? `<div class="replies-list">${replies.map(r => renderComment(r, postId, true)).join('')}</div>` : ''}
+              </div>
+            </div>
+          `;
+        }
 
         function renderPosts(list){
           postsList.innerHTML = '';
           list.forEach(p=>{
-            const node = document.createElement('div'); node.className='post-card';
-            const avatarLetter = escapeHtml((p.author||'').slice(0,1));
+            const node = document.createElement('div'); node.className='post-card'; node.dataset.postId = p.id;
+            const avatarLetter = escapeHtml(p.avatar || (p.author||'').slice(0,1));
+            const commentsArr = p.comments || [];
+            const commentCount = commentsArr.length + commentsArr.reduce((sum, c) => sum + (c.replies?.length || 0), 0);
+            
             node.innerHTML = `
               <div class="post-header">
                 <div class="avatar">${avatarLetter}</div>
-                <div class="post-author"><div class="author-name">${escapeHtml(p.author)}</div><div class="post-time">${escapeHtml(p.time)}</div></div>
+                <div class="post-author">
+                  <div class="author-name">${escapeHtml(p.author)}</div>
+                  <div class="post-time">${escapeHtml(p.time)}</div>
+                </div>
               </div>
-              <div class="post-body">${escapeHtml(p.text)}</div>
+              <div class="post-body">${renderTextWithTags(p.text)}</div>
               ${p.images&&p.images.length?`<div class="post-images">${p.images.map(src=>`<img src="${src}" alt="image">`).join('')}</div>`:''}
-              <div class="post-actions"><button class="like-btn" data-id="${p.id}">❤ <span class="like-count">${p.likes}</span></button></div>
+              <div class="post-actions">
+                <button class="action-btn like-btn" data-id="${p.id}"><i class="far fa-heart"></i> <span class="like-count">${p.likes}</span></button>
+                <button class="action-btn comment-toggle-btn" data-id="${p.id}"><i class="far fa-comment"></i> <span class="comment-count">${commentCount}</span></button>
+                <button class="action-btn share-btn"><i class="far fa-share-square"></i> 转发</button>
+              </div>
+              <div class="comments-section" id="comments-${p.id}" style="display:none;">
+                <div class="comments-list">
+                  ${commentsArr.map(c => renderComment(c, p.id)).join('')}
+                </div>
+                <div class="comment-composer">
+                  <input type="text" class="comment-input" placeholder="写评论..." data-post-id="${p.id}" />
+                  <button class="comment-submit-btn" data-post-id="${p.id}">发送</button>
+                </div>
+              </div>
             `;
             postsList.appendChild(node);
+          });
+          
+          // Bind comment toggle
+          document.querySelectorAll('.comment-toggle-btn').forEach(btn => {
+            btn.addEventListener('click', ()=>{
+              const postId = btn.dataset.id;
+              const section = document.getElementById('comments-' + postId);
+              if(section){
+                section.style.display = section.style.display === 'none' ? 'block' : 'none';
+              }
+            });
+          });
+          
+          // Track which comment we're replying to
+          let replyingToCommentId = null;
+          
+          // Bind comment submit
+          document.querySelectorAll('.comment-submit-btn').forEach(btn => {
+            btn.addEventListener('click', ()=>{
+              const postId = btn.dataset.postId;
+              const input = document.querySelector(`.comment-input[data-post-id="${postId}"]`);
+              let text = input.value.trim();
+              if(!text) return;
+              
+              // Find the post
+              const post = samplePosts.find(p => p.id == postId);
+              if(!post) return;
+              if(!post.comments) post.comments = [];
+              
+              const newComment = {
+                id: Date.now(),
+                author: '我',
+                avatar: 'W',
+                text: text,
+                time: '刚刚',
+                likes: 0
+              };
+              
+              // Check if replying to someone (text starts with @username)
+              const replyMatch = text.match(/^@(\S+)\s*/);
+              if(replyMatch && replyingToCommentId){
+                // Find the parent comment and add as reply
+                const parentComment = post.comments.find(c => c.id == replyingToCommentId);
+                if(parentComment){
+                  if(!parentComment.replies) parentComment.replies = [];
+                  parentComment.replies.push(newComment);
+                } else {
+                  // Fallback: add as top-level comment
+                  post.comments.push(newComment);
+                }
+              } else {
+                // Add as top-level comment
+                post.comments.push(newComment);
+              }
+              
+              // Reset reply state
+              replyingToCommentId = null;
+              
+              renderPosts(samplePosts);
+              // Re-open the comments section
+              setTimeout(()=>{
+                const section = document.getElementById('comments-' + postId);
+                if(section) section.style.display = 'block';
+              }, 0);
+            });
+          });
+          
+          // Bind reply buttons
+          document.querySelectorAll('.reply-btn').forEach(btn => {
+            btn.addEventListener('click', ()=>{
+              const postId = btn.dataset.postId;
+              const replyTo = btn.dataset.replyTo;
+              const commentId = btn.closest('.comment-item').dataset.commentId;
+              const input = document.querySelector(`.comment-input[data-post-id="${postId}"]`);
+              if(input){
+                input.value = `@${replyTo} `;
+                input.focus();
+                replyingToCommentId = commentId;
+              }
+            });
+          });
+          
+          // Bind post like buttons
+          document.querySelectorAll('.post-card .like-btn').forEach(btn => {
+            btn.addEventListener('click', (e)=>{
+              e.stopPropagation();
+              const id = parseInt(btn.dataset.id);
+              const post = samplePosts.find(p => p.id === id);
+              if(!post) return;
+              
+              // Toggle like state
+              if(btn.classList.contains('liked')){
+                post.likes = Math.max(0, (post.likes || 1) - 1);
+                btn.classList.remove('liked');
+              } else {
+                post.likes = (post.likes || 0) + 1;
+                btn.classList.add('liked');
+              }
+              const countEl = btn.querySelector('.like-count');
+              if(countEl) countEl.textContent = post.likes;
+            });
+          });
+          
+          // Bind comment like buttons
+          document.querySelectorAll('.comment-like-btn').forEach(btn => {
+            btn.addEventListener('click', (e)=>{
+              e.stopPropagation();
+              btn.classList.toggle('liked');
+              // Simple visual toggle for demo
+              const currentText = btn.textContent.trim();
+              const num = parseInt(currentText.match(/\d+/)?.[0] || '0');
+              if(btn.classList.contains('liked')){
+                btn.innerHTML = `<i class="fas fa-heart"></i> ${num + 1}`;
+              } else {
+                btn.innerHTML = `<i class="far fa-heart"></i> ${Math.max(0, num - 1)}`;
+              }
+            });
           });
         }
 
         // Initial render
-        renderGroups(sampleGroups);
+        renderJoinedGroups();
         renderPosts(samplePosts);
 
         // Composer: image preview and post creation
@@ -855,58 +1375,17 @@
           Promise.all(readers).then(dataUrls=>{
             const newId = (samplePosts.length? Math.max(...samplePosts.map(p=>p.id))+1:1);
             const now = new Date();
-            const post = { id:newId, author:'我', text:text, images:dataUrls, likes:0, time: now.toLocaleString(), tags:[] };
+            const post = { id:newId, author:'我', avatar:'W', text:text, images:dataUrls, likes:0, comments:[], time: now.toLocaleString(), tags:[] };
             samplePosts.unshift(post);
             composerInput.value = '';
             composerFilesEl.value = '';
             composerSelectedFiles = [];
             previewAreaEl.innerHTML = '';
             renderPosts(samplePosts);
-            attachLikeHandlers();
           });
         });
 
-        // Like button handler
-        function attachLikeHandlers(){
-          document.querySelectorAll('.like-btn').forEach(btn=>{
-            if (btn.dataset.bound) return; // avoid double binding
-            btn.dataset.bound = '1';
-            btn.addEventListener('click', (e)=>{
-              e.stopPropagation();
-              const id = parseInt(btn.getAttribute('data-id'));
-              const post = samplePosts.find(p=>p.id===id);
-              if(!post) return;
-              post.likes = (post.likes || 0) + 1;
-              const countEl = btn.querySelector('.like-count');
-              if (countEl) countEl.textContent = post.likes;
-            });
-          });
-        }
-        attachLikeHandlers();
-
-        // Category click: 'feed' shows feed; 'groups' shows all groups; other categories filter groups
-        categoryList.addEventListener('click', (e)=>{
-          const btn = e.target.closest('.category-item'); if(!btn) return;
-          document.querySelectorAll('.category-item').forEach(b=>b.classList.remove('active'));
-          btn.classList.add('active');
-          const cat = btn.getAttribute('data-category');
-          if(cat === 'feed') { feedPanel.style.display='block'; groupsPanel.style.display='none'; }
-          else if(cat === 'groups') { feedPanel.style.display='none'; groupsPanel.style.display='block'; renderGroups(sampleGroups); }
-          else { feedPanel.style.display='none'; groupsPanel.style.display='block'; renderGroups(sampleGroups.filter(g=>g.category===cat)); }
-        });
-
-        // Search box filters groups by name
-        function applySearchFilter(){
-          const q = (channelSearch.value||'').trim().toLowerCase();
-          const activeCatBtn = document.querySelector('.category-item.active');
-          const activeCat = activeCatBtn ? activeCatBtn.getAttribute('data-category') : null;
-          let list = sampleGroups.slice();
-          if(activeCat && activeCat !== 'feed' && activeCat !== 'groups') list = list.filter(g=>g.category===activeCat);
-          if(q) list = list.filter(g=> g.name.toLowerCase().includes(q) || g.desc.toLowerCase().includes(q));
-          renderGroups(list);
-        }
-        channelSearch && channelSearch.addEventListener('input', applySearchFilter);
-        clearSearch && clearSearch.addEventListener('click', ()=>{ if(channelSearch) channelSearch.value=''; applySearchFilter(); });
+        // Search box filters groups (already bound above via applyGroupFilters)
 
         // View mode
         function setViewMode(mode){
@@ -918,12 +1397,31 @@
         viewBtns.forEach(b=> b.addEventListener('click', ()=> setViewMode(b.getAttribute('data-mode'))));
         const saved = localStorage.getItem('channelViewMode') || 'card'; setViewMode(saved);
 
-        // Sort
-        sortSelect.addEventListener('change', ()=>{
-          const val = sortSelect.value; let sorted = [...sampleGroups];
-          if(val==='new') sorted.sort((a,b)=>b.id-a.id);
-          else if(val==='members') sorted.sort((a,b)=>b.members - a.members).reverse();
-          else if(val==='active') sorted.sort((a,b)=>b.members - a.members).reverse();
+        // Sort - Feed (动态排序：最新/最热)
+        feedSortSelect.addEventListener('change', ()=>{
+          const val = feedSortSelect.value;
+          let sorted = [...samplePosts];
+          if(val === 'new') {
+            // 按时间排序（id越大越新）
+            sorted.sort((a, b) => b.id - a.id);
+          } else if(val === 'hot') {
+            // 按热度排序（点赞+评论数）
+            sorted.sort((a, b) => {
+              const aHot = (a.likes || 0) + (a.comments?.length || 0);
+              const bHot = (b.likes || 0) + (b.comments?.length || 0);
+              return bHot - aHot;
+            });
+          }
+          renderPosts(sorted);
+        });
+
+        // Sort - Groups (群组排序：活跃度/最新/成员数)
+        groupSortSelect.addEventListener('change', ()=>{
+          const val = groupSortSelect.value;
+          let sorted = [...sampleGroups];
+          if(val === 'new') sorted.sort((a, b) => b.id - a.id);
+          else if(val === 'members') sorted.sort((a, b) => b.members - a.members);
+          else if(val === 'active') sorted.sort((a, b) => b.members - a.members);
           renderGroups(sorted);
         });
 
@@ -943,13 +1441,63 @@
           btn.textContent = '已加入'; btn.disabled = true; // mock behavior
         });
 
+        // Join by invite code handler
+        const inviteCodeInput = document.getElementById('inviteCodeInput');
+        const joinByCodeBtn = document.getElementById('joinByCodeBtn');
+        
+        joinByCodeBtn.addEventListener('click', ()=>{
+          const code = inviteCodeInput.value.trim().toUpperCase();
+          if(!code){
+            alert('请输入邀请码');
+            return;
+          }
+          if(code.length < 4){
+            alert('邀请码格式不正确');
+            return;
+          }
+          // Mock: simulate successful join
+          alert(`成功加入群组！邀请码：${code}`);
+          inviteCodeInput.value = '';
+          // In real app, would call API and refresh joined groups list
+        });
+        
+        // Allow Enter key to submit
+        inviteCodeInput.addEventListener('keypress', (e)=>{
+          if(e.key === 'Enter'){
+            joinByCodeBtn.click();
+          }
+        });
+
+        // Topic card click handler - filter Feed by hashtag
+        document.querySelectorAll('.topic-card').forEach(card => {
+          card.addEventListener('click', ()=>{
+            const tag = card.dataset.topic;
+            if(!tag) return;
+            // Switch to Feed tab
+            tabChips.forEach(c => c.classList.remove('active'));
+            document.querySelector('.tab-chip[data-tab="feed"]').classList.add('active');
+            feedPanel.style.display = 'block';
+            groupsPanel.style.display = 'none';
+            activityPanel.style.display = 'none';
+            feedSortSelect.style.display = 'inline-block';
+            groupSortSelect.style.display = 'none';
+            // Filter posts by tag
+            const filtered = samplePosts.filter(p => p.tags && p.tags.includes(tag));
+            if(filtered.length > 0){
+              renderPosts(filtered);
+            } else {
+              postsList.innerHTML = `<div style="text-align:center;padding:40px;color:#999;"><i class="fas fa-search" style="font-size:48px;margin-bottom:16px;display:block;color:#ddd;"></i>暂无 #${escapeHtml(tag)}# 相关动态</div>`;
+            }
+          });
+        });
+
         // Composer and like handling implemented earlier (avoid duplicate handlers)
 
-        // Ensure initial view based on active category
+        // Show Feed panel by default, hide Groups panel
         (function initPanels(){
-          const active = document.querySelector('.category-item.active');
-          if(active && active.getAttribute('data-category')==='feed') { feedPanel.style.display='block'; groupsPanel.style.display='none'; }
-          else { feedPanel.style.display='none'; groupsPanel.style.display='block'; }
+          feedPanel.style.display='block';
+          groupsPanel.style.display='none';
+          activityPanel.style.display='none';
         })();
 
       })();

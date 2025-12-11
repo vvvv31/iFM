@@ -224,14 +224,15 @@
             <button class="tab" onclick="window.location.href='my-collect.html'">收藏</button>
             <button class="tab" onclick="window.location.href='my-message.html'">私信</button>
             <button class="tab active" onclick="window.location.href='my-creator_center.html'">创作者中心</button>
+            <button class="tab" onclick="window.location.href='my-works.html'">我的作品</button>
         </section>
 
         <!-- 创作者中心特有内容 -->
         <section class="content-block">
             <h3 class="content-title">创作者数据概览</h3>
             <div class="creator-stats">
-                <div class="stat-card">
-                    <div class="stat-value">28</div>
+                <div class="stat-card" data-href="my-works">
+                    <div class="stat-value">5</div>
                     <div class="stat-label">作品数量</div>
                 </div>
                 <div class="stat-card">
@@ -268,24 +269,7 @@
                 </div>
             </div>
 
-            <h3 class="content-title">我的作品</h3>
-            <div class="channel-cards">
-                <div class="channel-card" onclick="goToProgram('1', '深夜英语角')">
-                    <div class="work-title">深夜英语角</div>
-                </div>
-                <div class="channel-card" onclick="goToProgram('2', '古典音乐赏析')">
-                    <div class="work-title">古典音乐赏析</div>
-                </div>
-                <div class="channel-card" onclick="goToProgram('3', '时间旅行者')">
-                    <div class="work-title">时间旅行者</div>
-                </div>
-                <div class="channel-card" onclick="goToProgram('4', '生活日记')">
-                    <div class="work-title">生活日记</div>
-                </div>
-                <div class="channel-card" onclick="goToProgram('5', '宇宙奥秘')">
-                    <div class="work-title">宇宙奥秘</div>
-                </div>
-            </div>
+            <!-- 已删除我的作品部分 -->
         </section>
     </main>
 
@@ -553,25 +537,7 @@
 
     <!-- 保留创作者中心交互脚本 -->
     <script>
-      // 跳转到作品详情页
-      function goToProgram(programId, programName) {
-        // 获取当前用户名
-        const username = document.querySelector('.username').textContent;
-        // 跳转到作品详情页，传递作品ID、名称和作者
-        window.location.href = `program_list.html?id=${programId}&author=${encodeURIComponent(username)}&program=${encodeURIComponent(programName)}`;
-      }
-
-      // 为作品卡片添加点击事件
-      document.querySelectorAll('.channel-card').forEach(card => {
-        card.addEventListener('click', function() {
-          // 添加点击反馈效果
-          this.style.backgroundColor = '#FFF8DC';
-          setTimeout(() => {
-            this.style.backgroundColor = '';
-          }, 300);
-        });
-      });
-
+      // 为action-card添加的点击事件
       document.querySelectorAll('.action-card').forEach(card => {
         card.addEventListener('click', function() {
           this.style.backgroundColor = '#FFF8DC';

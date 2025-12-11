@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的作品 - 星之声创作者中心</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/my-works.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* 预留底部播放栏空间 */
+        body { padding-bottom: 96px; }
+
+        /* PlayBar样式（与创作者中心相同） */
+        .pv-player-bar {
+          position: fixed; left: 0; right: 0; bottom: 0;
+          width: 100%; height: 96px; background: #ffffff;
+          border-top: 1px solid #e0e0e0; box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+          z-index: 29999; display: flex; align-items: center; user-select: none; pointer-events: auto;
+        }
+        .pv-inner {
+          width: 100%; max-width: 1200px; margin: 0 auto;
+          display: grid; grid-template-columns: auto 1fr auto; align-items: center;
+          column-gap: 16px; padding: 0 24px; height: 100%;
+        }
+        .pv-left { display: inline-flex; align-items: center; gap: 12px; min-width: 240px; }
+        .pv-cover { width: 52px; height: 52px; border-radius: 8px; background: #eee no-repeat center/cover; box-shadow: 0 2px 6px rgba(0,0,0,0.1); flex-shrink: 0; }
+        .pv-meta { display: flex; flex-direction: column; min-width: 0; }
+        .pv-title { font-size: 16px; font-weight: 700; color: #222; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .pv-artist { font-size: 12px; color: #666; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .pv-center { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-width: 0; }
+        .pv-controls { display: inline-flex; align-items: center; gap: 18px; }
+        .ctrl-btn, .mode-btn, .rate-btn { background: transparent; border: none; cursor: pointer; color: #444; font-size: 18px; padding: 6px; display: inline-flex; align-items: center; justify-content: center; transition: color 0.2s; }
+        .ctrl-btn:hover, .mode-btn:hover, .rate-btn:hover { color: #ff8c00; }
+        .play-btn { width: 44px; height: 44px; border-radius: 50%; background: #ff8c00; color: #fff; border: none; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 10px rgba(255,140,0,0.30); transition: transform 0.1s, background 0.2s; }
+        .play-btn:hover { background: #e67e00; transform: scale(1.05); }
+        .icon { width: 18px; height: 18px; fill: currentColor; }
+        .pv-progress-row { display: flex; align-items: center; gap: 12px; width: 100%; }
+        .time.small { font-size: 12px; color: #888; width: 48px; text-align: center; font-variant-numeric: tabular-nums; }
+        .pv-progress { position: relative; flex: 1; height: 6px; background: #eee; border-radius: 3px; cursor: pointer; touch-action: none; }
+        .pv-progress-fill { position: absolute; left: 0; top: 0; bottom: 0; background: #ff8c00; border-radius: 3px; width: 0%; pointer-events: none; }
+        .pv-knob { position: absolute; top: 50%; right: -6px; transform: translateY(-50%); width: 12px; height: 12px; background: #fff; border: 2px solid #ff8c00; border-radius: 50%; box-shadow: 0 1px 4px rgba(0,0,0,0.2); opacity: 0; transition: opacity 0.2s; pointer-events: none; }
+        .pv-right { display: inline-flex; align-items: center; justify-content: flex-end; gap: 12px; min-width: 240px; }
+        .pv-volume { width: 140px; height: 20px; display: flex; align-items: center; cursor: pointer; position: relative; }
+        .pv-volume-bar { width: 100%; height: 4px; background: #eee; border-radius: 2px; position: relative; overflow: visible; pointer-events: none; }
+        .pv-volume-fill { height: 100%; background: #888; width: 50%; border-radius: 2px; position: relative; }
+        .playlist-panel { background:#fff; border:1px solid #eee; border-radius:8px; box-shadow:0 8px 30px rgba(0,0,0,0.12); overflow:auto; padding:8px; position:absolute; bottom:110px; right:24px; display:none; }
+        .playlist-item { padding:8px 12px; cursor:pointer; }
+        .playlist-item.active { background:#fff3e0; color:#ff8c00; font-weight:600; }
+        @media (max-width: 900px) { .pv-left{min-width:0;} .pv-right{min-width:0;} .pv-inner{grid-template-columns:auto 1fr auto; column-gap:10px; padding:0 12px;} }
+    </style>
+</head>
+<body>
+    <!-- 音频元素 -->
+    <audio id="audioPlayer" controls style="display: none;">
+        <source src="" type="audio/mpeg">
+        您的浏览器不支持音频播放
+    </audio>
+
+    <!-- 顶部导航栏 -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-img"></div>
+            <span class="logo-text">星之声</span>
+        </div>
+        <nav class="main-nav">
+            <a href="javascript:;" class="nav-item" data-href="home">首页</a>
+            <a href="javascript:;" class="nav-item" data-href="category">分类</a>
+            <a href="javascript:;" class="nav-item" data-href="channel">社区</a>
+        </nav>
+        <div class="search-box">
+            <input type="text" placeholder="搜索课程、频道..." class="search-input" id="homeSearchInput">
+            <button class="search-btn" id="homeSearchBtn"><i class="fas fa-search"></i></button>
+        </div>
+        <div class="user-functions">
+            <a href="javascript:;" class="func-item" data-href="my-recent">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+            </a>
+            <a href="javascript:;" class="func-item" data-href="my-message"><i class="fas fa-bell"></i> 消息</a>
+            <a href="javascript:;" class="func-item" data-href="my-collect"><i class="fas fa-star"></i> 收藏</a>
+            <a href="javascript:;" class="func-item" data-href="my-recent"><i class="fas fa-history"></i> 历史</a>
+            <a href="javascript:;" class="func-item active" data-href="my-creator"><i class="fas fa-pen"></i> 创作中心</a>
+            <button class="submit-btn" data-href="login">登录/注册</button>
+        </div>
+    </header>
+
+    <!-- 主要内容区 -->
+    <main class="main-content">
+        <!-- 用户信息区 -->
+        <section class="user-info">
+            <div class="avatar-wrapper">
+                <div class="avatar"></div>
+            </div>
+            <div class="user-detail">
+                <div class="username">用户名</div>
+                <div class="identity">认证创作者</div>
+                <div class="stats">
+                    <span>关注 <b>23</b></span>
+                    <span>粉丝 <b>1,256</b></span>
+                    <span>收听时长 <b>4,502</b> 小时</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 选项卡 -->
+        <section class="tab-bar">
+            <button class="tab" onclick="window.location.href='my-recent.html'">最近收听</button>
+            <button class="tab" onclick="window.location.href='my-collect.html'">收藏</button>
+            <button class="tab" onclick="window.location.href='my-message.html'">私信</button>
+            <button class="tab" onclick="window.location.href='my-creator_center.html'">创作者中心</button>
+            <button class="tab active" onclick="window.location.href='my-works.html'">我的作品</button>
+        </section>
+
+        <!-- 我的作品页面特有内容 -->
+        <section class="content-block">
+            <!-- 页面标题 -->
+            <div class="works-header">
+                <h1>我的作品</h1>
+                <p>管理您发布的所有音频作品</p>
+            </div>
+
+            <!-- 作品统计 -->
+            <div class="works-stats">
+                <div class="stat-item" onclick="window.location.href='my-works.html'">
+                    <div class="stat-value">5</div>
+                    <div class="stat-label">作品总数</div>
+                </div>
+                <div class="stat-item" onclick="filterWorks('published')">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">已发布</div>
+                </div>
+                <div class="stat-item" onclick="filterWorks('draft')">
+                    <div class="stat-value">1</div>
+                    <div class="stat-label">草稿</div>
+                </div>
+                <div class="stat-item" onclick="filterWorks('pending')">
+                    <div class="stat-value">1</div>
+                    <div class="stat-label">审核中</div>
+                </div>
+            </div>
+
+            <!-- 操作栏 -->
+            <div class="works-actions">
+                <div class="action-buttons">
+                    <button class="action-btn" onclick="uploadNewWork()">
+                        <i class="fas fa-upload"></i> 上传新作品
+                    </button>
+                    <button class="action-btn secondary" onclick="createNewDraft()">
+                        <i class="fas fa-plus"></i> 创建新草稿
+                    </button>
+                    <button class="action-btn secondary" onclick="manageWorks()">
+                        <i class="fas fa-sliders-h"></i> 批量管理
+                    </button>
+                </div>
+                <div>
+                    <button class="action-btn secondary" onclick="refreshWorks()">
+                        <i class="fas fa-sync-alt"></i> 刷新
+                    </button>
+                </div>
+            </div>
+
+            <!-- 过滤选项 -->
+            <div class="filter-section">
+                <div class="filter-group">
+                    <span class="filter-label">状态：</span>
+                    <div class="filter-options" id="statusOptions">
+                        <button class="filter-option active" data-status="all">全部</button>
+                        <button class="filter-option" data-status="published">已发布</button>
+                        <button class="filter-option" data-status="draft">草稿</button>
+                        <button class="filter-option" data-status="pending">审核中</button>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <span class="filter-label">分类：</span>
+                    <div class="filter-options" id="categoryOptions">
+                        <button class="filter-option active" data-category="all">全部</button>
+                        <button class="filter-option" data-category="music">音乐</button>
+                        <button class="filter-option" data-category="speech">演讲</button>
+                        <button class="filter-option" data-category="audiobook">有声书</button>
+                        <button class="filter-option" data-category="podcast">播客剧</button>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <span class="filter-label">排序：</span>
+                    <div class="filter-options" id="sortOptions">
+                        <button class="filter-option active" data-sort="time">最新发布</button>
+                        <button class="filter-option" data-sort="popularity">播放量</button>
+                        <button class="filter-option" data-sort="comments">评论数</button>
+                        <button class="filter-option" data-sort="likes">点赞数</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 作品网格 -->
+            <div class="works-grid" id="worksGrid">
+                <!-- 作品卡片 1 -->
+                <div class="work-card" data-work-id="1" data-status="published" data-category="music">
+                    <div class="work-status published">已发布</div>
+                    <div class="work-thumbnail">
+                        <div class="thumbnail-overlay">
+                            <span class="play-icon">▶</span>
+                            <span class="audio-duration">45:30</span>
+                        </div>
+                    </div>
+                    <div class="work-info">
+                        <h3 class="work-title">深夜英语角 - 商务英语会话技巧</h3>
+                        <div class="work-meta">
+                            <span class="views-count">2.5万次播放</span>
+                            <span class="rating">★★★★★</span>
+                        </div>
+                        <div class="work-stats-small">
+                            <div class="stat-small">
+                                <i class="fas fa-heart"></i>
+                                <span>1.2K</span>
+                            </div>
+                            <div class="stat-small">
+                                <i class="fas fa-comment"></i>
+                                <span>356</span>
+                            </div>
+                            <div class="stat-small">
+                                <i class="fas fa-share"></i>
+                                <span>89</span>
+                            </div>
+                        </div>
+                        <div class="work-actions">
+                            <button class="action-btn-small edit" onclick="editWork(1)">
+                                <i class="fas fa-edit"></i> 编辑
+                            </button>
+                            <button class="action-btn-small" onclick="viewAnalytics(1)">
+                                <i class="fas fa-chart-line"></i> 数据
+                            </button>
+                            <button class="action-btn-small" onclick="shareWork(1)">
+                                <i class="fas fa-share"></i> 分享
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 作品卡片 2 -->
+                <div class="work-card" data-work-id="2" data-status="published" data-category="audiobook">
+                    <div class="work-status published">已发布</div>
+                    <div class="work-thumbnail">
+                        <div class="thumbnail-overlay">
+                            <span class="play-icon">▶</span>
+                            <span class="audio-duration">60:15</span>
+                        </div>
+                    </div>
+                    <div class="work-info">
+                        <h3 class="work-title">古典音乐赏析 - 贝多芬交响曲全集</h3>
+                        <div class="work-meta">
+                            <span class="views-count">5.0万次播放</span>
+                            <span class="rating">★★★★★</span>
+                        </div>
+                        <div class="work-stats-small">
+                            <div class="stat-small">
+                                <i class="fas fa-heart"></i>
+                                <span>3.4K</span>
+                            </div>
+                            <div class="stat-small">
+                                <i class="fas fa-comment"></i>
+                                <span>789</span>
+                            </div>
+                            <div class="stat-small">
+                                <i class="fas fa-share"></i>
+                                <span>156</span>
+                            </div>
+                        </div>
+                        <div class="work-actions">
+                            <button class="action-btn-small edit" onclick="editWork(2)">
+                                <i class="fas fa-edit"></i> 编辑
+                            </button>
+                            <button class="action-btn-small" onclick="viewAnalytics(2)">
+                                <i class="fas fa-chart-line"></i> 数据
+                            </button>
+                            <button class="action-btn-small" onclick="shareWork(2)">
+                                <i class="fas fa-share"></i> 分享
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 作品卡片 3 -->
+                <div class="work-card" data-work-id="3" data-status="published" data-category="podcast">
+                    <div class="work-status published">已发布</div>
+                    <div class="work-thumbnail">
+                        <div class="thumbnail-overlay">
+                            <span class="play-icon">▶</span>
+                            <span class="audio-duration">38:20</span>
+                        </div>
+                    </div>
+                    <div class="work-info">
+                        <h3 class="work-title">时间旅行者 - 科幻故事播客系列</h3>
+                        <div class="work-meta">
+                            <span class="views-count">1.4万次播放</span>
+                            <span class="rating">★★★★☆</span>
+                        </div>
+                        <div class="work-stats-small">
+                            <div class="stat-small">
+                                <i class="fas fa-heart"></i>
+                                <span>856</span>
+                            </div>
+                            <div class="stat-small">
+                                <i class="fas fa-comment"></i>
+                                <span>234</span>
+                            </div>
+                            <div class="stat-small">
+                                <i class="fas fa-share"></i>
+                                <span>67</span>
+                            </div>
+                        </div>
+                        <div class="work-actions">
+                            <button class="action-btn-small edit" onclick="editWork(3)">
+                                <i class="fas fa-edit"></i> 编辑
+                            </button>
+                            <button class="action-btn-small" onclick="viewAnalytics(3)">
+                                <i class="fas fa-chart-line"></i> 数据
+                            </button>
+                            <button class="action-btn-small" onclick="shareWork(3)">
+                                <i class="fas fa-share"></i> 分享
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 作品卡片 4 -->
+                <div class="work-card" data-work-id="4" data-status="draft" data-category="speech">
+                    <div class="work-status draft">草稿</div>
+                    <div class="work-thumbnail">
+                        <div class="thumbnail-overlay">
+                            <span class="play-icon">▶</span>
+                            <span class="audio-duration">52:10</span>
+                        </div>
+                    </div>
+                    <div class="work-info">
+                        <h3 class="work-title">生活日记 - 职场经验分享演讲</h3>
+                        <div class="work-meta">
+                            <span class="views-count">未发布</span>
+                            <span class="rating">-</span>
+                        </div>
+                        <div class="work-stats-small">
+                            <div class="stat-small">
+                                <i class="fas fa-save"></i>
+                                <span>保存于 3天前</span>
+                            </div>
+                        </div>
+                        <div class="work-actions">
+                            <button class="action-btn-small edit" onclick="editWork(4)">
+                                <i class="fas fa-edit"></i> 继续编辑
+                            </button>
+                            <button class="action-btn-small" onclick="publishWork(4)">
+                                <i class="fas fa-paper-plane"></i> 发布
+                            </button>
+                            <button class="action-btn-small" onclick="deleteWork(4)">
+                                <i class="fas fa-trash"></i> 删除
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 作品卡片 5 -->
+                <div class="work-card" data-work-id="5" data-status="pending" data-category="music">
+                    <div class="work-status pending">审核中</div>
+                    <div class="work-thumbnail">
+                        <div class="thumbnail-overlay">
+                            <span class="play-icon">▶</span>
+                            <span class="audio-duration">28:55</span>
+                        </div>
+                    </div>
+                    <div class="work-info">
+                        <h3 class="work-title">宇宙奥秘 - 科普音乐专辑</h3>
+                        <div class="work-meta">
+                            <span class="views-count">审核中</span>
+                            <span class="rating">-</span>
+                        </div>
+                        <div class="work-stats-small">
+                            <div class="stat-small">
+                                <i class="fas fa-clock"></i>
+                                <span>提交于 2天前</span>
+                            </div>
+                        </div>
+                        <div class="work-actions">
+                            <button class="action-btn-small" onclick="viewWorkStatus(5)">
+                                <i class="fas fa-info-circle"></i> 查看状态
+                            </button>
+                            <button class="action-btn-small" onclick="cancelReview(5)">
+                                <i class="fas fa-times"></i> 取消审核
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 分页控制 -->
+            <div class="pagination">
+                <button class="page-btn prev-btn">上一页</button>
+                <button class="page-btn active">1</button>
+                <button class="page-btn">2</button>
+                <button class="page-btn">3</button>
+                <span class="page-ellipsis">...</span>
+                <button class="page-btn">5</button>
+                <button class="page-btn next-btn">下一页</button>
+            </div>
+
+            <!-- 空状态提示 -->
+            <div class="empty-state" id="emptyState" style="display: none;">
+                <div class="empty-icon">
+                    <i class="fas fa-file-audio"></i>
+                </div>
+                <h3>暂无作品</h3>
+                <p>您还没有创建任何作品，点击下方按钮开始创作吧！</p>
+                <button class="action-btn" onclick="uploadNewWork()">
+                    <i class="fas fa-upload"></i> 上传第一个作品
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <!-- 底部播放栏 -->
+    <aside id="pv-player" class="pv-player-bar" role="region" aria-label="播放器">
+      <div class="pv-inner">
+        <!-- 左侧：封面与标题 -->
+        <div class="pv-left">
+          <div id="pv-cover" class="pv-cover"></div>
+          <div class="pv-meta">
+            <div id="pv-title" class="pv-title">Kalimba (Test Audio)</div>
+            <div id="pv-artist" class="pv-artist">Ninja Tuna</div>
+          </div>
+        </div>
+
+        <!-- 中间：控制与进度 -->
+        <div class="pv-center">
+          <div class="pv-controls">
+            <button id="pv-prev" class="ctrl-btn" title="上一首" aria-label="上一首">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M6 6h2v12H6V6zm3.5 6l8.5 6V6l-8.5 6z"/></svg>
+            </button>
+            <button id="pv-play" class="play-btn" title="播放/暂停" aria-label="播放/暂停">
+              <svg id="play-icon" class="icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            </button>
+            <button id="pv-next" class="ctrl-btn" title="下一首" aria-label="下一首">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M16 6h2v12h-2V6zM6 18l8.5-6L6 6v12z"/></svg>
+            </button>
+          </div>
+
+          <div class="pv-progress-row">
+            <span id="pv-time-cur" class="time small">00:00</span>
+            <div id="pv-progress" class="pv-progress">
+              <div id="pv-progress-fill" class="pv-progress-fill"></div>
+              <div id="pv-knob" class="pv-knob"></div>
+            </div>
+            <span id="pv-time-total" class="time small">00:00</span>
+          </div>
+        </div>
+
+        <!-- 右侧：音量 -->
+        <div class="pv-right">
+          <button id="pv-mute" class="ctrl-btn" title="静音/取消静音" aria-label="静音">
+            <svg id="vol-icon" class="icon" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3z"/></svg>
+          </button>
+          <div id="pv-volume" class="pv-volume" title="音量">
+            <div class="pv-volume-bar"><div id="pv-volume-fill" class="pv-volume-fill"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <audio id="pv-audio" preload="metadata"></audio>
+    </aside>
+
+    <!-- 引入脚本 -->
+    <script src="../js/router.js"></script>
+    <script src="../js/search.js"></script>
+    <script src="../js/script.js"></script>
+    <script src="../js/my-works.js"></script>
+
+    <!-- 播放栏脚本 -->
+    <script>
+    ;(function () {
+      const playlist = [
+        { title: "Kalimba (Test Audio)", artist: "Ninja Tuna", cover: "", src: "https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3" },
+        { title: "Sample MP3 (700KB)", artist: "Sample Source", cover: "", src: "https://sample.cat/downloads/file_example_MP3_700KB.mp3" }
+      ];
+
+      let currentIndex = 0;
+      let isPlaying = false;
+
+      const audio = document.getElementById('pv-audio');
+      const playBtn = document.getElementById('pv-play');
+      const playIcon = document.getElementById('play-icon');
+      const prevBtn = document.getElementById('pv-prev');
+      const nextBtn = document.getElementById('pv-next');
+      const titleEl = document.getElementById('pv-title');
+      const artistEl = document.getElementById('pv-artist');
+      const coverEl = document.getElementById('pv-cover');
+      const progressEl = document.getElementById('pv-progress');
+      const progressFill = document.getElementById('pv-progress-fill');
+      const knobEl = document.getElementById('pv-knob');
+      const timeCurEl = document.getElementById('pv-time-cur');
+      const timeTotalEl = document.getElementById('pv-time-total');
+      const volEl = document.getElementById('pv-volume');
+      const volFill = document.getElementById('pv-volume-fill');
+      const muteBtn = document.getElementById('pv-mute');
+      const volIcon = document.getElementById('vol-icon');
+
+      function loadTrack(index) {
+        const track = playlist[index];
+        titleEl.innerText = track.title;
+        artistEl.innerText = track.artist;
+        coverEl.style.backgroundImage = track.cover ? `url('${track.cover}')` : '';
+        audio.src = track.src;
+      }
+
+      function playTrack() {
+        audio.play().then(() => {
+          isPlaying = true;
+          updatePlayIcon();
+        }).catch(err => console.error("Play failed:", err));
+      }
+
+      function pauseTrack() {
+        audio.pause();
+        isPlaying = false;
+        updatePlayIcon();
+      }
+
+      function togglePlay() {
+        isPlaying ? pauseTrack() : playTrack();
+      }
+
+      function updatePlayIcon() {
+        playIcon.setAttribute('viewBox','0 0 24 24');
+        playIcon.innerHTML = isPlaying ?
+          '<path d="M6 5h4v14H6V5zm8 0h4v14h-4V5z"/>' :
+          '<path d="M8 5v14l11-7z"/>';
+      }
+
+      function formatTime(s) {
+        if (!s || isNaN(s)) return "00:00";
+        const m = Math.floor(s/60), ss = Math.floor(s%60);
+        return `${m<10?'0':''}${m}:${ss<10?'0':''}${ss}`;
+      }
+
+      function stopWrap(handler) {
+        return function(e){ e.stopPropagation(); handler(e); };
+      }
+
+      // 事件监听
+      playBtn.addEventListener('click', stopWrap(togglePlay));
+
+      prevBtn.addEventListener('click', stopWrap(() => {
+        currentIndex = (currentIndex - 1 + playlist.length) % playlist.length;
+        loadTrack(currentIndex);
+        playTrack();
+      }));
+
+      nextBtn.addEventListener('click', stopWrap(() => {
+        currentIndex = (currentIndex + 1) % playlist.length;
+        loadTrack(currentIndex);
+        playTrack();
+      }));
+
+      muteBtn.addEventListener('click', stopWrap(() => {
+        audio.muted = !audio.muted;
+        if (audio.muted || audio.volume === 0) {
+          volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 3l7 7-1.4 1.4L16 7.8V16h-2V8.6L9.4 4 11 2.4 14 3z"/>';
+        }
+        else if (audio.volume < 0.5) {
+          volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 9v6c1.7-0.7 3-2.4 3-4.5S15.7 9.7 14 9z"/>';
+        }
+        else {
+          volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 7v10c3-1 5-3.6 5-7s-2-6-5-7z"/>';
+        }
+      }));
+
+      // 进度条更新
+      audio.addEventListener('timeupdate', () => {
+        const percent = (audio.currentTime / audio.duration) * 100;
+        progressFill.style.width = `${percent}%`;
+        knobEl.style.left = `${percent}%`;
+        timeCurEl.innerText = formatTime(audio.currentTime);
+      });
+
+      audio.addEventListener('loadedmetadata', () => {
+        timeTotalEl.innerText = formatTime(audio.duration);
+      });
+
+      audio.addEventListener('ended', () => {
+        currentIndex = (currentIndex + 1) % playlist.length;
+        loadTrack(currentIndex);
+        playTrack();
+      });
+
+      // 进度条拖拽
+      function handleProgressInput(clientX) {
+        const rect = progressEl.getBoundingClientRect();
+        let x = clientX - rect.left;
+        x = Math.max(0, Math.min(x, rect.width));
+        const pct = (x / rect.width) * 100;
+        progressFill.style.width = `${pct}%`;
+        knobEl.style.left = `${pct}%`;
+        return (x / rect.width) * audio.duration;
+      }
+
+      let isDraggingProgress = false;
+      progressEl.addEventListener('mousedown', stopWrap((e) => {
+        isDraggingProgress = true;
+        const t = handleProgressInput(e.clientX);
+        timeCurEl.innerText = formatTime(t);
+      }));
+
+      document.addEventListener('mousemove', (e) => {
+        if (isDraggingProgress) {
+          e.preventDefault();
+          const t = handleProgressInput(e.clientX);
+          timeCurEl.innerText = formatTime(t);
+        }
+      });
+
+      document.addEventListener('mouseup', (e) => {
+        if (isDraggingProgress) {
+          isDraggingProgress = false;
+          const t = handleProgressInput(e.clientX);
+          if (isFinite(t)) audio.currentTime = t;
+        }
+      });
+
+      // 音量控制
+      function handleVolumeInput(clientX) {
+        const rect = volEl.getBoundingClientRect();
+        let x = clientX - rect.left;
+        x = Math.max(0, Math.min(x, rect.width));
+        const p = x / rect.width;
+        volFill.style.width = `${p * 100}%`;
+        audio.volume = p;
+        if (p === 0 || audio.muted) {
+          volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 3l7 7-1.4 1.4L16 7.8V16h-2V8.6L9.4 4 11 2.4 14 3z"/>';
+        }
+        else if (p < 0.5) {
+          volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 9v6c1.7-0.7 3-2.4 3-4.5S15.7 9.7 14 9z"/>';
+        }
+        else {
+          volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 7v10c3-1 5-3.6 5-7s-2-6-5-7z"/>';
+        }
+      }
+
+      let isDraggingVolume = false;
+      volEl.addEventListener('mousedown', stopWrap((e) => {
+        isDraggingVolume = true;
+        handleVolumeInput(e.clientX);
+      }));
+
+      document.addEventListener('mousemove', (e) => {
+        if (isDraggingVolume) {
+          e.preventDefault();
+          handleVolumeInput(e.clientX);
+        }
+      });
+
+      document.addEventListener('mouseup', () => {
+        isDraggingVolume = false;
+      });
+
+      // 初始化第一首
+      loadTrack(currentIndex);
+    })();
+    </script>
+</body>
+</html>

@@ -17,7 +17,8 @@ const routes = {
     'live-streaming': 'live-streaming.html',
     'player': 'player.html',
     'search': 'search.html',
-    'data-analysis': 'data-analysis.html'
+    'data-analysis': 'data-analysis.html',
+    'my-works': 'my-works.html'
 };
 
 function navigateTo(path) {

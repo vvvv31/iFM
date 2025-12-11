@@ -6,6 +6,7 @@
     <title>搜索结果 - 星之声</title>
     <!-- 复用现有样式文件 -->
     <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/category.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
       /* PlayBar 样式（来自 PlayBar.html） */
@@ -68,6 +69,59 @@
       .rate-item:hover { background: #f7f7f7; }
       .rate-item.active { color: #ff8c00; font-weight: 700; background: #fff4e6; }
       @media (max-width: 900px) { .pv-left { min-width: 0; } .pv-right { min-width: 0; } .pv-inner { grid-template-columns: auto 1fr auto; column-gap: 10px; padding: 0 12px; } }
+
+      /* 搜索结果页面特定样式 */
+      .main-content {
+          padding-bottom: 96px;
+      }
+
+      .no-results-container {
+          text-align: center;
+          padding: 60px 20px;
+          color: #666;
+      }
+
+      .no-results-icon {
+          font-size: 64px;
+          color: #FFDAB9;
+          margin-bottom: 20px;
+      }
+
+      .no-results-title {
+          font-size: 18px;
+          font-weight: bold;
+          margin-bottom: 10px;
+      }
+
+      .no-results-suggestions {
+          margin-top: 20px;
+          font-size: 14px;
+      }
+
+      .no-results-suggestions a {
+          color: #FF8C00;
+          text-decoration: none;
+      }
+
+      .no-results-suggestions a:hover {
+          text-decoration: underline;
+      }
+
+      /* 确保搜索结果网格与分类页面一致 */
+      .channels-grid {
+          min-height: 300px;
+      }
+
+      /* 添加课程卡片样式 */
+      .channel-card {
+          cursor: pointer;
+          transition: transform 0.2s, box-shadow 0.2s;
+      }
+
+      .channel-card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+      }
     </style>
 </head>
 <body>
@@ -84,7 +138,7 @@
         </div>
         <nav class="main-nav">
             <a href="index.html" class="nav-item">首页</a>
-            <a href="category.html" class="nav-item active">分类</a>
+            <a href="category.html" class="nav-item">分类</a>
             <a href="channel.html" class="nav-item">社区</a>
         </nav>
         <div class="search-box">
@@ -106,29 +160,52 @@
 
     <!-- 主要内容区 -->
     <main class="main-content">
-        <!-- 搜索结果头部 -->
-        <div class="content-block">
-            <div class="content-title">搜索结果</div>
-            <div class="search-result-header" style="padding: 10px 0; color: #666;">
-                您搜索的关键词：<span style="color: #FF8C00; font-weight: bold;" id="search-keyword"></span>
+        <!-- 搜索结果头部 - 使用与分类页面相同的样式 -->
+        <div class="category-header">
+            <h1>搜索结果</h1>
+            <p>为您找到以下相关课程</p>
+            <p id="result-count" style="font-size: 14px; color: #666; margin-top: 5px;">
+                搜索关键词：<span style="color: #FF8C00; font-weight: bold;" id="search-keyword"></span>
+                | 共 <span id="total-results">0</span> 个结果
+            </p>
+        </div>
+
+        <!-- 过滤选项 - 使用与分类页面相同的样式 -->
+        <div class="filter-section">
+            <!-- 类型过滤 -->
+            <div class="filter-group">
+                <span class="filter-label">类型：</span>
+                <div class="filter-options" id="typeOptions">
+                    <button class="filter-option active" data-type="all">全部</button>
+                    <button class="filter-option" data-type="audio">音频</button>
+                    <button class="filter-option" data-type="live">直播</button>
+                </div>
+            </div>
+
+            <!-- 排序选项 -->
+            <div class="filter-group">
+                <span class="filter-label">排序：</span>
+                <div class="filter-options" id="sortOptions">
+                    <button class="filter-option active" data-sort="popularity">热度</button>
+                    <button class="filter-option" data-sort="time">最新</button>
+                </div>
             </div>
         </div>
 
-        <!-- 搜索结果列表 -->
-        <div class="content-block">
-            <div class="content-title">相关课程</div>
-            <div class="channel-cards" id="course-results">
-                <!-- 结果项占位，实际会通过JS动态渲染 -->
-                <div class="channel-card">暂无匹配结果</div>
-            </div>
+        <!-- 搜索结果网格 - 使用与分类页面相同的网格布局 -->
+        <div class="channels-grid" id="search-results-grid">
+            <!-- 结果将通过JS动态生成 -->
         </div>
 
-        <!-- 相关频道 -->
-        <div class="content-block">
-            <div class="content-title">相关频道</div>
-            <div class="channel-cards" id="channel-results">
-                <div class="channel-card">暂无匹配频道</div>
-            </div>
+        <!-- 分页控制 -->
+        <div class="pagination" id="search-pagination" style="display: none;">
+            <button class="page-btn prev-btn">上一页</button>
+            <button class="page-btn active">1</button>
+            <button class="page-btn">2</button>
+            <button class="page-btn">3</button>
+            <span class="page-ellipsis">...</span>
+            <button class="page-btn">5</button>
+            <button class="page-btn next-btn">下一页</button>
         </div>
     </main>
 
@@ -225,7 +302,7 @@
     <script src="../js/search.js"></script>
     <script src="../js/script.js"></script>
 
-    <!-- 页面自身逻辑（保留：关键词解析与结果显示；不再绑定旧播放栏控制） -->
+    <!-- 页面自身逻辑 -->
     <script>
       // 搜索结果页专属脚本：解析URL参数并展示
       function getSearchKeyword() {
@@ -239,6 +316,75 @@
           const el = document.getElementById('search-keyword');
           if (el) el.textContent = keyword;
           // 这里可以添加搜索逻辑，根据关键词加载结果
+      });
+
+      // 课程ID映射表 - 确保search.js中的mockCourses与program_list.html中的courseData对应
+      const courseIdMap = {
+        // search.js中的id: program_list.html中的id
+        1: '1',  // 商务英语会话技巧
+        2: '2',  // 日常英语口语600句
+        3: '3',  // 英语听力进阶训练
+        4: '6',  // 英语写作技巧提升
+        5: '7',  // 零基础英语入门
+        6: '8',  // 英语语法精讲
+        7: '9',  // 旅游英语口语
+        8: '10', // 英语发音纠正
+        9: '11', // 英语面试技巧
+        10: '12', // 考研英语阅读理解
+        11: '13', // 少儿英语启蒙
+        12: '14'  // 职场英语沟通
+      };
+
+      // 重写搜索结果显示函数，确保点击可以跳转到正确的课程详情页
+      function overrideSearchFunctions() {
+        // 重写searchDataAndDisplay函数中的点击事件
+        const originalSearchDataAndDisplay = window.searchDataAndDisplay;
+        if (originalSearchDataAndDisplay) {
+          window.searchDataAndDisplay = function(keyword) {
+            originalSearchDataAndDisplay.call(this, keyword);
+
+            // 重绑定点击事件，确保跳转到program_list.html并传递正确的ID
+            setTimeout(() => {
+              document.querySelectorAll('#search-results-grid .channel-card').forEach(card => {
+                card.addEventListener('click', function(e) {
+                  e.stopPropagation();
+                  const courseId = this.getAttribute('data-course-id');
+                  const mappedId = courseIdMap[courseId] || courseId;
+
+                  // 跳转到课程详情页
+                  window.location.href = `program_list.html?id=${mappedId}`;
+                });
+              });
+            }, 100);
+          };
+        }
+
+        // 重写updateSearchResults函数中的点击事件
+        const originalUpdateSearchResults = window.updateSearchResults;
+        if (originalUpdateSearchResults) {
+          window.updateSearchResults = function(courses, keyword) {
+            originalUpdateSearchResults.call(this, courses, keyword);
+
+            // 重绑定点击事件
+            setTimeout(() => {
+              document.querySelectorAll('#search-results-grid .channel-card').forEach(card => {
+                card.addEventListener('click', function(e) {
+                  e.stopPropagation();
+                  const courseId = this.getAttribute('data-course-id');
+                  const mappedId = courseIdMap[courseId] || courseId;
+
+                  // 跳转到课程详情页
+                  window.location.href = `program_list.html?id=${mappedId}`;
+                });
+              });
+            }, 100);
+          };
+        }
+      }
+
+      // 页面加载完成后重写搜索函数
+      document.addEventListener('DOMContentLoaded', function() {
+        overrideSearchFunctions();
       });
     </script>
 

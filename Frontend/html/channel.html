@@ -54,6 +54,32 @@
         .playlist-item { padding:8px 12px; cursor:pointer; }
         .playlist-item.active { background:#fff3e0; color:#ff8c00; font-weight:600; }
         @media (max-width: 900px) { .pv-left{min-width:0;} .pv-right{min-width:0;} .pv-inner{grid-template-columns:auto 1fr auto; column-gap:10px; padding:0 12px;} }
+        /* Feed post styles (improved) */
+        .post-card { background: #fff; border: 1px solid #f0f0f0; padding: 14px; border-radius: 12px; margin-bottom: 14px; box-shadow: 0 4px 14px rgba(16,24,40,0.04); }
+        .post-header { display:flex; align-items:center; gap:12px; margin-bottom:10px; }
+        .avatar { width:40px; height:40px; border-radius:50%; background:#ffe9d6; display:inline-flex; align-items:center; justify-content:center; color:#c24a00; font-weight:700; font-size:14px; flex-shrink:0; }
+        .post-author { display:flex; flex-direction:column; }
+        .author-name { font-weight:700; color:#222; font-size:14px; }
+        .post-time { color:#999; font-size:12px; }
+        .post-body { font-size:15px; color:#222; margin-bottom:10px; white-space:pre-wrap; line-height:1.5; }
+        .post-images { display:grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap:8px; margin-bottom:8px; }
+        .post-images img { width:100%; height:100%; object-fit:cover; border-radius:8px; display:block; }
+        .post-actions { display:flex; gap:12px; align-items:center; }
+        .like-btn { background:transparent; border:1px solid #ffe6d0; padding:6px 10px; border-radius:20px; color:#ff6b35; cursor:pointer; transition:transform .12s ease; }
+        .like-btn:active { transform:scale(.96); }
+        /* Composer improvements */
+        .composer { background:#fff; border:1px solid #eee; padding:12px; border-radius:10px; margin-bottom:14px; }
+        .composer textarea { width:100%; border:1px solid #f0f0f0; padding:10px; border-radius:8px; resize:vertical; min-height:72px; }
+        .composer-actions { display:flex; gap:10px; margin-top:10px; align-items:center; }
+        .attach-btn { background:#fff; border:1px solid #ffcc80; color:#ff8c00; padding:8px 14px; border-radius:20px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; font-size:14px; transition:all .2s; }
+        .attach-btn:hover { background:#fff3e0; border-color:#ff8c00; }
+        .btn-orange { background:linear-gradient(135deg,#ff9800,#ff5722); color:#fff; border:none; padding:8px 16px; border-radius:20px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; font-size:14px; box-shadow:0 2px 8px rgba(255,152,0,.25); transition:transform .15s,box-shadow .15s; }
+        .btn-orange:hover { transform:translateY(-2px); box-shadow:0 4px 12px rgba(255,152,0,.35); }
+        .preview-area { display:grid; grid-template-columns:repeat(auto-fill,minmax(100px,1fr)); gap:10px; margin-top:10px; }
+        .preview-area>div { position:relative; border-radius:10px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,.08); }
+        .preview-area img { width:100%; height:100px; object-fit:cover; display:block; border-radius:10px; }
+        .preview-area button { position:absolute; top:4px; right:4px; width:24px; height:24px; background:rgba(0,0,0,.55); color:#fff; border:none; border-radius:50%; cursor:pointer; font-size:14px; display:flex; align-items:center; justify-content:center; transition:background .2s; }
+        .preview-area button:hover { background:rgba(0,0,0,.75); }
     </style>
 </head>
 <body>
@@ -103,12 +129,15 @@
               <input type="text" placeholder="搜索频道/群组" id="channelSearch" class="invite-search">
               <button class="close-btn" id="clearSearch">×</button>
             </div>
+            <div style="margin-top:8px; display:flex; align-items:center; gap:8px;">
+              <input type="checkbox" id="myGroupsOnly" />
+              <label for="myGroupsOnly" style="font-size:13px;">只看我加入的群组</label>
+            </div>
           </div>
 
           <div class="category-list" id="categoryList">
             <button class="category-item active" data-category="feed">动态</button>
             <button class="category-item" data-category="groups">群组</button>
-            <button class="category-item" data-category="讨论">讨论</button>
             <button class="category-item" data-category="学习">学习</button>
             <button class="category-item" data-category="其他">其他</button>
           </div>
@@ -126,7 +155,7 @@
                 <button class="view-btn" data-mode="compact" title="紧凑视图">☰</button>
               </div>
               <div class="filter-chips" id="filterChips">
-                <button class="chip" data-filter="讨论">讨论</button>
+                <!-- 讨论已合并入群组，不再单独展示 -->
                 <button class="chip" data-filter="学习">学习</button>
                 <button class="chip" data-filter="其他">其他</button>
               </div>
@@ -153,8 +182,8 @@
                 <textarea id="composerInput" placeholder="说点什么..." rows="3"></textarea>
                 <div class="composer-actions">
                   <input type="file" id="composerFiles" accept="image/*" multiple style="display:none;">
-                  <button id="attachBtn">图片</button>
-                  <button id="postBtn" class="btn-orange">发布</button>
+                  <button id="attachBtn" class="attach-btn"><i class="fas fa-image"></i> 图片</button>
+                  <button id="postBtn" class="btn-orange"><i class="fas fa-paper-plane"></i> 发布</button>
                 </div>
                 <div id="previewArea" class="preview-area"></div>
               </div>
@@ -696,16 +725,19 @@
       (function(){
         // 简单 mock 数据，可替换为后端 API 请求
         const sampleGroups = [
-          { id:1, name:'英语学习群', desc:'口语练习与资源分享', members:128, category:'学习' },
-          { id:2, name:'早起打卡组', desc:'每天早起一起学习', members:64, category:'其他' },
-          { id:3, name:'深度讨论组', desc:'长篇材料讨论', members:32, category:'讨论' }
+          { id:1, name:'英语口语练习群', desc:'口语练习与资源分享', members:128, category:'学习' },
+          { id:2, name:'托福备考群', desc:'每天早起一起学习', members:64, category:'其他' },
+          { id:3, name:'商务英语交流', desc:'长篇材料讨论', members:32, category:'groups' }
         ];
         // expose for other scripts/pages
         window.sampleGroups = sampleGroups;
 
+        // simulate current user's joined groups (ids)
+        const myJoinedGroupIds = new Set([1]); // simulate user has joined group with id=1
+
         const samplePosts = [
           { id:1, author:'小明', text:'刚完成一节发音练习，收获颇丰！', likes:4, time:'1小时前', tags:['学习'] },
-          { id:2, author:'小红', text:'周末组织线上分享，欢迎加入', likes:8, time:'3小时前', tags:['讨论'] }
+          { id:2, author:'小红', text:'周末组织线上分享，欢迎加入', likes:8, time:'3小时前', tags:['群组'] }
         ];
 
         const groupsGrid = document.getElementById('groupsGrid');
@@ -717,9 +749,7 @@
         const sortSelect = document.getElementById('sortSelect');
         const filterChips = document.querySelectorAll('.chip');
         const composerInput = document.getElementById('composerInput');
-        const attachBtn = document.getElementById('attachBtn');
-        const composerFiles = document.getElementById('composerFiles');
-        const previewArea = document.getElementById('previewArea');
+        
         const channelSearch = document.getElementById('channelSearch');
         const clearSearch = document.getElementById('clearSearch');
 
@@ -741,11 +771,40 @@
           });
         }
 
+        // filter helper: applies search text and my-groups-only filter
+        function applyGroupFilters(){
+          const q = (channelSearch.value || '').trim().toLowerCase();
+          const myOnly = document.getElementById('myGroupsOnly').checked;
+          const filtered = sampleGroups.filter(g=>{
+            if (myOnly && !myJoinedGroupIds.has(g.id)) return false;
+            if (!q) return true;
+            return (g.name && g.name.toLowerCase().includes(q)) || (g.desc && g.desc.toLowerCase().includes(q));
+          });
+          renderGroups(filtered);
+        }
+
+        // wire up instant search and checkbox
+        channelSearch.addEventListener('input', applyGroupFilters);
+        document.getElementById('myGroupsOnly').addEventListener('change', applyGroupFilters);
+        clearSearch.addEventListener('click', ()=>{ channelSearch.value=''; applyGroupFilters(); });
+
+        // initial render
+        applyGroupFilters();
+
         function renderPosts(list){
           postsList.innerHTML = '';
           list.forEach(p=>{
             const node = document.createElement('div'); node.className='post-card';
-            node.innerHTML = `<div class="post-meta"><span>${escapeHtml(p.author)}</span><span>${escapeHtml(p.time)}</span></div><div class="post-body">${escapeHtml(p.text)}</div><div class="post-actions"><button class="like-btn" data-id="${p.id}">❤ ${p.likes}</button></div>`;
+            const avatarLetter = escapeHtml((p.author||'').slice(0,1));
+            node.innerHTML = `
+              <div class="post-header">
+                <div class="avatar">${avatarLetter}</div>
+                <div class="post-author"><div class="author-name">${escapeHtml(p.author)}</div><div class="post-time">${escapeHtml(p.time)}</div></div>
+              </div>
+              <div class="post-body">${escapeHtml(p.text)}</div>
+              ${p.images&&p.images.length?`<div class="post-images">${p.images.map(src=>`<img src="${src}" alt="image">`).join('')}</div>`:''}
+              <div class="post-actions"><button class="like-btn" data-id="${p.id}">❤ <span class="like-count">${p.likes}</span></button></div>
+            `;
             postsList.appendChild(node);
           });
         }
@@ -753,6 +812,77 @@
         // Initial render
         renderGroups(sampleGroups);
         renderPosts(samplePosts);
+
+        // Composer: image preview and post creation
+        const postBtn = document.getElementById('postBtn');
+        const attachBtnEl = document.getElementById('attachBtn');
+        const composerFilesEl = document.getElementById('composerFiles');
+        const previewAreaEl = document.getElementById('previewArea');
+
+        attachBtnEl.addEventListener('click', ()=> composerFilesEl.click());
+        // manage selected files manually so we can remove thumbnails
+        let composerSelectedFiles = [];
+        composerFilesEl.addEventListener('change', (e)=>{
+          const files = Array.from(e.target.files || []);
+          // append new files to the selection
+          composerSelectedFiles = composerSelectedFiles.concat(files);
+          renderComposerPreviews();
+        });
+
+        function renderComposerPreviews(){
+          previewAreaEl.innerHTML = '';
+          composerSelectedFiles.forEach((f, idx)=>{
+            const reader = new FileReader();
+            const wrap = document.createElement('div'); wrap.style.display='inline-block'; wrap.style.position='relative';
+            reader.onload = ev=>{
+              const img = document.createElement('img'); img.src = ev.target.result; img.style.maxWidth='120px'; img.style.margin='6px'; img.style.borderRadius='6px';
+              wrap.appendChild(img);
+              const removeBtn = document.createElement('button'); removeBtn.textContent='×'; removeBtn.style.position='absolute'; removeBtn.style.right='4px'; removeBtn.style.top='4px'; removeBtn.style.background='rgba(0,0,0,0.5)'; removeBtn.style.color='#fff'; removeBtn.style.border='none'; removeBtn.style.borderRadius='50%'; removeBtn.style.width='22px'; removeBtn.style.height='22px'; removeBtn.style.cursor='pointer';
+              removeBtn.addEventListener('click',(ev)=>{ ev.stopPropagation(); composerSelectedFiles.splice(idx,1); renderComposerPreviews(); });
+              wrap.appendChild(removeBtn);
+            };
+            reader.readAsDataURL(f);
+            previewAreaEl.appendChild(wrap);
+          });
+        }
+
+        postBtn.addEventListener('click', ()=>{
+          const text = composerInput.value.trim();
+          const images = [];
+          const files = composerSelectedFiles.slice();
+          // convert files to data URLs synchronously via FileReader (already previewed)
+          const readers = files.map(f=> new Promise(resolve=>{ const r=new FileReader(); r.onload=ev=>resolve(ev.target.result); r.readAsDataURL(f);}));
+          Promise.all(readers).then(dataUrls=>{
+            const newId = (samplePosts.length? Math.max(...samplePosts.map(p=>p.id))+1:1);
+            const now = new Date();
+            const post = { id:newId, author:'我', text:text, images:dataUrls, likes:0, time: now.toLocaleString(), tags:[] };
+            samplePosts.unshift(post);
+            composerInput.value = '';
+            composerFilesEl.value = '';
+            composerSelectedFiles = [];
+            previewAreaEl.innerHTML = '';
+            renderPosts(samplePosts);
+            attachLikeHandlers();
+          });
+        });
+
+        // Like button handler
+        function attachLikeHandlers(){
+          document.querySelectorAll('.like-btn').forEach(btn=>{
+            if (btn.dataset.bound) return; // avoid double binding
+            btn.dataset.bound = '1';
+            btn.addEventListener('click', (e)=>{
+              e.stopPropagation();
+              const id = parseInt(btn.getAttribute('data-id'));
+              const post = samplePosts.find(p=>p.id===id);
+              if(!post) return;
+              post.likes = (post.likes || 0) + 1;
+              const countEl = btn.querySelector('.like-count');
+              if (countEl) countEl.textContent = post.likes;
+            });
+          });
+        }
+        attachLikeHandlers();
 
         // Category click: 'feed' shows feed; 'groups' shows all groups; other categories filter groups
         categoryList.addEventListener('click', (e)=>{
@@ -813,28 +943,7 @@
           btn.textContent = '已加入'; btn.disabled = true; // mock behavior
         });
 
-        // Post like handler (delegated)
-        postsList.addEventListener('click', (e)=>{
-          const btn = e.target.closest('.like-btn'); if(!btn) return;
-          const id = Number(btn.getAttribute('data-id'));
-          const post = samplePosts.find(p=>p.id===id); if(!post) return;
-          post.likes = (post.likes||0) + 1; renderPosts(samplePosts);
-        });
-
-        // Composer
-        attachBtn.addEventListener('click', ()=> composerFiles.click());
-        composerFiles.addEventListener('change', (e)=>{
-          previewArea.innerHTML='';
-          Array.from(e.target.files).forEach(f=>{
-            const url = URL.createObjectURL(f);
-            const img = document.createElement('img'); img.src = url; previewArea.appendChild(img);
-          });
-        });
-        document.getElementById('postBtn').addEventListener('click', ()=>{
-          const text = (composerInput.value||'').trim(); if(!text) return alert('请输入内容');
-          const newPost = { id:Date.now(), author:'你', text, likes:0, time:'刚刚' };
-          samplePosts.unshift(newPost); renderPosts(samplePosts); composerInput.value=''; previewArea.innerHTML=''; composerFiles.value='';
-        });
+        // Composer and like handling implemented earlier (avoid duplicate handlers)
 
         // Ensure initial view based on active category
         (function initPanels(){

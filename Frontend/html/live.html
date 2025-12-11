@@ -219,6 +219,28 @@
         const chatInput = document.querySelector('.chat-input');
         const chatSendBtn = document.querySelector('.chat-input-area .btn-orange');
         const chatMessages = document.querySelector('.chat-messages');
+        const urlParams = new URLSearchParams(window.location.search);
+        const liveId = urlParams.get('id');
+        const liveTitle = urlParams.get('title');
+        const teacherName = urlParams.get('teacher');
+
+        if (liveTitle) {
+            document.querySelector('.live-title').textContent = liveTitle;
+        }
+
+        if (teacherName) {
+            // 更新老师姓名
+            const teacherElements = document.querySelectorAll('.anchor-name, .teacher-name, .user-name');
+            teacherElements.forEach(el => {
+                el.textContent = teacherName;
+            });
+        }
+
+        // 如果有直播ID，可以用于后续获取更多直播数据
+        if (liveId) {
+            console.log('直播ID:', liveId);
+            // 这里可以添加根据ID获取直播详细信息的代码
+        }
 
         chatSendBtn.addEventListener('click', sendMessage);
         chatInput.addEventListener('keypress', (e) => {

@@ -201,6 +201,10 @@ document.addEventListener('DOMContentLoaded', function() {
             // 创建节目卡片元素（匹配现有CSS样式）
             const channelCard = document.createElement('div');
             channelCard.className = 'channel-card';
+            channelCard.setAttribute('data-type', channel.type); // 添加type属性
+            channelCard.setAttribute('data-course-id', channel.id);
+            channelCard.setAttribute('data-category', channel.category);
+
             channelCard.innerHTML = `
                 <div class="channel-thumbnail">
                     <!-- 缩略图背景（实际项目替换为真实图片URL） -->
@@ -210,12 +214,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="thumbnail-overlay">
                         <div class="play-icon">▶</div>
                     </div>
-                    <div class="video-duration">${channel.duration}</div>
+                    <div class="video-duration">${channel.duration || '直播中'}</div>
                 </div>
                 <div class="channel-info">
                     <h3 class="channel-title">${channel.title}</h3>
                     <div class="channel-meta">
-                        <span class="views-count">${formatPlayCount(channel.playCount)}次学习</span>
+                        <span class="views-count">${formatPlayCount(channel.playCount)}次${channel.type === 'audio' ? '学习' : '观看'}</span>
                         <span class="rating">${formatDate(channel.publishTime)}</span>
                     </div>
                     <div class="teacher-info">
@@ -225,10 +229,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             `;
 
-            //卡片点击跳转至详情页，携带节目ID
+            // 卡片点击跳转，根据类型跳转到不同页面
             channelCard.addEventListener('click', function() {
-                // 跳转URL格式：program_list.html?id=节目ID（根据文件实际路径调整）
-                window.location.href = `program_list.html?id=${channel.id}`;
+                const type = this.getAttribute('data-type');
+                const id = this.getAttribute('data-course-id');
+
+                if (type === 'audio') {
+                    // 音频类型跳转到program_list.html
+                    window.location.href = `program_list.html?id=${id}`;
+                } else if (type === 'live') {
+                    // 直播类型跳转到live.html
+                    window.location.href = `live.html?id=${id}&title=${encodeURIComponent(channel.title)}&teacher=${encodeURIComponent(channel.teacher)}`;
+                }
             });
 
             // 添加卡片到列表

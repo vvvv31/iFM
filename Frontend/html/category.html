@@ -461,27 +461,40 @@
     <!-- 页面功能脚本（保留与分类相关的逻辑，移除原播放器控制脚本） -->
     <script>
         // 为所有频道卡片添加点击事件 - 跳转到详情页
+        // 为所有频道卡片添加点击事件 - 根据类型跳转到不同页面
         document.querySelectorAll('.channel-card').forEach((card, index) => {
             card.addEventListener('click', () => {
                 const courseId = card.getAttribute('data-course-id') || (index + 1);
-                const title = card.querySelector('.channel-title').textContent;
-                const teacher = card.querySelector('.teacher-name').textContent;
-                const duration = card.querySelector('.video-duration').textContent;
-                const views = card.querySelector('.views-count').textContent;
-                
-                const courseInfo = {
-                    id: courseId,
-                    title: title,
-                    teacher: teacher,
-                    duration: duration,
-                    views: views,
-                    rating: '★★★★★',
-                    description: getCourseDescription(courseId),
-                    chapters: getCourseChapters(courseId)
-                };
-                
-                localStorage.setItem('currentCourse', JSON.stringify(courseInfo));
-                window.location.href = 'program_list.html';
+                const type = card.getAttribute('data-type') || 'audio'; // 默认为音频
+
+                if (type === 'audio') {
+                    // 音频类型：跳转到program_list.html
+                    const title = card.querySelector('.channel-title').textContent;
+                    const teacher = card.querySelector('.teacher-name').textContent;
+                    const duration = card.querySelector('.video-duration').textContent;
+                    const views = card.querySelector('.views-count').textContent;
+
+                    const courseInfo = {
+                        id: courseId,
+                        title: title,
+                        teacher: teacher,
+                        duration: duration,
+                        views: views,
+                        rating: '★★★★★',
+                        description: getCourseDescription(courseId),
+                        chapters: getCourseChapters(courseId)
+                    };
+
+                    localStorage.setItem('currentCourse', JSON.stringify(courseInfo));
+                    window.location.href = 'program_list.html';
+                } else if (type === 'live') {
+                    // 直播类型：跳转到live.html
+                    const title = card.querySelector('.channel-title').textContent;
+                    const teacher = card.querySelector('.teacher-name').textContent;
+
+                    // 跳转到直播页面，传递参数
+                    window.location.href = `live.html?id=${courseId}&title=${encodeURIComponent(title)}&teacher=${encodeURIComponent(teacher)}`;
+                }
             });
         });
 

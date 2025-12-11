@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>导航栏测试 - 星之声</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* 简化的导航栏样式 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #fff;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .logo {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        
+        .user-functions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .func-item {
+            text-decoration: none;
+            color: #333;
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+        
+        .func-item:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .submit-btn {
+            background-color: #ff8c00;
+            color: #fff;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .submit-btn:hover {
+            background-color: #e67e00;
+        }
+    </style>
+</head>
+<body>
+    <!-- 测试导航栏 -->
+    <header class="header">
+        <div class="logo">星之声</div>
+        <div class="user-functions">
+            <a href="my-recent.html" class="func-item">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+            </a>
+            <a href="my-message.html" class="func-item"><i class="fas fa-bell"></i> 消息</a>
+            <a href="my-collect.html" class="func-item"><i class="fas fa-star"></i> 收藏</a>
+            <a href="my-recent.html" class="func-item"><i class="fas fa-history"></i> 历史</a>
+            <a href="my-creator_center.html" class="func-item"><i class="fas fa-pen"></i> 创作中心</a>
+            <a href="login.html"><button class="submit-btn">登录/注册</button></a>
+        </div>
+    </header>
+    
+    <!-- 测试按钮 -->
+    <div style="padding: 20px;">
+        <h2>导航栏测试页面</h2>
+        <button onclick="setTestToken()">设置测试令牌</button>
+        <button onclick="removeTestToken()">移除测试令牌</button>
+        <button onclick="checkLoginStatus()">检查登录状态</button>
+        <button onclick="updateNavbar()">手动更新导航栏</button>
+        <p id="status"></p>
+    </div>
+    
+    <!-- 引入auth.js -->
+    <script src="js/auth.js"></script>
+    
+    <!-- 测试脚本 -->
+    <script>
+        function setTestToken() {
+            localStorage.setItem('authToken', 'test-token-12345');
+            document.getElementById('status').textContent = '测试令牌已设置';
+        }
+        
+        function removeTestToken() {
+            localStorage.removeItem('authToken');
+            document.getElementById('status').textContent = '测试令牌已移除';
+        }
+        
+        function checkLoginStatus() {
+            const isLoggedIn = isAuthenticated();
+            document.getElementById('status').textContent = '登录状态: ' + (isLoggedIn ? '已登录' : '未登录');
+        }
+        
+        // 页面加载时自动检查登录状态
+        window.addEventListener('DOMContentLoaded', function() {
+            checkLoginStatus();
+        });
+    </script>
+</body>
+</html>

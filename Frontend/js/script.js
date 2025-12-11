@@ -270,80 +270,101 @@ function initWebSocket() {
     const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     const wsUri = `${wsProtocol}//${window.location.host}/ws/live`;
 
-    ws = new WebSocket(wsUri);
+    try {
+        ws = new WebSocket(wsUri);
 
-    ws.onopen = function() {
-        console.log('WebSocket连接已建立');
-        // 发送加入直播间事件
-        ws.send(JSON.stringify({
-            type: 'join_live',
-            userId: currentUser.id,
-            timestamp: new Date().getTime()
-        }));
-    };
+        if (ws) {
+            ws.onopen = function() {
+                console.log('WebSocket连接已建立');
+                // 发送加入直播间事件
+                ws.send(JSON.stringify({
+                    type: 'join_live',
+                    userId: currentUser.id,
+                    timestamp: new Date().getTime()
+                }));
+            };
 
-    ws.onclose = function() {
-        console.log('WebSocket连接已关闭');
-        // 尝试重连
-        setTimeout(initWebSocket, 3000);
-    };
+            ws.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+                handleWebSocketMessage(data);
+            };
 
-    ws.onerror = function(error) {
-        console.error('WebSocket错误:', error);
-    };
+            ws.onclose = function() {
+                console.log('WebSocket连接已关闭');
+                // 尝试重连
+                setTimeout(initWebSocket, 3000);
+            };
+
+            ws.onerror = function(error) {
+                console.error('WebSocket错误:', error);
+            };
+        }
+    } catch (error) {
+        console.error('初始化WebSocket连接失败:', error);
+    }
 }
 
 // 初始化PK系统
 function initPKSystem() {
+    // 确保所有元素都存在后再初始化PK系统
     const inviteBtn = document.getElementById('invite-btn');
     const acceptBtn = document.getElementById('accept-btn');
     const rejectBtn = document.getElementById('reject-btn');
-    const requestList = document.getElementById('request-list');
 
-    // 连麦邀请
-    inviteBtn.addEventListener('click', () => {
-        const targetUserId = prompt('请输入要邀请连麦的用户ID:');
-        if (targetUserId) {
-            ws.send(JSON.stringify({
-                type: 'invite_pk',
-                from: currentUser.id,
-                to: targetUserId,
-                timestamp: new Date().getTime()
-            }));
-        }
-    });
+    // 连麦邀请 - 只有在元素存在时才添加事件监听器
+    if (inviteBtn) {
+        inviteBtn.addEventListener('click', () => {
+            const targetUserId = prompt('请输入要邀请连麦的用户ID:');
+            if (targetUserId && ws) {
+                ws.send(JSON.stringify({
+                    type: 'invite_pk',
+                    from: currentUser.id,
+                    to: targetUserId,
+                    timestamp: new Date().getTime()
+                }));
+            }
+        });
+    }
 
-    // 处理连麦请求和其他消息
-    ws.onmessage = function(event) {
-        const data = JSON.parse(event.data);
-        handleWebSocketMessage(data);
-    };
 
-    // 接受连麦
-    acceptBtn.onclick = function() {
-        const pkRequest = JSON.parse(acceptBtn.dataset.request);
-        ws.send(JSON.stringify({
-            type: 'pk_response',
-            from: currentUser.id,
-            to: pkRequest.from,
-            accepted: true
-        }));
-        startPK(pkRequest.from);
-        acceptBtn.style.display = 'none';
-        rejectBtn.style.display = 'none';
-    };
 
-    // 拒绝连麦
-    rejectBtn.onclick = function() {
-        const pkRequest = JSON.parse(rejectBtn.dataset.request);
-        ws.send(JSON.stringify({
-            type: 'pk_response',
-            from: currentUser.id,
-            to: pkRequest.from,
-            accepted: false
-        }));
-        acceptBtn.style.display = 'none';
-        rejectBtn.style.display = 'none';
+    // 接受连麦 - 只有在元素存在时才添加事件监听器
+    if (acceptBtn) {
+        acceptBtn.onclick = function() {
+            const pkRequest = JSON.parse(acceptBtn.dataset.request);
+            if (ws) {
+                ws.send(JSON.stringify({
+                    type: 'pk_response',
+                    from: currentUser.id,
+                    to: pkRequest.from,
+                    accepted: true
+                }));
+            }
+            startPK(pkRequest.from);
+            acceptBtn.style.display = 'none';
+            if (rejectBtn) {
+                rejectBtn.style.display = 'none';
+            }
+        };
+    }
+
+    // 拒绝连麦 - 只有在元素存在时才添加事件监听器
+    if (rejectBtn) {
+        rejectBtn.onclick = function() {
+            const pkRequest = JSON.parse(rejectBtn.dataset.request);
+            if (ws) {
+                ws.send(JSON.stringify({
+                    type: 'pk_response',
+                    from: currentUser.id,
+                    to: pkRequest.from,
+                    accepted: false
+                }));
+            }
+            if (acceptBtn) {
+                acceptBtn.style.display = 'none';
+            }
+            rejectBtn.style.display = 'none';
+        };
     };
 }
 
@@ -352,17 +373,19 @@ function handleWebSocketMessage(data) {
     switch(data.type) {
         case 'invite_pk':
             if (data.to === currentUser.id) {
-                // 显示接受/拒绝按钮
+                // 显示接受/拒绝按钮 - 只有在元素存在时才操作
                 const acceptBtn = document.getElementById('accept-btn');
                 const rejectBtn = document.getElementById('reject-btn');
 
-                acceptBtn.style.display = 'block';
-                rejectBtn.style.display = 'block';
-                acceptBtn.dataset.request = JSON.stringify(data);
-                rejectBtn.dataset.request = JSON.stringify(data);
+                if (acceptBtn && rejectBtn) {
+                    acceptBtn.style.display = 'block';
+                    rejectBtn.style.display = 'block';
+                    acceptBtn.dataset.request = JSON.stringify(data);
+                    rejectBtn.dataset.request = JSON.stringify(data);
 
-                // 显示邀请提示
-                showNotification(`收到来自${data.from}的连麦邀请`);
+                    // 显示邀请提示
+                    showNotification(`收到来自${data.from}的连麦邀请`);
+                }
             }
             break;
 
@@ -807,7 +830,11 @@ function removeViewer(userId) {
 document.addEventListener('DOMContentLoaded', function() {
     initWebSocket();
     initPlayerPage();
-    initPKSystem();
+    // 只有在直播页面或有PK相关元素的页面才初始化PK系统
+    const currentUrl = window.location.href;
+    if (currentUrl.includes('live.html') || document.getElementById('invite-btn') || document.getElementById('accept-btn') || document.getElementById('reject-btn')) {
+        initPKSystem();
+    }
     initStatsSystem();
 
     // 初始化音频播放器
@@ -826,10 +853,14 @@ document.addEventListener('DOMContentLoaded', function() {
     if (audioPlayer) {
         audioPlayer.addEventListener('timeupdate', () => {
             const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
-            progressFill.style.width = `${progress}%`;
+            if (progressFill) {
+                progressFill.style.width = `${progress}%`;
+            }
             const minutes = Math.floor(audioPlayer.currentTime / 60);
             const seconds = Math.floor(audioPlayer.currentTime % 60);
-            currentTimeEl.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            if (currentTimeEl) {
+                currentTimeEl.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
         });
     }
 
@@ -863,22 +894,20 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    if (speedOptions) {
-        speedOptions.forEach(option => {
-            option.addEventListener('click', () => {
-                const speed = parseFloat(option.dataset.speed);
-                if (audioPlayer) {
-                    audioPlayer.playbackRate = speed;
-                }
-                if (currentSpeed) {
-                    currentSpeed.textContent = `${speed}x`;
-                }
-                if (speedMenu) {
-                    speedMenu.classList.remove('active');
-                }
-            });
+    speedOptions.forEach(option => {
+        option.addEventListener('click', () => {
+            const speed = parseFloat(option.dataset.speed);
+            if (audioPlayer) {
+                audioPlayer.playbackRate = speed;
+            }
+            if (currentSpeed) {
+                currentSpeed.textContent = `${speed}x`;
+            }
+            if (speedMenu) {
+                speedMenu.classList.remove('active');
+            }
         });
-    }
+    });
 
     if (playlistBtn && playlistPanel) {
         playlistBtn.addEventListener('click', (e) => {
@@ -887,14 +916,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    if (playlistItems) {
-        playlistItems.forEach(item => {
-            item.addEventListener('click', () => {
-                playlistItems.forEach(i => i.classList.remove('active'));
-                item.classList.add('active');
-            });
+    playlistItems.forEach(item => {
+        item.addEventListener('click', () => {
+            playlistItems.forEach(i => i.classList.remove('active'));
+            item.classList.add('active');
         });
-    }
+    });
 
     document.addEventListener('click', () => {
         if (speedMenu) speedMenu.classList.remove('active');

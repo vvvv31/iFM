@@ -68,18 +68,59 @@
         .action-title { font-size: 18px; font-weight: bold; margin-bottom: 10px; color: #333; }
         .action-desc { color: #666; font-size: 14px; line-height: 1.4; }
 
+        /* 作品卡片样式 */
+        .work-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+        .work-stats {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        .work-author {
+            font-size: 12px;
+            color: #FF8C00;
+            margin-top: 5px;
+            font-weight: 500;
+        }
+        .channel-card {
+            background-color: white;
+            border: 1px solid #FFDAB9;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: left;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .channel-card:hover {
+            background-color: #FFF8DC;
+            transform: translateY(-3px);
+            box-shadow: 0 3px 10px rgba(255, 140, 0, 0.1);
+        }
+        .channel-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
         @media (max-width: 768px) {
             .creator-stats { grid-template-columns: 1fr; gap: 15px; }
             .creator-actions { grid-template-columns: 1fr; gap: 15px; }
             .stat-card, .action-card { padding: 20px; }
             .stat-value { font-size: 28px; }
             .action-icon { font-size: 32px; width: 50px; height: 50px; }
+            .channel-cards { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
         }
         @media (max-width: 480px) {
             .creator-stats, .creator-actions { gap: 10px; }
             .stat-card, .action-card { padding: 15px; }
             .stat-value { font-size: 24px; }
             .action-title { font-size: 16px; }
+            .channel-cards { grid-template-columns: 1fr; }
         }
 
         /* 预留底部播放栏空间 */
@@ -191,16 +232,16 @@
             <h3 class="content-title">创作者数据概览</h3>
             <div class="creator-stats">
                 <div class="stat-card">
-                    <div class="stat-value">4,502</div>
-                    <div class="stat-label">总收听</div>
+                    <div class="stat-value">28</div>
+                    <div class="stat-label">作品数量</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value">1,256</div>
-                    <div class="stat-label">粉丝数</div>
+                    <div class="stat-value">86.5万</div>
+                    <div class="stat-label">总播放量</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-value">1.5万</div>
-                    <div class="stat-label">累计收益</div>
+                    <div class="stat-label">累计收益(元)</div>
                 </div>
             </div>
 
@@ -228,13 +269,23 @@
                 </div>
             </div>
 
-            <h3 class="content-title">我的频道</h3>
+            <h3 class="content-title">我的作品</h3>
             <div class="channel-cards">
-                <div class="channel-card">英语口语</div>
-                <div class="channel-card">经典音乐</div>
-                <div class="channel-card">有声小说</div>
-                <div class="channel-card">生活分享</div>
-                <div class="channel-card">知识科普</div>
+                <div class="channel-card" onclick="goToProgram('1', '深夜英语角')">
+                    <div class="work-title">深夜英语角</div>
+                </div>
+                <div class="channel-card" onclick="goToProgram('2', '古典音乐赏析')">
+                    <div class="work-title">古典音乐赏析</div>
+                </div>
+                <div class="channel-card" onclick="goToProgram('3', '时间旅行者')">
+                    <div class="work-title">时间旅行者</div>
+                </div>
+                <div class="channel-card" onclick="goToProgram('4', '生活日记')">
+                    <div class="work-title">生活日记</div>
+                </div>
+                <div class="channel-card" onclick="goToProgram('5', '宇宙奥秘')">
+                    <div class="work-title">宇宙奥秘</div>
+                </div>
             </div>
         </section>
     </main>
@@ -501,8 +552,27 @@
     })();
     </script>
 
-    <!-- 保留创作者中心交互脚本（与播放栏无关） -->
+    <!-- 保留创作者中心交互脚本 -->
     <script>
+      // 跳转到作品详情页
+      function goToProgram(programId, programName) {
+        // 获取当前用户名
+        const username = document.querySelector('.username').textContent;
+        // 跳转到作品详情页，传递作品ID、名称和作者
+        window.location.href = `program_list.html?id=${programId}&author=${encodeURIComponent(username)}&program=${encodeURIComponent(programName)}`;
+      }
+
+      // 为作品卡片添加点击事件
+      document.querySelectorAll('.channel-card').forEach(card => {
+        card.addEventListener('click', function() {
+          // 添加点击反馈效果
+          this.style.backgroundColor = '#FFF8DC';
+          setTimeout(() => {
+            this.style.backgroundColor = '';
+          }, 300);
+        });
+      });
+
       document.querySelectorAll('.action-card').forEach(card => {
         card.addEventListener('click', function() {
           this.style.backgroundColor = '#FFF8DC';

@@ -104,21 +104,32 @@
 
         /* 评论区样式 */
         .comments-section { margin-top:12px; padding-top:12px; border-top:1px solid #f0f0f0; }
-        .comments-list { display:flex; flex-direction:column; gap:12px; margin-bottom:12px; }
+        .comments-list { display:flex; flex-direction:column; gap:16px; margin-bottom:12px; }
         .comment-item { display:flex; gap:10px; }
-        .comment-item.reply-item { margin-left:36px; padding-left:10px; border-left:2px solid #ffe0b2; }
         .comment-avatar { width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,#ffb74d,#ff9800); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:13px; flex-shrink:0; }
         .comment-content { flex:1; min-width:0; }
         .comment-header { display:flex; align-items:center; gap:8px; margin-bottom:4px; }
         .comment-author { font-weight:600; font-size:13px; color:#333; }
         .comment-time { font-size:12px; color:#999; }
         .comment-text { font-size:14px; color:#333; line-height:1.5; margin-bottom:6px; word-wrap:break-word; }
-        .comment-text .mention { color:#ff8c00; font-weight:500; }
+        .comment-text .mention { color:#ff8c00; font-weight:500; cursor:pointer; }
+        .comment-text .mention:hover { text-decoration:underline; }
         .comment-actions { display:flex; gap:12px; }
         .comment-actions button { background:none; border:none; color:#999; font-size:12px; cursor:pointer; display:flex; align-items:center; gap:4px; padding:2px 6px; border-radius:4px; transition:all .2s; }
         .comment-actions button:hover { color:#ff8c00; background:#fff3e0; }
         .comment-like-btn.liked { color:#ff5722 !important; }
         .comment-like-btn i { font-size:12px; }
+        /* 回复嵌套区域 - B站/微博风格 */
+        .replies-wrapper { margin-top:10px; margin-left:42px; padding:12px; background:#f8f8f8; border-radius:8px; }
+        .replies-list { display:flex; flex-direction:column; gap:10px; }
+        .reply-item { display:flex; gap:8px; }
+        .reply-item .comment-avatar { width:24px; height:24px; font-size:11px; }
+        .reply-item .comment-author { font-size:12px; }
+        .reply-item .comment-text { font-size:13px; margin-bottom:4px; }
+        .reply-item .comment-time { font-size:11px; }
+        .reply-item .comment-actions button { font-size:11px; }
+        .view-more-replies { color:#ff8c00; font-size:12px; cursor:pointer; margin-top:8px; background:none; border:none; padding:0; }
+        .view-more-replies:hover { text-decoration:underline; }
         .replies-list { margin-top:10px; display:flex; flex-direction:column; gap:8px; }
         .comment-composer { display:flex; gap:10px; align-items:center; background:#f9f9f9; padding:10px; border-radius:8px; }
         .comment-input { flex:1; border:1px solid #e0e0e0; border-radius:20px; padding:8px 14px; font-size:13px; outline:none; transition:border-color .2s; }
@@ -129,20 +140,22 @@
         /* 热门推荐侧边栏 */
         .channel-container { display:grid; grid-template-columns:280px 1fr 260px; gap:20px; }
         .hot-sidebar { display:flex; flex-direction:column; gap:16px; }
-        .hot-section { background:#fff; border:1px solid #ffe0b2; border-radius:12px; padding:16px; }
+        .hot-section { background:linear-gradient(135deg,#fff 0%,#fffbf7 100%); border:1px solid #ffe0b2; border-radius:12px; padding:16px; box-shadow:0 2px 8px rgba(255,152,0,.08); transition:all .3s; }
+        .hot-section:hover { box-shadow:0 4px 16px rgba(255,152,0,.12); }
         .hot-title { font-size:15px; font-weight:700; color:#ff6d00; margin:0 0 12px 0; display:flex; align-items:center; gap:8px; }
-        .hot-title i { color:#ff9800; }
-        .hot-list { display:flex; flex-direction:column; gap:10px; }
-        .hot-item { display:flex; align-items:center; gap:10px; padding:8px; border-radius:8px; cursor:pointer; transition:background .2s; }
-        .hot-item:hover { background:#fff8f0; }
-        .hot-rank { width:24px; height:24px; background:#ff9800; color:#fff; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; flex-shrink:0; }
-        .hot-rank.gold { background:linear-gradient(135deg,#ffd700,#ffb300); }
-        .hot-rank.silver { background:linear-gradient(135deg,#c0c0c0,#9e9e9e); }
-        .hot-rank.bronze { background:linear-gradient(135deg,#cd7f32,#8b4513); }
-        .hot-info { flex:1; min-width:0; }
-        .hot-name { font-size:14px; font-weight:600; color:#333; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-        .hot-desc { font-size:12px; color:#999; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-        .hot-members { font-size:12px; color:#ff8c00; font-weight:500; white-space:nowrap; }
+        .hot-title i { color:#ff9800; animation:pulse 2s infinite; }
+        .hot-list { display:flex; flex-direction:column; gap:8px; }
+        .hot-item { display:flex; align-items:center; gap:10px; padding:10px 8px; border-radius:8px; cursor:pointer; transition:all .3s cubic-bezier(.4,0,.2,1); position:relative; }
+        .hot-item:hover { background:#fff8f0; transform:translateX(4px); box-shadow:inset 0 0 0 1px #ffe0b2; }
+        .hot-rank { width:32px; height:32px; background:linear-gradient(135deg,#ff9800,#ff5722); color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; flex-shrink:0; box-shadow:0 2px 8px rgba(255,152,0,.3); transition:all .3s; }
+        .hot-item:hover .hot-rank { transform:scale(1.1); }
+        .hot-rank.gold { background:linear-gradient(135deg,#ffd700,#ffb300); box-shadow:0 2px 12px rgba(255,215,0,.4); }
+        .hot-rank.silver { background:linear-gradient(135deg,#e8e8e8,#b0b0b0); box-shadow:0 2px 12px rgba(192,192,192,.3); color:#666; }
+        .hot-rank.bronze { background:linear-gradient(135deg,#cd7f32,#a0511e); box-shadow:0 2px 12px rgba(205,127,50,.4); }
+        .hot-info { flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; }
+        .hot-name { font-size:14px; font-weight:700; color:#333; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .hot-desc { font-size:11px; color:#bbb; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .hot-members { font-size:13px; color:#ff6d00; font-weight:700; white-space:nowrap; text-align:right; min-width:50px; }
 
         /* 左侧栏：已加入群组 */
         .channel-sidebar { background:#fff; border:1px solid #ffe0b2; border-radius:12px; padding:16px; height:fit-content; }
@@ -178,32 +191,112 @@
         /* 活动面板样式 */
         .activity-section { padding:10px 0; }
         .topics-title { font-size:16px; font-weight:700; color:#333; margin:0 0 16px 0; display:flex; align-items:center; gap:8px; }
-        .topics-title i { color:#ff9800; }
-        .topics-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:24px; }
-        .topic-card { background:#fff; border:1px solid #f0f0f0; border-radius:12px; padding:16px; display:flex; align-items:center; gap:12px; cursor:pointer; transition:all .2s; }
-        .topic-card:hover { border-color:#ff9800; background:#fff8f0; transform:translateY(-2px); box-shadow:0 4px 12px rgba(255,152,0,.15); }
-        .topic-icon { font-size:28px; }
+        .topics-title i { color:#ff9800; animation:pulse 2s infinite; }
+        @keyframes pulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.1);} }
+        @keyframes float { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-4px);} }
+        @keyframes shimmer { 0%{background-position:-200% 0;} 100%{background-position:200% 0;} }
+        @keyframes progressFill { from{width:0;} }
+        .topics-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:20px; }
+        .topic-card { background:linear-gradient(135deg,#fff 0%,#fff8f0 100%); border:1px solid #ffe0b2; border-radius:12px; padding:14px; display:flex; align-items:center; gap:10px; cursor:pointer; transition:all .3s cubic-bezier(.4,0,.2,1); position:relative; overflow:hidden; }
+        .topic-card::before { content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent); transition:left .5s; }
+        .topic-card:hover::before { left:100%; }
+        .topic-card:hover { border-color:#ff9800; transform:translateY(-4px) scale(1.02); box-shadow:0 8px 24px rgba(255,152,0,.2); }
+        .topic-icon { font-size:32px; animation:float 3s ease-in-out infinite; }
+        .topic-card:nth-child(2) .topic-icon { animation-delay:.5s; }
+        .topic-card:nth-child(3) .topic-icon { animation-delay:1s; }
         .topic-info { flex:1; }
-        .topic-name { font-size:14px; font-weight:600; color:#ff6d00; margin-bottom:4px; }
-        .topic-count { font-size:12px; color:#999; }
+        .topic-name { font-size:13px; font-weight:700; color:#ff6d00; margin-bottom:4px; }
+        .topic-count { font-size:11px; color:#999; display:flex; align-items:center; gap:3px; }
+        .topic-count::before { content:'\f0c0'; font-family:'Font Awesome 6 Free'; font-weight:900; font-size:10px; color:#ffb74d; }
         .ongoing-activities { margin-top:20px; }
         .activity-list { display:flex; flex-direction:column; gap:12px; }
-        .activity-card { background:#fff; border:1px solid #f0f0f0; border-radius:12px; padding:16px; transition:all .2s; }
-        .activity-card:hover { border-color:#ffe0b2; box-shadow:0 4px 12px rgba(0,0,0,.06); }
-        .activity-badge { display:inline-block; padding:3px 8px; border-radius:4px; font-size:11px; font-weight:600; background:#e8f5e9; color:#4caf50; margin-bottom:8px; }
-        .activity-badge.hot { background:#fff3e0; color:#ff9800; }
-        .activity-badge.new { background:#e3f2fd; color:#2196f3; }
-        .activity-title { font-size:16px; font-weight:700; color:#333; margin-bottom:6px; }
-        .activity-desc { font-size:13px; color:#666; margin-bottom:10px; line-height:1.5; }
-        .activity-meta { display:flex; gap:16px; font-size:12px; color:#999; margin-bottom:12px; }
-        .activity-meta i { margin-right:4px; color:#ffb74d; }
-        .activity-join-btn { padding:8px 20px; background:linear-gradient(135deg,#ff9800,#ff5722); color:#fff; border:none; border-radius:20px; font-size:13px; font-weight:600; cursor:pointer; transition:all .2s; }
-        .activity-join-btn:hover { transform:scale(1.02); box-shadow:0 4px 12px rgba(255,152,0,.3); }
-        .activity-join-btn.joined { background:#e0e0e0; color:#999; cursor:default; }
-        .activity-join-btn.joined:hover { transform:none; box-shadow:none; }
+        .activity-card { background:#fff; border:1px solid #f0f0f0; border-radius:12px; padding:16px; transition:all .3s; position:relative; overflow:hidden; }
+        .activity-card::after { content:''; position:absolute; top:0; right:0; width:60px; height:60px; background:linear-gradient(135deg,transparent 50%,rgba(255,152,0,.03) 50%); border-radius:0 12px 0 0; }
+        .activity-card:hover { border-color:#ffcc80; box-shadow:0 4px 12px rgba(0,0,0,.06); }
+        .activity-badge { display:inline-flex; align-items:center; gap:4px; padding:3px 8px; border-radius:20px; font-size:10px; font-weight:600; background:#e8f5e9; color:#4caf50; margin-bottom:8px; }
+        .activity-badge::before { content:'\f111'; font-family:'Font Awesome 6 Free'; font-weight:900; font-size:6px; animation:blink 1.5s infinite; }
+        @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:.3;} }
+        .activity-badge.hot { background:linear-gradient(135deg,#fff3e0,#ffe0b2); color:#e65100; }
+        .activity-badge.hot::before { color:#ff5722; }
+        .activity-badge.new { background:linear-gradient(135deg,#e3f2fd,#bbdefb); color:#1565c0; }
+        .activity-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px; }
+        .activity-title { font-size:15px; font-weight:700; color:#333; margin-bottom:4px; display:flex; align-items:center; gap:6px; }
+        .activity-title-icon { font-size:18px; }
+        .activity-desc { font-size:12px; color:#999; margin-bottom:10px; line-height:1.5; }
+        .activity-progress { margin-bottom:10px; }
+        .progress-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; font-size:11px; }
+        .progress-label { color:#999; }
+        .progress-value { color:#ff8c00; font-weight:600; font-size:11px; }
+        .progress-bar { height:6px; background:#f0f0f0; border-radius:3px; overflow:hidden; }
+        .progress-fill { height:100%; background:linear-gradient(90deg,#ffb74d,#ff9800,#ff5722); border-radius:3px; animation:progressFill 1s ease-out; transition:width .3s; }
+        .activity-meta { display:flex; flex-wrap:wrap; gap:12px; font-size:11px; color:#bbb; margin-bottom:10px; }
+        .activity-meta span { display:flex; align-items:center; gap:4px; }
+        .activity-meta i { color:#ffb74d; font-size:12px; }
+        .activity-stats { display:flex; gap:16px; margin-bottom:10px; }
+        .stat-item { text-align:center; flex:1; }
+        .stat-value { font-size:16px; font-weight:700; color:#ff8c00; }
+        .stat-label { font-size:10px; color:#bbb; margin-top:2px; }
+        .activity-footer { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+        .activity-avatars { display:flex; flex-shrink:0; }
+        .activity-avatars .avatar { width:24px; height:24px; border-radius:50%; background:linear-gradient(135deg,#ffb74d,#ff9800); color:#fff; display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:600; border:1.5px solid #fff; margin-left:-6px; flex-shrink:0; }
+        .activity-avatars .avatar:first-child { margin-left:0; }
+        .activity-avatars .avatar.more { background:#f5f5f5; color:#999; font-size:9px; }
+        .activity-join-btn { padding:6px 16px; background:linear-gradient(135deg,#ff9800,#ff5722); color:#fff; border:none; border-radius:20px; font-size:12px; font-weight:600; cursor:pointer; transition:all .3s; display:flex; align-items:center; gap:4px; box-shadow:0 2px 8px rgba(255,152,0,.2); white-space:nowrap; flex-shrink:0; }
+        .activity-join-btn:hover { box-shadow:0 4px 12px rgba(255,152,0,.3); }
+        .activity-join-btn i { font-size:11px; }
+        .activity-join-btn.joined { background:linear-gradient(135deg,#66bb6a,#43a047); box-shadow:0 2px 8px rgba(76,175,80,.2); }
+        .activity-join-btn.joined:hover { box-shadow:0 4px 12px rgba(76,175,80,.3); }
+        .checkin-btn { padding:6px 16px; background:linear-gradient(135deg,#ff5722,#e64a19); color:#fff; border:none; border-radius:20px; font-size:12px; font-weight:600; cursor:pointer; transition:all .3s; display:flex; align-items:center; gap:4px; box-shadow:0 2px 8px rgba(255,87,34,.2); animation:pulse 2s infinite; white-space:nowrap; flex-shrink:0; }
+        .checkin-btn:hover { animation:none; transform:scale(1.03); }
 
         @media (max-width:1100px) { .channel-container { grid-template-columns:240px 1fr; } .hot-sidebar { display:none; } .topics-grid { grid-template-columns:repeat(2,1fr); } }
         @media (max-width:768px) { .channel-container { grid-template-columns:1fr; } .channel-sidebar { display:none; } .topics-grid { grid-template-columns:1fr; } }
+
+        /* 创建群组弹窗 */
+        .modal-overlay { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,.5); display:none; justify-content:center; align-items:center; z-index:1000; }
+        .modal-overlay.show { display:flex; }
+        .modal-box { background:#fff; border-radius:16px; width:90%; max-width:480px; padding:24px; box-shadow:0 20px 60px rgba(0,0,0,.3); animation:modalIn .25s ease; }
+        @keyframes modalIn { from { opacity:0; transform:scale(.9) translateY(-20px); } to { opacity:1; transform:scale(1) translateY(0); } }
+        .modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+        .modal-title { font-size:20px; font-weight:700; color:#333; }
+        .modal-close { background:none; border:none; font-size:24px; color:#999; cursor:pointer; padding:4px 8px; }
+        .modal-close:hover { color:#333; }
+        .modal-body { display:flex; flex-direction:column; gap:16px; }
+        .form-group { display:flex; flex-direction:column; gap:6px; }
+        .form-label { font-size:14px; font-weight:600; color:#333; }
+        .form-input { padding:12px 14px; border:1px solid #ddd; border-radius:8px; font-size:14px; transition:border-color .2s; }
+        .form-input:focus { outline:none; border-color:#ff9800; }
+        .form-textarea { resize:vertical; min-height:80px; }
+        .form-select { padding:12px 14px; border:1px solid #ddd; border-radius:8px; font-size:14px; background:#fff; cursor:pointer; }
+        .form-hint { font-size:12px; color:#999; }
+        .invite-code-display { display:flex; align-items:center; gap:8px; padding:10px 14px; background:#fff8f0; border:1px dashed #ff9800; border-radius:8px; }
+        .invite-code-display code { font-size:16px; font-weight:700; color:#ff6d00; letter-spacing:1px; }
+        .copy-code-btn { padding:4px 10px; background:#ff9800; color:#fff; border:none; border-radius:4px; font-size:12px; cursor:pointer; }
+        .copy-code-btn:hover { background:#f57c00; }
+        .modal-footer { margin-top:24px; display:flex; justify-content:flex-end; gap:12px; }
+        .btn-cancel { padding:10px 24px; background:#f5f5f5; color:#666; border:none; border-radius:8px; font-size:14px; cursor:pointer; }
+        .btn-cancel:hover { background:#e0e0e0; }
+        .btn-submit { padding:10px 24px; background:linear-gradient(135deg,#ff9800,#ff5722); color:#fff; border:none; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; }
+        .btn-submit:hover { box-shadow:0 4px 12px rgba(255,152,0,.4); }
+        
+        /* 删除群组按钮 */
+        .joined-group-item { position:relative; }
+        .jg-delete-btn { position:absolute; right:8px; top:50%; transform:translateY(-50%); width:24px; height:24px; background:#fff; border:1px solid #ffcdd2; border-radius:50%; color:#e57373; font-size:14px; cursor:pointer; display:none; align-items:center; justify-content:center; transition:all .2s; }
+        .jg-delete-btn:hover { background:#ffebee; border-color:#ef5350; color:#d32f2f; }
+        .joined-group-item:hover .jg-delete-btn { display:flex; }
+        
+        /* 确认删除弹窗 */
+        .confirm-modal { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,.5); display:none; justify-content:center; align-items:center; z-index:1001; }
+        .confirm-modal.show { display:flex; }
+        .confirm-box { background:#fff; border-radius:12px; padding:24px; width:90%; max-width:360px; text-align:center; animation:modalIn .2s ease; }
+        .confirm-icon { font-size:48px; color:#ff9800; margin-bottom:16px; }
+        .confirm-title { font-size:18px; font-weight:700; color:#333; margin-bottom:8px; }
+        .confirm-msg { font-size:14px; color:#666; margin-bottom:24px; line-height:1.5; }
+        .confirm-btns { display:flex; gap:12px; justify-content:center; }
+        .btn-confirm-cancel { padding:10px 28px; background:#f5f5f5; color:#666; border:none; border-radius:8px; font-size:14px; cursor:pointer; }
+        .btn-confirm-cancel:hover { background:#e0e0e0; }
+        .btn-confirm-delete { padding:10px 28px; background:#f44336; color:#fff; border:none; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; }
+        .btn-confirm-delete:hover { background:#d32f2f; }
     </style>
 </head>
 <body>
@@ -252,7 +345,7 @@
           <div class="joined-groups-list" id="joinedGroupsList">
             <!-- 由 JS 渲染 -->
           </div>
-          <button class="create-group-btn">+ 创建群组</button>
+          <button class="create-group-btn" id="openCreateGroupBtn">+ 创建群组</button>
           
           <!-- 加入群组 -->
           <div class="join-group-section">
@@ -263,6 +356,60 @@
             </div>
           </div>
         </aside>
+
+    <!-- 创建群组弹窗 -->
+    <div class="modal-overlay" id="createGroupModal">
+      <div class="modal-box">
+        <div class="modal-header">
+          <h3 class="modal-title">创建新群组</h3>
+          <button class="modal-close" id="closeCreateGroupBtn">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">群组名称 *</label>
+            <input type="text" class="form-input" id="newGroupName" placeholder="例如：雅思备考交流群" maxlength="20" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">群组简介</label>
+            <textarea class="form-input form-textarea" id="newGroupDesc" placeholder="简单介绍群组的主题和目的..." maxlength="100"></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">群组分类</label>
+            <select class="form-select" id="newGroupCategory">
+              <option value="学习">学习</option>
+              <option value="考试">考试</option>
+              <option value="兴趣">兴趣</option>
+              <option value="其他">其他</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">群组邀请码</label>
+            <div class="invite-code-display">
+              <code id="generatedInviteCode">------</code>
+              <button class="copy-code-btn" id="copyNewCodeBtn">复制</button>
+            </div>
+            <span class="form-hint">邀请码将在创建后自动生成，可分享给朋友加入</span>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-cancel" id="cancelCreateGroupBtn">取消</button>
+          <button class="btn-submit" id="submitCreateGroupBtn">创建群组</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 确认删除弹窗 -->
+    <div class="confirm-modal" id="deleteConfirmModal">
+      <div class="confirm-box">
+        <div class="confirm-icon"><i class="fas fa-exclamation-triangle"></i></div>
+        <div class="confirm-title">确认退出群组</div>
+        <div class="confirm-msg">你确定要退出「<span id="deleteGroupName"></span>」群组吗？</div>
+        <div class="confirm-btns">
+          <button class="btn-confirm-cancel" id="cancelDeleteBtn">取消</button>
+          <button class="btn-confirm-delete" id="confirmDeleteBtn">确认退出</button>
+        </div>
+      </div>
+    </div>
 
         <!-- 中间主视图区（工具栏 + 列表或 Feed） -->
         <section class="groups-section">
@@ -329,23 +476,63 @@
                 <div class="activity-list">
                   <div class="activity-card">
                     <div class="activity-badge">进行中</div>
-                    <div class="activity-title">21天早起打卡挑战</div>
-                    <div class="activity-desc">连续21天早起7点前打卡，养成早起好习惯</div>
-                    <div class="activity-meta">
-                      <span><i class="fas fa-users"></i> 328人参与</span>
-                      <span><i class="fas fa-clock"></i> 还剩15天结束</span>
+                    <div class="activity-title"><span class="activity-title-icon">🌅</span> 21天早起打卡挑战</div>
+                    <div class="activity-desc">连续21天早起7点前打卡，养成早起好习惯，赢取专属勋章！</div>
+                    <div class="activity-progress">
+                      <div class="progress-header">
+                        <span class="progress-label">活动进度</span>
+                        <span class="progress-value">6/21 天</span>
+                      </div>
+                      <div class="progress-bar">
+                        <div class="progress-fill" style="width:28%"></div>
+                      </div>
                     </div>
-                    <button class="activity-join-btn">立即参加</button>
+                    <div class="activity-meta">
+                      <span><i class="fas fa-users"></i> 108人参与</span>
+                      <span><i class="fas fa-clock"></i> 还剩15天结束</span>
+                      <span><i class="fas fa-trophy"></i> 已有18人完成</span>
+                    </div>
+                    <div class="activity-footer">
+                      <div class="activity-avatars">
+                        <div class="avatar">小</div>
+                        <div class="avatar">红</div>
+                        <div class="avatar">明</div>
+                        <div class="avatar more">+105</div>
+                      </div>
+                      <button class="checkin-btn"><i class="fas fa-check"></i> 立即打卡</button>
+                    </div>
                   </div>
                   <div class="activity-card">
                     <div class="activity-badge hot">火爆</div>
-                    <div class="activity-title">每日一句英文</div>
-                    <div class="activity-desc">每天学一句地道英文表达，积少成多</div>
-                    <div class="activity-meta">
-                      <span><i class="fas fa-users"></i> 1.2万人参与</span>
-                      <span><i class="fas fa-clock"></i> 长期活动</span>
+                    <div class="activity-title"><span class="activity-title-icon">💬</span> 每日一句英文</div>
+                    <div class="activity-desc">每天学一句地道英文表达，积少成多，坚持就是胜利！</div>
+                    <div class="activity-stats">
+                      <div class="stat-item">
+                        <div class="stat-value">1.5千</div>
+                        <div class="stat-label">参与人数</div>
+                      </div>
+                      <div class="stat-item">
+                        <div class="stat-value">365</div>
+                        <div class="stat-label">今日打卡</div>
+                      </div>
+                      <div class="stat-item">
+                        <div class="stat-value">28</div>
+                        <div class="stat-label">我的连续</div>
+                      </div>
                     </div>
-                    <button class="activity-join-btn joined">已参加</button>
+                    <div class="activity-meta">
+                      <span><i class="fas fa-infinity"></i> 长期活动</span>
+                      <span><i class="fas fa-fire"></i> 今日热度 TOP1</span>
+                    </div>
+                    <div class="activity-footer">
+                      <div class="activity-avatars">
+                        <div class="avatar">英</div>
+                        <div class="avatar">学</div>
+                        <div class="avatar">霸</div>
+                        <div class="avatar more">+1.5千</div>
+                      </div>
+                      <button class="activity-join-btn joined"><i class="fas fa-check-circle"></i> 已参加</button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -378,7 +565,7 @@
               <div class="hot-item">
                 <div class="hot-rank">1</div>
                 <div class="hot-info">
-                  <div class="hot-name">英语学习群</div>
+                  <div class="hot-name">英语口语练习群</div>
                   <div class="hot-desc">口语练习与资源分享</div>
                 </div>
                 <div class="hot-members">128人</div>
@@ -386,7 +573,7 @@
               <div class="hot-item">
                 <div class="hot-rank">2</div>
                 <div class="hot-info">
-                  <div class="hot-name">早起打卡组</div>
+                  <div class="hot-name">托福备考群</div>
                   <div class="hot-desc">每天早起一起学习</div>
                 </div>
                 <div class="hot-members">64人</div>
@@ -394,7 +581,7 @@
               <div class="hot-item">
                 <div class="hot-rank">3</div>
                 <div class="hot-info">
-                  <div class="hot-name">深度讨论组</div>
+                  <div class="hot-name">商务英语交流</div>
                   <div class="hot-desc">长篇材料讨论</div>
                 </div>
                 <div class="hot-members">32人</div>
@@ -621,103 +808,6 @@
             background-color: #E55A2A;
         }
     </style>
-
-    <!-- 页面脚本：保留原有社区页面逻辑（模态框、群组创建） -->
-    <script>
-        // 处理URL参数，自动显示创建群组模态框
-        window.addEventListener('DOMContentLoaded', function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const createGroup = urlParams.get('createGroup');
-
-            const createGroupModal = document.createElement('div');
-            createGroupModal.className = 'modal-overlay';
-            createGroupModal.style.display = 'none';
-            createGroupModal.innerHTML = `
-                <div class="modal">
-                    <div class="modal-header">
-                        <h2 class="modal-title">创建学习群组</h2>
-                        <button class="close-btn">&times;</button>
-                    </div>
-                    <div class="modal-content">
-                        <div class="form-group">
-                            <label for="groupName">群组名称</label>
-                            <input type="text" id="groupName" placeholder="请输入群组名称" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="groupDescription">群组描述</label>
-                            <textarea id="groupDescription" placeholder="请输入群组描述（可选）"></textarea>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn-cancel">取消</button>
-                        <button class="btn-create">创建</button>
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(createGroupModal);
-
-            if (createGroup === 'true') {
-                setTimeout(() => {
-                    createGroupModal.style.display = 'flex';
-                }, 100);
-            }
-
-            const createGroupBtn = document.querySelector('.create-group-btn');
-            if (createGroupBtn) {
-                createGroupBtn.addEventListener('click', function() {
-                    createGroupModal.style.display = 'flex';
-                });
-            }
-
-            createGroupModal.querySelector('.close-btn').addEventListener('click', function() {
-                createGroupModal.style.display = 'none';
-            });
-
-            createGroupModal.querySelector('.btn-cancel').addEventListener('click', function() {
-                createGroupModal.style.display = 'none';
-            });
-
-            createGroupModal.addEventListener('click', function(e) {
-                if (e.target === createGroupModal) {
-                    createGroupModal.style.display = 'none';
-                }
-            });
-
-            createGroupModal.querySelector('.btn-create').addEventListener('click', async function() {
-              const groupName = createGroupModal.querySelector('#groupName').value;
-              const groupDescription = createGroupModal.querySelector('#groupDescription').value;
-
-              if (!groupName) return alert('请输入群组名称');
-
-              // try backend create, otherwise fallback to client id
-              let createdId = null;
-              try{
-                const res = await fetch('/api/group', {
-                  method: 'POST', headers: {'Content-Type':'application/json'},
-                  body: JSON.stringify({ name: groupName, desc: groupDescription })
-                });
-                if(res.ok){
-                  const json = await res.json();
-                  if(json && json.id) createdId = json.id;
-                }
-              }catch(err){
-                // ignore and fallback
-              }
-              if(!createdId) createdId = 'g' + Date.now();
-
-              const newGroup = { id: createdId, name: groupName, desc: groupDescription || '暂无描述', members: 1, category: '其他' };
-              if(window.sampleGroups && Array.isArray(window.sampleGroups)){
-                window.sampleGroups.unshift(newGroup);
-              } else {
-                sampleGroups.unshift(newGroup);
-              }
-              renderGroups(window.sampleGroups || sampleGroups);
-              createGroupModal.style.display = 'none';
-              // navigate to the group's page
-              window.location.href = `channel2.html?groupId=${encodeURIComponent(createdId)}`;
-            });
-        });
-    </script>
 
     <!-- PlayBar 导航与基础交互（简版） -->
     <script>
@@ -961,15 +1051,67 @@
       (function(){
         // 简单 mock 数据，可替换为后端 API 请求
         const sampleGroups = [
-          { id:1, name:'英语口语练习群', desc:'口语练习与资源分享', members:128, category:'学习' },
-          { id:2, name:'托福备考群', desc:'每天早起一起学习', members:64, category:'其他' },
-          { id:3, name:'商务英语交流', desc:'长篇材料讨论', members:32, category:'groups' }
+          { id:1, name:'英语口语练习群', desc:'口语练习与资源分享', members:128, category:'学习', inviteCode:'ORAL2024' },
+          { id:2, name:'托福备考群', desc:'每天早起一起学习', members:64, category:'其他', inviteCode:'TOEFL888' },
+          { id:3, name:'商务英语交流', desc:'长篇材料讨论', members:32, category:'groups', inviteCode:'BIZ12345' },
+          { id:4, name:'英文原版阅读', desc:'一起读英文原版书籍', members:56, category:'学习', inviteCode:'BOOK2024' }
         ];
         // expose for other scripts/pages
         window.sampleGroups = sampleGroups;
 
-        // simulate current user's joined groups (ids)
-        const myJoinedGroupIds = new Set([1, 2, 3]); // user joined groups 1, 2, and 3
+        // 已加入的群组ID（每次刷新恢复初始状态）
+        const myJoinedGroupIds = new Set([1, 2, 3]);
+        
+        // Save joined groups (当前会话有效)
+        function saveJoinedGroups(){
+          // 不再保存到localStorage，刷新即恢复初始状态
+        }
+
+        // ========== 删除群组确认弹窗 ==========
+        const deleteConfirmModal = document.getElementById('deleteConfirmModal');
+        const deleteGroupNameEl = document.getElementById('deleteGroupName');
+        const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+        let pendingDeleteGroupId = null;
+        
+        function showDeleteConfirm(groupId, groupName){
+          pendingDeleteGroupId = groupId;
+          deleteGroupNameEl.textContent = groupName;
+          // 如果是自己创建的群（id > 4），显示"解散群组"，否则显示"退出群组"
+          const isMyGroup = groupId > 4;
+          document.querySelector('.confirm-title').textContent = isMyGroup ? '确认解散群组' : '确认退出群组';
+          document.getElementById('confirmDeleteBtn').textContent = isMyGroup ? '确认解散' : '确认退出';
+          deleteConfirmModal.classList.add('show');
+        }
+        
+        function hideDeleteConfirm(){
+          deleteConfirmModal.classList.remove('show');
+          pendingDeleteGroupId = null;
+        }
+        
+        cancelDeleteBtn.addEventListener('click', hideDeleteConfirm);
+        deleteConfirmModal.addEventListener('click', (e)=>{
+          if(e.target === deleteConfirmModal) hideDeleteConfirm();
+        });
+        
+        confirmDeleteBtn.addEventListener('click', ()=>{
+          if(pendingDeleteGroupId !== null){
+            // 从已加入列表移除
+            myJoinedGroupIds.delete(pendingDeleteGroupId);
+            
+            // 如果是自己创建的群（id > 4），从群组列表中也删除
+            if(pendingDeleteGroupId > 4){
+              const idx = sampleGroups.findIndex(g => g.id === pendingDeleteGroupId);
+              if(idx !== -1){
+                sampleGroups.splice(idx, 1);
+              }
+            }
+            
+            saveJoinedGroups();
+            renderJoinedGroups();
+            hideDeleteConfirm();
+          }
+        });
 
         // Render joined groups in left sidebar
         function renderJoinedGroups(){
@@ -983,12 +1125,23 @@
                 <div class="jg-name">${escapeHtml(g.name)}</div>
                 <div class="jg-members">${g.members}人</div>
               </div>
+              <button class="jg-delete-btn" data-id="${g.id}" data-name="${escapeHtml(g.name)}" title="退出群组"><i class="fas fa-times"></i></button>
             </div>
           `).join('');
           // click to navigate
           container.querySelectorAll('.joined-group-item').forEach(el => {
-            el.addEventListener('click', ()=>{
+            el.addEventListener('click', (e)=>{
+              if(e.target.closest('.jg-delete-btn')) return; // 不触发导航
               window.location.href = `channel2.html?groupId=${el.dataset.id}`;
+            });
+          });
+          // delete button handler
+          container.querySelectorAll('.jg-delete-btn').forEach(btn => {
+            btn.addEventListener('click', (e)=>{
+              e.stopPropagation();
+              const id = parseInt(btn.dataset.id);
+              const name = btn.dataset.name;
+              showDeleteConfirm(id, name);
             });
           });
         }
@@ -1096,12 +1249,22 @@
         function renderGroups(list){
           groupsGrid.innerHTML = '';
           list.forEach(g=>{
+            const isJoined = myJoinedGroupIds.has(g.id);
             const el = document.createElement('div'); el.className='group-item';
             el.setAttribute('data-group-id', g.id);
-            el.innerHTML = `<div class="group-info"><h3>${escapeHtml(g.name)}</h3><p>${escapeHtml(g.desc)}</p></div><div class="group-buttons"><span class="members-count">已加入${g.members}人</span><button class="join-btn" data-id="${g.id}">加入</button><span class="invite-code">邀请码：${Math.random().toString(36).slice(2,8).toUpperCase()}</span></div>`;
+            el.innerHTML = `<div class="group-info"><h3>${escapeHtml(g.name)}</h3><p>${escapeHtml(g.desc)}</p></div><div class="group-buttons"><span class="members-count">已加入${g.members}人</span><button class="join-btn" data-id="${g.id}" ${isJoined ? 'disabled' : ''}>${isJoined ? '已加入' : '加入'}</button><span class="invite-code" title="点击复制" style="cursor:pointer;">邀请码：${g.inviteCode || 'N/A'}</span></div>`;
             // clicking the group navigates to the chat/detail page for that group
-            el.addEventListener('click', ()=>{
+            el.querySelector('.group-info').addEventListener('click', ()=>{
               window.location.href = `channel2.html?groupId=${encodeURIComponent(g.id)}`;
+            });
+            // click invite code to copy
+            el.querySelector('.invite-code').addEventListener('click', (e)=>{
+              e.stopPropagation();
+              if(g.inviteCode){
+                navigator.clipboard.writeText(g.inviteCode).then(()=>{
+                  alert(`邀请码 ${g.inviteCode} 已复制到剪贴板！`);
+                });
+              }
             });
             groupsGrid.appendChild(el);
           });
@@ -1111,6 +1274,7 @@
         const feedSortSelect = document.getElementById('feedSortSelect');
         const groupSortSelect = document.getElementById('groupSortSelect');
         const activityPanel = document.getElementById('activityPanel');
+        const sortLabel = document.querySelector('.sort-label');
         
         tabChips.forEach(chip => {
           chip.addEventListener('click', ()=>{
@@ -1123,12 +1287,14 @@
               activityPanel.style.display = 'none';
               feedSortSelect.style.display = 'inline-block';
               groupSortSelect.style.display = 'none';
+              sortLabel.style.display = 'inline';
             } else if(tab === 'groups') {
               feedPanel.style.display = 'none';
               groupsPanel.style.display = 'block';
               activityPanel.style.display = 'none';
               feedSortSelect.style.display = 'none';
               groupSortSelect.style.display = 'inline-block';
+              sortLabel.style.display = 'inline';
               renderGroups(sampleGroups);
             } else if(tab === 'activity') {
               feedPanel.style.display = 'none';
@@ -1136,6 +1302,7 @@
               activityPanel.style.display = 'block';
               feedSortSelect.style.display = 'none';
               groupSortSelect.style.display = 'none';
+              sortLabel.style.display = 'none';
             }
           });
         });
@@ -1153,11 +1320,33 @@
           return escapeHtml(text).replace(/@(\S+)/g, '<span class="mention">@$1</span>');
         }
 
-        // Helper to render a single comment (with optional replies)
-        function renderComment(c, postId, isReply = false){
-          const replies = c.replies || [];
+        // Render a reply item (smaller style)
+        function renderReplyItem(r, postId, parentCommentId){
           return `
-            <div class="comment-item ${isReply ? 'reply-item' : ''}" data-comment-id="${c.id}">
+            <div class="reply-item" data-comment-id="${r.id}">
+              <div class="comment-avatar">${escapeHtml(r.avatar || r.author.slice(0,1))}</div>
+              <div class="comment-content">
+                <div class="comment-header">
+                  <span class="comment-author">${escapeHtml(r.author)}</span>
+                  <span class="comment-time">${escapeHtml(r.time)}</span>
+                </div>
+                <div class="comment-text">${renderCommentText(r.text)}</div>
+                <div class="comment-actions">
+                  <button class="comment-like-btn" data-id="${r.id}"><i class="far fa-heart"></i> ${r.likes || 0}</button>
+                  <button class="reply-btn" data-post-id="${postId}" data-parent-id="${parentCommentId}" data-reply-to="${r.author}">回复</button>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+
+        // Render main comment with nested replies (B站/微博 style)
+        function renderComment(c, postId){
+          const replies = c.replies || [];
+          const hasReplies = replies.length > 0;
+          
+          return `
+            <div class="comment-item" data-comment-id="${c.id}">
               <div class="comment-avatar">${escapeHtml(c.avatar || c.author.slice(0,1))}</div>
               <div class="comment-content">
                 <div class="comment-header">
@@ -1167,9 +1356,15 @@
                 <div class="comment-text">${renderCommentText(c.text)}</div>
                 <div class="comment-actions">
                   <button class="comment-like-btn" data-id="${c.id}"><i class="far fa-heart"></i> ${c.likes || 0}</button>
-                  <button class="reply-btn" data-post-id="${postId}" data-reply-to="${c.author}">回复</button>
+                  <button class="reply-btn" data-post-id="${postId}" data-parent-id="${c.id}" data-reply-to="${c.author}">回复</button>
                 </div>
-                ${replies.length ? `<div class="replies-list">${replies.map(r => renderComment(r, postId, true)).join('')}</div>` : ''}
+                ${hasReplies ? `
+                  <div class="replies-wrapper">
+                    <div class="replies-list">
+                      ${replies.map(r => renderReplyItem(r, postId, c.id)).join('')}
+                    </div>
+                  </div>
+                ` : ''}
               </div>
             </div>
           `;
@@ -1281,12 +1476,12 @@
             btn.addEventListener('click', ()=>{
               const postId = btn.dataset.postId;
               const replyTo = btn.dataset.replyTo;
-              const commentId = btn.closest('.comment-item').dataset.commentId;
+              const parentId = btn.dataset.parentId; // 主评论的ID
               const input = document.querySelector(`.comment-input[data-post-id="${postId}"]`);
               if(input){
                 input.value = `@${replyTo} `;
                 input.focus();
-                replyingToCommentId = commentId;
+                replyingToCommentId = parentId; // 记录主评论ID
               }
             });
           });
@@ -1437,8 +1632,13 @@
         groupsGrid.addEventListener('click', (e)=>{
           const btn = e.target.closest('.join-btn'); if(!btn) return;
           e.stopPropagation(); // prevent parent group click from firing navigation
-          const id = btn.getAttribute('data-id');
-          btn.textContent = '已加入'; btn.disabled = true; // mock behavior
+          const id = parseInt(btn.getAttribute('data-id'));
+          if(!myJoinedGroupIds.has(id)){
+            myJoinedGroupIds.add(id);
+            saveJoinedGroups(); // persist to localStorage
+            renderJoinedGroups(); // refresh left sidebar
+          }
+          btn.textContent = '已加入'; btn.disabled = true;
         });
 
         // Join by invite code handler
@@ -1455,10 +1655,21 @@
             alert('邀请码格式不正确');
             return;
           }
-          // Mock: simulate successful join
-          alert(`成功加入群组！邀请码：${code}`);
+          // Find group by invite code
+          const group = sampleGroups.find(g => g.inviteCode && g.inviteCode.toUpperCase() === code);
+          if(group){
+            if(myJoinedGroupIds.has(group.id)){
+              alert(`您已经加入了「${group.name}」群组`);
+            } else {
+              myJoinedGroupIds.add(group.id);
+              saveJoinedGroups(); // persist to localStorage
+              alert(`成功加入「${group.name}」群组！`);
+              renderJoinedGroups(); // refresh left sidebar
+            }
+          } else {
+            alert('邀请码无效，请检查后重试');
+          }
           inviteCodeInput.value = '';
-          // In real app, would call API and refresh joined groups list
         });
         
         // Allow Enter key to submit
@@ -1499,6 +1710,91 @@
           groupsPanel.style.display='none';
           activityPanel.style.display='none';
         })();
+
+        // ========== 创建群组功能 ==========
+        const createGroupModal = document.getElementById('createGroupModal');
+        const openCreateGroupBtn = document.getElementById('openCreateGroupBtn');
+        const closeCreateGroupBtn = document.getElementById('closeCreateGroupBtn');
+        const cancelCreateGroupBtn = document.getElementById('cancelCreateGroupBtn');
+        const submitCreateGroupBtn = document.getElementById('submitCreateGroupBtn');
+        const generatedInviteCode = document.getElementById('generatedInviteCode');
+        const copyNewCodeBtn = document.getElementById('copyNewCodeBtn');
+        
+        // 生成随机邀请码
+        function generateInviteCode(){
+          const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+          let code = '';
+          for(let i=0; i<6; i++) code += chars[Math.floor(Math.random()*chars.length)];
+          return code;
+        }
+        
+        // 打开弹窗
+        openCreateGroupBtn.addEventListener('click', ()=>{
+          generatedInviteCode.textContent = generateInviteCode();
+          document.getElementById('newGroupName').value = '';
+          document.getElementById('newGroupDesc').value = '';
+          document.getElementById('newGroupCategory').value = '学习';
+          createGroupModal.classList.add('show');
+        });
+        
+        // 关闭弹窗
+        function closeModal(){
+          createGroupModal.classList.remove('show');
+        }
+        closeCreateGroupBtn.addEventListener('click', closeModal);
+        cancelCreateGroupBtn.addEventListener('click', closeModal);
+        createGroupModal.addEventListener('click', (e)=>{
+          if(e.target === createGroupModal) closeModal();
+        });
+        
+        // 复制邀请码
+        copyNewCodeBtn.addEventListener('click', ()=>{
+          const code = generatedInviteCode.textContent;
+          navigator.clipboard.writeText(code).then(()=>{
+            copyNewCodeBtn.textContent = '已复制';
+            setTimeout(()=>{ copyNewCodeBtn.textContent = '复制'; }, 1500);
+          });
+        });
+        
+        // 提交创建群组
+        submitCreateGroupBtn.addEventListener('click', ()=>{
+          const name = document.getElementById('newGroupName').value.trim();
+          const desc = document.getElementById('newGroupDesc').value.trim();
+          const category = document.getElementById('newGroupCategory').value;
+          const inviteCode = generatedInviteCode.textContent;
+          
+          if(!name){
+            alert('请输入群组名称');
+            return;
+          }
+          if(name.length < 2){
+            alert('群组名称至少2个字符');
+            return;
+          }
+          
+          // 创建新群组
+          const newId = Math.max(...sampleGroups.map(g=>g.id)) + 1;
+          const newGroup = {
+            id: newId,
+            name: name,
+            desc: desc || '暂无简介',
+            members: 1,
+            category: category,
+            inviteCode: inviteCode
+          };
+          
+          // 添加到群组列表
+          sampleGroups.push(newGroup);
+          
+          // 自动加入自己创建的群组
+          myJoinedGroupIds.add(newId);
+          
+          // 刷新界面
+          renderJoinedGroups();
+          
+          alert(`群组「${name}」创建成功！\n邀请码：${inviteCode}`);
+          closeModal();
+        });
 
       })();
       </script>

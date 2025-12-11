@@ -62,7 +62,7 @@
             font-size: 24px;
             font-weight: 700;
             color: #000;
-            margin-bottom: 5px;
+            margin-bottom: 15px;
             line-height: 1.3;
             position: relative;
             padding-bottom: 10px;
@@ -77,15 +77,6 @@
             height: 2px;
             background-color: #FF8C00;
             border-radius: 1px;
-        }
-
-        /* 作者信息样式 */
-        .program-author {
-            font-size: 14px;
-            color: #FF8C00;
-            font-weight: 500;
-            margin-top: -5px;
-            margin-bottom: 15px;
         }
 
         .program-meta {
@@ -805,11 +796,6 @@
                 font-size: 20px;
             }
 
-            .program-author {
-                font-size: 13px;
-                margin-top: -3px;
-            }
-
             .detail-section p {
                 font-size: 14px;
             }
@@ -878,11 +864,6 @@
 
             .program-title {
                 font-size: 18px;
-            }
-
-            .program-author {
-                font-size: 12px;
-                margin-top: -2px;
             }
 
             .program-info {
@@ -976,7 +957,6 @@
                     </div>
                     <div class="program-info">
                         <h1 id="courseTitle" class="program-title">英语日常对话系列</h1>
-                        <div id="authorInfo" class="program-author">作者: 用户名</div>
                         <div class="program-meta">
                             <span id="courseLevel" class="meta-item">初级到中级</span>
                             <span id="courseEpisodes" class="meta-item">共20集</span>
@@ -988,8 +968,7 @@
                             <span class="stat-item">学习人数：<span id="studentCount">5.8万</span></span>
                         </div>
                         <div class="program-actions">
-                            <!-- 给立即学习添加 id，由脚本统一处理（保留类名与样式） -->
-                            <button id="startLearnBtn" class="action-btn btn-primary">立即学习</button>
+                            <button class="action-btn btn-primary" onclick="window.location.href='player.html'">立即学习</button>
                             <button class="action-btn btn-secondary" id="collectBtn">加入收藏</button>
                             <button class="action-btn btn-outline" id="shareBtn">分享课程</button>
                         </div>
@@ -1236,223 +1215,641 @@
     </footer>
 
     <script>
-        // 课程数据 - 对应创作者的作品
+        // 课程数据
         const courseData = {
             '1': {
-                title: '深夜英语角',
-                description: '深夜时分的英语学习时光，轻松愉快的英语对话系列，帮助您在放松的状态下提升英语能力。',
-                level: '初级到中级',
-                episodes: '30集',
+                title: '商务英语会话技巧',
+                description: '本课程专为商务人士设计，涵盖商务会议、谈判、邮件沟通等场景，帮助您在国际商务环境中自信地进行英语交流。',
+                level: '中级到高级',
+                episodes: '15集',
                 status: '已完结',
-                playCount: '12.5万',
-                rating: '4.9',
-                studentCount: '5.8万',
-                image: '../images/english_daily.jpg',
-                objectives: '通过本系列的学习，您将能够：',
+                playCount: '8.3万',
+                rating: '4.8',
+                studentCount: '3.2万',
+                image: '../images/business_english.jpg',
+                objectives: '通过本课程的学习，您将能够：',
                 objectivesList: [
-                    '在轻松的氛围中学习实用英语表达',
-                    '提高英语听力和口语反应能力',
-                    '掌握日常生活中的英语对话技巧',
-                    '建立英语学习的自信心和兴趣'
+                    '掌握商务会议中的常用表达和礼仪',
+                    '能够进行商务谈判和合同讨论',
+                    '熟练撰写商务邮件和报告',
+                    '理解不同文化背景下的商务礼仪',
+                    '提高跨文化商务沟通能力'
                 ],
                 targetAudience: [
-                    '喜欢在轻松环境下学习英语的人士',
-                    '希望提升日常英语对话能力的学习者',
-                    '英语初级到中级水平的学习者',
-                    '寻找趣味英语学习内容的用户'
+                    '商务人士和职场精英',
+                    '需要与国际客户沟通的专业人士',
+                    '准备进入外企工作的求职者',
+                    '商务英语专业的学生',
+                    '希望提升商务英语能力的学习者'
                 ],
                 features: [
-                    '深夜轻松氛围',
-                    '实用对话场景',
-                    '渐进式学习难度',
-                    '互动练习环节',
-                    '真实发音示范'
+                    '真实商务场景模拟',
+                    '专业商务词汇讲解',
+                    '跨文化沟通技巧',
+                    '商务礼仪指导',
+                    '实际案例分析'
                 ],
                 syllabus: [
-                    { unit: '基础问候与聊天', lessons: ['夜晚问候', '简单自我介绍', '日常闲聊', '告别用语'], duration: '35分钟' },
-                    { unit: '生活场景对话', lessons: ['晚餐点餐', '购物交流', '朋友聚会', '周末计划'], duration: '40分钟' },
-                    { unit: '情感表达', lessons: ['表达喜欢', '分享感受', '安慰朋友', '表达感谢'], duration: '38分钟' }
+                    { unit: '商务会议', lessons: ['会议准备与安排', '会议主持与发言', '讨论与决议', '会议纪要撰写'], duration: '40分钟' },
+                    { unit: '商务谈判', lessons: ['谈判策略与技巧', '价格与条款讨论', '合同谈判要点', '谈判礼仪'], duration: '45分钟' },
+                    { unit: '商务邮件', lessons: ['邮件格式与结构', '正式与非正式邮件', '邮件语气与措辞', '邮件回复技巧'], duration: '35分钟' }
                 ],
                 chapters: [
-                    { title: '夜晚问候与闲聊', duration: '35分钟' },
-                    { title: '日常生活中的对话', duration: '40分钟' },
-                    { title: '情感表达与交流', duration: '38分钟' },
-                    { title: '文化差异与理解', duration: '42分钟' },
-                    { title: '实用场景模拟', duration: '36分钟' }
+                    { title: '商务会议技巧', duration: '40分钟' },
+                    { title: '商务谈判策略', duration: '45分钟' },
+                    { title: '商务邮件写作', duration: '35分钟' },
+                    { title: '商务演讲技巧', duration: '38分钟' },
+                    { title: '跨文化商务沟通', duration: '42分钟' }
                 ]
             },
             '2': {
-                title: '古典音乐赏析',
-                description: '深入浅出的古典音乐欣赏课程，带您走进古典音乐的世界，理解音乐背后的故事与情感。',
-                level: '所有级别',
-                episodes: '25集',
+                title: '日常英语口语600句',
+                description: '精选600个最常用的英语口语句子，涵盖日常生活的各个方面，帮助您快速提升英语口语表达能力。',
+                level: '初级到中级',
+                episodes: '30集',
                 status: '已完结',
-                playCount: '8.7万',
-                rating: '4.8',
-                studentCount: '3.2万',
-                image: '../images/classical_music.jpg',
-                objectives: '通过本系列的学习，您将能够：',
+                playCount: '15.6万',
+                rating: '4.9',
+                studentCount: '7.8万',
+                image: '../images/daily_english.jpg',
+                objectives: '通过本课程的学习，您将能够：',
                 objectivesList: [
-                    '了解古典音乐的基本知识',
-                    '欣赏不同时期的古典音乐作品',
-                    '理解音乐背后的历史和文化背景',
-                    '培养对古典音乐的欣赏能力'
+                    '掌握日常生活中的基础英语表达',
+                    '能够进行简单的日常对话',
+                    '提高英语听力和口语反应速度',
+                    '积累常用词汇和句型',
+                    '建立英语交流的自信心'
                 ],
                 targetAudience: [
-                    '古典音乐爱好者',
-                    '想要了解古典音乐的新手',
-                    '音乐专业的学生',
-                    '希望提升音乐素养的人士'
+                    '英语初学者',
+                    '想要提高日常英语能力的学习者',
+                    '准备出国旅游的人士',
+                    '需要基础英语交流能力的学习者',
+                    '希望快速提升口语的学习者'
                 ],
                 features: [
-                    '专业音乐讲解',
-                    '经典作品赏析',
-                    '历史背景介绍',
-                    '作曲家生平故事',
-                    '音乐理论浅析'
+                    '600个实用口语句子',
+                    '生活场景分类教学',
+                    '真人发音示范',
+                    '对话练习与模仿',
+                    '渐进式学习难度'
                 ],
                 syllabus: [
-                    { unit: '巴洛克时期音乐', lessons: ['巴赫作品欣赏', '维瓦尔第的四季', '亨德尔的水上音乐', '巴洛克音乐特点'], duration: '45分钟' },
-                    { unit: '古典主义时期', lessons: ['莫扎特交响曲', '海顿弦乐四重奏', '贝多芬早期作品', '古典音乐形式'], duration: '50分钟' },
-                    { unit: '浪漫主义时期', lessons: ['肖邦夜曲', '柴可夫斯基芭蕾舞剧', '李斯特钢琴曲', '浪漫主义特征'], duration: '48分钟' }
+                    { unit: '基础问候与介绍', lessons: ['问候语', '自我介绍', '询问近况', '告别用语'], duration: '35分钟' },
+                    { unit: '家庭与日常生活', lessons: ['家庭介绍', '日常活动', '生活习惯', '时间表达'], duration: '40分钟' },
+                    { unit: '饮食与购物', lessons: ['餐厅点餐', '食物偏好', '购物对话', '价格询问'], duration: '38分钟' }
                 ],
                 chapters: [
-                    { title: '巴洛克音乐世界', duration: '45分钟' },
-                    { title: '古典主义经典', duration: '50分钟' },
-                    { title: '浪漫主义情感', duration: '48分钟' },
-                    { title: '现代古典音乐', duration: '42分钟' },
-                    { title: '中国古典音乐', duration: '40分钟' }
+                    { title: '基础问候与介绍', duration: '35分钟' },
+                    { title: '家庭与日常生活', duration: '40分钟' },
+                    { title: '饮食与购物对话', duration: '38分钟' },
+                    { title: '旅行与交通', duration: '42分钟' },
+                    { title: '健康与医疗', duration: '36分钟' }
                 ]
             },
             '3': {
-                title: '时间旅行者',
-                description: '一部跨越时空的有声小说，讲述一位时间旅行者的奇幻冒险故事，带您领略不同历史时期的魅力。',
-                level: '所有级别',
-                episodes: '40集',
-                status: '连载中',
-                playCount: '25.3万',
-                rating: '4.9',
-                studentCount: '12.5万',
-                image: '../images/time_traveler.jpg',
-                objectives: '通过本系列的学习，您将能够：',
+                title: '英语听力进阶训练',
+                description: '系统化的英语听力训练课程，从基础听力技巧到高级听力理解，帮助您全面提升英语听力能力。',
+                level: '初级到高级',
+                episodes: '25集',
+                status: '已完结',
+                playCount: '11.2万',
+                rating: '4.7',
+                studentCount: '4.5万',
+                image: '../images/listening_training.jpg',
+                objectives: '通过本课程的学习，您将能够：',
                 objectivesList: [
-                    '在故事中享受阅读的乐趣',
-                    '了解不同历史时期的文化背景',
-                    '提高中文听力和理解能力',
-                    '激发对历史和文化的兴趣'
+                    '提高英语听力理解能力',
+                    '掌握不同口音的英语听力技巧',
+                    '提高听力反应速度和准确度',
+                    '学会听力笔记技巧',
+                    '能够听懂各种场景的英语对话'
                 ],
                 targetAudience: [
-                    '有声小说爱好者',
-                    '喜欢奇幻冒险故事的听众',
-                    '历史和文化爱好者',
-                    '寻找高质量有声读物的用户'
+                    '需要提高英语听力的学习者',
+                    '准备英语考试（雅思、托福等）的学生',
+                    '需要听懂英语会议或讲座的专业人士',
+                    '英语教师和培训师',
+                    '希望全面提升英语能力的学习者'
                 ],
                 features: [
-                    '原创有声小说',
-                    '专业声优演绎',
-                    '丰富的历史背景',
-                    '引人入胜的剧情',
-                    '精美的音效设计'
+                    '系统化听力训练体系',
+                    '多种口音听力练习',
+                    '真实场景听力材料',
+                    '听力技巧讲解',
+                    '渐进式难度设置'
                 ],
                 syllabus: [
-                    { unit: '序章：时间裂缝', lessons: ['意外的发现', '第一次穿越', '古代世界初体验', '时间的秘密'], duration: '40分钟' },
-                    { unit: '中世纪冒险', lessons: ['骑士与城堡', '神秘的炼金术士', '中世纪日常生活', '历史的转折点'], duration: '45分钟' },
-                    { unit: '未来世界', lessons: ['科技乌托邦', '人工智能危机', '未来社会结构', '时间悖论'], duration: '48分钟' }
+                    { unit: '基础听力技巧', lessons: ['数字与时间', '基础词汇识别', '简单对话理解', '听力笔记基础'], duration: '30分钟' },
+                    { unit: '中级听力训练', lessons: ['对话主旨理解', '细节信息捕捉', '长对话听力', '不同口音识别'], duration: '45分钟' },
+                    { unit: '高级听力挑战', lessons: ['讲座与演讲', '新闻听力', '学术英语听力', '快速听力反应'], duration: '50分钟' }
                 ],
                 chapters: [
-                    { title: '序章：时间裂缝', duration: '40分钟' },
-                    { title: '中世纪冒险', duration: '45分钟' },
-                    { title: '文艺复兴时期', duration: '42分钟' },
-                    { title: '工业革命时代', duration: '38分钟' },
-                    { title: '未来世界探索', duration: '50分钟' }
+                    { title: '基础听力技巧', duration: '30分钟' },
+                    { title: '中级听力训练', duration: '45分钟' },
+                    { title: '高级听力挑战', duration: '50分钟' },
+                    { title: '考试听力技巧', duration: '42分钟' },
+                    { title: '实战听力应用', duration: '38分钟' }
                 ]
             },
             '4': {
-                title: '生活日记',
-                description: '日常生活的点滴记录与感悟，分享生活中的美好瞬间、成长思考和情感体验，陪伴您度过每一个平凡而珍贵的日子。',
-                level: '所有级别',
-                episodes: '60集',
-                status: '连载中',
-                playCount: '4.2万',
-                rating: '4.7',
-                studentCount: '1.8万',
-                image: '../images/life_diary.jpg',
-                objectives: '通过本系列的学习，您将能够：',
+                title: '旅游英语实用对话',
+                description: '专为旅行者设计的英语课程，涵盖机场、酒店、餐厅、购物等旅行场景，让您的出国旅行更加顺畅。',
+                level: '初级到中级',
+                episodes: '20集',
+                status: '已完结',
+                playCount: '9.8万',
+                rating: '4.8',
+                studentCount: '4.1万',
+                image: '../images/travel_english.jpg',
+                objectives: '通过本课程的学习，您将能够：',
                 objectivesList: [
-                    '记录和反思日常生活',
-                    '培养积极的生活态度',
-                    '提升自我认知和情感表达能力',
-                    '在平凡中发现生活的美好'
+                    '掌握旅行中的基本英语交流',
+                    '能够独立完成旅行相关事务',
+                    '理解旅行中的英语指示和说明',
+                    '提高旅行中的应急英语能力',
+                    '增强出国旅行的自信心'
                 ],
                 targetAudience: [
-                    '喜欢生活分享的听众',
-                    '需要情感陪伴的用户',
-                    '追求生活品质的人士',
-                    '寻找心灵慰藉的听众'
+                    '准备出国旅行的人士',
+                    '喜欢自由行的旅行者',
+                    '需要短期出国的工作者',
+                    '旅行行业从业人员',
+                    '希望学习实用旅行英语的学习者'
                 ],
                 features: [
-                    '真实生活记录',
-                    '温暖治愈的声音',
-                    '生活智慧分享',
-                    '情感共鸣体验',
-                    '轻松自然的风格'
+                    '真实旅行场景模拟',
+                    '实用旅行词汇',
+                    '应急英语表达',
+                    '文化差异提示',
+                    '互动对话练习'
                 ],
                 syllabus: [
-                    { unit: '晨间时光', lessons: ['清晨的宁静', '早餐的仪式感', '晨间阅读', '新一天的计划'], duration: '25分钟' },
-                    { unit: '工作与学习', lessons: ['效率提升技巧', '专注力培养', '工作生活平衡', '学习心得分享'], duration: '30分钟' },
-                    { unit: '夜晚思绪', lessons: ['一天的回顾', '感恩日记', '未来规划', '睡前放松'], duration: '28分钟' }
+                    { unit: '机场与航班', lessons: ['值机与登机', '安检与海关', '航班信息查询', '行李托运'], duration: '38分钟' },
+                    { unit: '酒店住宿', lessons: ['酒店预订', '入住与退房', '房间服务', '问题处理'], duration: '35分钟' },
+                    { unit: '餐厅与饮食', lessons: ['餐厅预订', '点餐与结账', '食物偏好表达', '特殊饮食要求'], duration: '32分钟' }
                 ],
                 chapters: [
-                    { title: '晨间时光', duration: '25分钟' },
-                    { title: '工作与学习', duration: '30分钟' },
-                    { title: '人际交往', duration: '32分钟' },
-                    { title: '休闲娱乐', duration: '28分钟' },
-                    { title: '夜晚思绪', duration: '26分钟' }
+                    { title: '机场与航班', duration: '38分钟' },
+                    { title: '酒店住宿', duration: '35分钟' },
+                    { title: '餐厅与饮食', duration: '32分钟' },
+                    { title: '交通与出行', duration: '40分钟' },
+                    { title: '购物与娱乐', duration: '36分钟' }
                 ]
             },
             '5': {
-                title: '宇宙奥秘',
-                description: '探索宇宙的奥秘，从星系到黑洞，从量子力学到相对论，用通俗易懂的方式带您了解宇宙的奇妙与壮丽。',
-                level: '所有级别',
-                episodes: '35集',
+                title: '职场英语沟通技巧',
+                description: '针对职场环境的英语沟通课程，帮助您提升工作中的英语表达能力，建立良好的职业形象。',
+                level: '中级到高级',
+                episodes: '18集',
                 status: '已完结',
-                playCount: '15.8万',
-                rating: '4.8',
-                studentCount: '7.2万',
-                image: '../images/cosmic_mystery.jpg',
-                objectives: '通过本系列的学习，您将能够：',
+                playCount: '7.5万',
+                rating: '4.7',
+                studentCount: '3.0万',
+                image: '../images/workplace_english.jpg',
+                objectives: '通过本课程的学习，您将能够：',
                 objectivesList: [
-                    '了解宇宙的基本知识',
-                    '认识天文学的重要概念',
-                    '理解现代物理学的基本原理',
-                    '培养科学思维和探索精神'
+                    '提升职场英语沟通能力',
+                    '掌握职业场合的英语表达',
+                    '提高英语演讲和展示技巧',
+                    '学会有效的职场英语写作',
+                    '建立专业的职业英语形象'
                 ],
                 targetAudience: [
-                    '天文爱好者',
-                    '对科学感兴趣的用户',
-                    '学生和教师',
-                    '喜欢探索未知的听众'
+                    '职场人士',
+                    '需要英语工作环境的人员',
+                    '准备进入外企的求职者',
+                    '希望提升职业英语能力的学习者',
+                    '管理人员和团队领导'
                 ],
                 features: [
-                    '通俗易懂的讲解',
-                    '最新的科学发现',
-                    '生动的案例分析',
-                    '专业的科学知识',
-                    '引人入胜的主题'
+                    '职场真实场景',
+                    '专业沟通技巧',
+                    '商务礼仪指导',
+                    '职业形象建立',
+                    '实用案例分析'
                 ],
                 syllabus: [
-                    { unit: '太阳系探秘', lessons: ['太阳的奥秘', '行星之旅', '卫星与彗星', '太阳系边缘'], duration: '45分钟' },
-                    { unit: '星系与宇宙', lessons: ['银河系巡礼', '星系的形成', '暗物质与暗能量', '宇宙的起源'], duration: '50分钟' },
-                    { unit: '宇宙现象', lessons: ['黑洞的真相', '超新星爆发', '引力波探测', '时空扭曲'], duration: '48分钟' }
+                    { unit: '职场交流', lessons: ['同事沟通', '会议发言', '电话沟通', '邮件往来'], duration: '42分钟' },
+                    { unit: '工作报告', lessons: ['工作汇报', '项目展示', '数据说明', '建议提出'], duration: '45分钟' },
+                    { unit: '职业发展', lessons: ['面试英语', '薪资谈判', '职业规划', '升职沟通'], duration: '40分钟' }
                 ],
                 chapters: [
-                    { title: '太阳系探秘', duration: '45分钟' },
-                    { title: '星系与宇宙', duration: '50分钟' },
-                    { title: '宇宙现象', duration: '48分钟' },
-                    { title: '宇宙生命', duration: '42分钟' },
-                    { title: '未来探索', duration: '40分钟' }
+                    { title: '职场日常交流', duration: '42分钟' },
+                    { title: '工作报告与展示', duration: '45分钟' },
+                    { title: '职业发展与面试', duration: '40分钟' },
+                    { title: '团队协作与管理', duration: '38分钟' },
+                    { title: '跨部门沟通', duration: '36分钟' }
+                ]
+            },
+            // 在 courseData 对象中，在 '5': {...} 后面添加以下新课程数据
+
+            '6': {
+                title: '英语写作技巧提升',
+                description: '从基础到高级，系统学习英语写作技巧，帮助您提高写作表达能力，掌握各种文体的写作方法。',
+                level: '中级到高级',
+                episodes: '18集',
+                status: '已完结',
+                playCount: '10万',
+                rating: '4.8',
+                studentCount: '6.2万',
+                image: '../images/writing_skills.jpg',
+                objectives: '通过本课程的学习，您将能够：',
+                objectivesList: [
+                    '掌握英语写作的基本结构和格式',
+                    '学会不同文体的写作技巧',
+                    '提高写作表达的准确性和流畅性',
+                    '掌握学术写作和专业写作的方法',
+                    '能够进行创意写作和文学表达'
+                ],
+                targetAudience: [
+                    '需要提高英语写作能力的学习者',
+                    '准备英语考试（雅思、托福等）的学生',
+                    '需要英语写作的职场人士',
+                    '英语专业的学生和教师',
+                    '对英语写作感兴趣的学习者'
+                ],
+                features: [
+                    '系统化的写作训练体系',
+                    '多种文体写作教学',
+                    '写作技巧详细讲解',
+                    '范文分析与模仿',
+                    '写作练习与反馈'
+                ],
+                syllabus: [
+                    { unit: '基础写作技巧', lessons: ['句子结构与语法', '段落写作', '文章结构', '写作流程'], duration: '40分钟' },
+                    { unit: '应用文写作', lessons: ['书信写作', '邮件写作', '报告写作', '简历写作'], duration: '45分钟' },
+                    { unit: '学术写作', lessons: ['论文结构', '文献引用', '学术风格', '研究方法'], duration: '50分钟' }
+                ],
+                chapters: [
+                    { title: '基础写作技巧', duration: '40分钟' },
+                    { title: '应用文写作', duration: '45分钟' },
+                    { title: '学术写作进阶', duration: '50分钟' },
+                    { title: '创意写作', duration: '38分钟' },
+                    { title: '专业写作', duration: '42分钟' }
+                ]
+            },
+            '7': {
+                title: '零基础英语入门',
+                description: '专为零基础学习者设计的入门课程，从最基础的字母发音开始，循序渐进地带领您进入英语学习的世界。',
+                level: '零基础',
+                episodes: '25集',
+                status: '已完结',
+                playCount: '8.2万',
+                rating: '4.9',
+                studentCount: '4.5万',
+                image: '../images/basic_english.jpg',
+                objectives: '通过本课程的学习，您将能够：',
+                objectivesList: [
+                    '掌握26个英文字母的正确发音',
+                    '学会基础英语音标和发音规则',
+                    '掌握基础英语词汇和简单句型',
+                    '能够进行简单的日常对话',
+                    '建立英语学习的基本框架'
+                ],
+                targetAudience: [
+                    '完全零基础的英语学习者',
+                    '从未系统学习过英语的成年人',
+                    '想要重新开始学习英语的人士',
+                    '对英语感兴趣但不知如何入门的学习者',
+                    '需要基础英语启蒙的家长'
+                ],
+                features: [
+                    '零起点教学，适合完全初学者',
+                    '系统化的基础知识讲解',
+                    '生活化场景的简单对话',
+                    '发音纠正和语调训练',
+                    '渐进式学习难度设计'
+                ],
+                syllabus: [
+                    { unit: '字母与发音', lessons: ['26个字母', '元音发音', '辅音发音', '发音练习'], duration: '35分钟' },
+                    { unit: '基础词汇', lessons: ['数字与时间', '颜色与形状', '家庭成员', '日常物品'], duration: '40分钟' },
+                    { unit: '简单句型', lessons: ['问候与介绍', '简单提问', '肯定与否定', '基础对话'], duration: '38分钟' }
+                ],
+                chapters: [
+                    { title: '字母与发音基础', duration: '35分钟' },
+                    { title: '基础词汇积累', duration: '40分钟' },
+                    { title: '简单句型学习', duration: '38分钟' },
+                    { title: '日常对话练习', duration: '32分钟' },
+                    { title: '综合复习与应用', duration: '45分钟' }
+                ]
+            },
+            '8': {
+                title: '英语语法精讲',
+                description: '系统讲解英语语法规则，通过大量实例分析，帮助您深入理解英语语法结构，提高语言表达的准确性。',
+                level: '初级到高级',
+                episodes: '30集',
+                status: '已完结',
+                playCount: '4.3万',
+                rating: '4.7',
+                studentCount: '2.8万',
+                image: '../images/grammar_english.jpg',
+                objectives: '通过本课程的学习，您将能够：',
+                objectivesList: [
+                    '掌握英语语法的基本规则',
+                    '理解复杂句型的结构',
+                    '提高语言表达的准确性',
+                    '学会语法在实际语境中的应用',
+                    '掌握常见语法错误的纠正方法'
+                ],
+                targetAudience: [
+                    '需要系统学习语法的英语学习者',
+                    '准备英语考试的学生',
+                    '英语教师和培训师',
+                    '希望提高英语准确性的学习者',
+                    '需要巩固语法基础的学习者'
+                ],
+                features: [
+                    '系统化的语法知识体系',
+                    '丰富的实例分析',
+                    '语法难点详细讲解',
+                    '实用语法练习',
+                    '常见错误解析'
+                ],
+                syllabus: [
+                    { unit: '基础语法', lessons: ['时态与语态', '名词与代词', '形容词与副词', '介词与连词'], duration: '45分钟' },
+                    { unit: '句子结构', lessons: ['简单句与复合句', '从句结构', '倒装句', '省略句'], duration: '50分钟' },
+                    { unit: '高级语法', lessons: ['虚拟语气', '非谓语动词', '独立主格', '语法综合应用'], duration: '55分钟' }
+                ],
+                chapters: [
+                    { title: '基础语法精讲', duration: '45分钟' },
+                    { title: '句子结构分析', duration: '50分钟' },
+                    { title: '高级语法应用', duration: '55分钟' },
+                    { title: '语法错误纠正', duration: '42分钟' },
+                    { title: '综合语法练习', duration: '48分钟' }
+                ]
+            },
+            '9': {
+                title: '旅游英语口语',
+                description: '针对旅游场景的实用英语口语课程，涵盖机场、酒店、餐厅、购物等场景，让您的出国旅行更加顺利愉快。',
+                level: '初级到中级',
+                episodes: '20集',
+                status: '已完结',
+                playCount: '3.7万',
+                rating: '4.8',
+                studentCount: '2.1万',
+                image: '../images/travel_conversation.jpg',
+                objectives: '通过本课程的学习，您将能够：',
+                objectivesList: [
+                    '掌握旅游中的基本英语交流',
+                    '能够独立完成旅行相关事务',
+                    '理解旅行中的英语指示和说明',
+                    '提高旅行中的应急英语能力',
+                    '增强出国旅行的自信心'
+                ],
+                targetAudience: [
+                    '准备出国旅行的人士',
+                    '喜欢自由行的旅行者',
+                    '需要短期出国的工作者',
+                    '旅行行业从业人员',
+                    '希望学习实用旅行英语的学习者'
+                ],
+                features: [
+                    '真实旅行场景模拟',
+                    '实用旅行词汇',
+                    '应急英语表达',
+                    '文化差异提示',
+                    '互动对话练习'
+                ],
+                syllabus: [
+                    { unit: '机场与交通', lessons: ['值机与登机', '问路与交通', '行李托运', '航班信息'], duration: '38分钟' },
+                    { unit: '酒店住宿', lessons: ['酒店预订', '入住与退房', '房间服务', '问题处理'], duration: '35分钟' },
+                    { unit: '餐饮购物', lessons: ['餐厅点餐', '食物偏好', '购物对话', '讨价还价'], duration: '32分钟' }
+                ],
+                chapters: [
+                    { title: '机场与交通英语', duration: '38分钟' },
+                    { title: '酒店住宿沟通', duration: '35分钟' },
+                    { title: '餐饮购物对话', duration: '32分钟' },
+                    { title: '景点游览交流', duration: '36分钟' },
+                    { title: '应急情况处理', duration: '34分钟' }
+                ]
+            },
+            '10': {
+                title: '英语发音纠正',
+                description: '纠正常见的英语发音问题，通过系统的发音训练，帮助您提高英语发音的准确性和流利度。',
+                level: '初级到高级',
+                episodes: '22集',
+                status: '已完结',
+                playCount: '2.8万',
+                rating: '4.6',
+                studentCount: '1.9万',
+                image: '../images/pronunciation.jpg',
+                objectives: '通过本课程的学习，您将能够：',
+                objectivesList: [
+                    '纠正常见英语发音错误',
+                    '掌握标准英语发音技巧',
+                    '提高发音的准确性和清晰度',
+                    '学会连读、弱读等发音规则',
+                    '建立自信的英语口语表达'
+                ],
+                targetAudience: [
+                    '发音不准确需要纠正的学习者',
+                    '希望提高口语流利度的学习者',
+                    '需要标准发音的职场人士',
+                    '英语教师和发音培训师',
+                    '准备英语口语考试的学生'
+                ],
+                features: [
+                    '发音错误系统纠正',
+                    '标准发音示范',
+                    '发音技巧详细讲解',
+                    '对比练习与模仿',
+                    '个性化发音指导'
+                ],
+                syllabus: [
+                    { unit: '元音发音', lessons: ['单元音', '双元音', '元音对比', '元音练习'], duration: '40分钟' },
+                    { unit: '辅音发音', lessons: ['清浊辅音', '摩擦音', '爆破音', '辅音组合'], duration: '42分钟' },
+                    { unit: '语调与节奏', lessons: ['句子重音', '语调模式', '连读弱读', '节奏练习'], duration: '45分钟' }
+                ],
+                chapters: [
+                    { title: '元音发音纠正', duration: '40分钟' },
+                    { title: '辅音发音训练', duration: '42分钟' },
+                    { title: '语调与节奏掌握', duration: '45分钟' },
+                    { title: '常见错误解析', duration: '38分钟' },
+                    { title: '综合发音练习', duration: '40分钟' }
+                ]
+            },
+            '11': {
+                title: '英语面试技巧',
+                description: '学习英语面试中的常见问题和回答技巧，帮助您在英语面试中自信表现，提高面试成功率。',
+                level: '中级到高级',
+                episodes: '16集',
+                status: '已完结',
+                playCount: '3.2万',
+                rating: '4.7',
+                studentCount: '2.0万',
+                image: '../images/interview_skills.jpg',
+                objectives: '通过本课程的学习，您将能够：',
+                objectivesList: [
+                    '掌握英语面试的常见问题',
+                    '学会英语面试的回答技巧',
+                    '提高面试英语的表达能力',
+                    '学会面试礼仪和注意事项',
+                    '建立面试自信心态'
+                ],
+                targetAudience: [
+                    '准备英语面试的求职者',
+                    '想要进入外企的职场人士',
+                    '留学申请需要面试的学生',
+                    '需要英语面试培训的学员',
+                    '人力资源和招聘专员'
+                ],
+                features: [
+                    '真实面试场景模拟',
+                    '常见问题解析',
+                    '回答技巧指导',
+                    '面试礼仪讲解',
+                    '模拟面试练习'
+                ],
+                syllabus: [
+                    { unit: '面试准备', lessons: ['简历准备', '公司研究', '自我介绍', '常见问题'], duration: '35分钟' },
+                    { unit: '面试技巧', lessons: ['回答策略', '问题应对', '英语表达', '非语言沟通'], duration: '40分钟' },
+                    { unit: '模拟面试', lessons: ['一对一模拟', '小组面试', '压力面试', '面试反馈'], duration: '42分钟' }
+                ],
+                chapters: [
+                    { title: '面试前期准备', duration: '35分钟' },
+                    { title: '面试技巧提升', duration: '40分钟' },
+                    { title: '模拟面试训练', duration: '42分钟' },
+                    { title: '面试后续跟进', duration: '30分钟' },
+                    { title: '特殊面试场景', duration: '38分钟' }
+                ]
+            },
+            '12': {
+                title: '考研英语阅读理解',
+                description: '针对考研英语阅读理解的专项训练，通过系统方法和大量练习，提高阅读速度和理解准确率。',
+                level: '中级到高级',
+                episodes: '28集',
+                status: '已完结',
+                playCount: '6.5万',
+                rating: '4.8',
+                studentCount: '3.5万',
+                image: '../images/exam_reading.jpg',
+                objectives: '通过本课程的学习，您将能够：',
+                objectivesList: [
+                    '提高英语阅读速度和效率',
+                    '掌握阅读理解解题技巧',
+                    '学会分析长难句结构',
+                    '提高阅读理解的准确率',
+                    '建立系统的阅读训练方法'
+                ],
+                targetAudience: [
+                    '准备考研英语的学生',
+                    '需要提高阅读理解能力的学习者',
+                    '准备其他英语考试的学习者',
+                    '英语教师和培训师',
+                    '需要学术阅读能力的研究者'
+                ],
+                features: [
+                    '考研真题详细解析',
+                    '阅读技巧系统讲解',
+                    '长难句分析方法',
+                    '解题策略指导',
+                    '模拟练习与评估'
+                ],
+                syllabus: [
+                    { unit: '阅读基础', lessons: ['快速阅读', '精读技巧', '词汇积累', '句子分析'], duration: '45分钟' },
+                    { unit: '题型解析', lessons: ['主旨大意', '细节理解', '推理判断', '词义猜测'], duration: '50分钟' },
+                    { unit: '真题训练', lessons: ['历年真题', '模拟练习', '错题分析', '应试策略'], duration: '55分钟' }
+                ],
+                chapters: [
+                    { title: '阅读基础训练', duration: '45分钟' },
+                    { title: '题型解析与技巧', duration: '50分钟' },
+                    { title: '真题分析与练习', duration: '55分钟' },
+                    { title: '模拟考试训练', duration: '60分钟' },
+                    { title: '考前冲刺指导', duration: '48分钟' }
+                ]
+            },
+            '13': {
+                title: '少儿英语启蒙',
+                description: '通过歌曲、游戏、故事等方式，激发孩子学习英语的兴趣，帮助孩子打好英语学习的基础。',
+                level: '启蒙入门',
+                episodes: '24集',
+                status: '已完结',
+                playCount: '9.8万',
+                rating: '4.9',
+                studentCount: '5.2万',
+                image: '../images/kids_english.jpg',
+                objectives: '通过本课程的学习，您的孩子将能够：',
+                objectivesList: [
+                    '培养英语学习兴趣',
+                    '掌握基础英语词汇',
+                    '学会简单的英语表达',
+                    '建立英语语感',
+                    '养成良好的学习习惯'
+                ],
+                targetAudience: [
+                    '3-8岁儿童的家长',
+                    '幼儿园和小学英语教师',
+                    '少儿英语培训机构',
+                    '希望孩子早期接触英语的家长',
+                    '儿童教育工作者'
+                ],
+                features: [
+                    '趣味性教学方式',
+                    '歌曲与游戏结合',
+                    '生动故事讲解',
+                    '亲子互动练习',
+                    '循序渐进的学习计划'
+                ],
+                syllabus: [
+                    { unit: '基础认知', lessons: ['字母歌', '颜色认知', '数字学习', '动物世界'], duration: '25分钟' },
+                    { unit: '日常表达', lessons: ['问候用语', '家庭称呼', '食物名称', '日常活动'], duration: '28分钟' },
+                    { unit: '趣味故事', lessons: ['经典故事', '英语儿歌', '角色扮演', '创意表达'], duration: '30分钟' }
+                ],
+                chapters: [
+                    { title: '字母与数字乐园', duration: '25分钟' },
+                    { title: '颜色与动物世界', duration: '28分钟' },
+                    { title: '日常用语学习', duration: '30分钟' },
+                    { title: '英语儿歌欣赏', duration: '22分钟' },
+                    { title: '趣味故事时间', duration: '26分钟' }
+                ]
+            },
+            '14': {
+                title: '职场英语沟通',
+                description: '学习职场中的英语沟通技巧，包括会议、报告、邮件等场景，帮助您在职场中建立专业的英语沟通形象。',
+                level: '中级到高级',
+                episodes: '20集',
+                status: '已完结',
+                playCount: '4.1万',
+                rating: '4.7',
+                studentCount: '2.3万',
+                image: '../images/workplace_communication.jpg',
+                objectives: '通过本课程的学习，您将能够：',
+                objectivesList: [
+                    '掌握职场英语沟通技巧',
+                    '提高会议和报告的英语表达能力',
+                    '学会专业邮件的写作方法',
+                    '提升跨文化职场沟通能力',
+                    '建立专业的职场英语形象'
+                ],
+                targetAudience: [
+                    '职场人士和企业员工',
+                    '需要英语工作环境的人员',
+                    '准备进入外企的求职者',
+                    '管理人员和团队领导',
+                    '希望提升职业英语能力的学习者'
+                ],
+                features: [
+                    '真实职场场景',
+                    '专业沟通技巧',
+                    '商务礼仪指导',
+                    '案例分析与模拟',
+                    '实用模板与工具'
+                ],
+                syllabus: [
+                    { unit: '会议沟通', lessons: ['会议准备', '会议发言', '讨论与决议', '会议纪要'], duration: '42分钟' },
+                    { unit: '工作报告', lessons: ['工作汇报', '项目展示', '数据说明', '建议提出'], duration: '45分钟' },
+                    { unit: '邮件写作', lessons: ['邮件格式', '正式与非正式', '语气与措辞', '附件处理'], duration: '38分钟' }
+                ],
+                chapters: [
+                    { title: '职场会议沟通', duration: '42分钟' },
+                    { title: '工作报告与展示', duration: '45分钟' },
+                    { title: '专业邮件写作', duration: '38分钟' },
+                    { title: '团队协作沟通', duration: '40分钟' },
+                    { title: '跨文化职场沟通', duration: '42分钟' }
                 ]
             }
+            // 其他课程数据可以继续添加...
         };
 
         // 页面加载时根据URL参数设置课程内容
@@ -1460,19 +1857,18 @@
             // 从URL获取课程ID
             const urlParams = new URLSearchParams(window.location.search);
             const courseId = urlParams.get('id') || '1';
-            const authorName = urlParams.get('author') || '用户名';
-            const programName = urlParams.get('program') || '英语课程';
+            const courseName = urlParams.get('course') || '英语课程';
 
             // 获取课程数据，如果没有对应ID则使用第一个课程
             const course = courseData[courseId] || courseData['1'];
 
             // 更新页面标题
-            document.title = programName + ' - 星之声';
+            document.title = course.title + ' - 星之声';
 
             // 更新课程信息
-            document.getElementById('courseTitle').textContent = programName;
+            document.getElementById('courseTitle').textContent = course.title;
             document.getElementById('courseImage').src = course.image;
-            document.getElementById('courseImage').alt = programName + '封面';
+            document.getElementById('courseImage').alt = course.title + '封面';
             document.getElementById('courseDescription').textContent = course.description;
             document.getElementById('courseLevel').textContent = course.level;
             document.getElementById('courseEpisodes').textContent = course.episodes;
@@ -1481,9 +1877,6 @@
             document.getElementById('courseRating').textContent = course.rating;
             document.getElementById('studentCount').textContent = course.studentCount;
             document.getElementById('courseObjectives').textContent = course.objectives;
-
-            // 更新作者信息
-            document.getElementById('authorInfo').textContent = '作者: ' + authorName;
 
             // 更新学习目标列表
             const objectivesList = document.getElementById('objectivesList');
@@ -1604,36 +1997,38 @@
                 alert('分享链接已复制到剪贴板，可以粘贴发送给好友了');
             });
 
-            // 新增：立即学习按钮行为 —— 跳转到 player.html 并携带必要信息
-            const startBtn = document.getElementById('startLearnBtn');
-            if (startBtn) {
-                startBtn.addEventListener('click', function () {
-                    const params = new URLSearchParams();
-                    // 传递课程 id 与课程名
-                    params.set('id', courseId);
-                    params.set('course', programName);
-                    // 默认从第 0 章开始
-                    params.set('chapterIndex', '0');
-                    // 将章节数组序列化并编码后传递（player 页面可解析）
-                    try {
-                        const chaptersJson = JSON.stringify(course.chapters || []);
-                        params.set('chapters', encodeURIComponent(chaptersJson));
-                    } catch (e) {
-                        // 如果序列化失败，就不加 chapters 参数
-                    }
-                    window.location.href = 'player.html?' + params.toString();
-                });
-            }
+            // 获取URL参数的函数
+        function getURLParameter(name) {
+            const params = new URLSearchParams(window.location.search);
+            return params.get(name);
+        }
 
-            // 章节选择功能（保留原样，同时支持高亮）
-            const chapterItems = document.querySelectorAll('.chapter-item');
-            chapterItems.forEach((item, idx) => {
-                item.addEventListener('click', function() {
-                    chapterItems.forEach(i => i.classList.remove('active'));
-                    this.classList.add('active');
-                });
+        // 章节选择功能
+        const chapterItems = document.querySelectorAll('.chapter-item');
+        chapterItems.forEach(item => {
+            item.addEventListener('click', function() {
+                chapterItems.forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
             });
         });
+
+        // 根据URL参数动态更新频道信息
+        const channelName = getURLParameter('channel');
+        if (channelName) {
+            // 更新频道标题
+            const programTitle = document.querySelector('.program-title');
+            if (programTitle) {
+                programTitle.textContent = channelName;
+            }
+
+            // 更新页面标题
+            document.title = `${channelName} - 节目列表 - iFM`;
+
+            // 可以根据需要更新更多频道信息
+            // 例如：频道封面、描述等
+            // 这里可以添加从后端获取频道详细信息的API调用
+        }
+    });
 
         // 单元展开/折叠功能
         function toggleUnit(header) {

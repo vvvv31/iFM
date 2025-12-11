@@ -127,6 +127,25 @@
             </div>
         </section>
     </main>
+    
+    <script>
+        // 为订阅列表中的头像添加点击事件，跳转到用户主页
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取所有订阅项
+            const subscribeItems = document.querySelectorAll('.subscribe-item');
+            
+            // 为每个订阅项的头像添加点击事件
+            subscribeItems.forEach(item => {
+                const avatarWrapper = item.querySelector('.avatar-wrapper');
+                const username = item.querySelector('span').textContent;
+                
+                avatarWrapper.addEventListener('click', function() {
+                    // 跳转到用户主页，传递用户名参数
+                    window.location.href = `user-profile.html?username=${encodeURIComponent(username)}`;
+                });
+            });
+        });
+    </script>
 
     <!-- 替换底部播放栏为 PlayBar.html 版本 -->
     <aside id="pv-player" class="pv-player-bar" role="region" aria-label="播放器">

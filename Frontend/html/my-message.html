@@ -558,10 +558,78 @@
 
     <!-- 保留私信页面交互脚本（与播放栏无关） -->
     <script>
+        // 解析URL参数
+        function getURLParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+        
         const msgItems = document.querySelectorAll('.msg-item');
         const messageInput = document.getElementById('messageInput');
         const sendBtn = document.getElementById('sendBtn');
         const chatContent = document.querySelector('.chat-content');
+        const chatHeaderName = document.querySelector('.chat-header span');
+        
+        // 页面加载时检查URL参数
+        window.addEventListener('DOMContentLoaded', () => {
+            const username = getURLParameter('username');
+            if (username) {
+                // 尝试查找已存在的消息列表项
+                let found = false;
+                msgItems.forEach(item => {
+                    const itemName = item.querySelector('span').textContent;
+                    if (itemName === username) {
+                        item.click(); // 自动点击对应的消息列表项
+                        found = true;
+                    }
+                });
+                
+                // 如果没有找到对应的消息列表项，创建新的消息列表项和聊天窗口
+                if (!found) {
+                    // 创建新的消息列表项
+                    const messageList = document.querySelector('.message-list');
+                    const newMsgItem = document.createElement('div');
+                    newMsgItem.className = 'msg-item active';
+                    newMsgItem.innerHTML = `
+                        <div class="avatar-wrapper">
+                            <div class="avatar"></div>
+                        </div>
+                        <span>${username}</span>
+                    `;
+                    
+                    // 移除所有现有active类
+                    msgItems.forEach(item => item.classList.remove('active'));
+                    
+                    // 将新消息列表项添加到侧边栏
+                    messageList.appendChild(newMsgItem);
+                    
+                    // 更新消息列表项数组
+                    msgItems = document.querySelectorAll('.msg-item');
+                    
+                    // 为新添加的消息列表项添加点击事件
+                    newMsgItem.addEventListener('click', () => {
+                        msgItems.forEach(item => item.classList.remove('active'));
+                        newMsgItem.classList.add('active');
+                        const name = newMsgItem.querySelector('span').textContent;
+                        chatHeaderName.textContent = name;
+                        chatContent.innerHTML = `<div class="chat-message received">
+                            开始与${name}的对话
+                            <span class="time">${getCurrentTime()}</span>
+                        </div>`;
+                        chatContent.scrollTop = chatContent.scrollHeight;
+                    });
+                    
+                    // 更新聊天窗口标题
+                    chatHeaderName.textContent = username;
+                    // 清空聊天内容并显示新对话提示
+                    chatContent.innerHTML = `<div class="chat-message received">
+                        开始与${username}的对话
+                        <span class="time">${getCurrentTime()}</span>
+                    </div>`;
+                    chatContent.scrollTop = chatContent.scrollHeight;
+                }
+            }
+        });
 
         // 切换对话
         msgItems.forEach(item => {

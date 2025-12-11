@@ -1134,10 +1134,36 @@
                     <div class="member-avatar online">${shortName}</div>
                     <span class="member-name">${member}</span>
                 `;
+                // 添加点击跳转功能
+                memberElement.addEventListener('click', () => {
+                    // 通过URL参数传递用户名
+                    window.location.href = `user-profile.html?username=${encodeURIComponent(member)}`;
+                });
                 onlineMembers.appendChild(memberElement);
             });
 
             updateGroupListActiveState(groupId);
+        }
+
+        // 添加头像点击跳转功能
+        function addAvatarClickEvents() {
+            // 为消息头像添加点击事件
+            const messageAvatars = document.querySelectorAll('.message-avatar');
+            messageAvatars.forEach(avatar => {
+                avatar.style.cursor = 'pointer';
+                avatar.addEventListener('click', function() {
+                    window.location.href = 'user-profile.html';
+                });
+            });
+
+            // 为成员头像添加点击事件
+            const memberAvatars = document.querySelectorAll('.member-avatar');
+            memberAvatars.forEach(avatar => {
+                avatar.style.cursor = 'pointer';
+                avatar.addEventListener('click', function() {
+                    window.location.href = 'user-profile.html';
+                });
+            });
         }
 
         function updateGroupListActiveState(activeGroupId) {
@@ -1241,6 +1267,9 @@
                     if (remainingGroupIds.length > 0) switchGroup(remainingGroupIds[0]);
                     else alert('所有群组已删除！');
                 }
+                
+                // 添加头像点击事件
+                addAvatarClickEvents();
             }
         }
 

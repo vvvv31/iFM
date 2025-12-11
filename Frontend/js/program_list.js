@@ -100,6 +100,60 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             ]
         },
+        {
+            id: 4,
+            title: "深夜英语角", // 与收藏页标题完全一致
+            teacher: "刘老师",
+            cover: "https://via.placeholder.com/300x200?text=深夜英语角",
+            level: "初级",
+            episodes: 15,
+            status: "已完结",
+            playCount: 125000, // 收藏页显示12.5万次
+            rating: 5.0,
+            learnCount: 68000,
+            desc: "深夜英语角，轻松练口语！适合上班族利用碎片时间提升英语口语，涵盖日常对话、话题讨论等场景。",
+            goals: [
+                "提升日常英语口语流利度",
+                "积累高频口语词汇",
+                "克服开口恐惧"
+            ],
+            chapters: [
+                {
+                    unit: "第1单元：日常话题讨论",
+                    lessons: [
+                        { id: 501, title: "兴趣爱好交流", duration: "15:20" },
+                        { id: 502, title: "职场生活分享", duration: "18:10" }
+                    ]
+                }
+            ]
+        },
+        {
+            id: 5,
+            title: "宇宙奥秘", // 与收藏页标题完全一致
+            teacher: "赵教授",
+            cover: "https://via.placeholder.com/300x200?text=宇宙奥秘",
+            level: "通识",
+            episodes: 10,
+            status: "已完结",
+            playCount: 158000, // 收藏页显示15.8万次
+            rating: 4.9,
+            learnCount: 92000,
+            desc: "探索宇宙未知，解读星系、黑洞、外星生命等热门话题，用通俗语言讲解专业天文知识。",
+            goals: [
+                "了解宇宙基本构成",
+                "掌握天文科普常识",
+                "激发科学探索兴趣"
+            ],
+            chapters: [
+                {
+                    unit: "第1单元：太阳系探秘",
+                    lessons: [
+                        { id: 601, title: "太阳与八大行星", duration: "22:30" },
+                        { id: 602, title: "月球起源与潮汐", duration: "19:45" }
+                    ]
+                }
+            ]
+        }
         // 可添加更多节目数据...
     ];
 

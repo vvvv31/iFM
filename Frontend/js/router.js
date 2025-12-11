@@ -10,7 +10,6 @@ const routes = {
     'login': 'login.html',
     'my-recent': 'my-recent.html',
     'my-collect': 'my-collect.html',
-    'my-subscribe': 'my-subscribe.html',
     'my-message': 'my-message.html',
     'my-creator': 'my-creator_center.html',
     'group-management': 'group-management.html',

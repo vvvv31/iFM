@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>我的-收藏 - 星之声</title>
     <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/category.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="../js/search.js"></script>
     <style>
@@ -106,15 +107,115 @@
         <section class="tab-bar">
             <button class="tab" onclick="window.location.href='my-recent.html'">最近收听</button>
             <button class="tab active" onclick="window.location.href='my-collect.html'">收藏</button>
-            <button class="tab" onclick="window.location.href='my-subscribe.html'">订阅</button>
             <button class="tab" onclick="window.location.href='my-message.html'">私信</button>
             <button class="tab" onclick="window.location.href='my-creator_center.html'">创作者中心</button>
         </section>
         <section class="content-block">
             <div class="channel-cards">
-                <div class="channel-card">频道</div>
-                <div class="channel-card">频道</div>
-                <div class="channel-card">频道</div>
+                <!-- 对应 program_list.html 中 ID: 1 的作品 -->
+                <div class="channel-card" data-course-id="1">
+                    <div class="channel-thumbnail" style="background-image: url('../images/business_english.jpg');">
+                        <div class="thumbnail-overlay">
+                            <span class="play-icon">▶</span>
+                            <span class="video-duration">45:30</span>
+                        </div>
+                    </div>
+                    <div class="channel-info">
+                        <h3 class="channel-title">商务英语会话技巧</h3>
+                        <div class="channel-meta">
+                            <span class="views-count">8.3万次学习</span>
+                            <span class="rating">★★★★★</span>
+                        </div>
+                        <div class="teacher-info">
+                            <div class="teacher-avatar">李</div>
+                            <span class="teacher-name">李老师</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 对应 program_list.html 中 ID: 2 的作品 -->
+                <div class="channel-card" data-course-id="2">
+                    <div class="channel-thumbnail" style="background-image: url('../images/daily_english.jpg');">
+                        <div class="thumbnail-overlay">
+                            <span class="play-icon">▶</span>
+                            <span class="video-duration">38:15</span>
+                        </div>
+                    </div>
+                    <div class="channel-info">
+                        <h3 class="channel-title">日常英语口语600句</h3>
+                        <div class="channel-meta">
+                            <span class="views-count">15.6万次学习</span>
+                            <span class="rating">★★★★★</span>
+                        </div>
+                        <div class="teacher-info">
+                            <div class="teacher-avatar">王</div>
+                            <span class="teacher-name">王老师</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 对应 program_list.html 中 ID: 3 的作品 -->
+                <div class="channel-card" data-course-id="3">
+                    <div class="channel-thumbnail" style="background-image: url('../images/listening_training.jpg');">
+                        <div class="thumbnail-overlay">
+                            <span class="play-icon">▶</span>
+                            <span class="video-duration">52:40</span>
+                        </div>
+                    </div>
+                    <div class="channel-info">
+                        <h3 class="channel-title">英语听力进阶训练</h3>
+                        <div class="channel-meta">
+                            <span class="views-count">11.2万次学习</span>
+                            <span class="rating">★★★★★</span>
+                        </div>
+                        <div class="teacher-info">
+                            <div class="teacher-avatar">张</div>
+                            <span class="teacher-name">张老师</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 对应 program_list.html 中 ID: 4 的作品 -->
+                <div class="channel-card" data-course-id="4">
+                    <div class="channel-thumbnail" style="background-image: url('../images/travel_english.jpg');">
+                        <div class="thumbnail-overlay">
+                            <span class="play-icon">▶</span>
+                            <span class="video-duration">28:30</span>
+                        </div>
+                    </div>
+                    <div class="channel-info">
+                        <h3 class="channel-title">旅游英语实用对话</h3>
+                        <div class="channel-meta">
+                            <span class="views-count">9.8万次学习</span>
+                            <span class="rating">★★★★★</span>
+                        </div>
+                        <div class="teacher-info">
+                            <div class="teacher-avatar">刘</div>
+                            <span class="teacher-name">刘老师</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 对应 program_list.html 中 ID: 5 的作品 -->
+                <div class="channel-card" data-course-id="5">
+                    <div class="channel-thumbnail" style="background-image: url('../images/workplace_english.jpg');">
+                        <div class="thumbnail-overlay">
+                            <span class="play-icon">▶</span>
+                            <span class="video-duration">45:10</span>
+                        </div>
+                    </div>
+                    <div class="channel-info">
+                        <h3 class="channel-title">职场英语沟通技巧</h3>
+                        <div class="channel-meta">
+                            <span class="views-count">7.5万次学习</span>
+                            <span class="rating">★★★★★</span>
+                        </div>
+                        <div class="teacher-info">
+                            <div class="teacher-avatar">赵</div>
+                            <span class="teacher-name">赵老师</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
     </main>
@@ -243,6 +344,42 @@
       const modeBtn = document.getElementById('pv-mode-btn');
       const modePop = document.getElementById('mode-pop');
       const ratePop = document.getElementById('rate-pop');
+
+      // 为收藏页面的频道卡片添加点击事件
+      document.addEventListener('DOMContentLoaded', function() {
+          const channelCards = document.querySelectorAll('.channel-card');
+
+          channelCards.forEach(card => {
+              card.style.cursor = 'pointer';
+
+                card.addEventListener('click', function(e) {
+                  // 防止播放按钮的点击事件触发跳转
+                  if (e.target.closest('.thumbnail-overlay')) {
+                      return;
+                  }
+
+                  const courseId = this.getAttribute('data-course-id');
+                  const courseTitle = this.querySelector('.channel-title').textContent;
+
+                  // 根据不同的课程ID跳转到对应的节目详情页
+                  let targetUrl = 'program_list.html';
+
+                  // 直接使用课程ID，不需要复杂的映射
+                  targetUrl = `program_list.html?id=${courseId}&title=${encodeURIComponent(courseTitle)}`;
+
+                  window.location.href = targetUrl;
+              });
+          });
+
+          // 防止播放按钮触发跳转
+          document.querySelectorAll('.thumbnail-overlay').forEach(overlay => {
+              overlay.addEventListener('click', function(e) {
+                  e.stopPropagation();
+                  // 这里可以添加播放逻辑
+                  console.log('播放按钮被点击');
+              });
+          });
+      });
 
       function loadTrack(index) {
         const track = playlist[index];

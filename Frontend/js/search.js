@@ -402,10 +402,10 @@ function updateSearchResults(courses, keyword) {
     if (searchResultsGrid) {
         if (courses.length > 0) {
             const coursesHTML = courses.map(course => `
-                <div class="channel-card" data-course-id="${course.id}">
+                <div class="channel-card" data-course-id="${course.id}" data-course-type="${course.type}" data-course-title="${course.title}" data-course-teacher="${course.teacher.name}">
                     <div class="channel-thumbnail">
                         <div class="thumbnail-overlay">
-                            <span class="play-icon">▶</span>
+                            <span class="play-icon">${course.type === 'live' ? '🔴' : '▶'}</span>
                             <span class="video-duration">${course.duration}</span>
                         </div>
                     </div>
@@ -414,6 +414,14 @@ function updateSearchResults(courses, keyword) {
                         <div class="channel-meta">
                             <span class="views-count">${course.views}</span>
                             <span class="rating">${course.rating}</span>
+                            <span class="course-type-badge" style="
+                                background-color: ${course.type === 'live' ? '#FF6B6B' : '#FF8C00'};
+                                color: white;
+                                padding: 2px 6px;
+                                border-radius: 3px;
+                                font-size: 12px;
+                                margin-left: 8px;
+                                ">${course.type === 'live' ? '直播' : '音频'}</span>
                         </div>
                         <div class="teacher-info">
                             <div class="teacher-avatar">${course.teacher.avatar}</div>
@@ -429,10 +437,18 @@ function updateSearchResults(courses, keyword) {
             document.querySelectorAll('#search-results-grid .channel-card').forEach(card => {
                 card.addEventListener('click', function() {
                     const courseId = this.getAttribute('data-course-id');
-                    const mappedId = courseIdMap[courseId] || courseId; // 使用映射表获取对应的ID
+                    const courseType = this.getAttribute('data-course-type');
+                    const courseTitle = this.getAttribute('data-course-title');
+                    const courseTeacher = this.getAttribute('data-course-teacher');
 
-                    // 直接跳转到课程详情页，传递映射后的ID
-                    window.location.href = `program_list.html?id=${mappedId}`;
+                    if (courseType === 'live') {
+                        // 直播课程：跳转到live.html
+                        window.location.href = `live.html?id=${courseId}&title=${encodeURIComponent(courseTitle)}&teacher=${encodeURIComponent(courseTeacher)}`;
+                      } else {
+                        // 音频课程：跳转到program_list.html
+                        const mappedId = courseIdMap[courseId] || courseId;
+                        window.location.href = `program_list.html?id=${mappedId}`;
+                      }
                 });
             });
         } else {

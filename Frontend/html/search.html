@@ -122,6 +122,40 @@
           transform: translateY(-5px);
           box-shadow: 0 8px 16px rgba(0,0,0,0.1);
       }
+
+      /* 课程类型标签样式 */
+      .course-type-badge {
+          background-color: #FF8C00;
+          color: white;
+          padding: 2px 6px;
+          border-radius: 3px;
+          font-size: 12px;
+          margin-left: 8px;
+      }
+
+      .live-badge {
+          background-color: #FF6B6B !important;
+      }
+
+      .audio-badge {
+          background-color: #FF8C00 !important;
+      }
+
+      /* 课程卡片悬停效果增强 */
+      .channel-card:hover .channel-thumbnail::before {
+          content: ${course.type === 'live' ? '"观看直播"' : '"开始学习"'};
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          background-color: rgba(255, 140, 0, 0.9);
+          color: white;
+          padding: 8px 16px;
+          border-radius: 20px;
+          font-size: 14px;
+          font-weight: bold;
+          z-index: 2;
+      }
     </style>
 </head>
 <body>
@@ -336,46 +370,66 @@
       };
 
       // 重写搜索结果显示函数，确保点击可以跳转到正确的课程详情页
-      function overrideSearchFunctions() {
-        // 重写searchDataAndDisplay函数中的点击事件
-        const originalSearchDataAndDisplay = window.searchDataAndDisplay;
-        if (originalSearchDataAndDisplay) {
-          window.searchDataAndDisplay = function(keyword) {
-            originalSearchDataAndDisplay.call(this, keyword);
+        function overrideSearchFunctions() {
+          // 重写searchDataAndDisplay函数中的点击事件
+          const originalSearchDataAndDisplay = window.searchDataAndDisplay;
+          if (originalSearchDataAndDisplay) {
+            window.searchDataAndDisplay = function(keyword) {
+              originalSearchDataAndDisplay.call(this, keyword);
 
-            // 重绑定点击事件，确保跳转到program_list.html并传递正确的ID
-            setTimeout(() => {
-              document.querySelectorAll('#search-results-grid .channel-card').forEach(card => {
-                card.addEventListener('click', function(e) {
-                  e.stopPropagation();
-                  const courseId = this.getAttribute('data-course-id');
-                  const mappedId = courseIdMap[courseId] || courseId;
-                  window.location.href = `program_list.html?id=${mappedId}`;
+              // 重绑定点击事件，根据课程类型跳转到不同页面
+              setTimeout(() => {
+                document.querySelectorAll('#search-results-grid .channel-card').forEach(card => {
+                  card.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const courseId = this.getAttribute('data-course-id');
+                    const courseType = this.getAttribute('data-course-type');
+                    const courseTitle = this.getAttribute('data-course-title');
+                    const courseTeacher = this.getAttribute('data-course-teacher');
+
+                    if (courseType === 'live') {
+                      // 直播课程：跳转到live.html，传递ID、标题和老师信息
+                      window.location.href = `live.html?id=${courseId}&title=${encodeURIComponent(courseTitle)}&teacher=${encodeURIComponent(courseTeacher)}`;
+                    } else {
+                      // 音频课程：跳转到program_list.html，使用映射后的ID
+                      const mappedId = courseIdMap[courseId] || courseId;
+                      window.location.href = `program_list.html?id=${mappedId}`;
+                    }
+                  });
                 });
-              });
-            }, 100);
-          };
-        }
+              }, 100);
+            };
+          }
 
-        // 重写updateSearchResults函数中的点击事件
-        const originalUpdateSearchResults = window.updateSearchResults;
-        if (originalUpdateSearchResults) {
-          window.updateSearchResults = function(courses, keyword) {
-            originalUpdateSearchResults.call(this, courses, keyword);
+          // 重写updateSearchResults函数中的点击事件
+          const originalUpdateSearchResults = window.updateSearchResults;
+          if (originalUpdateSearchResults) {
+            window.updateSearchResults = function(courses, keyword) {
+              originalUpdateSearchResults.call(this, courses, keyword);
 
-            setTimeout(() => {
-              document.querySelectorAll('#search-results-grid .channel-card').forEach(card => {
-                card.addEventListener('click', function(e) {
-                  e.stopPropagation();
-                  const courseId = this.getAttribute('data-course-id');
-                  const mappedId = courseIdMap[courseId] || courseId;
-                  window.location.href = `program_list.html?id=${mappedId}`;
+              setTimeout(() => {
+                document.querySelectorAll('#search-results-grid .channel-card').forEach(card => {
+                  card.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const courseId = this.getAttribute('data-course-id');
+                    const courseType = this.getAttribute('data-course-type');
+                    const courseTitle = this.getAttribute('data-course-title');
+                    const courseTeacher = this.getAttribute('data-course-teacher');
+
+                    if (courseType === 'live') {
+                      // 直播课程：跳转到live.html
+                      window.location.href = `live.html?id=${courseId}&title=${encodeURIComponent(courseTitle)}&teacher=${encodeURIComponent(courseTeacher)}`;
+                    } else {
+                      // 音频课程：跳转到program_list.html
+                      const mappedId = courseIdMap[courseId] || courseId;
+                      window.location.href = `program_list.html?id=${mappedId}`;
+                    }
+                  });
                 });
-              });
-            }, 100);
-          };
+              }, 100);
+            };
+          }
         }
-      }
 
       // 页面加载完成后重写搜索函数
       document.addEventListener('DOMContentLoaded', function() {

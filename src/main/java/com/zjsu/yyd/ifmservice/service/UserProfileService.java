@@ -4,6 +4,7 @@ import com.zjsu.yyd.ifmservice.model.user.User;
 import com.zjsu.yyd.ifmservice.model.user.UserProfile;
 import com.zjsu.yyd.ifmservice.repository.UserProfileRepository;
 import com.zjsu.yyd.ifmservice.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -46,45 +47,90 @@ public class UserProfileService {
     /**
      * 添加订阅
      */
+    @Transactional
     public void addSubscribe(Long userId, Long creatorId) {
 
+        if (userId.equals(creatorId)) {
+            throw new RuntimeException("不能关注自己");
+        }
+
+        // 1️⃣ 查 A（关注者）
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("用户不存在"));
 
-        UserProfile profile = profileRepository.findById(userId)
+        UserProfile userProfile = profileRepository.findById(userId)
                 .orElseGet(() -> {
                     UserProfile p = new UserProfile();
-                    p.setUser(user);     // ★ 关键：自动同步主键
+                    p.setUser(user);
                     return p;
                 });
 
-        if (profile.getSubscribeCreatorIds() == null)
-            profile.setSubscribeCreatorIds(new ArrayList<>());
-
-        if (!profile.getSubscribeCreatorIds().contains(creatorId)) {
-            profile.getSubscribeCreatorIds().add(creatorId);
+        // 初始化关注列表
+        if (userProfile.getSubscribeCreatorIds() == null) {
+            userProfile.setSubscribeCreatorIds(new ArrayList<>());
         }
 
-        profile.setFollowCount(profile.getSubscribeCreatorIds().size());
+        // 已关注，直接返回（防止重复）
+        if (userProfile.getSubscribeCreatorIds().contains(creatorId)) {
+            return;
+        }
 
-        profileRepository.save(profile);
+        // 2️⃣ 查 B（被关注者）
+        User creator = userRepository.findById(creatorId)
+                .orElseThrow(() -> new RuntimeException("被关注用户不存在"));
+
+        UserProfile creatorProfile = profileRepository.findById(creatorId)
+                .orElseGet(() -> {
+                    UserProfile p = new UserProfile();
+                    p.setUser(creator);
+                    return p;
+                });
+
+        // 3️⃣ 执行业务更新
+        userProfile.getSubscribeCreatorIds().add(creatorId);
+        userProfile.setFollowCount(userProfile.getSubscribeCreatorIds().size());
+
+        creatorProfile.setFansCount(
+                (creatorProfile.getFansCount() == null ? 0 : creatorProfile.getFansCount()) + 1
+        );
+
+        // 4️⃣ 保存
+        profileRepository.save(userProfile);
+        profileRepository.save(creatorProfile);
     }
+
 
     /**
      * 移除订阅
      */
+    @Transactional
     public void removeSubscribe(Long userId, Long creatorId) {
 
-        UserProfile profile = profileRepository.findById(userId).orElse(null);
-        if (profile != null && profile.getSubscribeCreatorIds() != null) {
+        UserProfile userProfile = profileRepository.findById(userId).orElse(null);
+        UserProfile creatorProfile = profileRepository.findById(creatorId).orElse(null);
 
-            profile.getSubscribeCreatorIds().remove(creatorId);
-
-            profile.setFollowCount(profile.getSubscribeCreatorIds().size());
-
-            profileRepository.save(profile);
+        if (userProfile == null || creatorProfile == null ||
+                userProfile.getSubscribeCreatorIds() == null) {
+            return;
         }
+
+        // 未关注，直接返回
+        if (!userProfile.getSubscribeCreatorIds().contains(creatorId)) {
+            return;
+        }
+
+        // 1️⃣ A 取消关注 B
+        userProfile.getSubscribeCreatorIds().remove(creatorId);
+        userProfile.setFollowCount(userProfile.getSubscribeCreatorIds().size());
+
+        // 2️⃣ B 粉丝数 -1（防止负数）
+        int fans = creatorProfile.getFansCount() == null ? 0 : creatorProfile.getFansCount();
+        creatorProfile.setFansCount(Math.max(0, fans - 1));
+
+        profileRepository.save(userProfile);
+        profileRepository.save(creatorProfile);
     }
+
 
     /**
      * 添加收藏

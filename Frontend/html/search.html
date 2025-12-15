@@ -143,7 +143,7 @@
 
       /* 课程卡片悬停效果增强 */
       .channel-card:hover .channel-thumbnail::before {
-          content: ${course.type === 'live' ? '"观看直播"' : '"开始学习"'};
+          content: "开始学习";
           position: absolute;
           top: 50%;
           left: 50%;
@@ -155,6 +155,12 @@
           font-size: 14px;
           font-weight: bold;
           z-index: 2;
+      }
+
+      /* 直播课程悬停显示不同文字 */
+      .channel-card[data-course-type="live"]:hover .channel-thumbnail::before {
+          content: "观看直播";
+          background-color: rgba(255, 107, 107, 0.9);
       }
     </style>
 </head>

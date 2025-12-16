@@ -1055,17 +1055,38 @@ loadTrack(currentIndex);
       <script>
       (function(){
         // 简单 mock 数据，可替换为后端 API 请求
-        const sampleGroups = [
+        const defaultGroups = [
           { id:1, name:'英语口语练习群', desc:'口语练习与资源分享', members:128, category:'学习', inviteCode:'ORAL2024' },
           { id:2, name:'托福备考群', desc:'每天早起一起学习', members:64, category:'其他', inviteCode:'TOEFL888' },
           { id:3, name:'商务英语交流', desc:'长篇材料讨论', members:32, category:'groups', inviteCode:'BIZ12345' },
           { id:4, name:'英文原版阅读', desc:'一起读英文原版书籍', members:56, category:'学习', inviteCode:'BOOK2024' }
         ];
+        
+        // 从 sessionStorage 加载共享群组数据
+        let sharedGroups = [];
+        try {
+            const saved = sessionStorage.getItem('sharedGroups');
+            if (saved) {
+                sharedGroups = JSON.parse(saved);
+            }
+        } catch(e) { console.log('Failed to load shared groups'); }
+        
+        // 合并默认群组和共享群组
+        const sampleGroups = [...defaultGroups, ...sharedGroups];
+        
         // expose for other scripts/pages
         window.sampleGroups = sampleGroups;
+        
+        // 保存共享群组到 sessionStorage
+        function saveSharedGroups() {
+            const newGroups = sampleGroups.filter(g => g.id > 4); // 只保存新创建的
+            sessionStorage.setItem('sharedGroups', JSON.stringify(newGroups));
+        }
 
         // 已加入的群组ID（每次刷新恢复初始状态）
         const myJoinedGroupIds = new Set([1, 2, 3]);
+        // 加载共享群组的已加入状态
+        sharedGroups.forEach(g => myJoinedGroupIds.add(g.id));
         
         // Save joined groups (当前会话有效)
         function saveJoinedGroups(){
@@ -1790,6 +1811,9 @@ loadTrack(currentIndex);
           
           // 添加到群组列表
           sampleGroups.push(newGroup);
+          
+          // 保存到 sessionStorage 以便 channel2.html 同步
+          saveSharedGroups();
           
           // 自动加入自己创建的群组
           myJoinedGroupIds.add(newId);

@@ -593,6 +593,238 @@
           .pv-right { min-width: 0; }
           .pv-inner { grid-template-columns: auto 1fr auto; column-gap: 10px; padding: 0 12px; }
         }
+
+        /* 创建群组模态框样式 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay[style*="flex"] {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: #fff;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 480px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            transform: scale(0.9) translateY(20px);
+            transition: transform 0.3s ease;
+            overflow: hidden;
+        }
+
+        .modal-overlay[style*="flex"] .modal {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(135deg, #ff6b35 0%, #ff9d6f 100%);
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+            margin: 0;
+        }
+
+        .close-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            font-size: 24px;
+            color: #fff;
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .modal-content {
+            padding: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.2s;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #ff6b35;
+            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: #999;
+        }
+
+        /* 群组类型选择 */
+        .group-type-options {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .group-type-option {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .group-type-option:hover {
+            border-color: #ff9d6f;
+            background: #fff9f5;
+        }
+
+        .group-type-option.selected {
+            border-color: #ff6b35;
+            background: linear-gradient(135deg, rgba(255, 107, 53, 0.1) 0%, rgba(255, 157, 111, 0.1) 100%);
+        }
+
+        .group-type-option i {
+            font-size: 24px;
+            color: #ff6b35;
+            margin-bottom: 8px;
+        }
+
+        .group-type-option span {
+            display: block;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .modal-footer {
+            padding: 16px 24px 24px;
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .btn-cancel,
+        .btn-create {
+            padding: 12px 28px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-cancel {
+            background: #f5f5f5;
+            border: 1px solid #e0e0e0;
+            color: #666;
+        }
+
+        .btn-cancel:hover {
+            background: #eee;
+        }
+
+        .btn-create {
+            background: linear-gradient(135deg, #ff6b35 0%, #ff9d6f 100%);
+            border: none;
+            color: #fff;
+        }
+
+        .btn-create:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+        }
+
+        .btn-create:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* 成功提示 */
+        .create-success-toast {
+            position: fixed;
+            bottom: 120px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%);
+            color: #fff;
+            padding: 14px 28px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 100001;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(76, 175, 80, 0.3);
+        }
+
+        .create-success-toast.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .create-success-toast i {
+            margin-right: 8px;
+        }
     </style>
 </head>
 <body>
@@ -1048,6 +1280,97 @@
                 todayTopic: "Literary Analysis Techniques"
             }
         };
+        
+        // 从 sessionStorage 加载共享群组数据（从 channel.html 创建的）
+        function loadSharedGroups() {
+            try {
+                const saved = sessionStorage.getItem('sharedGroups');
+                if (saved) {
+                    const sharedGroups = JSON.parse(saved);
+                    sharedGroups.forEach(g => {
+                        if (!groupData[g.id]) {
+                            groupData[g.id] = {
+                                name: g.name,
+                                description: g.desc || '欢迎加入！',
+                                memberCount: g.members || 1,
+                                messages: [
+                                    { sender: "系统", text: `欢迎来到「${g.name}」！🌟`, time: new Date().toLocaleTimeString('zh-CN', {hour: '2-digit', minute:'2-digit'}), isSystem: true }
+                                ],
+                                onlineMembers: ["我"],
+                                allMembers: ["我"],
+                                unreadCount: 0,
+                                todayTopic: "暂无话题"
+                            };
+                            // 添加到左侧群组列表
+                            addGroupToSidebar(g.id, g.name, g.desc);
+                        }
+                    });
+                }
+                
+                // 加载 channel2 创建的群组
+                const channel2Groups = sessionStorage.getItem('channel2Groups');
+                if (channel2Groups) {
+                    const groups = JSON.parse(channel2Groups);
+                    groups.forEach(g => {
+                        if (!groupData[g.id]) {
+                            groupData[g.id] = g.data;
+                            addGroupToSidebar(g.id, g.data.name, g.data.description);
+                        }
+                    });
+                }
+            } catch(e) { console.log('Failed to load shared groups:', e); }
+        }
+        
+        // 添加群组到侧边栏
+        function addGroupToSidebar(groupId, groupName, groupDesc) {
+            const typeEmojis = ['🎤', '📚', '🎓', '⭐', '💬'];
+            const randomEmoji = typeEmojis[Math.floor(Math.random() * typeEmojis.length)];
+            const avatarColors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD'];
+            const randomColor = avatarColors[Math.floor(Math.random() * avatarColors.length)];
+            
+            const groupItemHTML = `
+                <div class="group-avatar-placeholder" style="width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, ${randomColor}, ${randomColor}99); display: flex; align-items: center; justify-content: center; font-size: 20px; margin-right: 12px; flex-shrink: 0;">${randomEmoji}</div>
+                <div class="group-info">
+                    <h4>${groupName}</h4>
+                    <p>最新：${groupDesc ? groupDesc.substring(0, 15) + '...' : '欢迎加入！'}</p>
+                </div>
+                <span class="message-time">新</span>
+            `;
+            
+            const desktopGroupItems = document.querySelector('.group-items');
+            if (desktopGroupItems && !desktopGroupItems.querySelector(`[data-group-id="${groupId}"]`)) {
+                const newItem = document.createElement('div');
+                newItem.className = 'group-item';
+                newItem.setAttribute('data-group-id', groupId);
+                newItem.setAttribute('onclick', `switchGroup('${groupId}')`);
+                newItem.innerHTML = groupItemHTML;
+                desktopGroupItems.appendChild(newItem);
+            }
+            
+            const mobileGroupList = document.querySelector('.group-list-mobile');
+            if (mobileGroupList && !mobileGroupList.querySelector(`[data-group-id="${groupId}"]`)) {
+                const newItem = document.createElement('div');
+                newItem.className = 'group-item';
+                newItem.setAttribute('data-group-id', groupId);
+                newItem.setAttribute('onclick', `switchGroup('${groupId}')`);
+                newItem.innerHTML = groupItemHTML;
+                mobileGroupList.appendChild(newItem);
+            }
+        }
+        
+        // 保存 channel2 创建的群组到 sessionStorage
+        function saveChannel2Groups() {
+            const channel2Groups = [];
+            Object.keys(groupData).forEach(id => {
+                if (id > 4 || String(id).startsWith('group_')) {
+                    channel2Groups.push({ id: id, data: groupData[id] });
+                }
+            });
+            sessionStorage.setItem('channel2Groups', JSON.stringify(channel2Groups));
+        }
+        
+        // 页面加载时加载共享群组
+        loadSharedGroups();
 
         let currentGroupId = 1;
 
@@ -1422,95 +1745,211 @@
             });
         });
 
-        // 创建群组模态框（原样保留）
+        // 创建群组模态框
         const createGroupModal = document.createElement('div');
         createGroupModal.className = 'modal-overlay';
         createGroupModal.style.display = 'none';
         createGroupModal.innerHTML = `
             <div class="modal">
                 <div class="modal-header">
-                    <h2 class="modal-title">创建学习群组</h2>
+                    <h2 class="modal-title"><i class="fas fa-users"></i> 创建学习群组</h2>
                     <button class="close-btn">&times;</button>
                 </div>
                 <div class="modal-content">
                     <div class="form-group">
-                        <label for="groupName">群组名称</label>
-                        <input type="text" id="groupName" placeholder="请输入群组名称" required>
+                        <label for="groupName"><i class="fas fa-edit"></i> 群组名称 <span style="color: #ff6b35;">*</span></label>
+                        <input type="text" id="groupName" placeholder="例如：英语口语练习群" maxlength="20" required>
                     </div>
                     <div class="form-group">
-                        <label for="groupDescription">群组描述</label>
-                        <textarea id="groupDescription" placeholder="请输入群组描述（可选）"></textarea>
+                        <label><i class="fas fa-th-large"></i> 群组类型</label>
+                        <div class="group-type-options">
+                            <div class="group-type-option selected" data-type="speaking">
+                                <i class="fas fa-microphone"></i>
+                                <span>口语练习</span>
+                            </div>
+                            <div class="group-type-option" data-type="reading">
+                                <i class="fas fa-book-open"></i>
+                                <span>阅读交流</span>
+                            </div>
+                            <div class="group-type-option" data-type="exam">
+                                <i class="fas fa-graduation-cap"></i>
+                                <span>考试备战</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="groupDescription"><i class="fas fa-align-left"></i> 群组简介</label>
+                        <textarea id="groupDescription" placeholder="介绍一下这个群组的目标和规则..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="groupTopic"><i class="fas fa-comments"></i> 今日话题（可选）</label>
+                        <input type="text" id="groupTopic" placeholder="例如：Travel and Transportation">
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button class="btn-cancel">取消</button>
-                    <button class="btn-create">创建</button>
+                    <button class="btn-create"><i class="fas fa-plus"></i> 创建群组</button>
                 </div>
             </div>
         `;
         document.body.appendChild(createGroupModal);
 
+        // 创建成功提示
+        const successToast = document.createElement('div');
+        successToast.className = 'create-success-toast';
+        successToast.innerHTML = '<i class="fas fa-check-circle"></i> 群组创建成功！';
+        document.body.appendChild(successToast);
+
+        // 群组类型选择
+        let selectedGroupType = 'speaking';
+        createGroupModal.querySelectorAll('.group-type-option').forEach(option => {
+            option.addEventListener('click', function() {
+                createGroupModal.querySelectorAll('.group-type-option').forEach(o => o.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedGroupType = this.getAttribute('data-type');
+            });
+        });
+
         document.getElementById('createGroupBtn').addEventListener('click', function() {
+            // 重置表单
+            createGroupModal.querySelector('#groupName').value = '';
+            createGroupModal.querySelector('#groupDescription').value = '';
+            createGroupModal.querySelector('#groupTopic').value = '';
+            createGroupModal.querySelectorAll('.group-type-option').forEach(o => o.classList.remove('selected'));
+            createGroupModal.querySelector('.group-type-option').classList.add('selected');
+            selectedGroupType = 'speaking';
             createGroupModal.style.display = 'flex';
         });
+
         createGroupModal.querySelector('.close-btn').addEventListener('click', function() {
             createGroupModal.style.display = 'none';
         });
+
         createGroupModal.querySelector('.btn-cancel').addEventListener('click', function() {
             createGroupModal.style.display = 'none';
         });
+
         createGroupModal.addEventListener('click', function(e) {
             if (e.target === createGroupModal) {
                 createGroupModal.style.display = 'none';
             }
         });
-        createGroupModal.querySelector('.btn-create').addEventListener('click', function() {
-            const groupName = createGroupModal.querySelector('#groupName').value;
-            const groupDescription = createGroupModal.querySelector('#groupDescription').value;
-            if (groupName) {
-                const newGroupId = 'group_' + Date.now();
-                groupData[newGroupId] = {
-                    name: groupName,
-                    description: groupDescription,
-                    memberCount: 3,
-                    messages: [
-                        { sender: "系统", text: `欢迎加入 ${groupName} 群组！🌟`, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}), isSystem: true }
-                    ],
-                    onlineMembers: ['您', '其他成员1', '其他成员2'],
-                    allMembers: ['您', '其他成员1', '其他成员2'],
-                    unreadCount: 1,
-                    todayTopic: "暂无话题"
-                };
 
-                const avatarId = Math.floor(Math.random() * 4) + 1;
-                const avatarSrc = `images/english-group${avatarId}.png`;
-                const groupItemHTML = `
-                    <img src="${avatarSrc}" alt="群组头像">
-                    <div class="group-info">
-                        <h4>${groupName}</h4>
-                        <p>${groupDescription || '暂无描述'}</p>
-                    </div>
-                `;
-                const mobileGroupList = document.querySelector('.group-list-mobile');
-                if (mobileGroupList) {
-                    const newMobileGroupItem = document.createElement('div');
-                    newMobileGroupItem.className = 'group-item';
-                    newMobileGroupItem.setAttribute('onclick', `switchGroup('${newGroupId}')`);
-                    newMobileGroupItem.innerHTML = groupItemHTML;
-                    mobileGroupList.appendChild(newMobileGroupItem);
-                }
-                const desktopGroupItems = document.querySelector('.group-items');
-                if (desktopGroupItems) {
-                    const newDesktopGroupItem = document.createElement('div');
-                    newDesktopGroupItem.className = 'group-item';
-                    newDesktopGroupItem.setAttribute('onclick', `switchGroup('${newGroupId}')`);
-                    newDesktopGroupItem.innerHTML = groupItemHTML;
-                    desktopGroupItems.appendChild(newDesktopGroupItem);
-                }
+        // ESC 键关闭
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && createGroupModal.style.display === 'flex') {
                 createGroupModal.style.display = 'none';
-            } else {
-                alert('请输入群组名称');
             }
+        });
+
+        createGroupModal.querySelector('.btn-create').addEventListener('click', function() {
+            const groupName = createGroupModal.querySelector('#groupName').value.trim();
+            const groupDescription = createGroupModal.querySelector('#groupDescription').value.trim();
+            const groupTopic = createGroupModal.querySelector('#groupTopic').value.trim();
+
+            if (!groupName) {
+                createGroupModal.querySelector('#groupName').style.borderColor = '#ff6b35';
+                createGroupModal.querySelector('#groupName').focus();
+                return;
+            }
+
+            const newGroupId = 'group_' + Date.now();
+            const typeEmojis = {
+                'speaking': '🎤',
+                'reading': '📚',
+                'exam': '🎓'
+            };
+
+            groupData[newGroupId] = {
+                name: groupName,
+                description: groupDescription || '欢迎加入，一起学习进步！',
+                memberCount: 1,
+                messages: [
+                    { 
+                        sender: "系统", 
+                        text: `${typeEmojis[selectedGroupType]} 欢迎来到「${groupName}」！这是一个${selectedGroupType === 'speaking' ? '口语练习' : selectedGroupType === 'reading' ? '阅读交流' : '考试备战'}群组。`, 
+                        time: new Date().toLocaleTimeString('zh-CN', {hour: '2-digit', minute:'2-digit'}), 
+                        isSystem: true 
+                    }
+                ],
+                onlineMembers: ['我'],
+                allMembers: ['我'],
+                unreadCount: 0,
+                todayTopic: groupTopic || '暂无话题'
+            };
+
+            // 添加到群组列表
+            const avatarColors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD'];
+            const randomColor = avatarColors[Math.floor(Math.random() * avatarColors.length)];
+            const groupEmoji = typeEmojis[selectedGroupType];
+
+            const groupItemHTML = `
+                <div class="group-avatar-placeholder" style="width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, ${randomColor}, ${randomColor}99); display: flex; align-items: center; justify-content: center; font-size: 20px; margin-right: 12px; flex-shrink: 0;">${groupEmoji}</div>
+                <div class="group-info">
+                    <h4>${groupName}</h4>
+                    <p>最新：${groupDescription ? groupDescription.substring(0, 20) + '...' : '欢迎加入！'}</p>
+                </div>
+                <span class="message-time">刚刚</span>
+            `;
+
+            // 添加到桌面端列表
+            const desktopGroupItems = document.querySelector('.group-items');
+            if (desktopGroupItems) {
+                const newDesktopGroupItem = document.createElement('div');
+                newDesktopGroupItem.className = 'group-item';
+                newDesktopGroupItem.setAttribute('data-group-id', newGroupId);
+                newDesktopGroupItem.setAttribute('onclick', `switchGroup('${newGroupId}')`);
+                newDesktopGroupItem.innerHTML = groupItemHTML;
+                // 插入到列表顶部
+                desktopGroupItems.insertBefore(newDesktopGroupItem, desktopGroupItems.firstChild);
+            }
+
+            // 添加到移动端列表
+            const mobileGroupList = document.querySelector('.group-list-mobile');
+            if (mobileGroupList) {
+                const newMobileGroupItem = document.createElement('div');
+                newMobileGroupItem.className = 'group-item';
+                newMobileGroupItem.setAttribute('data-group-id', newGroupId);
+                newMobileGroupItem.setAttribute('onclick', `switchGroup('${newGroupId}')`);
+                newMobileGroupItem.innerHTML = groupItemHTML;
+                mobileGroupList.insertBefore(newMobileGroupItem, mobileGroupList.firstChild);
+            }
+
+            // 关闭模态框
+            createGroupModal.style.display = 'none';
+            
+            // 保存到 sessionStorage 以便同步到 channel.html
+            saveChannel2Groups();
+            
+            // 同时保存到 sharedGroups 格式，让 channel.html 能识别
+            try {
+                let sharedGroups = [];
+                const saved = sessionStorage.getItem('sharedGroups');
+                if (saved) sharedGroups = JSON.parse(saved);
+                
+                // 添加新群组到 sharedGroups（使用 channel.html 的格式）
+                const newSharedGroup = {
+                    id: newGroupId,
+                    name: groupName,
+                    desc: groupDescription || '欢迎加入，一起学习进步！',
+                    members: 1,
+                    category: selectedGroupType === 'speaking' ? '口语' : selectedGroupType === 'reading' ? '阅读' : '考试',
+                    inviteCode: 'NEW' + Math.random().toString(36).substring(2, 6).toUpperCase()
+                };
+                sharedGroups.push(newSharedGroup);
+                sessionStorage.setItem('sharedGroups', JSON.stringify(sharedGroups));
+            } catch(e) { console.log('Failed to save shared group:', e); }
+
+            // 显示成功提示
+            successToast.classList.add('show');
+            setTimeout(() => {
+                successToast.classList.remove('show');
+            }, 2500);
+
+            // 自动切换到新群组
+            setTimeout(() => {
+                switchGroup(newGroupId);
+            }, 500);
         });
     </script>
 

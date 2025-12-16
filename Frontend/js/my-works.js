@@ -8,6 +8,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 绑定事件
     bindEvents();
+    
+    // 加载草稿
+    loadDrafts();
+    
+    // 初始化更新作品统计数据
+    updateWorkStats();
 });
 
 function initMyWorksPage() {
@@ -16,6 +22,148 @@ function initMyWorksPage() {
 
     // 初始化过滤选项
     initFilterOptions();
+}
+
+function loadDrafts() {
+    // 从localStorage获取所有草稿
+    const drafts = getSavedDrafts();
+    
+    if (drafts.length > 0) {
+        // 渲染草稿卡片
+        renderDraftCards(drafts);
+        // 重新检查空状态
+        checkEmptyState();
+        // 应用过滤
+        applyFilters();
+        // 更新作品统计数据
+        updateWorkStats();
+    }
+}
+
+function getSavedDrafts() {
+    // 从localStorage获取所有草稿
+    const drafts = [];
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key.startsWith('draft_')) {
+            try {
+                const draft = JSON.parse(localStorage.getItem(key));
+                drafts.push(draft);
+            } catch (e) {
+                console.error('解析草稿失败:', e);
+            }
+        }
+    }
+    return drafts;
+}
+
+function renderDraftCards(drafts) {
+    const worksGrid = document.querySelector('#worksGrid');
+    
+    drafts.forEach(draft => {
+        // 创建草稿卡片
+        const draftCard = createDraftCard(draft);
+        // 添加到作品网格
+        worksGrid.appendChild(draftCard);
+    });
+}
+
+function createDraftCard(draft) {
+    const card = document.createElement('div');
+    card.className = 'work-card';
+    card.setAttribute('data-work-id', draft.id || 'draft_' + new Date().getTime());
+    card.setAttribute('data-status', 'draft');
+    card.setAttribute('data-category', draft.category || 'audio');
+    
+    // 构建卡片HTML
+    card.innerHTML = `
+        <div class="work-status draft">草稿</div>
+        <div class="work-thumbnail">
+            <div class="thumbnail-overlay">
+                <span class="play-icon">▶</span>
+                <span class="audio-duration">${draft.duration || '00:00'}</span>
+            </div>
+        </div>
+        <div class="work-info">
+            <h3 class="work-title">${draft.title || '未命名草稿'}</h3>
+            <div class="work-meta">
+                <span class="views-count">草稿</span>
+                <span class="rating">-</span>
+            </div>
+            <div class="work-stats-small">
+                <div class="stat-small">
+                    <i class="fas fa-clock"></i>
+                    <span>${formatDate(draft.lastSaved)}</span>
+                </div>
+                <div class="stat-small">
+                    <i class="fas fa-file-alt"></i>
+                    <span>草稿</span>
+                </div>
+            </div>
+            <div class="work-actions">
+                <button class="action-btn-small edit" onclick="editDraft('${draft.id}')">
+                    <i class="fas fa-edit"></i> 编辑
+                </button>
+                <button class="action-btn-small" onclick="publishDraft('${draft.id}')">
+                    <i class="fas fa-publish"></i> 发布
+                </button>
+                <button class="action-btn-small delete" onclick="deleteDraft('${draft.id}')">
+                    <i class="fas fa-trash"></i> 删除
+                </button>
+            </div>
+        </div>
+    `;
+    
+    return card;
+}
+
+function formatDate(timestamp) {
+    if (!timestamp) return '未保存';
+    const date = new Date(timestamp);
+    return date.toLocaleString();
+}
+
+function editDraft(draftId) {
+    // 跳转到编辑草稿页面
+    window.location.href = `upload-audio.html?mode=draft&id=${draftId}`;
+}
+
+function publishDraft(draftId) {
+    if (confirm('确定要发布这个草稿吗？')) {
+        // 从localStorage获取草稿
+        const draft = JSON.parse(localStorage.getItem(draftId));
+        if (draft) {
+            // 模拟发布操作
+            alert('草稿已发布');
+            // 删除草稿
+            localStorage.removeItem(draftId);
+            // 移除卡片
+            const card = document.querySelector(`[data-work-id="${draftId}"]`);
+            if (card) {
+                card.remove();
+            }
+            // 检查空状态
+            checkEmptyState();
+            // 更新作品统计数据
+            updateWorkStats();
+        }
+    }
+}
+
+function deleteDraft(draftId) {
+    if (confirm('确定要删除这个草稿吗？删除后无法恢复。')) {
+        // 删除草稿
+        localStorage.removeItem(draftId);
+        // 移除卡片
+        const card = document.querySelector(`[data-work-id="${draftId}"]`);
+        if (card) {
+            card.remove();
+            // 检查空状态
+            checkEmptyState();
+            // 更新作品统计数据
+            updateWorkStats();
+        }
+    }
 }
 
 function bindEvents() {
@@ -154,6 +302,29 @@ function checkEmptyState() {
     }
 }
 
+function updateWorkStats() {
+    // 计算已发布作品数量
+    const publishedWorks = document.querySelectorAll('.work-card[data-status="published"]');
+    const publishedCount = publishedWorks.length;
+    
+    // 计算草稿数量（包括页面上的和本地存储中的）
+    const draftWorks = document.querySelectorAll('.work-card[data-status="draft"]');
+    const draftCount = draftWorks.length;
+    
+    // 计算审核中作品数量
+    const pendingWorks = document.querySelectorAll('.work-card[data-status="pending"]');
+    const pendingCount = pendingWorks.length;
+    
+    // 计算作品总数
+    const totalCount = publishedCount + draftCount + pendingCount;
+    
+    // 更新统计数据
+    document.querySelector('.stat-item:nth-child(1) .stat-value').textContent = totalCount;
+    document.querySelector('.stat-item:nth-child(2) .stat-value').textContent = publishedCount;
+    document.querySelector('.stat-item:nth-child(3) .stat-value').textContent = draftCount;
+    document.querySelector('.stat-item:nth-child(4) .stat-value').textContent = pendingCount;
+}
+
 function initFilterOptions() {
     // 可以在这里初始化更多过滤选项
     console.log('过滤选项已初始化');
@@ -203,8 +374,8 @@ function uploadNewWork() {
 }
 
 function createNewDraft() {
-    alert('创建新草稿');
-    // 实际应用中可以打开创建草稿的模态框或跳转到编辑页面
+    // 跳转到带有draft参数的上传页面，实现创建新草稿功能
+    window.location.href = 'upload-audio.html?mode=draft';
 }
 
 function manageWorks() {

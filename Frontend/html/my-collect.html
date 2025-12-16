@@ -165,10 +165,10 @@
     <main class="main-content">
         <section class="user-info">
             <div class="avatar-wrapper">
-                <div class="avatar"></div>
+                <div class="avatar" id="userAvatar"></div>
             </div>
             <div class="user-detail">
-                <div class="username">用户名</div>
+                <div class="username" id="displayUsername">用户名</div>
                 <div class="identity">身份</div>
                 <div class="stats">
                     <span>关注 <b>0</b></span>
@@ -589,6 +589,53 @@
 
       /* 初始化第一首 */
       loadTrack(currentIndex);
+    })();
+    </script>
+
+    <!-- 头像同步脚本 -->
+    <script>
+    (function() {
+        // 从 sessionStorage 加载用户资料
+        function syncUserProfile() {
+            const saved = sessionStorage.getItem('userProfile');
+            if (saved) {
+                const userProfile = JSON.parse(saved);
+                
+                // 更新用户名
+                const usernameEl = document.getElementById('displayUsername');
+                if (usernameEl) {
+                    usernameEl.textContent = userProfile.username;
+                }
+                
+                // 更新头像
+                const avatarEl = document.getElementById('userAvatar');
+                if (avatarEl) {
+                    if (userProfile.avatarType === 'custom' && userProfile.avatarUrl) {
+                        avatarEl.style.background = `url('${userProfile.avatarUrl}') center/cover no-repeat`;
+                        avatarEl.textContent = '';
+                    } else {
+                        const lightenColor = (color, percent) => {
+                            const num = parseInt(color.replace('#', ''), 16);
+                            const amt = Math.round(2.55 * percent);
+                            const R = (num >> 16) + amt;
+                            const G = (num >> 8 & 0x00FF) + amt;
+                            const B = (num & 0x0000FF) + amt;
+                            return '#' + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
+                                (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 +
+                                (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1);
+                        };
+                        avatarEl.style.background = `linear-gradient(135deg, ${userProfile.avatarColor}, ${lightenColor(userProfile.avatarColor, 30)})`;
+                        avatarEl.textContent = userProfile.avatarEmoji || '';
+                        avatarEl.style.display = 'flex';
+                        avatarEl.style.alignItems = 'center';
+                        avatarEl.style.justifyContent = 'center';
+                        avatarEl.style.fontSize = '28px';
+                    }
+                }
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', syncUserProfile);
     })();
     </script>
 </body>

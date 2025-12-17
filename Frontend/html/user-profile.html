@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户主页 - 星之声</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="../js/search.js"></script>
+    <style>
+        /* 为固定播放栏预留空间 */
+        body { 
+            padding-bottom: 96px; 
+            background-color: #f8f9fa;
+        }
+
+        /* PlayBar 样式（与 my-collect.html 一致） */
+        .pv-player-bar {
+          position: fixed; left: 0; right: 0; bottom: 0;
+          width: 100%; height: 96px; background: #ffffff;
+          border-top: 1px solid #e0e0e0; box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+          z-index: 29999; display: flex; align-items: center; user-select: none; pointer-events: auto;
+        }
+        .pv-inner {
+          width: 100%; max-width: 1200px; margin: 0 auto;
+          display: grid; grid-template-columns: auto 1fr auto; align-items: center;
+          column-gap: 16px; padding: 0 24px; height: 100%;
+        }
+        .pv-left { display: inline-flex; align-items: center; gap: 12px; min-width: 240px; }
+        .pv-cover { width: 52px; height: 52px; border-radius: 8px; background: #eee no-repeat center/cover; box-shadow: 0 2px 6px rgba(0,0,0,0.1); flex-shrink: 0; }
+        .pv-meta { display: flex; flex-direction: column; min-width: 0; }
+        .pv-title { font-size: 16px; font-weight: 700; color: #222; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .pv-artist { font-size: 12px; color: #666; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .pv-center { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-width: 0; }
+        .pv-controls { display: inline-flex; align-items: center; gap: 18px; }
+        .ctrl-btn, .mode-btn, .rate-btn { background: transparent; border: none; cursor: pointer; color: #444; font-size: 18px; padding: 6px; display: inline-flex; align-items: center; justify-content: center; transition: color 0.2s; }
+        .ctrl-btn:hover, .mode-btn:hover, .rate-btn:hover { color: #ff8c00; }
+        .play-btn { width: 44px; height: 44px; border-radius: 50%; background: #ff8c00; color: #fff; border: none; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 10px rgba(255,140,0,0.30); transition: transform 0.1s, background 0.2s; }
+        .play-btn:hover { background: #e67e00; transform: scale(1.05); }
+        .icon { width: 18px; height: 18px; fill: currentColor; }
+        .pv-progress-row { display: flex; align-items: center; gap: 12px; width: 100%; }
+        .time.small { font-size: 12px; color: #888; width: 48px; text-align: center; font-variant-numeric: tabular-nums; }
+        .pv-progress { position: relative; flex: 1; height: 6px; background: #eee; border-radius: 3px; cursor: pointer; touch-action: none; }
+        .pv-progress-fill { position: absolute; left: 0; top: 0; bottom: 0; background: #ff8c00; border-radius: 3px; width: 0%; pointer-events: none; }
+        .pv-knob { position: absolute; top: 50%; right: -6px; transform: translateY(-50%); width: 12px; height: 12px; background: #fff; border: 2px solid #ff8c00; border-radius: 50%; box-shadow: 0 1px 4px rgba(0,0,0,0.2); opacity: 0; transition: opacity 0.2s; pointer-events: none; }
+        .pv-right { display: inline-flex; align-items: center; justify-content: flex-end; gap: 12px; min-width: 240px; }
+        .pv-volume { width: 140px; height: 20px; display: flex; align-items: center; cursor: pointer; position: relative; }
+        .pv-volume-bar { width: 100%; height: 4px; background: #eee; border-radius: 2px; position: relative; overflow: visible; pointer-events: none; }
+        .pv-volume-fill { height: 100%; background: #888; width: 50%; border-radius: 2px; position: relative; }
+        .playlist-panel { background:#fff; border:1px solid #eee; border-radius:8px; box-shadow:0 8px 30px rgba(0,0,0,0.12); overflow:auto; padding:8px; position:absolute; bottom:110px; right:24px; display:none; }
+        .playlist-item { padding:8px 12px; cursor:pointer; }
+        .playlist-item.active { background:#fff3e0; color:#ff8c00; font-weight:600; }
+        @media (max-width: 900px) { .pv-left{min-width:0;} .pv-right{min-width:0;} .pv-inner{grid-template-columns:auto 1fr auto; column-gap:10px; padding:0 12px;} }
+
+        /* 用户主页特有样式 - 保持原有结构但统一视觉风格 */
+        .user-profile-main {
+            padding: 20px 0 40px;
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* 用户信息头部 - 保持原有结构但更新样式 */
+        .profile-header {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+            padding: 24px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background-color: #f0f0f0;
+            overflow: hidden;
+            border: 4px solid #ff8c00;
+            box-shadow: 0 4px 12px rgba(255,140,0,0.3);
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-info {
+            flex: 1;
+        }
+
+        .profile-username {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #222;
+        }
+
+        .profile-description {
+            color: #666;
+            margin-bottom: 16px;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        .profile-stats {
+            display: flex;
+            gap: 32px;
+            margin-bottom: 20px;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .stat-number {
+            font-size: 20px;
+            font-weight: 700;
+            color: #ff8c00;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+            margin-top: 2px;
+        }
+
+        .profile-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .follow-btn, .message-btn {
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .follow-btn {
+            background-color: #ff8c00;
+            color: #ffffff;
+        }
+
+        .follow-btn:hover {
+            background-color: #e67e00;
+        }
+
+        .message-btn {
+            background-color: #ffffff;
+            color: #ff8c00;
+            border: 2px solid #ff8c00;
+        }
+
+        .message-btn:hover {
+            background-color: #fff3e0;
+        }
+
+        /* 用户内容区域 - 保持原有结构但更新样式 */
+        .profile-content {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+            padding: 24px;
+        }
+
+        /* 内容标签页 - 改为与 my-collect.html 一致的标签样式 */
+        .content-tabs {
+            display: flex;
+            border-bottom: 1px solid #f0f0f0;
+            margin-bottom: 24px;
+            padding: 0;
+            overflow: hidden;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .tab-item {
+            flex: 1;
+            padding: 16px 20px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .tab-item.active {
+            color: #ff8c00;
+            background: #fff3e0;
+        }
+
+        .tab-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #ff8c00;
+        }
+
+        .tab-item:hover {
+            color: #ff8c00;
+            background: #fff9f0;
+        }
+
+        /* 频道列表 - 保持原有结构但更新样式 */
+        .channel-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+        }
+
+        .channel-card {
+            border: 2px solid #ff8c00;
+            border-radius: 18px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 80px;
+        }
+
+        .channel-card:hover {
+            background-color: #fff3e0;
+        }
+
+        .channel-info {
+            padding: 12px;
+            width: 100%;
+        }
+
+        .channel-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 0;
+            color: #222;
+            line-height: 1.4;
+            text-align: center;
+        }
+
+        .play-btn, .collect-btn {
+            flex: 1;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .play-btn {
+            background-color: #ff8c00;
+            color: #ffffff;
+        }
+
+        .play-btn:hover {
+            background-color: #e67e00;
+        }
+
+        .collect-btn {
+            background-color: #f0f0f0;
+            color: #666;
+        }
+
+        .collect-btn:hover {
+            background-color: #e0e0e0;
+            color: #ff8c00;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .profile-actions {
+                justify-content: center;
+            }
+
+            .profile-stats {
+                justify-content: center;
+                gap: 20px;
+            }
+
+            .stat-item {
+                align-items: center;
+            }
+
+            .channel-list {
+                grid-template-columns: 1fr;
+            }
+
+            .content-tabs {
+                flex-direction: column;
+            }
+
+            .tab-item {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 音频元素 -->
+    <audio id="audioPlayer" controls style="display: none;">
+        <source src="" type="audio/mpeg">
+        您的浏览器不支持音频播放
+    </audio>
+
+    <!-- 顶部导航栏 -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-img"></div>
+            <span class="logo-text">星之声</span>
+        </div>
+        <nav class="main-nav">
+            <a href="index.html" class="nav-item">首页</a>
+            <a href="category.html" class="nav-item">分类</a>
+            <a href="channel.html" class="nav-item">社区</a>
+        </nav>
+        <div class="search-box">
+            <input type="text" placeholder="搜索课程、频道..." class="search-input" id="homeSearchInput">
+            <button class="search-btn" id="homeSearchBtn"><i class="fas fa-search"></i></button>
+        </div>
+        <div class="user-functions">
+            <a href="my-recent.html" class="func-item">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+            </a>
+            <a href="my-message.html" class="func-item"><i class="fas fa-bell"></i> 消息</a>
+            <a href="my-collect.html" class="func-item"><i class="fas fa-star"></i> 收藏</a>
+            <a href="my-recent.html" class="func-item"><i class="fas fa-history"></i> 历史</a>
+            <a href="my-creator_center.html" class="func-item"><i class="fas fa-pen"></i> 创作中心</a>
+            <a href="login.html"><button class="submit-btn">登录/注册</button></a>
+        </div>
+    </header>
+
+    <!-- 主要内容区域 - 保持原有结构 -->
+    <main class="main user-profile-main">
+        <div class="container">
+            <!-- 用户信息头部 -->
+            <div class="profile-header">
+                <div class="profile-avatar">
+                    <img src="images/user-avatar.jpg" alt="用户头像">
+                </div>
+                <div class="profile-info">
+                    <h1 class="profile-username">英语学习达人</h1>
+                    <p class="profile-description">专注于英语听力和口语教学，分享实用的英语学习技巧和资源，帮助更多人提高英语水平。</p>
+                    <div class="profile-stats">
+                        <div class="stat-item">
+                            <span class="stat-number">12</span>
+                            <span class="stat-label">频道</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">2.5万</span>
+                            <span class="stat-label">粉丝</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">89</span>
+                            <span class="stat-label">关注</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">156</span>
+                            <span class="stat-label">作品</span>
+                        </div>
+                    </div>
+                    <div class="profile-actions">
+                        <button class="follow-btn">+ 关注</button>
+                        <button class="message-btn">私信</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 用户内容区域 -->
+            <div class="profile-content">
+                <!-- 内容标签页 - 改为与 my-collect.html 一致的样式 -->
+                <div class="content-tabs">
+                    <div class="tab-item active">投稿频道</div>
+                    <div class="tab-item">动态</div>
+                </div>
+
+                <!-- 频道列表 -->
+                <div class="channel-list">
+                    <!-- 频道卡片示例1 -->
+                    <div class="channel-card">
+                        <div class="channel-info">
+                            <h3 class="channel-title">英语词汇达人</h3>
+                        </div>
+                    </div>
+
+                    <!-- 频道卡片示例2 -->
+                    <div class="channel-card">
+                        <div class="channel-info">
+                            <h3 class="channel-title">英语听力训练</h3>
+                        </div>
+                    </div>
+
+                    <!-- 频道卡片示例3 -->
+                    <div class="channel-card">
+                        <div class="channel-info">
+                            <h3 class="channel-title">英语口语对话</h3>
+                        </div>
+                    </div>
+
+                    <!-- 频道卡片示例4 -->
+                    <div class="channel-card">
+                        <div class="channel-info">
+                            <h3 class="channel-title">英语语法精讲</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 底部播放栏（与 my-collect.html 一致） -->
+    <aside id="pv-player" class="pv-player-bar" role="region" aria-label="播放器">
+      <div class="pv-inner">
+        <!-- 左侧：封面与标题 -->
+        <div class="pv-left">
+          <div id="pv-cover" class="pv-cover"></div>
+          <div class="pv-meta">
+            <div id="pv-title" class="pv-title">Kalimba (Test Audio)</div>
+            <div id="pv-artist" class="pv-artist">Ninja Tuna</div>
+          </div>
+        </div>
+
+        <!-- 中间：控制与进度 -->
+        <div class="pv-center">
+          <div class="pv-controls">
+            <button id="pv-prev" class="ctrl-btn" title="上一首" aria-label="上一首">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M6 6h2v12H6V6zm3.5 6l8.5 6V6l-8.5 6z"/></svg>
+            </button>
+            <button id="pv-play" class="play-btn" title="播放/暂停" aria-label="播放/暂停">
+              <svg id="play-icon" class="icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            </button>
+            <button id="pv-next" class="ctrl-btn" title="下一首" aria-label="下一首">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M16 6h2v12h-2V6zM6 18l8.5-6L6 6v12z"/></svg>
+            </button>
+
+            <!-- 播放模式 -->
+            <div style="position: relative;">
+              <button id="pv-mode-btn" class="mode-btn" title="播放模式" aria-label="播放模式">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M7 7h8v3l4-4-4-4v3H5v6h2V7zm10 10H9v-3l-4 4 4 4v-3h10v-6h-2v4z"/></svg>
+              </button>
+              <div id="mode-pop" class="popover mode-popover" style="display:none;">
+                <div class="mode-item active" data-mode="single" title="单曲循环">
+                  <svg class="icon" viewBox="0 0 24 24"><path d="M12 5v4l-1.5-1.5C8 10 8 14 10.5 16.5S16 19 18.5 16.5L20 18c-3 3-8 3-11 0S6 9 9 6L12 5z"/></svg>
+                </div>
+                <div class="mode-item" data-mode="list" title="歌单顺序循环">
+                  <svg class="icon" viewBox="0 0 24 24"><path d="M4 6h12v2H4V6zm0 5h12v2H4v-2zm0 5h8v2H4v-2zm15-7l-3 3h2v4h2v-4h2l-3-3z"/></svg>
+                </div>
+                <div class="mode-item" data-mode="shuffle" title="歌单乱序循环">
+                  <svg class="icon" viewBox="0 0 24 24"><path d="M16 3h5v5h-2V6.41l-4.29 4.3-1.42-1.42L17.59 5H16V3zM4 6h7l2 2H4V6zm0 6h5l2 2H4v-2zm12 3h1.59l-2.29 2.29 1.42 1.42L20 17.41V19h2v-5h-5v2z"/></svg>
+                </div>
+              </div>
+            </div>
+
+            <!-- 倍速 -->
+            <div class="rate-control" style="position: relative;">
+              <button id="pv-rate-btn" class="rate-btn" title="倍速"><span id="rate-text" style="font-size: 12px; font-weight: bold;">1x</span></button>
+              <div id="rate-pop" class="popover rate-popover" style="display:none;">
+                <div class="rate-item" data-rate="0.5">0.5x</div>
+                <div class="rate-item active" data-rate="1">1.0x</div>
+                <div class="rate-item" data-rate="1.5">1.5x</div>
+                <div class="rate-item" data-rate="2">2.0x</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="pv-progress-row">
+            <span id="pv-time-cur" class="time small">00:00</span>
+            <div id="pv-progress" class="pv-progress">
+              <div id="pv-progress-fill" class="pv-progress-fill"></div>
+              <div id="pv-knob" class="pv-knob"></div>
+            </div>
+            <span id="pv-time-total" class="time small">00:00</span>
+          </div>
+        </div>
+
+        <!-- 右侧：音量 -->
+        <div class="pv-right">
+          <button id="pv-mute" class="ctrl-btn" title="静音/取消静音" aria-label="静音">
+            <svg id="vol-icon" class="icon" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3z"/></svg>
+          </button>
+          <div id="pv-volume" class="pv-volume" title="音量">
+            <div class="pv-volume-bar"><div id="pv-volume-fill" class="pv-volume-fill"></div></div>
+          </div>
+          <button id="pv-list-btn" class="ctrl-btn" title="播放列表" aria-label="播放列表">▤</button>
+        </div>
+      </div>
+
+      <!-- 播放列表弹窗（示例） -->
+      <div id="playlist-panel" class="playlist-panel">
+        <div class="playlist-item active" onclick="playIndex(0)">1. Kalimba (Test)</div>
+        <div class="playlist-item" onclick="playIndex(1)">2. Sample MP3 (Test)</div>
+      </div>
+
+      <audio id="pv-audio" preload="metadata"></audio>
+    </aside>
+
+    <!-- JavaScript -->
+    <script>
+        // 解析URL参数
+        function getURLParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        // 用户数据映射表
+        const userData = {
+            "English Learner": {
+                username: "English Learner",
+                description: "专注于英语听力和口语学习，每天进步一点点！",
+                avatar: "images/user-avatar.jpg",
+                channels: 8,
+                followers: "1.2万",
+                following: 45,
+                works: 98
+            },
+            "Teaching Assistant": {
+                username: "Teaching Assistant",
+                description: "英语教育专业，热爱教学，帮助学生提高英语能力。",
+                avatar: "images/user-avatar.jpg",
+                channels: 15,
+                followers: "3.5万",
+                following: 67,
+                works: 215
+            },
+            "Fluency Master": {
+                username: "Fluency Master",
+                description: "专注于英语口语流利度训练，分享实用的口语技巧。",
+                avatar: "images/user-avatar.jpg",
+                channels: 10,
+                followers: "2.1万",
+                following: 89,
+                works: 145
+            },
+            "Grammar Guru": {
+                username: "Grammar Guru",
+                description: "英语语法专家，擅长解析复杂语法规则，让语法学习变得简单。",
+                avatar: "images/user-avatar.jpg",
+                channels: 12,
+                followers: "1.8万",
+                following: 34,
+                works: 189
+            },
+            "IELTS Expert": {
+                username: "IELTS Expert",
+                description: "雅思考试专家，提供专业的考试指导和备考策略。",
+                avatar: "images/user-avatar.jpg",
+                channels: 20,
+                followers: "4.2万",
+                following: 123,
+                works: 320
+            }
+        };
+
+        // 初始化用户信息
+        function initUserProfile() {
+            const username = getURLParameter('username');
+            if (username && userData[username]) {
+                const user = userData[username];
+                // 更新用户信息
+                document.querySelector('.profile-username').textContent = user.username;
+                document.querySelector('.profile-description').textContent = user.description;
+                document.querySelector('.profile-avatar img').src = user.avatar;
+                document.querySelector('.profile-stats .stat-item:nth-child(1) .stat-number').textContent = user.channels;
+                document.querySelector('.profile-stats .stat-item:nth-child(2) .stat-number').textContent = user.followers;
+                document.querySelector('.profile-stats .stat-item:nth-child(3) .stat-number').textContent = user.following;
+                document.querySelector('.profile-stats .stat-item:nth-child(4) .stat-number').textContent = user.works;
+            }
+        }
+
+        // 页面加载时初始化用户信息
+        window.addEventListener('DOMContentLoaded', initUserProfile);
+
+        // 内容标签页切换
+        const tabItems = document.querySelectorAll('.tab-item');
+        tabItems.forEach(tab => {
+            tab.addEventListener('click', () => {
+                // 移除所有标签的active类
+                tabItems.forEach(item => item.classList.remove('active'));
+                // 为当前点击的标签添加active类
+                tab.classList.add('active');
+            });
+        });
+
+        // 关注按钮功能
+        const followBtn = document.querySelector('.follow-btn');
+        followBtn.addEventListener('click', () => {
+            if (followBtn.textContent.includes('关注')) {
+                followBtn.textContent = '已关注';
+                followBtn.style.backgroundColor = '#f0f0f0';
+                followBtn.style.color = '#666';
+                followBtn.style.border = '2px solid #eee';
+            } else {
+                followBtn.textContent = '+ 关注';
+                followBtn.style.backgroundColor = '#ff8c00';
+                followBtn.style.color = '#ffffff';
+                followBtn.style.border = 'none';
+            }
+        });
+        
+        // 获取URL参数的函数
+        function getURLParameter(name) {
+            const params = new URLSearchParams(window.location.search);
+            return params.get(name);
+        }
+
+        // 私信按钮功能
+        const messageBtn = document.querySelector('.message-btn');
+        messageBtn.addEventListener('click', () => {
+            const username = getURLParameter('username') || 'English Learner'; // 默认值
+            window.location.href = `my-message.html?username=${encodeURIComponent(username)}`;
+        });
+
+        // 根据URL参数动态更新用户信息
+        document.addEventListener('DOMContentLoaded', () => {
+            const username = getURLParameter('username');
+            if (username) {
+                // 更新用户名
+                const profileUsername = document.querySelector('.profile-username');
+                if (profileUsername) {
+                    profileUsername.textContent = username;
+                }
+                
+                // 可以根据需要更新更多用户信息
+                // 例如：头像、个人简介等
+                // 这里可以添加从后端获取用户详细信息的API调用
+                
+                // 更新页面标题
+                document.title = `${username} - iFM`;
+            }
+            
+            // 为频道卡片添加点击事件，跳转到program_list.html页面
+            const channelCards = document.querySelectorAll('.channel-card');
+            channelCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    // 获取频道名称
+                    const channelTitle = card.querySelector('.channel-title').textContent;
+                    // 跳转到program_list.html页面，传递频道名称作为参数
+                    window.location.href = `program_list.html?channel=${encodeURIComponent(channelTitle)}`;
+                });
+                
+                // 为频道卡片添加指针样式，提示可点击
+                card.style.cursor = 'pointer';
+            });
+        });
+        
+        // 动态记录数据
+        const activityData = [
+            {
+                id: 1,
+                type: 'publish',
+                content: '发布了新频道《商务英语会话技巧》',
+                time: '2023-11-15 14:30',
+                channelTitle: '商务英语会话技巧',
+                channelImage: 'images/english_vocabulary.jpg'
+            },
+            {
+                id: 2,
+                type: 'like',
+                content: '点赞了频道《英语听力训练》',
+                time: '2023-11-14 09:15',
+                channelTitle: '英语听力训练',
+                channelImage: 'images/english_listening.jpg'
+            },
+            {
+                id: 3,
+                type: 'comment',
+                content: '在频道《英语词汇达人》中发表了评论："这个频道非常实用，每天都在学习！"',
+                time: '2023-11-13 16:45',
+                channelTitle: '英语词汇达人',
+                channelImage: 'images/english_vocabulary.jpg'
+            },
+            {
+                id: 4,
+                type: 'publish',
+                content: '发布了新音频《日常英语常用句型》',
+                time: '2023-11-12 11:20',
+                channelTitle: '日常英语常用句型',
+                channelImage: 'images/english_conversation.jpg'
+            }
+        ];
+        
+        // 创建动态记录容器
+        const activityContainer = document.createElement('div');
+        activityContainer.className = 'activity-container';
+        activityContainer.style.display = 'none';
+        
+        // 生成动态记录HTML
+        function generateActivityHTML() {
+            let html = '';
+            activityData.forEach(activity => {
+                html += `
+                    <div class="activity-item">
+                        <div class="activity-avatar">
+                            <img src="images/user-avatar.jpg" alt="用户头像">
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-text">${activity.content}</div>
+                            <div class="activity-time">${activity.time}</div>
+                            <div class="activity-channel" style="margin-top: 8px;">
+                                <img src="${activity.channelImage}" alt="频道封面" style="width: 60px; height: 60px; border-radius: 4px; object-fit: cover;">
+                                <span style="margin-left: 10px; font-weight: 600;">${activity.channelTitle}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            return html;
+        }
+        
+        // 为动态记录添加样式
+        const style = document.createElement('style');
+        style.textContent = `
+            .activity-container {
+                margin-top: 20px;
+            }
+            
+            .activity-item {
+                display: flex;
+                padding: 16px;
+                border-bottom: 1px solid #f0f0f0;
+                transition: background-color 0.2s;
+            }
+            
+            .activity-item:hover {
+                background-color: #fafafa;
+            }
+            
+            .activity-avatar {
+                margin-right: 16px;
+            }
+            
+            .activity-avatar img {
+                width: 48px;
+                height: 48px;
+                border-radius: 50%;
+                object-fit: cover;
+            }
+            
+            .activity-content {
+                flex: 1;
+            }
+            
+            .activity-text {
+                font-size: 15px;
+                color: #333;
+                margin-bottom: 4px;
+            }
+            
+            .activity-time {
+                font-size: 13px;
+                color: #999;
+                margin-bottom: 8px;
+            }
+            
+            .activity-channel {
+                display: flex;
+                align-items: center;
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // 添加动态记录到页面
+        const profileContent = document.querySelector('.profile-content');
+        const channelList = document.querySelector('.channel-list');
+        profileContent.insertBefore(activityContainer, channelList.nextSibling);
+        
+        // 更新标签页切换逻辑
+        tabItems.forEach((tab, index) => {
+            tab.addEventListener('click', () => {
+                // 移除所有标签的active类
+                tabItems.forEach(item => item.classList.remove('active'));
+                // 为当前点击的标签添加active类
+                tab.classList.add('active');
+                
+                // 显示对应的内容
+                if (index === 0) { // 投稿频道
+                    channelList.style.display = 'grid';
+                    activityContainer.style.display = 'none';
+                } else if (index === 1) { // 动态
+                    channelList.style.display = 'none';
+                    activityContainer.innerHTML = generateActivityHTML();
+                    activityContainer.style.display = 'block';
+                }
+            });
+        });
+    </script>
+    
+    <script>
+    ;(function () {
+      const playlist = [
+        { title: "Kalimba (Test Audio)", artist: "Ninja Tuna", cover: "", src: "https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3" },
+        { title: "Sample MP3 (700KB)", artist: "Sample Source", cover: "", src: "https://sample.cat/downloads/file_example_MP3_700KB.mp3" }
+      ];
+
+      let currentIndex = 0;
+      let isPlaying = false;
+      let isDraggingProgress = false;
+      let isDraggingVolume = false;
+      let playMode = 'list'; /* single | list | shuffle */
+
+      const audio = document.getElementById('pv-audio');
+      const playBtn = document.getElementById('pv-play');
+      const playIcon = document.getElementById('play-icon');
+      const prevBtn = document.getElementById('pv-prev');
+      const nextBtn = document.getElementById('pv-next');
+      const titleEl = document.getElementById('pv-title');
+      const artistEl = document.getElementById('pv-artist');
+      const coverEl = document.getElementById('pv-cover');
+      const progressEl = document.getElementById('pv-progress');
+      const progressFill = document.getElementById('pv-progress-fill');
+      const knobEl = document.getElementById('pv-knob');
+      const timeCurEl = document.getElementById('pv-time-cur');
+      const timeTotalEl = document.getElementById('pv-time-total');
+      const volEl = document.getElementById('pv-volume');
+      const volFill = document.getElementById('pv-volume-fill');
+      const listBtn = document.getElementById('pv-list-btn');
+      const playlistPanel = document.getElementById('playlist-panel');
+      const rateBtn = document.getElementById('pv-rate-btn');
+      const rateText = document.getElementById('rate-text');
+      const muteBtn = document.getElementById('pv-mute');
+      const volIcon = document.getElementById('vol-icon');
+      const modeBtn = document.getElementById('pv-mode-btn');
+      const modePop = document.getElementById('mode-pop');
+      const ratePop = document.getElementById('rate-pop');
+
+      function loadTrack(index) {
+        const track = playlist[index];
+        titleEl.innerText = track.title;
+        artistEl.innerText = track.artist;
+        coverEl.style.backgroundImage = track.cover ? `url('${track.cover}')` : '';
+        audio.src = track.src;
+        document.querySelectorAll('.playlist-item').forEach((item, i) => item.classList.toggle('active', i === index));
+      }
+      function playTrack() { audio.play().then(() => { isPlaying = true; updatePlayIcon(); }).catch(err => console.error("Play failed:", err)); }
+      function pauseTrack() { audio.pause(); isPlaying = false; updatePlayIcon(); }
+      function togglePlay() { isPlaying ? pauseTrack() : playTrack(); }
+      function updatePlayIcon() {
+        playIcon.setAttribute('viewBox','0 0 24 24');
+        playIcon.innerHTML = isPlaying ? '<path d="M6 5h4v14H6V5zm8 0h4v14h-4V5z"/>' : '<path d="M8 5v14l11-7z"/>';
+      }
+      function formatTime(s) { if (!s || isNaN(s)) return "00:00"; const m = Math.floor(s/60), ss = Math.floor(s%60); return `${m<10?'0':''}${m}:${ss<10?'0':''}${ss}`; }
+      function stopWrap(handler) { return function(e){ e.stopPropagation(); handler(e); }; }
+
+      /* 控件事件（阻止冒泡） */
+      playBtn.addEventListener('click', stopWrap(togglePlay));
+      prevBtn.addEventListener('click', stopWrap(() => prevByMode()));
+      nextBtn.addEventListener('click', stopWrap(() => nextByMode()));
+      muteBtn.addEventListener('click', stopWrap(() => {
+        audio.muted = !audio.muted;
+        if (audio.muted || audio.volume === 0) { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 3l7 7-1.4 1.4L16 7.8V16h-2V8.6L9.4 4 11 2.4 14 3z"/>'; }
+        else if (audio.volume < 0.5) { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 9v6c1.7-0.7 3-2.4 3-4.5S15.7 9.7 14 9z"/>'; }
+        else { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 7v10c3-1 5-3.6 5-7s-2-6-5-7z"/>'; }
+      }));
+
+      /* 模式弹层 */
+      modeBtn.addEventListener('click', stopWrap(() => {
+        ratePop.style.display = 'none';
+        modePop.style.display = modePop.style.display === 'flex' ? 'none' : 'flex';
+      }));
+      modePop.addEventListener('click', stopWrap((e) => {
+        const item = e.target.closest('.mode-item');
+        if (!item) return;
+        playMode = item.getAttribute('data-mode');
+        document.querySelectorAll('#mode-pop .mode-item').forEach(el => el.classList.toggle('active', el === item));
+        modePop.style.display = 'none';
+      }));
+
+      /* 倍速弹层 */
+      rateBtn.addEventListener('click', stopWrap(() => {
+        modePop.style.display = 'none';
+        ratePop.style.display = ratePop.style.display === 'flex' ? 'none' : 'flex';
+      }));
+      ratePop.addEventListener('click', stopWrap((e) => {
+        const item = e.target.closest('.rate-item');
+        if (!item) return;
+        const r = parseFloat(item.getAttribute('data-rate'));
+        audio.playbackRate = r;
+        rateText.innerText = r.toFixed(1) + 'x';
+        document.querySelectorAll('#rate-pop .rate-item').forEach(el => el.classList.toggle('active', el === item));
+        ratePop.style.display = 'none';
+      }));
+
+      /* 点击其他区域关闭弹层 */
+      document.addEventListener('click', (e) => {
+        if (!modeBtn.contains(e.target) && !modePop.contains(e.target)) modePop.style.display = 'none';
+        if (!rateBtn.contains(e.target) && !ratePop.contains(e.target)) ratePop.style.display = 'none';
+      });
+
+      /* 音频事件与切歌模式 */
+      audio.addEventListener('timeupdate', () => {
+        if (isDraggingProgress) return;
+        const percent = (audio.currentTime / audio.duration) * 100;
+        progressFill.style.width = `${percent}%`;
+        knobEl.style.left = `${percent}%`;
+        timeCurEl.innerText = formatTime(audio.currentTime);
+      });
+      audio.addEventListener('loadedmetadata', () => { timeTotalEl.innerText = formatTime(audio.duration); });
+      audio.addEventListener('ended', () => {
+        if (playMode === 'single') { audio.currentTime = 0; playTrack(); }
+        else { nextByMode(); }
+      });
+      function prevByMode() {
+        if (playMode === 'shuffle') currentIndex = Math.floor(Math.random() * playlist.length);
+        else currentIndex = (currentIndex - 1 + playlist.length) % playlist.length;
+        loadTrack(currentIndex); playTrack();
+      }
+      function nextByMode() {
+        if (playMode === 'shuffle') currentIndex = Math.floor(Math.random() * playlist.length);
+        else currentIndex = (currentIndex + 1) % playlist.length;
+        loadTrack(currentIndex); playTrack();
+      }
+
+      /* 进度条拖拽（鼠标/触摸） */
+      function handleProgressInput(clientX) {
+        const rect = progressEl.getBoundingClientRect();
+        let x = clientX - rect.left; x = Math.max(0, Math.min(x, rect.width));
+        const pct = (x / rect.width) * 100; progressFill.style.width = `${pct}%`; knobEl.style.left = `${pct}%`;
+        return (x / rect.width) * audio.duration;
+      }
+      progressEl.addEventListener('mousedown', stopWrap((e) => { isDraggingProgress = true; progressEl.classList.add('dragging'); const t = handleProgressInput(e.clientX); timeCurEl.innerText = formatTime(t); }));
+      document.addEventListener('mousemove', (e) => { if (isDraggingProgress) { e.preventDefault(); const t = handleProgressInput(e.clientX); timeCurEl.innerText = formatTime(t); } });
+      document.addEventListener('mouseup', (e) => { if (isDraggingProgress) { isDraggingProgress = false; progressEl.classList.remove('dragging'); const t = handleProgressInput(e.clientX); if (isFinite(t)) audio.currentTime = t; } });
+
+      function getTouchX(e){ return (e.touches&&e.touches[0]) ? e.touches[0].clientX : (e.changedTouches&&e.changedTouches[0] ? e.changedTouches[0].clientX : 0); }
+      progressEl.addEventListener('touchstart', (e) => { e.stopPropagation(); e.preventDefault(); isDraggingProgress = true; const t = handleProgressInput(getTouchX(e)); timeCurEl.innerText = formatTime(t); }, { passive:false });
+      document.addEventListener('touchmove', (e) => { if (isDraggingProgress) { e.preventDefault(); const t = handleProgressInput(getTouchX(e)); timeCurEl.innerText = formatTime(t); } }, { passive:false });
+      document.addEventListener('touchend', (e) => { if (isDraggingProgress) { isDraggingProgress = false; const t = handleProgressInput(getTouchX(e)); if (isFinite(t)) audio.currentTime = t; } }, { passive:false });
+
+      /* 音量拖拽（鼠标/触摸） */
+      function handleVolumeInput(clientX) {
+        const rect = volEl.getBoundingClientRect();
+        let x = clientX - rect.left; x = Math.max(0, Math.min(x, rect.width));
+        const p = x / rect.width; volFill.style.width = `${p * 100}%`; audio.volume = p;
+        if (p === 0 || audio.muted) { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 3l7 7-1.4 1.4L16 7.8V16h-2V8.6L9.4 4 11 2.4 14 3z"/>'; }
+        else if (p < 0.5) { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 9v6c1.7-0.7 3-2.4 3-4.5S15.7 9.7 14 9z"/>'; }
+        else { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 7v10c3-1 5-3.6 5-7s-2-6-5-7z"/>'; }
+      }
+      volEl.addEventListener('mousedown', stopWrap((e) => { isDraggingVolume = true; handleVolumeInput(e.clientX); }));
+      document.addEventListener('mousemove', (e) => { if (isDraggingVolume) { e.preventDefault(); handleVolumeInput(e.clientX); } });
+      document.addEventListener('mouseup', () => { isDraggingVolume = false; });
+      volEl.addEventListener('touchstart', (e) => { e.stopPropagation(); e.preventDefault(); isDraggingVolume = true; handleVolumeInput(getTouchX(e)); }, { passive:false });
+      document.addEventListener('touchmove', (e) => { if (isDraggingVolume) { e.preventDefault(); handleVolumeInput(getTouchX(e)); } }, { passive:false });
+      document.addEventListener('touchend', () => { isDraggingVolume = false; }, { passive:false });
+
+      /* 简易播放列表开关（示例） */
+      listBtn.addEventListener('click', stopWrap(() => {
+        playlistPanel.style.display = playlistPanel.style.display === 'block' ? 'none' : 'block';
+      }));
+
+      /* 提供给 HTML 的播放列表切换 */
+      window.playIndex = function(index){ currentIndex = index; loadTrack(currentIndex); playTrack(); }
+
+      /* 初始化第一首 */
+      loadTrack(currentIndex);
+    })();
+    </script>
+</body>
+</html>

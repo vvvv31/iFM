@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>直播中 - 星之声</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="../js/search.js"></script>
+    <style>
+        /* 直播页特定样式 */
+        .main-content {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .live-header {
+            background-color: #FFF8DC;
+            border: 1px solid #FFDAB9;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .live-status {
+            display: inline-block;
+            background-color: #FF8C00;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        
+        .live-status.pk {
+            background-color: #7b61ff;
+        }
+        
+        .live-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .host-info {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: #FF8C00;
+            border: 2px solid #FF8C00;
+        }
+        
+        .host-name {
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .students-list {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .student-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .student-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: #E0FFFF;
+            border: 2px solid #4a90e2;
+        }
+        
+        .student-avatar.live {
+            border-color: #ff4d4d;
+            position: relative;
+        }
+        
+        .student-avatar.live::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 15px;
+            height: 15px;
+            background-color: #ff4d4d;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+        
+        .student-name {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .chat-container {
+            background-color: #FFF8DC;
+            border: 1px solid #FFDAB9;
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            height: 400px;
+        }
+        
+        .chat-header {
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #FFDAB9;
+            color: #FF8C00;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 15px;
+        }
+        
+        .message {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 6px;
+            background-color: white;
+            border: 1px solid #FFDAB9;
+        }
+        
+        .message.host {
+            background-color: #fff5e6;
+            border-left: 3px solid #FF8C00;
+        }
+        
+        .message.student {
+            background-color: #f0f8ff;
+            border-left: 3px solid #4a90e2;
+        }
+        
+        .message.system {
+            background-color: #f0fff4;
+            border-left: 3px solid #4cd964;
+        }
+        
+        .message-sender {
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        
+        .message-content {
+            margin-bottom: 5px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        
+        .message-time {
+            font-size: 12px;
+            color: #999;
+            text-align: right;
+        }
+        
+        .chat-input {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .chat-input input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #FFDAB9;
+            border-radius: 4px;
+            outline: none;
+            font-size: 14px;
+        }
+        
+        .chat-input button {
+            background-color: #FF8C00;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .viewers-panel,
+        .stats-panel,
+        .controls-panel {
+            background-color: #FFF8DC;
+            border: 1px solid #FFDAB9;
+            border-radius: 8px;
+            padding: 15px;
+        }
+        
+        .viewers-header,
+        .stats-header,
+        .controls-header {
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #FFDAB9;
+            color: #FF8C00;
+        }
+        
+        .viewer-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #FFDAB9;
+            cursor: pointer;
+        }
+        
+        .viewer-item:last-child {
+            border-bottom: none;
+        }
+        
+        .viewer-item:hover {
+            background-color: #FFEDCC;
+        }
+        
+        .viewer-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .viewer-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #E0FFFF;
+        }
+        
+        .viewer-name {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .manage-btn {
+            background-color: #FF8C00;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            text-align: center;
+        }
+        
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .stat-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #FF8C00;
+        }
+        
+        .stat-value.pk {
+            color: #7b61ff;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .control-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .control-btn {
+            background-color: white;
+            border: 1px solid #FFDAB9;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .control-btn:hover {
+            background-color: #FFEDCC;
+        }
+        
+        .control-btn.primary {
+            background-color: #FF8C00;
+            color: white;
+            border-color: #FF8C00;
+        }
+        
+        .control-btn.pk {
+            background-color: #7b61ff;
+            color: white;
+            border-color: #7b61ff;
+        }
+        
+        .control-btn.primary:hover {
+            background-color: #e67e00;
+        }
+        
+        .control-btn.pk:hover {
+            background-color: #6a52e0;
+        }
+        
+        /* PK相关样式 */
+        .pk-container {
+            display: none;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #FFDAB9;
+        }
+        
+        .pk-container.active {
+            display: block;
+        }
+        
+        .pk-opponent {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .pk-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 15px;
+            gap: 20px;
+        }
+        
+        .pk-team {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .pk-team-name {
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .pk-progress {
+            height: 8px;
+            background-color: #eee;
+            border-radius: 4px;
+            margin: 8px 0;
+            overflow: hidden;
+        }
+        
+        .pk-progress-fill {
+            height: 100%;
+            background-color: #FF8C00;
+            width: 50%;
+        }
+        
+        .pk-progress-fill.opponent {
+            background-color: #7b61ff;
+        }
+        
+        /* 连麦请求提示 */
+        .request-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: white;
+            padding: 12px 15px;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border: 1px solid #FFDAB9;
+            display: none;
+            z-index: 1000;
+        }
+        
+        .request-notification.active {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .request-actions {
+            display: flex;
+            gap: 8px;
+            margin-left: 10px;
+        }
+        
+        .request-btn {
+            padding: 4px 10px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .accept {
+            background-color: #4cd964;
+            color: white;
+        }
+        
+        .reject {
+            background-color: #ff4d4d;
+            color: white;
+        }
+        
+        /* 响应式布局 */
+        @media (min-width: 768px) {
+            .main-content {
+                flex-direction: row;
+            }
+            
+            .live-container {
+                flex: 2;
+            }
+            
+            .sidebar {
+                flex: 1;
+                min-width: 300px;
+            }
+            
+            .chat-container {
+                height: 500px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 音频元素 -->
+    <audio id="audioPlayer" controls style="display: none;">
+        <source src="" type="audio/mpeg">
+        您的浏览器不支持音频播放
+    </audio>
+
+    <!-- 顶部导航栏 -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-img"></div>
+            <span class="logo-text">星之声</span>
+        </div>
+        <nav class="main-nav">
+            <a href="index.html" class="nav-item">首页</a>
+            <a href="category.html" class="nav-item">分类</a>
+            <a href="channel.html" class="nav-item active">社区</a>
+        </nav>
+        <div class="search-box">
+            <input type="text" placeholder="搜索课程、频道..." class="search-input" id="homeSearchInput">
+            <button class="search-btn" id="homeSearchBtn"><i class="fas fa-search"></i></button>
+        </div>
+        <div class="user-functions">
+            <a href="my-recent.html" class="func-item">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+            </a>
+            <a href="my-message.html" class="func-item"><i class="fas fa-bell"></i> 消息</a>
+            <a href="my-collect.html" class="func-item"><i class="fas fa-star"></i> 收藏</a>
+            <a href="my-recent.html" class="func-item"><i class="fas fa-history"></i> 历史</a>
+            <a href="my-creator_center.html" class="func-item"><i class="fas fa-pen"></i> 创作中心</a>
+            <a href="login.html"><button class="submit-btn">登录/注册</button></a>
+        </div>
+    </header>
+
+    <!-- 主要内容区 -->
+    <main class="main-content">
+        <div class="live-container">
+            <div class="live-header">
+                <div class="live-status" id="live-status">直播中</div>
+                <div class="live-title">聊天室名字</div>
+                <div class="host-info">
+                    <div class="avatar"></div>
+                    <div class="host-name">xx老师</div>
+                </div>
+
+                <!-- PK相关区域 -->
+                <div class="pk-container" id="pk-container">
+                    <div class="pk-opponent">
+                        <div>VS</div>
+                        <div class="avatar" style="border-color: #7b61ff;"></div>
+                        <div class="host-name">yy老师</div>
+                    </div>
+                    <div class="pk-stats">
+                        <div class="pk-team">
+                            <div class="pk-team-name">我方</div>
+                            <div class="stat-value">12</div>
+                            <div class="pk-progress">
+                                <div class="pk-progress-fill" id="our-pk-progress"></div>
+                            </div>
+                        </div>
+                        <div class="pk-team">
+                            <div class="pk-team-name">对方</div>
+                            <div class="stat-value pk">8</div>
+                            <div class="pk-progress">
+                                <div class="pk-progress-fill opponent" id="opponent-pk-progress"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-label">PK剩余时间: <span id="pk-remaining-time">05:00</span></div>
+                </div>
+
+                <div class="students-list">
+                    <div class="student-item">
+                        <div class="student-avatar live"></div>
+                        <div class="student-name">学生1 (连麦中)</div>
+                    </div>
+                    <div class="student-item">
+                        <div class="student-avatar"></div>
+                        <div class="student-name">学生2</div>
+                    </div>
+                    <div class="student-item">
+                        <div class="student-avatar"></div>
+                        <div class="student-name">学生3</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-container">
+                <div class="chat-header">聊天室</div>
+                <div class="chat-messages" id="chat-messages">
+                    <div class="message host">
+                        <div class="message-sender">xx老师</div>
+                        <div class="message-content">我要点一些同学连麦，朗读一下这段话</div>
+                        <div class="message-time">2025.11.22 15:03</div>
+                    </div>
+                    <div class="message student">
+                        <div class="message-sender">学生一</div>
+                        <div class="message-content">点我</div>
+                        <div class="message-time">2025.11.22 15:04</div>
+                    </div>
+                </div>
+                <div class="chat-input">
+                    <input type="text" placeholder="请输入消息..." id="message-input">
+                    <button id="send-message">发送</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <div class="viewers-panel">
+                <div class="viewers-header">观看列表</div>
+                <div class="viewer-item" id="viewer-1">
+                    <div class="viewer-info">
+                        <div class="viewer-avatar"></div>
+                        <div class="viewer-name">学生1</div>
+                    </div>
+                    <button class="manage-btn">连麦</button>
+                </div>
+                <div class="viewer-item" id="viewer-2">
+                    <div class="viewer-info">
+                        <div class="viewer-avatar"></div>
+                        <div class="viewer-name">学生2</div>
+                    </div>
+                    <button class="manage-btn">连麦</button>
+                </div>
+                <div class="viewer-item" id="viewer-3">
+                    <div class="viewer-info">
+                        <div class="viewer-avatar"></div>
+                        <div class="viewer-name">学生3</div>
+                    </div>
+                    <button class="manage-btn">连麦</button>
+                </div>
+            </div>
+
+            <div class="stats-panel">
+                <div class="stats-header">直播数据</div>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value" id="viewer-count">32</div>
+                        <div class="stat-label">收看</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="like-count">3</div>
+                        <div class="stat-label">点赞</div>
+                        <button class="control-btn" id="like-btn" style="padding: 6px 10px; font-size: 12px;">点赞</button>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="live-duration">0:35</div>
+                        <div class="stat-label">直播时长</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls-panel">
+                <div class="controls-header">操作栏</div>
+                <div class="control-buttons">
+                    <button class="control-btn primary">管理直播间</button>
+                    <button class="control-btn" id="invite-btn">邀请连麦</button>
+                    <button class="control-btn" id="accept-btn" style="display:none;">接受连麦</button>
+                    <button class="control-btn" id="reject-btn" style="display:none;">拒绝连麦</button>
+                    <button class="control-btn pk" id="start-pk-btn">发起PK</button>
+                    <button class="control-btn pk" id="end-pk-btn" style="display:none;">结束PK</button>
+                    <button class="control-btn">分享直播</button>
+                    <button class="control-btn">设置</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 连麦请求通知 -->
+    <div class="request-notification" id="request-notification">
+        <div>
+            <strong id="requester-name">学生2</strong> 请求连麦
+        </div>
+        <div class="request-actions">
+            <button class="request-btn accept" id="accept-request">接受</button>
+            <button class="request-btn reject" id="reject-request">拒绝</button>
+        </div>
+    </div>
+
+    <!-- 已删除底部播放栏 -->
+
+    <script>
+        // 数据统计相关变量
+        let viewerCount = 32;
+        let likeCount = 3;
+        let liveStartTime = new Date();
+        liveStartTime.setMinutes(liveStartTime.getMinutes() - 35); // 模拟已直播35分钟
+        let isInPk = false;
+        let pkOurScore = 12;
+        let pkOpponentScore = 8;
+        let pkRemainingTime = 300; // 5分钟，单位：秒
+        let currentRequester = null;
+
+        // DOM元素
+        const viewerCountEl = document.getElementById('viewer-count');
+        const likeCountEl = document.getElementById('like-count');
+        const liveDurationEl = document.getElementById('live-duration');
+        const likeBtn = document.getElementById('like-btn');
+        const chatMessagesEl = document.getElementById('chat-messages');
+        const messageInputEl = document.getElementById('message-input');
+        const sendMessageBtn = document.getElementById('send-message');
+        const inviteBtn = document.getElementById('invite-btn');
+        const acceptBtn = document.getElementById('accept-btn');
+        const rejectBtn = document.getElementById('reject-btn');
+        const startPkBtn = document.getElementById('start-pk-btn');
+        const endPkBtn = document.getElementById('end-pk-btn');
+        const liveStatusEl = document.getElementById('live-status');
+        const pkContainerEl = document.getElementById('pk-container');
+        const ourPkProgressEl = document.getElementById('our-pk-progress');
+        const opponentPkProgressEl = document.getElementById('opponent-pk-progress');
+        const pkRemainingTimeEl = document.getElementById('pk-remaining-time');
+        const requestNotificationEl = document.getElementById('request-notification');
+        const requesterNameEl = document.getElementById('requester-name');
+        const acceptRequestBtn = document.getElementById('accept-request');
+        const rejectRequestBtn = document.getElementById('reject-request');
+        const viewerItems = [
+            document.getElementById('viewer-1'),
+            document.getElementById('viewer-2'),
+            document.getElementById('viewer-3')
+        ];
+
+        // 更新直播时长
+        function updateLiveDuration() {
+            const now = new Date();
+            const durationMs = now - liveStartTime;
+            const minutes = Math.floor(durationMs / 60000);
+            const seconds = Math.floor((durationMs % 60000) / 1000);
+            liveDurationEl.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // 随机更新观看人数
+        function randomUpdateViewerCount() {
+            if (Math.random() > 0.7) { // 30%概率更新
+                const change = Math.floor(Math.random() * 5) - 2; // -2到2之间的随机数
+                viewerCount = Math.max(1, viewerCount + change);
+                viewerCountEl.textContent = viewerCount;
+            }
+        }
+
+        // 更新PK进度
+        function updatePkProgress() {
+            const total = pkOurScore + pkOpponentScore;
+            const ourPercent = total > 0 ? (pkOurScore / total) * 100 : 50;
+            const opponentPercent = 100 - ourPercent;
+
+            ourPkProgressEl.style.width = `${ourPercent}%`;
+            opponentPkProgressEl.style.width = `${opponentPercent}%`;
+
+            // 更新剩余时间
+            const minutes = Math.floor(pkRemainingTime / 60);
+            const seconds = pkRemainingTime % 60;
+            pkRemainingTimeEl.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+            // 随机增加PK分数
+            if (Math.random() > 0.85) {
+                if (Math.random() > 0.5) {
+                    pkOurScore++;
+                } else {
+                    pkOpponentScore++;
+                }
+            }
+        }
+
+        // 发送消息
+        function sendMessage(sender, content, isHost = false) {
+            const now = new Date();
+            const timeStr = `${now.getFullYear()}.${(now.getMonth() + 1).toString().padStart(2, '0')}.${now.getDate().toString().padStart(2, '0')} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+
+            const messageEl = document.createElement('div');
+            messageEl.className = `message ${isHost ? 'host' : 'student'}`;
+            messageEl.innerHTML = `
+                <div class="message-sender">${sender}</div>
+                <div class="message-content">${content}</div>
+                <div class="message-time">${timeStr}</div>
+            `;
+
+            chatMessagesEl.appendChild(messageEl);
+            chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight; // 滚动到底部
+        }
+
+        // 显示系统消息
+        function showSystemMessage(content) {
+            const now = new Date();
+            const timeStr = `${now.getFullYear()}.${(now.getMonth() + 1).toString().padStart(2, '0')}.${now.getDate().toString().padStart(2, '0')} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+
+            const messageEl = document.createElement('div');
+            messageEl.className = 'message system';
+            messageEl.innerHTML = `
+                <div class="message-sender">系统消息</div>
+                <div class="message-content">${content}</div>
+                <div class="message-time">${timeStr}</div>
+            `;
+
+            chatMessagesEl.appendChild(messageEl);
+            chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
+        }
+
+        // 发起连麦请求
+        function requestConnection(viewerId, viewerName) {
+            currentRequester = { id: viewerId, name: viewerName };
+            requesterNameEl.textContent = viewerName;
+            requestNotificationEl.classList.add('active');
+
+            // 30秒后自动拒绝
+            setTimeout(() => {
+                if (requestNotificationEl.classList.contains('active')) {
+                    rejectConnection();
+                }
+            }, 30000);
+        }
+
+        // 接受连麦
+        function acceptConnection() {
+            if (currentRequester) {
+                showSystemMessage(`${currentRequester.name} 已连麦`);
+                viewerItems[currentRequester.id - 1].querySelector('.manage-btn').textContent = '断开';
+            }
+            requestNotificationEl.classList.remove('active');
+            currentRequester = null;
+        }
+
+        // 拒绝连麦
+        function rejectConnection() {
+            if (currentRequester) {
+                showSystemMessage(`已拒绝 ${currentRequester.name} 的连麦请求`);
+            }
+            requestNotificationEl.classList.remove('active');
+            currentRequester = null;
+        }
+
+        // 开始PK
+        function startPK() {
+            isInPk = true;
+            liveStatusEl.classList.add('pk');
+            liveStatusEl.textContent = '直播中 - PK进行中';
+            pkContainerEl.classList.add('active');
+            startPkBtn.style.display = 'none';
+            endPkBtn.style.display = 'inline-flex';
+            showSystemMessage('PK已开始，双方加油！');
+        }
+
+        // 结束PK
+        function endPK() {
+            isInPk = false;
+            liveStatusEl.classList.remove('pk');
+            liveStatusEl.textContent = '直播中';
+            pkContainerEl.classList.remove('active');
+            startPkBtn.style.display = 'inline-flex';
+            endPkBtn.style.display = 'none';
+
+            let result = '';
+            if (pkOurScore > pkOpponentScore) {
+                result = '我方获胜！';
+            } else if (pkOurScore < pkOpponentScore) {
+                result = '对方获胜！';
+            } else {
+                result = '双方平局！';
+            }
+
+            showSystemMessage(`PK已结束，${result} 比分: ${pkOurScore} - ${pkOpponentScore}`);
+
+            // 重置PK数据
+            pkOurScore = 0;
+            pkOpponentScore = 0;
+            pkRemainingTime = 300;
+        }
+
+        // 事件监听
+        likeBtn.addEventListener('click', () => {
+            likeCount++;
+            likeCountEl.textContent = likeCount;
+
+            // PK期间点赞增加分数
+            if (isInPk) {
+                pkOurScore++;
+                updatePkProgress();
+            }
+        });
+
+        sendMessageBtn.addEventListener('click', () => {
+            const content = messageInputEl.value.trim();
+            if (content) {
+                sendMessage('我', content);
+                messageInputEl.value = '';
+            }
+        });
+
+        messageInputEl.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessageBtn.click();
+            }
+        });
+
+        inviteBtn.addEventListener('click', () => {
+            // 随机邀请一个观众
+            const randomIndex = Math.floor(Math.random() * viewerItems.length);
+            const viewerName = viewerItems[randomIndex].querySelector('.viewer-name').textContent;
+            showSystemMessage(`已邀请 ${viewerName} 连麦`);
+        });
+
+        acceptBtn.addEventListener('click', acceptConnection);
+        rejectBtn.addEventListener('click', rejectConnection);
+        acceptRequestBtn.addEventListener('click', acceptConnection);
+        rejectRequestBtn.addEventListener('click', rejectConnection);
+
+        startPkBtn.addEventListener('click', startPK);
+        endPkBtn.addEventListener('click', endPK);
+
+        // 为每个观众项添加连麦请求事件
+        viewerItems.forEach((item, index) => {
+            const manageBtn = item.querySelector('.manage-btn');
+            const viewerName = item.querySelector('.viewer-name').textContent;
+
+            manageBtn.addEventListener('click', () => {
+                if (manageBtn.textContent === '连麦') {
+                    requestConnection(index + 1, viewerName);
+                } else {
+                    showSystemMessage(`${viewerName} 已断开连麦`);
+                    manageBtn.textContent = '连麦';
+                }
+            });
+        });
+
+        // 定时更新数据
+        setInterval(updateLiveDuration, 1000);
+        setInterval(randomUpdateViewerCount, 5000);
+
+        // PK定时更新
+        setInterval(() => {
+            if (isInPk) {
+                pkRemainingTime--;
+                updatePkProgress();
+
+                if (pkRemainingTime <= 0) {
+                    endPK();
+                }
+            }
+        }, 1000);
+
+        // 模拟实时消息
+        setInterval(() => {
+            if (Math.random() > 0.7 && !isInPk) { // 30%概率发送模拟消息
+                const students = ['学生1', '学生2', '学生3'];
+                const randomStudent = students[Math.floor(Math.random() * students.length)];
+                const messages = [
+                    '老师，这个问题我不太懂',
+                    '能再讲一遍吗？',
+                    '我明白了，谢谢老师',
+                    '这个知识点好难啊',
+                    '有没有相关的资料可以参考？'
+                ];
+                const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+                sendMessage(randomStudent, randomMessage);
+            }
+        }, 15000);
+    </script>
+</body>
+</html>

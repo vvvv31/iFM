@@ -1,0 +1,2085 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>课程详情 - 星之声</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="../js/search.js"></script>
+    <style>
+        /* 节目列表页面专用样式 */
+        .program-main {
+            background-color: #fff;
+            min-height: calc(100vh - 66px - 84px);
+            padding: 30px 0;
+        }
+
+        .program-layout {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        /* 主内容区 */
+        .program-content {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        /* 课程封面和标题区域 */
+        .program-header {
+            display: flex;
+            gap: 30px;
+            background-color: #FFF8DC;
+            border: 1px solid #FFDAB9;
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+
+        .program-cover {
+            flex-shrink: 0;
+        }
+
+        .cover-image {
+            width: 300px;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid #FF8C00;
+            background-color: #E0FFFF;
+        }
+
+        .program-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .program-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 15px;
+            line-height: 1.3;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .program-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 2px;
+            background-color: #FF8C00;
+            border-radius: 1px;
+        }
+
+        .program-meta {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            background-color: #fff8e1;
+            color: #FF8C00;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 500;
+            border: 1px solid #FFDAB9;
+        }
+
+        .program-stats {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            color: #666;
+            font-size: 14px;
+            flex-wrap: wrap;
+        }
+
+        .program-actions {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 10px 24px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            outline: none;
+        }
+
+        .btn-primary {
+            background-color: #FF8C00;
+            color: white;
+            border: 1px solid #FF8C00;
+        }
+
+        .btn-primary:hover {
+            background-color: #ff7000;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background-color: #fff3e0;
+            color: #FF8C00;
+            border: 1px solid #FFDAB9;
+        }
+
+        .btn-secondary:hover {
+            background-color: #ffe0b2;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary.collected {
+            background-color: #FF8C00;
+            color: white;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: #FF8C00;
+            border: 1px solid #FF8C00;
+        }
+
+        .btn-outline:hover {
+            background-color: #fff8e1;
+            transform: translateY(-1px);
+        }
+
+        /* 标签导航 */
+        .program-tabs {
+            background-color: #FFF8DC;
+            border: 1px solid #FFDAB9;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .tab-container {
+            display: flex;
+            border-bottom: 1px solid #FFDAB9;
+        }
+
+        .tab-btn {
+            padding: 15px 25px;
+            background: none;
+            border: none;
+            font-size: 14px;
+            font-weight: 500;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .tab-btn:hover {
+            color: #FF8C00;
+            background-color: #FFEDCC;
+        }
+
+        .tab-btn.active {
+            color: #FF8C00;
+            font-weight: 600;
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #FF8C00;
+            border-radius: 1px;
+        }
+
+        /* 标签内容 */
+        .tab-content {
+            background-color: #fff;
+            border-radius: 0 0 8px 8px;
+            padding: 25px;
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* 详情部分样式 */
+        .detail-section {
+            margin-bottom: 25px;
+        }
+
+        .detail-section h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 15px;
+            position: relative;
+            padding-left: 12px;
+        }
+
+        .detail-section h2::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 5px;
+            bottom: 5px;
+            width: 4px;
+            background-color: #FF8C00;
+            border-radius: 2px;
+        }
+
+        .detail-section p {
+            margin-bottom: 15px;
+            color: #333;
+            line-height: 1.6;
+            text-align: justify;
+            word-break: break-word;
+        }
+
+        .detail-section ul {
+            margin-bottom: 15px;
+            padding-left: 20px;
+        }
+
+        .detail-section li {
+            margin-bottom: 8px;
+            color: #333;
+            position: relative;
+            padding-left: 10px;
+        }
+
+        .detail-section li::before {
+            content: '•';
+            color: #FF8C00;
+            font-weight: bold;
+            position: absolute;
+            left: -10px;
+        }
+
+        /* 课程大纲样式 */
+        .syllabus-section h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 20px;
+        }
+
+        .unit-item {
+            margin-bottom: 20px;
+            background-color: #fafafa;
+            border: 1px solid #FFDAB9;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .unit-header {
+            background-color: #fff3e0;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            border-bottom: 1px solid #FFDAB9;
+        }
+
+        .unit-header:hover {
+            background-color: #ffe0b2;
+        }
+
+        .unit-header h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #000;
+            margin: 0;
+        }
+
+        .unit-duration {
+            font-size: 13px;
+            color: #FF8C00;
+            font-weight: 500;
+        }
+
+        .lesson-list {
+            padding: 10px 0;
+            display: none;
+        }
+
+        .lesson-list.show {
+            display: block;
+        }
+
+        .lesson-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 20px;
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .lesson-item:last-child {
+            border-bottom: none;
+        }
+
+        .lesson-item:hover {
+            background-color: #FFF8DC;
+        }
+
+        .lesson-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex: 1;
+        }
+
+        .lesson-number {
+            font-size: 14px;
+            font-weight: 600;
+            color: #FF8C00;
+            min-width: 30px;
+        }
+
+        .lesson-title {
+            font-size: 14px;
+            color: #000;
+        }
+
+        .lesson-duration {
+            font-size: 13px;
+            color: #666;
+            margin-right: 15px;
+        }
+
+        .play-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: #fff;
+            border: 1px solid #FF8C00;
+            color: #FF8C00;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .play-btn:hover {
+            background-color: #FF8C00;
+            color: #fff;
+            transform: scale(1.05);
+        }
+
+        /* 课程章节侧边栏样式 */
+        .chapter-sidebar {
+            width: 320px;
+            flex-shrink: 0;
+            background: white;
+            border: 1px solid #FFDAB9;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .chapter-header {
+            background-color: #FF8C00;
+            color: white;
+            padding: 12px 15px;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chapter-header h2 {
+            margin: 0;
+            font-size: 16px;
+        }
+
+        .back-button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chapter-list {
+            background-color: #f9f9f9;
+        }
+
+        .chapter-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .chapter-item:last-child {
+            border-bottom: none;
+        }
+
+        .chapter-item.active {
+            background-color: #fff0e0;
+        }
+
+        .chapter-number {
+            color: #FF8C00;
+            font-weight: 600;
+            margin-right: 10px;
+            font-size: 14px;
+            min-width: 20px;
+        }
+
+        .chapter-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .chapter-title {
+            font-size: 14px;
+            color: #333;
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .chapter-duration {
+            color: #FF8C00;
+            font-size: 14px;
+            margin-left: 10px;
+            font-weight: 500;
+        }
+
+        /* 学员评价样式 */
+        .write-review {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .write-review h3 {
+            margin-bottom: 20px;
+            font-size: 18px;
+            color: #333;
+        }
+
+        .review-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .review-field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .review-field label {
+            font-weight: 500;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .rating-input {
+            display: flex;
+            gap: 10px;
+        }
+
+        .rating-star {
+            font-size: 24px;
+            color: #ddd;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .rating-star:hover,
+        .rating-star.active,
+        .rating-star.hovered {
+            color: #ffc107;
+        }
+
+        #reviewContent {
+            width: 100%;
+            padding: 12px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+            resize: vertical;
+            font-family: inherit;
+            color: #333;
+        }
+
+        #reviewContent:focus {
+            outline: none;
+            border-color: #FF8C00;
+            box-shadow: 0 0 0 2px rgba(255, 140, 0, 0.1);
+        }
+
+        #submitReview {
+            padding: 10px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            border-radius: 4px;
+            background-color: #FF8C00;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            align-self: flex-start;
+        }
+
+        #submitReview:hover {
+            background-color: #ff7000;
+            transform: translateY(-1px);
+        }
+
+        #submitReview:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .reviews-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .overall-rating {
+            display: flex;
+            align-items: center;
+        }
+
+        .rating-stars {
+            color: #ffc107;
+            font-size: 18px;
+            margin-right: 10px;
+        }
+
+        .rating-score {
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+            margin-right: 5px;
+        }
+
+        .rating-count {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .rating-distribution {
+            margin-bottom: 30px;
+        }
+
+        .rating-bar {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .rating-label {
+            width: 30px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 8px;
+            background-color: #f0f0f0;
+            border-radius: 4px;
+            margin: 0 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ffc107, #ff9800);
+            border-radius: 4px;
+        }
+
+        .rating-percentage {
+            width: 40px;
+            font-size: 14px;
+            color: #666;
+            text-align: right;
+        }
+
+        .reviews-list {
+            margin-bottom: 20px;
+        }
+
+        .review-item {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .review-item:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-avatar {
+            width: 30px;
+            height: 30px;
+            background-color: #FF8C00;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 6px;
+        }
+
+        .user-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-weight: bold;
+            color: #333;
+            font-size: 11px;
+        }
+
+        .review-date {
+            color: #999;
+            font-size: 12px;
+        }
+
+        .review-rating {
+            color: #ffc107;
+            font-size: 10px;
+        }
+
+        .review-content {
+            color: #555;
+            line-height: 1.6;
+            font-size: 16px;
+        }
+
+        .load-more-reviews {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        /* 页脚样式 */
+        .footer {
+            background-color: #fff;
+            padding: 30px 0;
+            border-top: 1px solid #FFDAB9;
+            margin-top: 40px;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .footer-info p {
+            color: #666;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .footer-link {
+            text-decoration: none;
+            color: #666;
+            font-size: 14px;
+            transition: color 0.3s ease;
+        }
+
+        .footer-link:hover {
+            color: #FF8C00;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1024px) {
+            .program-layout {
+                flex-direction: column;
+            }
+
+            .chapter-sidebar {
+                width: 100%;
+                max-width: none;
+            }
+
+            .program-title {
+                font-size: 22px;
+            }
+
+            .program-header {
+                padding: 20px;
+            }
+
+            .program-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .program-cover {
+                align-self: center;
+            }
+
+            .cover-image {
+                width: 100%;
+                max-width: 400px;
+                height: auto;
+            }
+
+            .program-actions {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .program-title {
+                font-size: 20px;
+            }
+
+            .detail-section p {
+                font-size: 14px;
+            }
+
+            .program-header {
+                padding: 15px;
+            }
+
+            .tab-container {
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+
+            .tab-btn {
+                padding: 12px 20px;
+                font-size: 13px;
+            }
+
+            .tab-content {
+                padding: 20px;
+            }
+
+            .write-review {
+                padding: 15px;
+            }
+
+            .rating-star {
+                font-size: 20px;
+            }
+
+            #submitReview {
+                padding: 8px 20px;
+                font-size: 13px;
+                width: 100%;
+            }
+
+            .reviews-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .rating-score {
+                font-size: 24px;
+            }
+
+            .rating-stars {
+                font-size: 16px;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .footer-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .program-header {
+                padding: 15px;
+            }
+
+            .program-title {
+                font-size: 18px;
+            }
+
+            .program-info {
+                align-items: flex-start;
+            }
+
+            .program-stats {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .program-meta {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .program-actions {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+
+            .action-btn {
+                padding: 8px 16px;
+                font-size: 13px;
+                flex: 1;
+                min-width: 120px;
+            }
+
+            .tab-content {
+                padding: 15px;
+            }
+
+            .detail-section h2 {
+                font-size: 16px;
+            }
+
+            .lesson-item {
+                padding: 10px 15px;
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 音频元素 -->
+    <audio id="audioPlayer" controls style="display: none;">
+        <source src="" type="audio/mpeg">
+        您的浏览器不支持音频播放
+    </audio>
+
+    <!-- 顶部导航栏 -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-img"></div>
+            <span class="logo-text">星之声</span>
+        </div>
+        <nav class="main-nav">
+            <a href="index.html" class="nav-item">首页</a>
+            <a href="category.html" class="nav-item">分类</a>
+            <a href="channel.html" class="nav-item">社区</a>
+        </nav>
+        <div class="search-box">
+            <label for="homeSearchInput" style="display: none;">搜索课程、频道</label>
+            <input type="text" id="homeSearchInput" class="search-input" placeholder="搜索课程、频道...">
+            <button class="search-btn" id="homeSearchBtn"><i class="fas fa-search"></i></button>
+        </div>
+        <div class="user-functions">
+            <a href="my-recent.html" class="func-item">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+            </a>
+            <a href="my-message.html" class="func-item"><i class="fas fa-bell"></i> 消息</a>
+            <a href="my-collect.html" class="func-item"><i class="fas fa-star"></i> 收藏</a>
+            <a href="my-recent.html" class="func-item"><i class="fas fa-history"></i> 历史</a>
+            <a href="my-creator_center.html" class="func-item"><i class="fas fa-pen"></i> 创作中心</a>
+            <a href="login.html"><button class="submit-btn">登录/注册</button></a>
+        </div>
+    </header>
+
+    <!-- 主要内容区域 -->
+    <main class="main-content program-main">
+        <div class="program-layout">
+            <!-- 左侧主内容区 -->
+            <section class="program-content">
+                <!-- 课程封面和标题 -->
+                <div class="program-header">
+                    <div class="program-cover">
+                        <img id="courseImage" src="../images/english_daily.jpg" alt="课程封面" class="cover-image">
+                    </div>
+                    <div class="program-info">
+                        <h1 id="courseTitle" class="program-title">英语日常对话系列</h1>
+                        <div class="program-meta">
+                            <span id="courseLevel" class="meta-item">初级到中级</span>
+                            <span id="courseEpisodes" class="meta-item">共20集</span>
+                            <span id="courseStatus" class="meta-item">已完结</span>
+                        </div>
+                        <div class="program-stats">
+                            <span class="stat-item">播放量：<span id="playCount">12.5万</span></span>
+                            <span class="stat-item">评分：<span id="courseRating">4.9</span></span>
+                            <span class="stat-item">学习人数：<span id="studentCount">5.8万</span></span>
+                        </div>
+                        <div class="program-actions">
+                            <button class="action-btn btn-primary" onclick="window.location.href='player.html'">立即学习</button>
+                            <button class="action-btn btn-secondary" id="collectBtn">加入收藏</button>
+                            <button class="action-btn btn-outline" id="shareBtn">分享课程</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 标签导航 -->
+                <div class="program-tabs">
+                    <div class="tab-container">
+                        <button class="tab-btn active" data-tab="detail">课程详情</button>
+                        <button class="tab-btn" data-tab="syllabus">课程大纲</button>
+                        <button class="tab-btn" data-tab="reviews">学员评价</button>
+                        <button class="tab-btn" data-tab="faq">常见问题</button>
+                    </div>
+
+                    <!-- 课程详情内容 -->
+                    <div class="tab-content active" id="detail">
+                        <div class="detail-section">
+                            <h2>课程介绍</h2>
+                            <p id="courseDescription">本课程专为想要提升日常英语对话能力的学习者设计，从最基础的问候语到日常生活场景中的实用对话，循序渐进地帮助学习者掌握实用英语。</p>
+                            <p id="courseObjectives">通过本课程的学习，您将能够：</p>
+                            <ul id="objectivesList">
+                                <li>掌握日常生活中最常用的英语表达</li>
+                                <li>在各种日常场景中自信地进行英语交流</li>
+                                <li>提高听力理解能力和口语表达能力</li>
+                                <li>学习地道的英语表达方式和文化背景知识</li>
+                            </ul>
+                        </div>
+
+                        <div class="detail-section">
+                            <h2>适合人群</h2>
+                            <ul id="targetAudience">
+                                <li>英语初级到中级水平的学习者</li>
+                                <li>想要提高日常英语会话能力的学习者</li>
+                                <li>即将出国旅游、学习或工作的人士</li>
+                                <li>需要在日常生活中使用英语的学习者</li>
+                            </ul>
+                        </div>
+
+                        <div class="detail-section">
+                            <h2>课程特色</h2>
+                            <ul id="courseFeatures">
+                                <li>情景对话：真实生活场景中的对话练习</li>
+                                <li>语音讲解：清晰的发音指导和语调练习</li>
+                                <li>互动练习：丰富的练习活动巩固所学内容</li>
+                                <li>文化背景：介绍英语国家的文化习俗和礼仪</li>
+                                <li>实用词汇：每个场景的核心词汇和表达方式</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- 课程大纲内容 -->
+                    <div class="tab-content" id="syllabus">
+                        <div class="syllabus-section">
+                            <h2>课程大纲</h2>
+                            <div id="courseSyllabus">
+                                <!-- 大纲内容将通过JavaScript动态生成 -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 学员评价内容 -->
+                    <div class="tab-content" id="reviews">
+                        <div class="write-review">
+                            <h3>写下您的评价</h3>
+                            <form class="review-form">
+                                <div class="review-field">
+                                    <label for="rating">您的评分</label>
+                                    <input type="hidden" id="rating" name="rating" value="0">
+                                    <div class="rating-input">
+                                        <span class="rating-star" data-rating="1" onclick="setRating(1)"><i class="fas fa-star"></i></span>
+                                        <span class="rating-star" data-rating="2" onclick="setRating(2)"><i class="fas fa-star"></i></span>
+                                        <span class="rating-star" data-rating="3" onclick="setRating(3)"><i class="fas fa-star"></i></span>
+                                        <span class="rating-star" data-rating="4" onclick="setRating(4)"><i class="fas fa-star"></i></span>
+                                        <span class="rating-star" data-rating="5" onclick="setRating(5)"><i class="fas fa-star"></i></span>
+                                    </div>
+                                </div>
+                                <div class="review-field">
+                                    <label for="reviewContent">您的评价内容</label>
+                                    <textarea id="reviewContent" rows="5" placeholder="请分享您对本课程的看法和学习体验..."></textarea>
+                                </div>
+                                <button type="button" id="submitReview" disabled>提交评价</button>
+                            </form>
+                        </div>
+
+                        <div class="reviews-header">
+                            <div class="overall-rating">
+                                <div class="rating-stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                </div>
+                                <div>
+                                    <span class="rating-score">4.9</span>
+                                    <span class="rating-count">(2358条评价)</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="rating-distribution">
+                            <div class="rating-bar">
+                                <span class="rating-label">5星</span>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 85%"></div>
+                                </div>
+                                <span class="rating-percentage">85%</span>
+                            </div>
+                            <div class="rating-bar">
+                                <span class="rating-label">4星</span>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 10%"></div>
+                                </div>
+                                <span class="rating-percentage">10%</span>
+                            </div>
+                            <div class="rating-bar">
+                                <span class="rating-label">3星</span>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 3%"></div>
+                                </div>
+                                <span class="rating-percentage">3%</span>
+                            </div>
+                            <div class="rating-bar">
+                                <span class="rating-label">2星</span>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 1%"></div>
+                                </div>
+                                <span class="rating-percentage">1%</span>
+                            </div>
+                            <div class="rating-bar">
+                                <span class="rating-label">1星</span>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 1%"></div>
+                                </div>
+                                <span class="rating-percentage">1%</span>
+                            </div>
+                        </div>
+
+                        <div class="reviews-list">
+                            <div class="review-item">
+                                <div class="review-header">
+                                    <div class="user-info">
+                                        <div class="user-avatar">李</div>
+                                        <div class="user-details">
+                                            <span class="user-name">李明</span>
+                                            <span class="review-date">2023-10-15</span>
+                                        </div>
+                                    </div>
+                                    <div class="review-rating">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                </div>
+                                <div class="review-content">
+                                    课程非常实用，对话场景贴近生活，学完之后在国外旅游时真的能用得上。老师的发音很标准，讲解也很详细，非常适合初学者。
+                                </div>
+                            </div>
+
+                            <div class="review-item">
+                                <div class="review-header">
+                                    <div class="user-info">
+                                        <div class="user-avatar">王</div>
+                                        <div class="user-details">
+                                            <span class="user-name">王芳</span>
+                                            <span class="review-date">2023-09-28</span>
+                                        </div>
+                                    </div>
+                                    <div class="review-rating">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star-half-alt"></i>
+                                    </div>
+                                </div>
+                                <div class="review-content">
+                                    作为英语初学者，这个课程帮了我很大的忙。每节课时长适中，内容循序渐进，很容易跟上。如果能有配套的练习材料就更好了。
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="load-more-reviews">
+                            <button class="action-btn btn-outline">加载更多评价</button>
+                        </div>
+                    </div>
+
+                    <!-- 常见问题内容 -->
+                    <div class="tab-content" id="faq">
+                        <div class="detail-section">
+                            <h2>课程相关问题</h2>
+                            <ul>
+                                <li><strong>问：本课程适合完全没有英语基础的人学习吗？</strong><br>
+                                答：本课程主要针对初级到中级水平的学习者，建议有一定基础（如掌握26个字母和基础词汇）的学习者学习。如果是完全零基础，建议先学习基础音标和入门词汇课程。</li>
+
+                                <li><strong>问：课程有配套的文字材料或笔记吗？</strong><br>
+                                答：有的，每节课都有配套的对话文本和重点词汇解释，学习时可以在播放器右侧查看和下载。</li>
+
+                                <li><strong>问：购买课程后有有效期限制吗？</strong><br>
+                                答：没有限制，购买后可以永久观看和学习，支持反复收听复习。</li>
+
+                                <li><strong>问：可以在手机上学习吗？</strong><br>
+                                答：可以，支持手机、平板和电脑多设备学习，进度会自动同步。</li>
+
+                                <li><strong>问：学习过程中遇到问题可以提问吗？</strong><br>
+                                答：可以，课程讨论区支持提问，老师会定期回复，也可以与其他学习者交流讨论。</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 右侧章节侧边栏 -->
+            <aside class="chapter-sidebar">
+                <div class="chapter-header">
+                    <button class="back-button" onclick="window.history.back()">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <h2>课程章节</h2>
+                </div>
+                <div class="chapter-list" id="chapterList">
+                    <!-- 章节内容将通过JavaScript动态生成 -->
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-info">
+                <p>© 2023 星之声英语学习中心 版权所有</p>
+            </div>
+            <div class="footer-links">
+                <a href="#" class="footer-link">关于我们</a>
+                <a href="#" class="footer-link">联系方式</a>
+                <a href="#" class="footer-link">隐私政策</a>
+                <a href="#" class="footer-link">用户协议</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 课程数据
+        const courseData = {
+            '1': {
+                title: '商务英语会话技巧',
+                description: '本课程专为商务人士设计，涵盖商务会议、谈判、邮件沟通等场景，帮助您在国际商务环境中自信地进行英语交流。',
+                level: '中级到高级',
+                episodes: '15集',
+                status: '已完结',
+                playCount: '8.3万',
+                rating: '4.8',
+                studentCount: '3.2万',
+                image: '../images/business_english.jpg',
+                objectives: '通过本课程的学习，您将能够：',
+                objectivesList: [
+                    '掌握商务会议中的常用表达和礼仪',
+                    '能够进行商务谈判和合同讨论',
+                    '熟练撰写商务邮件和报告',
+                    '理解不同文化背景下的商务礼仪',
+                    '提高跨文化商务沟通能力'
+                ],
+                targetAudience: [
+                    '商务人士和职场精英',
+                    '需要与国际客户沟通的专业人士',
+                    '准备进入外企工作的求职者',
+                    '商务英语专业的学生',
+                    '希望提升商务英语能力的学习者'
+                ],
+                features: [
+                    '真实商务场景模拟',
+                    '专业商务词汇讲解',
+                    '跨文化沟通技巧',
+                    '商务礼仪指导',
+                    '实际案例分析'
+                ],
+                syllabus: [
+                    { unit: '商务会议', lessons: ['会议准备与安排', '会议主持与发言', '讨论与决议', '会议纪要撰写'], duration: '40分钟' },
+                    { unit: '商务谈判', lessons: ['谈判策略与技巧', '价格与条款讨论', '合同谈判要点', '谈判礼仪'], duration: '45分钟' },
+                    { unit: '商务邮件', lessons: ['邮件格式与结构', '正式与非正式邮件', '邮件语气与措辞', '邮件回复技巧'], duration: '35分钟' }
+                ],
+                chapters: [
+                    { title: '商务会议技巧', duration: '40分钟' },
+                    { title: '商务谈判策略', duration: '45分钟' },
+                    { title: '商务邮件写作', duration: '35分钟' },
+                    { title: '商务演讲技巧', duration: '38分钟' },
+                    { title: '跨文化商务沟通', duration: '42分钟' }
+                ]
+            },
+            '2': {
+                title: '日常英语口语600句',
+                description: '精选600个最常用的英语口语句子，涵盖日常生活的各个方面，帮助您快速提升英语口语表达能力。',
+                level: '初级到中级',
+                episodes: '30集',
+                status: '已完结',
+                playCount: '15.6万',
+                rating: '4.9',
+                studentCount: '7.8万',
+                image: '../images/daily_english.jpg',
+                objectives: '通过本课程的学习，您将能够：',
+                objectivesList: [
+                    '掌握日常生活中的基础英语表达',
+                    '能够进行简单的日常对话',
+                    '提高英语听力和口语反应速度',
+                    '积累常用词汇和句型',
+                    '建立英语交流的自信心'
+                ],
+                targetAudience: [
+                    '英语初学者',
+                    '想要提高日常英语能力的学习者',
+                    '准备出国旅游的人士',
+                    '需要基础英语交流能力的学习者',
+                    '希望快速提升口语的学习者'
+                ],
+                features: [
+                    '600个实用口语句子',
+                    '生活场景分类教学',
+                    '真人发音示范',
+                    '对话练习与模仿',
+                    '渐进式学习难度'
+                ],
+                syllabus: [
+                    { unit: '基础问候与介绍', lessons: ['问候语', '自我介绍', '询问近况', '告别用语'], duration: '35分钟' },
+                    { unit: '家庭与日常生活', lessons: ['家庭介绍', '日常活动', '生活习惯', '时间表达'], duration: '40分钟' },
+                    { unit: '饮食与购物', lessons: ['餐厅点餐', '食物偏好', '购物对话', '价格询问'], duration: '38分钟' }
+                ],
+                chapters: [
+                    { title: '基础问候与介绍', duration: '35分钟' },
+                    { title: '家庭与日常生活', duration: '40分钟' },
+                    { title: '饮食与购物对话', duration: '38分钟' },
+                    { title: '旅行与交通', duration: '42分钟' },
+                    { title: '健康与医疗', duration: '36分钟' }
+                ]
+            },
+            '3': {
+                title: '英语听力进阶训练',
+                description: '系统化的英语听力训练课程，从基础听力技巧到高级听力理解，帮助您全面提升英语听力能力。',
+                level: '初级到高级',
+                episodes: '25集',
+                status: '已完结',
+                playCount: '11.2万',
+                rating: '4.7',
+                studentCount: '4.5万',
+                image: '../images/listening_training.jpg',
+                objectives: '通过本课程的学习，您将能够：',
+                objectivesList: [
+                    '提高英语听力理解能力',
+                    '掌握不同口音的英语听力技巧',
+                    '提高听力反应速度和准确度',
+                    '学会听力笔记技巧',
+                    '能够听懂各种场景的英语对话'
+                ],
+                targetAudience: [
+                    '需要提高英语听力的学习者',
+                    '准备英语考试（雅思、托福等）的学生',
+                    '需要听懂英语会议或讲座的专业人士',
+                    '英语教师和培训师',
+                    '希望全面提升英语能力的学习者'
+                ],
+                features: [
+                    '系统化听力训练体系',
+                    '多种口音听力练习',
+                    '真实场景听力材料',
+                    '听力技巧讲解',
+                    '渐进式难度设置'
+                ],
+                syllabus: [
+                    { unit: '基础听力技巧', lessons: ['数字与时间', '基础词汇识别', '简单对话理解', '听力笔记基础'], duration: '30分钟' },
+                    { unit: '中级听力训练', lessons: ['对话主旨理解', '细节信息捕捉', '长对话听力', '不同口音识别'], duration: '45分钟' },
+                    { unit: '高级听力挑战', lessons: ['讲座与演讲', '新闻听力', '学术英语听力', '快速听力反应'], duration: '50分钟' }
+                ],
+                chapters: [
+                    { title: '基础听力技巧', duration: '30分钟' },
+                    { title: '中级听力训练', duration: '45分钟' },
+                    { title: '高级听力挑战', duration: '50分钟' },
+                    { title: '考试听力技巧', duration: '42分钟' },
+                    { title: '实战听力应用', duration: '38分钟' }
+                ]
+            },
+            '4': {
+                title: '旅游英语实用对话',
+                description: '专为旅行者设计的英语课程，涵盖机场、酒店、餐厅、购物等旅行场景，让您的出国旅行更加顺畅。',
+                level: '初级到中级',
+                episodes: '20集',
+                status: '已完结',
+                playCount: '9.8万',
+                rating: '4.8',
+                studentCount: '4.1万',
+                image: '../images/travel_english.jpg',
+                objectives: '通过本课程的学习，您将能够：',
+                objectivesList: [
+                    '掌握旅行中的基本英语交流',
+                    '能够独立完成旅行相关事务',
+                    '理解旅行中的英语指示和说明',
+                    '提高旅行中的应急英语能力',
+                    '增强出国旅行的自信心'
+                ],
+                targetAudience: [
+                    '准备出国旅行的人士',
+                    '喜欢自由行的旅行者',
+                    '需要短期出国的工作者',
+                    '旅行行业从业人员',
+                    '希望学习实用旅行英语的学习者'
+                ],
+                features: [
+                    '真实旅行场景模拟',
+                    '实用旅行词汇',
+                    '应急英语表达',
+                    '文化差异提示',
+                    '互动对话练习'
+                ],
+                syllabus: [
+                    { unit: '机场与航班', lessons: ['值机与登机', '安检与海关', '航班信息查询', '行李托运'], duration: '38分钟' },
+                    { unit: '酒店住宿', lessons: ['酒店预订', '入住与退房', '房间服务', '问题处理'], duration: '35分钟' },
+                    { unit: '餐厅与饮食', lessons: ['餐厅预订', '点餐与结账', '食物偏好表达', '特殊饮食要求'], duration: '32分钟' }
+                ],
+                chapters: [
+                    { title: '机场与航班', duration: '38分钟' },
+                    { title: '酒店住宿', duration: '35分钟' },
+                    { title: '餐厅与饮食', duration: '32分钟' },
+                    { title: '交通与出行', duration: '40分钟' },
+                    { title: '购物与娱乐', duration: '36分钟' }
+                ]
+            },
+            '5': {
+                title: '职场英语沟通技巧',
+                description: '针对职场环境的英语沟通课程，帮助您提升工作中的英语表达能力，建立良好的职业形象。',
+                level: '中级到高级',
+                episodes: '18集',
+                status: '已完结',
+                playCount: '7.5万',
+                rating: '4.7',
+                studentCount: '3.0万',
+                image: '../images/workplace_english.jpg',
+                objectives: '通过本课程的学习，您将能够：',
+                objectivesList: [
+                    '提升职场英语沟通能力',
+                    '掌握职业场合的英语表达',
+                    '提高英语演讲和展示技巧',
+                    '学会有效的职场英语写作',
+                    '建立专业的职业英语形象'
+                ],
+                targetAudience: [
+                    '职场人士',
+                    '需要英语工作环境的人员',
+                    '准备进入外企的求职者',
+                    '希望提升职业英语能力的学习者',
+                    '管理人员和团队领导'
+                ],
+                features: [
+                    '职场真实场景',
+                    '专业沟通技巧',
+                    '商务礼仪指导',
+                    '职业形象建立',
+                    '实用案例分析'
+                ],
+                syllabus: [
+                    { unit: '职场交流', lessons: ['同事沟通', '会议发言', '电话沟通', '邮件往来'], duration: '42分钟' },
+                    { unit: '工作报告', lessons: ['工作汇报', '项目展示', '数据说明', '建议提出'], duration: '45分钟' },
+                    { unit: '职业发展', lessons: ['面试英语', '薪资谈判', '职业规划', '升职沟通'], duration: '40分钟' }
+                ],
+                chapters: [
+                    { title: '职场日常交流', duration: '42分钟' },
+                    { title: '工作报告与展示', duration: '45分钟' },
+                    { title: '职业发展与面试', duration: '40分钟' },
+                    { title: '团队协作与管理', duration: '38分钟' },
+                    { title: '跨部门沟通', duration: '36分钟' }
+                ]
+            },
+            // 在 courseData 对象中，在 '5': {...} 后面添加以下新课程数据
+
+            '6': {
+                title: '英语写作技巧提升',
+                description: '从基础到高级，系统学习英语写作技巧，帮助您提高写作表达能力，掌握各种文体的写作方法。',
+                level: '中级到高级',
+                episodes: '18集',
+                status: '已完结',
+                playCount: '10万',
+                rating: '4.8',
+                studentCount: '6.2万',
+                image: '../images/writing_skills.jpg',
+                objectives: '通过本课程的学习，您将能够：',
+                objectivesList: [
+                    '掌握英语写作的基本结构和格式',
+                    '学会不同文体的写作技巧',
+                    '提高写作表达的准确性和流畅性',
+                    '掌握学术写作和专业写作的方法',
+                    '能够进行创意写作和文学表达'
+                ],
+                targetAudience: [
+                    '需要提高英语写作能力的学习者',
+                    '准备英语考试（雅思、托福等）的学生',
+                    '需要英语写作的职场人士',
+                    '英语专业的学生和教师',
+                    '对英语写作感兴趣的学习者'
+                ],
+                features: [
+                    '系统化的写作训练体系',
+                    '多种文体写作教学',
+                    '写作技巧详细讲解',
+                    '范文分析与模仿',
+                    '写作练习与反馈'
+                ],
+                syllabus: [
+                    { unit: '基础写作技巧', lessons: ['句子结构与语法', '段落写作', '文章结构', '写作流程'], duration: '40分钟' },
+                    { unit: '应用文写作', lessons: ['书信写作', '邮件写作', '报告写作', '简历写作'], duration: '45分钟' },
+                    { unit: '学术写作', lessons: ['论文结构', '文献引用', '学术风格', '研究方法'], duration: '50分钟' }
+                ],
+                chapters: [
+                    { title: '基础写作技巧', duration: '40分钟' },
+                    { title: '应用文写作', duration: '45分钟' },
+                    { title: '学术写作进阶', duration: '50分钟' },
+                    { title: '创意写作', duration: '38分钟' },
+                    { title: '专业写作', duration: '42分钟' }
+                ]
+            },
+            '7': {
+                title: '零基础英语入门',
+                description: '专为零基础学习者设计的入门课程，从最基础的字母发音开始，循序渐进地带领您进入英语学习的世界。',
+                level: '零基础',
+                episodes: '25集',
+                status: '已完结',
+                playCount: '8.2万',
+                rating: '4.9',
+                studentCount: '4.5万',
+                image: '../images/basic_english.jpg',
+                objectives: '通过本课程的学习，您将能够：',
+                objectivesList: [
+                    '掌握26个英文字母的正确发音',
+                    '学会基础英语音标和发音规则',
+                    '掌握基础英语词汇和简单句型',
+                    '能够进行简单的日常对话',
+                    '建立英语学习的基本框架'
+                ],
+                targetAudience: [
+                    '完全零基础的英语学习者',
+                    '从未系统学习过英语的成年人',
+                    '想要重新开始学习英语的人士',
+                    '对英语感兴趣但不知如何入门的学习者',
+                    '需要基础英语启蒙的家长'
+                ],
+                features: [
+                    '零起点教学，适合完全初学者',
+                    '系统化的基础知识讲解',
+                    '生活化场景的简单对话',
+                    '发音纠正和语调训练',
+                    '渐进式学习难度设计'
+                ],
+                syllabus: [
+                    { unit: '字母与发音', lessons: ['26个字母', '元音发音', '辅音发音', '发音练习'], duration: '35分钟' },
+                    { unit: '基础词汇', lessons: ['数字与时间', '颜色与形状', '家庭成员', '日常物品'], duration: '40分钟' },
+                    { unit: '简单句型', lessons: ['问候与介绍', '简单提问', '肯定与否定', '基础对话'], duration: '38分钟' }
+                ],
+                chapters: [
+                    { title: '字母与发音基础', duration: '35分钟' },
+                    { title: '基础词汇积累', duration: '40分钟' },
+                    { title: '简单句型学习', duration: '38分钟' },
+                    { title: '日常对话练习', duration: '32分钟' },
+                    { title: '综合复习与应用', duration: '45分钟' }
+                ]
+            },
+            '8': {
+                title: '英语语法精讲',
+                description: '系统讲解英语语法规则，通过大量实例分析，帮助您深入理解英语语法结构，提高语言表达的准确性。',
+                level: '初级到高级',
+                episodes: '30集',
+                status: '已完结',
+                playCount: '4.3万',
+                rating: '4.7',
+                studentCount: '2.8万',
+                image: '../images/grammar_english.jpg',
+                objectives: '通过本课程的学习，您将能够：',
+                objectivesList: [
+                    '掌握英语语法的基本规则',
+                    '理解复杂句型的结构',
+                    '提高语言表达的准确性',
+                    '学会语法在实际语境中的应用',
+                    '掌握常见语法错误的纠正方法'
+                ],
+                targetAudience: [
+                    '需要系统学习语法的英语学习者',
+                    '准备英语考试的学生',
+                    '英语教师和培训师',
+                    '希望提高英语准确性的学习者',
+                    '需要巩固语法基础的学习者'
+                ],
+                features: [
+                    '系统化的语法知识体系',
+                    '丰富的实例分析',
+                    '语法难点详细讲解',
+                    '实用语法练习',
+                    '常见错误解析'
+                ],
+                syllabus: [
+                    { unit: '基础语法', lessons: ['时态与语态', '名词与代词', '形容词与副词', '介词与连词'], duration: '45分钟' },
+                    { unit: '句子结构', lessons: ['简单句与复合句', '从句结构', '倒装句', '省略句'], duration: '50分钟' },
+                    { unit: '高级语法', lessons: ['虚拟语气', '非谓语动词', '独立主格', '语法综合应用'], duration: '55分钟' }
+                ],
+                chapters: [
+                    { title: '基础语法精讲', duration: '45分钟' },
+                    { title: '句子结构分析', duration: '50分钟' },
+                    { title: '高级语法应用', duration: '55分钟' },
+                    { title: '语法错误纠正', duration: '42分钟' },
+                    { title: '综合语法练习', duration: '48分钟' }
+                ]
+            },
+            '9': {
+                title: '旅游英语口语',
+                description: '针对旅游场景的实用英语口语课程，涵盖机场、酒店、餐厅、购物等场景，让您的出国旅行更加顺利愉快。',
+                level: '初级到中级',
+                episodes: '20集',
+                status: '已完结',
+                playCount: '3.7万',
+                rating: '4.8',
+                studentCount: '2.1万',
+                image: '../images/travel_conversation.jpg',
+                objectives: '通过本课程的学习，您将能够：',
+                objectivesList: [
+                    '掌握旅游中的基本英语交流',
+                    '能够独立完成旅行相关事务',
+                    '理解旅行中的英语指示和说明',
+                    '提高旅行中的应急英语能力',
+                    '增强出国旅行的自信心'
+                ],
+                targetAudience: [
+                    '准备出国旅行的人士',
+                    '喜欢自由行的旅行者',
+                    '需要短期出国的工作者',
+                    '旅行行业从业人员',
+                    '希望学习实用旅行英语的学习者'
+                ],
+                features: [
+                    '真实旅行场景模拟',
+                    '实用旅行词汇',
+                    '应急英语表达',
+                    '文化差异提示',
+                    '互动对话练习'
+                ],
+                syllabus: [
+                    { unit: '机场与交通', lessons: ['值机与登机', '问路与交通', '行李托运', '航班信息'], duration: '38分钟' },
+                    { unit: '酒店住宿', lessons: ['酒店预订', '入住与退房', '房间服务', '问题处理'], duration: '35分钟' },
+                    { unit: '餐饮购物', lessons: ['餐厅点餐', '食物偏好', '购物对话', '讨价还价'], duration: '32分钟' }
+                ],
+                chapters: [
+                    { title: '机场与交通英语', duration: '38分钟' },
+                    { title: '酒店住宿沟通', duration: '35分钟' },
+                    { title: '餐饮购物对话', duration: '32分钟' },
+                    { title: '景点游览交流', duration: '36分钟' },
+                    { title: '应急情况处理', duration: '34分钟' }
+                ]
+            },
+            '10': {
+                title: '英语发音纠正',
+                description: '纠正常见的英语发音问题，通过系统的发音训练，帮助您提高英语发音的准确性和流利度。',
+                level: '初级到高级',
+                episodes: '22集',
+                status: '已完结',
+                playCount: '2.8万',
+                rating: '4.6',
+                studentCount: '1.9万',
+                image: '../images/pronunciation.jpg',
+                objectives: '通过本课程的学习，您将能够：',
+                objectivesList: [
+                    '纠正常见英语发音错误',
+                    '掌握标准英语发音技巧',
+                    '提高发音的准确性和清晰度',
+                    '学会连读、弱读等发音规则',
+                    '建立自信的英语口语表达'
+                ],
+                targetAudience: [
+                    '发音不准确需要纠正的学习者',
+                    '希望提高口语流利度的学习者',
+                    '需要标准发音的职场人士',
+                    '英语教师和发音培训师',
+                    '准备英语口语考试的学生'
+                ],
+                features: [
+                    '发音错误系统纠正',
+                    '标准发音示范',
+                    '发音技巧详细讲解',
+                    '对比练习与模仿',
+                    '个性化发音指导'
+                ],
+                syllabus: [
+                    { unit: '元音发音', lessons: ['单元音', '双元音', '元音对比', '元音练习'], duration: '40分钟' },
+                    { unit: '辅音发音', lessons: ['清浊辅音', '摩擦音', '爆破音', '辅音组合'], duration: '42分钟' },
+                    { unit: '语调与节奏', lessons: ['句子重音', '语调模式', '连读弱读', '节奏练习'], duration: '45分钟' }
+                ],
+                chapters: [
+                    { title: '元音发音纠正', duration: '40分钟' },
+                    { title: '辅音发音训练', duration: '42分钟' },
+                    { title: '语调与节奏掌握', duration: '45分钟' },
+                    { title: '常见错误解析', duration: '38分钟' },
+                    { title: '综合发音练习', duration: '40分钟' }
+                ]
+            },
+            '11': {
+                title: '英语面试技巧',
+                description: '学习英语面试中的常见问题和回答技巧，帮助您在英语面试中自信表现，提高面试成功率。',
+                level: '中级到高级',
+                episodes: '16集',
+                status: '已完结',
+                playCount: '3.2万',
+                rating: '4.7',
+                studentCount: '2.0万',
+                image: '../images/interview_skills.jpg',
+                objectives: '通过本课程的学习，您将能够：',
+                objectivesList: [
+                    '掌握英语面试的常见问题',
+                    '学会英语面试的回答技巧',
+                    '提高面试英语的表达能力',
+                    '学会面试礼仪和注意事项',
+                    '建立面试自信心态'
+                ],
+                targetAudience: [
+                    '准备英语面试的求职者',
+                    '想要进入外企的职场人士',
+                    '留学申请需要面试的学生',
+                    '需要英语面试培训的学员',
+                    '人力资源和招聘专员'
+                ],
+                features: [
+                    '真实面试场景模拟',
+                    '常见问题解析',
+                    '回答技巧指导',
+                    '面试礼仪讲解',
+                    '模拟面试练习'
+                ],
+                syllabus: [
+                    { unit: '面试准备', lessons: ['简历准备', '公司研究', '自我介绍', '常见问题'], duration: '35分钟' },
+                    { unit: '面试技巧', lessons: ['回答策略', '问题应对', '英语表达', '非语言沟通'], duration: '40分钟' },
+                    { unit: '模拟面试', lessons: ['一对一模拟', '小组面试', '压力面试', '面试反馈'], duration: '42分钟' }
+                ],
+                chapters: [
+                    { title: '面试前期准备', duration: '35分钟' },
+                    { title: '面试技巧提升', duration: '40分钟' },
+                    { title: '模拟面试训练', duration: '42分钟' },
+                    { title: '面试后续跟进', duration: '30分钟' },
+                    { title: '特殊面试场景', duration: '38分钟' }
+                ]
+            },
+            '12': {
+                title: '考研英语阅读理解',
+                description: '针对考研英语阅读理解的专项训练，通过系统方法和大量练习，提高阅读速度和理解准确率。',
+                level: '中级到高级',
+                episodes: '28集',
+                status: '已完结',
+                playCount: '6.5万',
+                rating: '4.8',
+                studentCount: '3.5万',
+                image: '../images/exam_reading.jpg',
+                objectives: '通过本课程的学习，您将能够：',
+                objectivesList: [
+                    '提高英语阅读速度和效率',
+                    '掌握阅读理解解题技巧',
+                    '学会分析长难句结构',
+                    '提高阅读理解的准确率',
+                    '建立系统的阅读训练方法'
+                ],
+                targetAudience: [
+                    '准备考研英语的学生',
+                    '需要提高阅读理解能力的学习者',
+                    '准备其他英语考试的学习者',
+                    '英语教师和培训师',
+                    '需要学术阅读能力的研究者'
+                ],
+                features: [
+                    '考研真题详细解析',
+                    '阅读技巧系统讲解',
+                    '长难句分析方法',
+                    '解题策略指导',
+                    '模拟练习与评估'
+                ],
+                syllabus: [
+                    { unit: '阅读基础', lessons: ['快速阅读', '精读技巧', '词汇积累', '句子分析'], duration: '45分钟' },
+                    { unit: '题型解析', lessons: ['主旨大意', '细节理解', '推理判断', '词义猜测'], duration: '50分钟' },
+                    { unit: '真题训练', lessons: ['历年真题', '模拟练习', '错题分析', '应试策略'], duration: '55分钟' }
+                ],
+                chapters: [
+                    { title: '阅读基础训练', duration: '45分钟' },
+                    { title: '题型解析与技巧', duration: '50分钟' },
+                    { title: '真题分析与练习', duration: '55分钟' },
+                    { title: '模拟考试训练', duration: '60分钟' },
+                    { title: '考前冲刺指导', duration: '48分钟' }
+                ]
+            },
+            '13': {
+                title: '少儿英语启蒙',
+                description: '通过歌曲、游戏、故事等方式，激发孩子学习英语的兴趣，帮助孩子打好英语学习的基础。',
+                level: '启蒙入门',
+                episodes: '24集',
+                status: '已完结',
+                playCount: '9.8万',
+                rating: '4.9',
+                studentCount: '5.2万',
+                image: '../images/kids_english.jpg',
+                objectives: '通过本课程的学习，您的孩子将能够：',
+                objectivesList: [
+                    '培养英语学习兴趣',
+                    '掌握基础英语词汇',
+                    '学会简单的英语表达',
+                    '建立英语语感',
+                    '养成良好的学习习惯'
+                ],
+                targetAudience: [
+                    '3-8岁儿童的家长',
+                    '幼儿园和小学英语教师',
+                    '少儿英语培训机构',
+                    '希望孩子早期接触英语的家长',
+                    '儿童教育工作者'
+                ],
+                features: [
+                    '趣味性教学方式',
+                    '歌曲与游戏结合',
+                    '生动故事讲解',
+                    '亲子互动练习',
+                    '循序渐进的学习计划'
+                ],
+                syllabus: [
+                    { unit: '基础认知', lessons: ['字母歌', '颜色认知', '数字学习', '动物世界'], duration: '25分钟' },
+                    { unit: '日常表达', lessons: ['问候用语', '家庭称呼', '食物名称', '日常活动'], duration: '28分钟' },
+                    { unit: '趣味故事', lessons: ['经典故事', '英语儿歌', '角色扮演', '创意表达'], duration: '30分钟' }
+                ],
+                chapters: [
+                    { title: '字母与数字乐园', duration: '25分钟' },
+                    { title: '颜色与动物世界', duration: '28分钟' },
+                    { title: '日常用语学习', duration: '30分钟' },
+                    { title: '英语儿歌欣赏', duration: '22分钟' },
+                    { title: '趣味故事时间', duration: '26分钟' }
+                ]
+            },
+            '14': {
+                title: '职场英语沟通',
+                description: '学习职场中的英语沟通技巧，包括会议、报告、邮件等场景，帮助您在职场中建立专业的英语沟通形象。',
+                level: '中级到高级',
+                episodes: '20集',
+                status: '已完结',
+                playCount: '4.1万',
+                rating: '4.7',
+                studentCount: '2.3万',
+                image: '../images/workplace_communication.jpg',
+                objectives: '通过本课程的学习，您将能够：',
+                objectivesList: [
+                    '掌握职场英语沟通技巧',
+                    '提高会议和报告的英语表达能力',
+                    '学会专业邮件的写作方法',
+                    '提升跨文化职场沟通能力',
+                    '建立专业的职场英语形象'
+                ],
+                targetAudience: [
+                    '职场人士和企业员工',
+                    '需要英语工作环境的人员',
+                    '准备进入外企的求职者',
+                    '管理人员和团队领导',
+                    '希望提升职业英语能力的学习者'
+                ],
+                features: [
+                    '真实职场场景',
+                    '专业沟通技巧',
+                    '商务礼仪指导',
+                    '案例分析与模拟',
+                    '实用模板与工具'
+                ],
+                syllabus: [
+                    { unit: '会议沟通', lessons: ['会议准备', '会议发言', '讨论与决议', '会议纪要'], duration: '42分钟' },
+                    { unit: '工作报告', lessons: ['工作汇报', '项目展示', '数据说明', '建议提出'], duration: '45分钟' },
+                    { unit: '邮件写作', lessons: ['邮件格式', '正式与非正式', '语气与措辞', '附件处理'], duration: '38分钟' }
+                ],
+                chapters: [
+                    { title: '职场会议沟通', duration: '42分钟' },
+                    { title: '工作报告与展示', duration: '45分钟' },
+                    { title: '专业邮件写作', duration: '38分钟' },
+                    { title: '团队协作沟通', duration: '40分钟' },
+                    { title: '跨文化职场沟通', duration: '42分钟' }
+                ]
+            }
+            // 其他课程数据可以继续添加...
+        };
+
+        // 页面加载时根据URL参数设置课程内容
+        document.addEventListener('DOMContentLoaded', function() {
+            // 从URL获取课程ID
+            const urlParams = new URLSearchParams(window.location.search);
+            const courseId = urlParams.get('id') || '1';
+            const courseName = urlParams.get('course') || '英语课程';
+
+            // 获取课程数据，如果没有对应ID则使用第一个课程
+            const course = courseData[courseId] || courseData['1'];
+
+            // 更新页面标题
+            document.title = course.title + ' - 星之声';
+
+            // 更新课程信息
+            document.getElementById('courseTitle').textContent = course.title;
+            document.getElementById('courseImage').src = course.image;
+            document.getElementById('courseImage').alt = course.title + '封面';
+            document.getElementById('courseDescription').textContent = course.description;
+            document.getElementById('courseLevel').textContent = course.level;
+            document.getElementById('courseEpisodes').textContent = course.episodes;
+            document.getElementById('courseStatus').textContent = course.status;
+            document.getElementById('playCount').textContent = course.playCount;
+            document.getElementById('courseRating').textContent = course.rating;
+            document.getElementById('studentCount').textContent = course.studentCount;
+            document.getElementById('courseObjectives').textContent = course.objectives;
+
+            // 更新学习目标列表
+            const objectivesList = document.getElementById('objectivesList');
+            objectivesList.innerHTML = '';
+            course.objectivesList.forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = item;
+                objectivesList.appendChild(li);
+            });
+
+            // 更新适合人群列表
+            const targetAudience = document.getElementById('targetAudience');
+            targetAudience.innerHTML = '';
+            course.targetAudience.forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = item;
+                targetAudience.appendChild(li);
+            });
+
+            // 更新课程特色列表
+            const courseFeatures = document.getElementById('courseFeatures');
+            courseFeatures.innerHTML = '';
+            course.features.forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = item;
+                courseFeatures.appendChild(li);
+            });
+
+            // 更新课程大纲
+            const courseSyllabus = document.getElementById('courseSyllabus');
+            courseSyllabus.innerHTML = '';
+            course.syllabus.forEach((unit, unitIndex) => {
+                const unitItem = document.createElement('div');
+                unitItem.className = 'unit-item';
+
+                const unitHeader = document.createElement('div');
+                unitHeader.className = 'unit-header';
+                unitHeader.onclick = function() { toggleUnit(this); };
+                unitHeader.innerHTML = `
+                    <h3>第${unitIndex + 1}单元：${unit.unit}</h3>
+                    <span class="unit-duration">${unit.lessons.length}集 · 约${unit.duration}</span>
+                `;
+
+                const lessonList = document.createElement('div');
+                lessonList.className = 'lesson-list' + (unitIndex === 0 ? ' show' : '');
+
+                unit.lessons.forEach((lesson, lessonIndex) => {
+                    const lessonItem = document.createElement('div');
+                    lessonItem.className = 'lesson-item';
+                    lessonItem.innerHTML = `
+                        <div class="lesson-info">
+                            <span class="lesson-number">${unitIndex + 1}.${lessonIndex + 1}</span>
+                            <span class="lesson-title">${lesson}</span>
+                        </div>
+                        <span class="lesson-duration">${Math.floor(Math.random() * 5) + 8}:${Math.floor(Math.random() * 60).toString().padStart(2, '0')}</span>
+                        <button class="play-btn" onclick="playAudio('audio/sample.mp3', '${lesson}')">
+                            <i class="fas fa-play"></i>
+                        </button>
+                    `;
+                    lessonList.appendChild(lessonItem);
+                });
+
+                unitItem.appendChild(unitHeader);
+                unitItem.appendChild(lessonList);
+                courseSyllabus.appendChild(unitItem);
+            });
+
+            // 更新章节列表
+            const chapterList = document.getElementById('chapterList');
+            chapterList.innerHTML = '';
+            course.chapters.forEach((chapter, index) => {
+                const chapterItem = document.createElement('div');
+                chapterItem.className = 'chapter-item' + (index === 0 ? ' active' : '');
+                chapterItem.innerHTML = `
+                    <span class="chapter-number">${index + 1}</span>
+                    <div class="chapter-content">
+                        <h3 class="chapter-title">${chapter.title}</h3>
+                    </div>
+                    <span class="chapter-duration">${chapter.duration}</span>
+                `;
+                chapterList.appendChild(chapterItem);
+            });
+
+            // 标签切换功能
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    this.classList.add('active');
+                    const tabId = this.getAttribute('data-tab');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+
+            // 收藏按钮功能
+            const collectBtn = document.getElementById('collectBtn');
+            let isCollected = false;
+            collectBtn.addEventListener('click', function() {
+                isCollected = !isCollected;
+                if (isCollected) {
+                    this.textContent = '已收藏';
+                    this.classList.add('btn-primary');
+                    this.classList.remove('btn-secondary');
+                    alert('已添加到收藏');
+                } else {
+                    this.textContent = '加入收藏';
+                    this.classList.remove('btn-primary');
+                    this.classList.add('btn-secondary');
+                }
+            });
+
+            // 分享按钮功能
+            const shareBtn = document.getElementById('shareBtn');
+            shareBtn.addEventListener('click', function() {
+                alert('分享链接已复制到剪贴板，可以粘贴发送给好友了');
+            });
+
+            // 获取URL参数的函数
+        function getURLParameter(name) {
+            const params = new URLSearchParams(window.location.search);
+            return params.get(name);
+        }
+
+        // 章节选择功能
+        const chapterItems = document.querySelectorAll('.chapter-item');
+        chapterItems.forEach(item => {
+            item.addEventListener('click', function() {
+                chapterItems.forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // 根据URL参数动态更新频道信息
+        const channelName = getURLParameter('channel');
+        if (channelName) {
+            // 更新频道标题
+            const programTitle = document.querySelector('.program-title');
+            if (programTitle) {
+                programTitle.textContent = channelName;
+            }
+
+            // 更新页面标题
+            document.title = `${channelName} - 节目列表 - iFM`;
+
+            // 可以根据需要更新更多频道信息
+            // 例如：频道封面、描述等
+            // 这里可以添加从后端获取频道详细信息的API调用
+        }
+    });
+
+        // 单元展开/折叠功能
+        function toggleUnit(header) {
+            const lessonList = header.nextElementSibling;
+            lessonList.classList.toggle('show');
+        }
+
+        // 音频播放功能
+        function playAudio(src, title) {
+            const audioPlayer = document.getElementById('audioPlayer');
+            const source = audioPlayer.querySelector('source');
+            source.src = src;
+            audioPlayer.load();
+            audioPlayer.play();
+            audioPlayer.style.display = 'block';
+            audioPlayer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        // 评分星星功能（同步更新隐藏input值）
+        let selectedRating = 0;
+        function setRating(rating) {
+            selectedRating = rating;
+            const stars = document.querySelectorAll('.rating-star');
+            // 同步更新隐藏input的评分值
+            document.getElementById('rating').value = rating;
+
+            stars.forEach(star => {
+                const starRating = parseInt(star.getAttribute('data-rating'));
+                star.classList.toggle('active', starRating <= rating);
+            });
+
+            // 启用提交按钮
+            document.getElementById('submitReview').disabled = false;
+        }
+
+        // 提交评价功能
+        document.getElementById('submitReview').addEventListener('click', function() {
+            const content = document.getElementById('reviewContent').value.trim();
+            if (!content) {
+                alert('请输入评价内容');
+                return;
+            }
+
+            alert(`感谢您的评价！\n评分：${selectedRating}星\n内容：${content}`);
+            // 重置表单
+            document.querySelector('.review-form').reset();
+            document.querySelectorAll('.rating-star').forEach(star => star.classList.remove('active'));
+            selectedRating = 0;
+            document.getElementById('rating').value = 0;
+            this.disabled = true;
+        });
+    </script>
+</body>
+</html>

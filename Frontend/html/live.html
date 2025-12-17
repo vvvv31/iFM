@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>直播间 - 星之声</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/live.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="../js/search.js"></script>
+</head>
+<body>
+    <!-- 音频元素 -->
+    <audio id="audioPlayer" controls style="display: none;">
+        <source src="" type="audio/mpeg">
+        您的浏览器不支持音频播放
+    </audio>
+
+    <!-- 顶部导航栏 -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-img"></div>
+            <span class="logo-text">星之声</span>
+        </div>
+        <nav class="main-nav">
+            <a href="index.html" class="nav-item">首页</a>
+            <a href="category.html" class="nav-item">分类</a>
+            <a href="channel.html" class="nav-item">社区</a>
+        </nav>
+        <div class="search-box">
+            <input type="text" placeholder="搜索课程、频道..." class="search-input" id="homeSearchInput">
+            <button class="search-btn" id="homeSearchBtn"><i class="fas fa-search"></i></button>
+        </div>
+        <div class="user-functions">
+            <a href="my-recent.html" class="func-item">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+            </a>
+            <a href="my-message.html" class="func-item"><i class="fas fa-bell"></i> 消息</a>
+            <a href="my-collect.html" class="func-item"><i class="fas fa-star"></i> 收藏</a>
+            <a href="my-recent.html" class="func-item"><i class="fas fa-history"></i> 历史</a>
+            <a href="my-creator_center.html" class="func-item"><i class="fas fa-pen"></i> 创作中心</a>
+            <a href="login.html"><button class="submit-btn">登录/注册</button></a>
+        </div>
+    </header>
+
+    <!-- 主要内容区域 -->
+    <main class="main-content">
+        <div class="live-container">
+            <!-- 左侧直播区域 -->
+            <div class="live-stream-section">
+                <!-- 直播头部信息 -->
+                <div class="live-header">
+                    <div class="live-status">
+                        <span class="live-badge">直播中</span>
+                        <h1 class="live-title">英语口语练习</h1>
+                    </div>
+                    <div class="live-actions">
+                        <button class="btn-orange">
+                            <i class="fas fa-heart"></i> 收藏
+                        </button>
+                        <button class="btn-orange">
+                            <i class="fas fa-share"></i> 分享
+                        </button>
+                        <button class="btn-orange">
+                            <i class="fas fa-ellipsis-h"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 直播主体内容 -->
+                <div class="live-content">
+                    <!-- 直播画面区域 -->
+                    <div class="live-video-container">
+                        <div class="live-video">
+                            <!-- 模拟直播画面 -->
+                            <div class="live-stream">
+                                <!-- 主播信息 -->
+                                <div class="live-anchor-info">
+                                    <div class="anchor-avatar">
+                                        <i class="fas fa-user-circle" style="font-size: 48px; color: #FF8C00;"></i>
+                                    </div>
+                                    <div class="anchor-name">xx老师</div>
+                                </div>
+
+                                <!-- 学生视频区域 -->
+                                <div class="students-videos">
+                                    <div class="student-video-item">
+                                        <div class="student-avatar">
+                                            <i class="fas fa-user" style="font-size: 32px; color: #FF8C00;"></i>
+                                        </div>
+                                        <div class="student-name">学生1</div>
+                                    </div>
+                                    <div class="student-video-item">
+                                        <div class="student-avatar">
+                                            <i class="fas fa-user" style="font-size: 32px; color: #FF8C00;"></i>
+                                        </div>
+                                        <div class="student-name">学生2</div>
+                                    </div>
+                                    <div class="student-video-item">
+                                        <div class="student-avatar">
+                                            <i class="fas fa-user" style="font-size: 32px; color: #FF8C00;"></i>
+                                        </div>
+                                        <div class="student-name">学生3</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 直播操作栏 -->
+                            <div class="live-controls">
+                                <div class="control-left">
+                                    <div class="viewer-count">
+                                        <i class="fas fa-eye"></i>
+                                        <span>2,586 人观看</span>
+                                    </div>
+                                </div>
+                                <div class="control-center">
+                                    <button class="btn-orange">
+                                        <i class="fas fa-thumbs-up"></i>
+                                        <span>点赞</span>
+                                    </button>
+                                    <button class="btn-orange">
+                                        <i class="fas fa-comment"></i>
+                                        <span>评论</span>
+                                    </button>
+                                    <button class="btn-orange">
+                                        <i class="fas fa-phone"></i>
+                                        <span>连麦</span>
+                                    </button>
+                                </div>
+                                <div class="control-right">
+                                    <button class="btn-orange">
+                                        <i class="fas fa-microphone"></i>
+                                    </button>
+                                    <button class="btn-orange">
+                                        <i class="fas fa-video"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 直播课程信息 -->
+                    <div class="live-course-info">
+                        <div class="course-header">
+                            <h3>课程信息</h3>
+                            <span class="course-date">2023-05-20</span>
+                        </div>
+                        <div class="course-content">
+                            <p>这是一节英语口语练习直播课，适合中级英语学习者。本节课将重点练习日常对话和商务英语表达，提高口语流利度和准确性。</p>
+                        </div>
+                        <div class="course-teacher">
+                            <div class="teacher-info">
+                                <div class="teacher-avatar">
+                                    <i class="fas fa-user-tie" style="font-size: 32px; color: #FF8C00;"></i>
+                                </div>
+                                <div class="teacher-details">
+                                    <h4>xx老师</h4>
+                                    <p>资深英语讲师 | 10年教学经验</p>
+                                </div>
+                            </div>
+                            <button class="btn-orange">关注</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧聊天区域 -->
+            <div class="live-chat-section">
+                <div class="chat-header">
+                    <h3>聊天室</h3>
+                    <button class="btn-orange">
+                        <i class="fas fa-expand"></i>
+                    </button>
+                </div>
+                <div class="chat-messages">
+                    <div class="chat-message system-message">
+                        <span>欢迎来到英语学习直播间！</span>
+                    </div>
+                    <div class="chat-message user-message">
+                        <div class="user-info">
+                            <div class="user-avatar">
+                                <i class="fas fa-user-circle" style="font-size: 24px; color: #FF8C00;"></i>
+                            </div>
+                            <div class="user-name">xx老师</div>
+                        </div>
+                        <div class="message-content">
+                            我要点一些同学连麦，朗读一下这段话
+                        </div>
+                    </div>
+                    <div class="chat-message user-message">
+                        <div class="user-info">
+                            <div class="user-avatar">
+                                <i class="fas fa-user" style="font-size: 20px; color: #FF8C00;"></i>
+                            </div>
+                            <div class="user-name">学生1</div>
+                        </div>
+                        <div class="message-content">
+                            点我
+                        </div>
+                    </div>
+                    <!-- 更多聊天消息 -->
+                </div>
+                <div class="chat-input-area">
+                    <input type="text" class="chat-input" placeholder="发送消息...">
+                    <button class="btn-orange">发送</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 已删除底部播放栏代码 -->
+
+    <!-- 功能JavaScript（保留非播放栏相关功能） -->
+    <script>
+        // 聊天功能
+        const chatInput = document.querySelector('.chat-input');
+        const chatSendBtn = document.querySelector('.chat-input-area .btn-orange');
+        const chatMessages = document.querySelector('.chat-messages');
+        const urlParams = new URLSearchParams(window.location.search);
+        const liveId = urlParams.get('id');
+        const liveTitle = urlParams.get('title');
+        const teacherName = urlParams.get('teacher');
+
+        if (liveTitle) {
+            document.querySelector('.live-title').textContent = liveTitle;
+        }
+
+        if (teacherName) {
+            // 更新老师姓名
+            const teacherElements = document.querySelectorAll('.anchor-name, .teacher-name, .user-name');
+            teacherElements.forEach(el => {
+                el.textContent = teacherName;
+            });
+        }
+
+        // 如果有直播ID，可以用于后续获取更多直播数据
+        if (liveId) {
+            console.log('直播ID:', liveId);
+            // 这里可以添加根据ID获取直播详细信息的代码
+        }
+
+        chatSendBtn.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        function sendMessage() {
+            const message = chatInput.value.trim();
+            if (message) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'chat-message user-message';
+                messageDiv.innerHTML = `
+                    <div class="user-info">
+                        <div class="user-avatar">
+                            <i class="fas fa-user" style="font-size: 20px; color: #FF8C00;"></i>
+                        </div>
+                        <div class="user-name">我</div>
+                    </div>
+                    <div class="message-content">${message}</div>
+                `;
+                chatMessages.appendChild(messageDiv);
+                chatInput.value = '';
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        }
+    </script>
+</body>
+</html>

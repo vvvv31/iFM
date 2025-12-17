@@ -1,0 +1,1008 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "微软雅黑", sans-serif;
+}
+body {
+    background-color: #fff;
+    color: #333;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    /* 为固定导航栏设置内边距 */
+    padding-top: 66px; /* 顶部导航栏高度 */
+    padding-bottom: 84px; /* 底部播放栏高度 */
+}
+
+/* 固定顶部导航栏 */
+.header {
+    background-color: #FF8C00;
+    color: #fff;
+    padding: 8px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    position: fixed; /* 改为固定定位 */
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000; /* 确保在最上层 */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* 添加阴影增强层次感 */
+}
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.logo-img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: #fff; /* 图片占位 */
+}
+.logo-text {
+    font-size: 16px;
+    font-weight: bold;
+}
+.main-nav {
+    display: flex;
+    gap: 15px;
+}
+.nav-item {
+    color: #fff;
+    text-decoration: none;
+    font-size: 14px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+.nav-item:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+.nav-item.active {
+    background-color: #fff;
+    color: #FF8C00;
+    font-weight: bold;
+}
+.search-box {
+    flex: 1;
+    max-width: 400px;
+    position: relative;
+}
+.search-input {
+    width: 100%;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    outline: none;
+    font-size: 14px;
+}
+.search-btn {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #999;
+    cursor: pointer;
+}
+.user-functions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.func-item {
+    color: #fff;
+    text-decoration: none;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    transition: color 0.3s;
+}
+.func-item:hover {
+    color: #FFEDCC;
+}
+.submit-btn {
+    background-color: #fff;
+    color: #FF8C00;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+.submit-btn:hover {
+    background-color: #FFEDCC;
+}
+
+/* 主要内容区 */
+.main-content {
+    flex: 1;
+    padding: 15px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+    /* 确保内容在固定导航栏下面 */
+    margin-top: 0;
+}
+.user-info {
+    background-color: #FFF8DC;
+    border: 1px solid #FFDAB9;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+.avatar-wrapper {
+    width: 60px;
+    height: 60px;
+    border: 1px solid #FF8C00;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #FF8C00; /* 图片占位 */
+}
+.user-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+.username {
+    font-size: 16px;
+    font-weight: bold;
+}
+.identity {
+    font-size: 12px;
+    color: #666;
+}
+.stats {
+    display: flex;
+    gap: 10px;
+    font-size: 12px;
+    color: #666;
+}
+.stats span b {
+    color: #FF8C00;
+}
+.tab-bar {
+    display: flex;
+    gap: 10px;
+    background-color: #FFF8DC;
+    border: 1px solid #FFDAB9;
+    border-radius: 8px;
+    padding: 5px;
+    margin-bottom: 15px;
+}
+.tab {
+    flex: 1;
+    padding: 8px 0;
+    text-align: center;
+    font-size: 14px;
+    border: none;
+    border-radius: 4px;
+    background: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+.tab:hover {
+    background-color: rgba(255, 140, 0, 0.1);
+}
+.tab.active {
+    background-color: #FF8C00;
+    color: #fff;
+    font-weight: bold;
+}
+.content-block {
+    background-color: #fff;
+    border: 1px solid #FFDAB9;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+.content-title {
+    font-size: 14px;
+    font-weight: bold;
+    color: #FF8C00;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #FFDAB9;
+}
+.channel-cards {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+.channel-card {
+    width: 120px;
+    height: 80px;
+    background-color: #E0FFFF;
+    border: 1px solid #FF8C00;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: bold;
+    transition: transform 0.3s;
+}
+.channel-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(255, 140, 0, 0.2);
+}
+
+/* 固定底部播放栏 */
+.player-bar {
+    background-color: #F5F5F5;
+    border-top: 2px solid #FF8C00;
+    padding: 8px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    position: fixed; /* 改为固定定位 */
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000; /* 确保在最上层 */
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1); /* 添加上方阴影 */
+}
+.player-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+/* 贴合图片的频道封面（文字样式+背景，无需图片） */
+.channel-cover {
+    width: 40px;
+    height: 40px;
+    border: 2px solid #FF8C00;
+    border-radius: 4px;
+    background-color: #E0FFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: bold;
+    color: #FF8C00;
+}
+.song-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.song-name {
+    font-size: 14px;
+    font-weight: bold;
+}
+.singer {
+    font-size: 12px;
+    color: #666;
+}
+.player-middle {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    max-width: 600px;
+}
+.control-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+}
+.control-btn {
+    background: none;
+    border: none;
+    color: #333;
+    cursor: pointer;
+    font-size: 16px;
+    transition: color 0.3s;
+}
+.control-btn:hover {
+    color: #FF8C00;
+}
+.control-btn.play-btn {
+    color: #FF8C00;
+    font-size: 20px;
+}
+.progress-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.time {
+    font-size: 12px;
+    color: #666;
+    width: 40px;
+    text-align: center;
+}
+.progress-bar {
+    flex: 1;
+    height: 6px;
+    background-color: #CCC;
+    border-radius: 3px;
+    overflow: hidden;
+    cursor: pointer;
+}
+.progress-fill {
+    height: 100%;
+    background-color: #FF8C00;
+    width: 30%;
+    transition: width 0.3s;
+}
+.player-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.volume-bar {
+    width: 80px;
+    height: 6px;
+    background-color: #CCC;
+    border-radius: 3px;
+    overflow: hidden;
+    cursor: pointer;
+}
+.volume-fill {
+    height: 100%;
+    background-color: #FF8C00;
+    width: 80%;
+    transition: width 0.3s;
+}
+
+/* 新增：倍速控制样式 */
+.speed-control {
+    position: relative;
+    margin: 0 10px;
+}
+.speed-btn {
+    background: none;
+    border: none;
+    color: #333;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    transition: color 0.3s;
+}
+.speed-btn:hover {
+    color: #FF8C00;
+}
+.speed-menu {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #fff;
+    border: 1px solid #FFDAB9;
+    border-radius: 4px;
+    padding: 5px 0;
+    width: 80px;
+    display: none;
+    z-index: 999;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+.speed-menu.active {
+    display: block;
+}
+.speed-option {
+    padding: 5px 10px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+.speed-option.active {
+    background-color: #FF8C00;
+    color: #fff;
+}
+.speed-option:hover {
+    background-color: #FFF8DC;
+}
+
+/* 新增：播放列表样式 */
+.playlist-container {
+    position: relative;
+    margin-left: 10px;
+}
+.playlist-btn {
+    background: none;
+    border: none;
+    color: #333;
+    font-size: 16px;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+.playlist-btn:hover {
+    color: #FF8C00;
+}
+.playlist-panel {
+    position: absolute;
+    bottom: 30px;
+    right: 0;
+    background-color: #fff;
+    border: 1px solid #FFDAB9;
+    border-radius: 4px;
+    width: 200px;
+    max-height: 200px;
+    overflow-y: auto;
+    display: none;
+    z-index: 999;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+.playlist-panel.active {
+    display: block;
+}
+.playlist-title {
+    padding: 8px 10px;
+    font-size: 14px;
+    font-weight: bold;
+    border-bottom: 1px solid #FFDAB9;
+    color: #FF8C00;
+    background-color: #FFF8DC;
+}
+.playlist-item {
+    padding: 8px 10px;
+    font-size: 14px;
+    cursor: pointer;
+    border-bottom: 1px dashed #FFDAB9;
+    transition: background-color 0.3s;
+}
+.playlist-item:hover {
+    background-color: #FFF8DC;
+}
+.playlist-item.active {
+    color: #FF8C00;
+    font-weight: bold;
+    background-color: #FFEDCC;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    body {
+        padding-top: 56px; /* 移动端顶部导航栏高度减小 */
+        padding-bottom: 120px; /* 移动端底部播放栏高度增加 */
+    }
+    
+    .header {
+        padding: 8px 10px;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    
+    .logo-text {
+        font-size: 14px;
+    }
+    
+    .main-nav {
+        order: 3;
+        width: 100%;
+        justify-content: center;
+        margin-top: 8px;
+        gap: 10px;
+    }
+    
+    .search-box {
+        max-width: 200px;
+    }
+    
+    .user-functions {
+        gap: 8px;
+    }
+    
+    .func-item span {
+        display: none; /* 移动端隐藏文字，只显示图标 */
+    }
+    
+    .player-bar {
+        flex-direction: column;
+        padding: 10px;
+        gap: 10px;
+        height: 120px;
+    }
+    
+    .player-left, .player-middle, .player-right {
+        width: 100%;
+    }
+    
+    .control-buttons {
+        justify-content: space-around;
+    }
+    
+    .player-right {
+        justify-content: space-between;
+    }
+}
+
+/* ========== 播放器页面专用样式 ========== */
+
+.player-main {
+    padding: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.player-container {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.player-main-area {
+    flex: 1;
+    min-width: 300px;
+    background-color: #fff;
+    border: 1px solid #FFDAB9;
+    border-radius: 8px;
+    padding: 25px;
+    box-shadow: 0 4px 12px rgba(255, 140, 0, 0.1);
+}
+
+.player-header {
+    text-align: center;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #FF8C00;
+}
+
+.course-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.course-subtitle {
+    font-size: 16px;
+    color: #FF8C00;
+}
+
+.player-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 25px;
+}
+
+.player-album {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.album-cover {
+    width: 280px;
+    height: 280px;
+    background-color: #E0FFFF;
+    border: 3px solid #FF8C00;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(255, 140, 0, 0.2);
+}
+
+.album-image {
+    width: 250px;
+    height: 250px;
+    background-color: #FFEDCC;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    color: #FF8C00;
+    font-weight: bold;
+}
+
+.player-controls-large {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    margin-top: 15px;
+}
+
+.control-btn-large {
+    background: none;
+    border: none;
+    color: #333;
+    font-size: 24px;
+    cursor: pointer;
+    transition: color 0.3s, transform 0.3s;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.control-btn-large:hover {
+    color: #FF8C00;
+    transform: scale(1.1);
+}
+
+.play-btn-large {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background-color: #FF8C00;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    font-size: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+    box-shadow: 0 6px 20px rgba(255, 140, 0, 0.3);
+}
+
+.play-btn-large:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 25px rgba(255, 140, 0, 0.4);
+}
+
+.play-btn-large.play-active {
+    background-color: #ff6b00;
+}
+
+.progress-container-large {
+    width: 100%;
+    max-width: 600px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.progress-container-large .time {
+    font-size: 14px;
+    color: #666;
+    min-width: 45px;
+    text-align: center;
+}
+
+.progress-bar-large {
+    flex: 1;
+    height: 8px;
+    background-color: #FFEDCC;
+    border-radius: 4px;
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.progress-fill-large {
+    height: 100%;
+    background-color: #FF8C00;
+    width: 40%;
+    border-radius: 4px;
+    transition: width 0.3s;
+}
+
+.progress-handle-large {
+    position: absolute;
+    top: 50%;
+    left: 40%;
+    transform: translate(-50%, -50%);
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background-color: #FF8C00;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.current-chapter {
+    text-align: center;
+    margin-top: 10px;
+    padding: 15px;
+    background-color: #FFF8DC;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 600px;
+}
+
+.current-chapter h3 {
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.current-chapter p {
+    font-size: 14px;
+    color: #FF8C00;
+}
+
+/* 侧边栏样式 */
+.player-sidebars {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 320px;
+    min-width: 280px;
+}
+
+.chapter-sidebar,
+.recommend-sidebar {
+    background-color: #fff;
+    border: 1px solid #FFDAB9;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(255, 140, 0, 0.1);
+}
+
+.sidebar-header {
+    background-color: #FF8C00;
+    color: #fff;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sidebar-header h2 {
+    font-size: 16px;
+    font-weight: bold;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sidebar-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.action-btn {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 14px;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.action-btn:hover {
+    color: #FFEDCC;
+}
+
+/* 章节列表 */
+.chapter-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.chapter-item {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    cursor: pointer;
+    border-bottom: 1px solid #FFF8DC;
+    transition: background-color 0.3s;
+}
+
+.chapter-item:hover {
+    background-color: #FFF8DC;
+}
+
+.chapter-item.active {
+    background-color: #FFEDCC;
+    border-left: 4px solid #FF8C00;
+}
+
+.chapter-number {
+    color: #FF8C00;
+    font-weight: bold;
+    min-width: 30px;
+}
+
+.chapter-title {
+    flex: 1;
+    font-size: 14px;
+    color: #333;
+}
+
+.chapter-duration {
+    font-size: 12px;
+    color: #666;
+    margin-left: 10px;
+}
+
+/* 推荐列表 */
+.recommend-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.recommend-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px 20px;
+    border-bottom: 1px solid #FFF8DC;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.recommend-item:hover {
+    background-color: #FFF8DC;
+}
+
+.recommend-cover {
+    width: 50px;
+    height: 50px;
+    border: 2px solid #FF8C00;
+    border-radius: 6px;
+    background-color: #E0FFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cover-icon {
+    font-size: 20px;
+    font-weight: bold;
+    color: #FF8C00;
+}
+
+.recommend-info {
+    flex: 1;
+}
+
+.recommend-info h4 {
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 3px;
+}
+
+.recommend-info p {
+    font-size: 12px;
+    color: #FF8C00;
+}
+
+.play-now-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #fff;
+    border: 1px solid #FF8C00;
+    color: #FF8C00;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 14px;
+}
+
+.play-now-btn:hover {
+    background-color: #FF8C00;
+    color: #fff;
+    transform: scale(1.05);
+}
+
+/* 响应式设计 */
+@media (max-width: 1024px) {
+    .player-container {
+        flex-direction: column;
+    }
+    
+    .player-sidebars {
+        width: 100%;
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    
+    .chapter-sidebar,
+    .recommend-sidebar {
+        flex: 1;
+        min-width: 300px;
+    }
+}
+
+@media (max-width: 768px) {
+    .player-main {
+        padding: 15px;
+    }
+    
+    .album-cover {
+        width: 220px;
+        height: 220px;
+    }
+    
+    .album-image {
+        width: 190px;
+        height: 190px;
+    }
+    
+    .player-controls-large {
+        gap: 25px;
+    }
+    
+    .control-btn-large {
+        font-size: 20px;
+    }
+    
+    .play-btn-large {
+        width: 60px;
+        height: 60px;
+        font-size: 25px;
+    }
+    
+    .player-sidebars {
+        flex-direction: column;
+    }
+    
+    .chapter-sidebar,
+    .recommend-sidebar {
+        min-width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .course-title {
+        font-size: 20px;
+    }
+    
+    .album-cover {
+        width: 180px;
+        height: 180px;
+    }
+    
+    .album-image {
+        width: 150px;
+        height: 150px;
+        font-size: 36px;
+    }
+    
+    .player-controls-large {
+        gap: 15px;
+    }
+    
+    .play-btn-large {
+        width: 50px;
+        height: 50px;
+        font-size: 22px;
+    }
+}
+
+/* 修改 .nav-item.active 样式 */
+.nav-item.active {
+    background-color: #fff;
+    color: #FF8C00;
+    font-weight: bold;
+}
+
+/* 可以添加过渡效果让切换更平滑 */
+.nav-item {
+    color: #fff;
+    text-decoration: none;
+    font-size: 14px;
+    padding: 4px 12px; /* 增加一些内边距让白底更明显 */
+    border-radius: 4px;
+    transition: all 0.3s;
+}
+
+.nav-item:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}

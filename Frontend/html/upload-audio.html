@@ -504,20 +504,55 @@
                 <textarea id="audio-description" placeholder="请输入音频描述"></textarea>
             </div>
 
+            <!-- 分类选择 -->
+            <div class="form-group">
+                <label for="audio-category">选择分类</label>
+                <select id="audio-category" required>
+                    <option value="">请选择分类</option>
+                    <option value="音乐">音乐</option>
+                    <option value="演讲">演讲</option>
+                    <option value="有声书">有声书</option>
+                    <option value="播客剧">播客剧</option>
+                </select>
+            </div>
+
             <!-- 合集选择 -->
             <div class="form-group">
                 <label for="audio-group">选择合集</label>
-                <select id="audio-group">
-                    <option value="">不添加到任何合集</option>
-                    <!-- 动态加载合集列表 -->
-                </select>
+                <div class="group-selector">
+                    <select id="audio-group-main" style="margin-bottom: 10px;">
+                        <option value="">选择课程</option>
+                        <!-- 动态加载课程列表 -->
+                    </select>
+                    <select id="audio-group-sub" disabled>
+                        <option value="">选择单元</option>
+                        <!-- 动态加载单元列表 -->
+                    </select>
+                    <div style="margin-top: 10px;">
+                        <button type="button" id="create-main-group-btn" class="btn btn-secondary" style="margin-right: 10px;">创建课程</button>
+                        <button type="button" id="create-sub-group-btn" class="btn btn-secondary" disabled>创建单元</button>
+                    </div>
+                </div>
             </div>
 
             <!-- 模态框容器 -->
             <div id="modal-overlay" class="modal-overlay">
                 <div id="create-group-modal" class="modal">
                     <div class="modal-content">
-                        <h3>创建新合集</h3>
+                        <h3>创建新目录</h3>
+                        <div class="form-group">
+                            <label for="group-type">目录类型</label>
+                            <select id="group-type">
+                                <option value="main">课程</option>
+                                <option value="sub">单元</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="main-group-select-container" style="display: none;">
+                            <label for="parent-group">所属课程</label>
+                            <select id="parent-group">
+                                <!-- 动态加载课程列表 -->
+                            </select>
+                        </div>
                         <div class="form-group">
                             <label for="new-group-name">合集名称</label>
                             <input type="text" id="new-group-name" placeholder="请输入合集名称">
@@ -645,6 +680,11 @@
         return urlParams.get(name);
     }
 
+    // 生成唯一草稿ID
+    function generateDraftId() {
+        return 'draft_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+    }
+
     // 检查是否处于草稿模式
     const isDraftMode = getURLParameter('mode') === 'draft';
     const draftId = getURLParameter('id') || generateDraftId();
@@ -693,11 +733,196 @@
     const submitBtn = uploadForm.querySelector('button[type="submit"]');
     const audioTitle = document.getElementById('audio-title');
     const audioDescription = document.getElementById('audio-description');
-    const audioGroup = document.getElementById('audio-group');
+    // const audioGroup = document.getElementById('audio-group');
+    const audioGroupMain = document.getElementById('audio-group-main');
+    const audioGroupSub = document.getElementById('audio-group-sub');
+    const createMainGroupBtn = document.getElementById('create-main-group-btn');
+    const createSubGroupBtn = document.getElementById('create-sub-group-btn');
+    const createGroupModal = document.getElementById('create-group-modal');
+    const groupTypeSelect = document.getElementById('group-type');
+    const mainGroupSelectContainer = document.getElementById('main-group-select-container');
+    const parentGroupSelect = document.getElementById('parent-group');
+    const newGroupNameInput = document.getElementById('new-group-name');
+    const newGroupDescInput = document.getElementById('new-group-desc');
+    const submitCreateGroupBtn = document.getElementById('submit-create-group');
+    const cancelCreateGroupBtn = document.getElementById('cancel-create-group');
+    const modalOverlay = document.getElementById('modal-overlay');
 
-    // 生成唯一草稿ID
-    function generateDraftId() {
-        return 'draft_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+    // 模拟课程与单元数据
+    let groupsData = {
+        main: [
+            { id: 'main_1', name: '商务英语会话技巧', description: '商务英语会话技巧课程，包含中级到高级内容' },
+            { id: 'main_2', name: '科技前沿', description: '最新科技资讯和深度分析' },
+            { id: 'main_3', name: '音乐天地', description: '各种音乐类型的分享和推荐' }
+        ],
+        sub: [
+            { id: 'sub_1_1', mainId: 'main_1', name: '第一单元：商务会议', description: '商务会议相关英语表达' },
+            { id: 'sub_1_2', mainId: 'main_1', name: '第二单元：商务谈判', description: '商务谈判技巧和常用语' },
+            { id: 'sub_1_3', mainId: 'main_1', name: '第三单元：商务邮件', description: '商务邮件写作技巧' },
+            { id: 'sub_2_1', mainId: 'main_2', name: '人工智能', description: 'AI技术的发展和应用' },
+            { id: 'sub_2_2', mainId: 'main_2', name: '区块链', description: '区块链技术和加密货币' },
+            { id: 'sub_3_1', mainId: 'main_3', name: '流行音乐', description: '当下流行的音乐' },
+            { id: 'sub_3_2', mainId: 'main_3', name: '古典音乐', description: '经典古典音乐作品' }
+        ]
+    };
+
+    // 从本地存储加载合集数据
+    function loadGroupsData() {
+        const saved = localStorage.getItem('groupsData');
+        if (saved) {
+            try {
+                groupsData = JSON.parse(saved);
+            } catch (error) {
+                console.error('加载合集数据失败:', error);
+            }
+        }
+    }
+
+    // 保存合集数据到本地存储
+    function saveGroupsData() {
+        localStorage.setItem('groupsData', JSON.stringify(groupsData));
+    }
+
+    // 加载大合集列表
+    function loadMainGroups() {
+        const mainGroups = groupsData.main || [];
+        
+        // 清空现有选项
+        audioGroupMain.innerHTML = '<option value="">选择课程</option>';
+        parentGroupSelect.innerHTML = '<option value="">选择课程</option>';
+        
+        // 添加大合集选项
+        mainGroups.forEach(group => {
+            const option1 = document.createElement('option');
+            option1.value = group.id;
+            option1.textContent = group.name;
+            audioGroupMain.appendChild(option1);
+            
+            const option2 = document.createElement('option');
+            option2.value = group.id;
+            option2.textContent = group.name;
+            parentGroupSelect.appendChild(option2);
+        });
+    }
+
+    // 加载小合集列表
+    function loadSubGroups(mainGroupId) {
+        const subGroups = groupsData.sub || [];
+        
+        // 清空现有选项
+        audioGroupSub.innerHTML = '<option value="">选择单元</option>';
+        
+        // 如果没有选择大合集，禁用小合集选择
+        if (!mainGroupId) {
+            audioGroupSub.disabled = true;
+            createSubGroupBtn.disabled = true;
+            return;
+        }
+        
+        // 启用小合集选择
+        audioGroupSub.disabled = false;
+        createSubGroupBtn.disabled = false;
+        
+        // 添加小合集选项
+        subGroups
+            .filter(subGroup => subGroup.mainId === mainGroupId)
+            .forEach(subGroup => {
+                const option = document.createElement('option');
+                option.value = subGroup.id;
+                option.textContent = subGroup.name;
+                audioGroupSub.appendChild(option);
+            });
+    }
+
+    // 显示创建合集模态框
+    function showCreateGroupModal(type = 'main', parentId = '') {
+        // 设置默认类型
+        groupTypeSelect.value = type;
+        
+        // 切换所属大合集选择的显示
+        if (type === 'sub') {
+            mainGroupSelectContainer.style.display = 'block';
+        } else {
+            mainGroupSelectContainer.style.display = 'none';
+        }
+        
+        // 清空输入框
+        newGroupNameInput.value = '';
+        newGroupDescInput.value = '';
+        
+        // 显示模态框
+        modalOverlay.style.display = 'block';
+        createGroupModal.style.display = 'block';
+    }
+
+    // 隐藏创建合集模态框
+    function hideCreateGroupModal() {
+        modalOverlay.style.display = 'none';
+        createGroupModal.style.display = 'none';
+    }
+
+    // 创建新合集
+    function createGroup() {
+        const type = groupTypeSelect.value;
+        const name = newGroupNameInput.value.trim();
+        const description = newGroupDescInput.value.trim();
+        
+        // 验证输入
+        if (!name) {
+            alert('请输入合集名称');
+            return;
+        }
+        
+        // 生成唯一ID
+        const timestamp = Date.now();
+        const random = Math.floor(Math.random() * 1000);
+        
+        if (type === 'main') {
+            // 创建大合集
+            const newMainGroup = {
+                id: `main_${timestamp}_${random}`,
+                name: name,
+                description: description
+            };
+            
+            groupsData.main.push(newMainGroup);
+        } else {
+            // 创建小合集
+            const parentId = parentGroupSelect.value;
+            
+            if (!parentId) {
+                alert('请选择所属大合集');
+                return;
+            }
+            
+            const newSubGroup = {
+                id: `sub_${parentId.split('_')[1]}_${timestamp}_${random}`,
+                mainId: parentId,
+                name: name,
+                description: description
+            };
+            
+            groupsData.sub.push(newSubGroup);
+        }
+        
+        // 保存数据
+        saveGroupsData();
+        
+        // 重新加载合集列表
+        loadMainGroups();
+        loadSubGroups(audioGroupMain.value);
+        
+        // 隐藏模态框
+        hideCreateGroupModal();
+        
+        // 显示成功提示
+        msgBox.className = 'message success';
+        msgBox.textContent = '合集创建成功！';
+        msgBox.style.display = 'block';
+        msgBox.style.display = 'none';
+        setTimeout(() => {
+            msgBox.style.display = 'none';
+        }, 3000);
     }
 
     // 初始化页面
@@ -729,7 +954,9 @@
             id: draftId,
             title: audioTitle.value,
             description: audioDescription.value,
-            group: audioGroup.value,
+            category: audioCategory.value,
+            mainGroup: audioGroupMain.value,
+            subGroup: audioGroupSub.value,
             lastSaved: Date.now(),
             status: 0 // 0表示草稿状态
         };
@@ -766,7 +993,17 @@
                 const data = JSON.parse(draftData);
                 audioTitle.value = data.title || '';
                 audioDescription.value = data.description || '';
-                audioGroup.value = data.group || '';
+                audioCategory.value = data.category || '';
+                
+                // 设置合集选择
+                if (data.mainGroup) {
+                    audioGroupMain.value = data.mainGroup;
+                    loadSubGroups(data.mainGroup);
+                    
+                    if (data.subGroup) {
+                        audioGroupSub.value = data.subGroup;
+                    }
+                }
                 
                 msgBox.className = 'message info';
                 msgBox.textContent = '已加载草稿！';
@@ -784,7 +1021,7 @@
     // 启动自动保存
     function startAutoSave() {
         // 监听表单变化
-        const formElements = [audioTitle, audioDescription, audioGroup, fileInput];
+        const formElements = [audioTitle, audioDescription, audioCategory, audioGroupMain, audioGroupSub, fileInput];
         formElements.forEach(element => {
             element.addEventListener('input', () => {
                 // 清除之前的定时器
@@ -798,7 +1035,53 @@
             });
         });
     }
-    
+
+    // 初始化合集选择器
+    function initGroupSelector() {
+        // 加载合集数据
+        loadGroupsData();
+        
+        // 加载大合集列表
+        loadMainGroups();
+        
+        // 事件监听器：大合集选择变化
+        audioGroupMain.addEventListener('change', (e) => {
+            loadSubGroups(e.target.value);
+        });
+        
+        // 事件监听器：合集类型选择变化
+        groupTypeSelect.addEventListener('change', (e) => {
+            if (e.target.value === 'sub') {
+                mainGroupSelectContainer.style.display = 'block';
+            } else {
+                mainGroupSelectContainer.style.display = 'none';
+            }
+        });
+        
+        // 事件监听器：创建大合集按钮
+        createMainGroupBtn.addEventListener('click', () => {
+            showCreateGroupModal('main');
+        });
+        
+        // 事件监听器：创建小合集按钮
+        createSubGroupBtn.addEventListener('click', () => {
+            showCreateGroupModal('sub');
+        });
+        
+        // 事件监听器：提交创建合集
+        submitCreateGroupBtn.addEventListener('click', createGroup);
+        
+        // 事件监听器：取消创建合集
+        cancelCreateGroupBtn.addEventListener('click', hideCreateGroupModal);
+        
+        // 事件监听器：点击模态框外部关闭
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) {
+                hideCreateGroupModal();
+            }
+        });
+    }
+
     // 格式化时间
     function formatTime(seconds) {
         if (!seconds || isNaN(seconds)) return '00:00';
@@ -815,6 +1098,18 @@
             // 如果是草稿模式，只保存草稿
             saveDraft();
         } else {
+            // 检查是否选择了分类
+            if (!audioCategory.value) {
+                msgBox.className = 'message warning';
+                msgBox.textContent = '请选择分类！';
+                msgBox.style.display = 'block';
+                
+                setTimeout(() => {
+                    msgBox.style.display = 'none';
+                }, 3000);
+                return;
+            }
+            
             // 正常上传流程
             msgBox.className = 'message info';
             msgBox.textContent = '开始上传...';
@@ -830,10 +1125,17 @@
                     clearInterval(timer);
                     msgBox.className = 'message success';
                     msgBox.textContent = '上传成功！';
-                    // 上传成功后清除本地草稿
+                    msgBox.style.display = 'block';
+                    
+                    // 如果是草稿模式，删除本地存储的草稿
                     if (isDraftMode) {
                         localStorage.removeItem(draftId);
                     }
+                    
+                    // 5秒后跳转到我的作品页面
+                    setTimeout(() => {
+                        window.location.href = 'my-works.html';
+                    }, 5000);
                 }
             }, 500);
         }
@@ -857,7 +1159,10 @@
     });
 
     // 页面加载完成后初始化
-    document.addEventListener('DOMContentLoaded', initPage);
+    document.addEventListener('DOMContentLoaded', function() {
+        initPage();
+        initGroupSelector();
+    });
 </script>
 
 <!-- PlayBar 业务脚本（完整替换为 PlayBar.html 版本） -->
@@ -924,9 +1229,9 @@ prevBtn.addEventListener('click', stopWrap(() => prevByMode()));
 nextBtn.addEventListener('click', stopWrap(() => nextByMode()));
 muteBtn.addEventListener('click', stopWrap(() => {
   audio.muted = !audio.muted;
-  if (audio.muted || audio.volume === 0) { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 3l7 7-1.4 1.4L16 7.8V16h-2V8.6L9.4 4 11 2.4 14 3z"/>'; }
-  else if (audio.volume < 0.5) { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 9v6c1.7-0.7 3-2.4 3-4.5S15.7 9.7 14 9z"/>'; }
-  else { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 7v10c3-1 5-3.6 5-7s-2-6-5-7z"/>'; }
+  if (audio.muted || audio.volume === 0) { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3z"/>'; }
+  else if (audio.volume < 0.5) { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3z"/>'; }
+  else { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3z"/>'; }
 }));
 
 /* 模式弹层 */
@@ -1069,3 +1374,7 @@ loadTrack(currentIndex);
 <script src="../js/upload-audio.js"></script>
 </body>
 </html>
+
+
+
+

@@ -682,3 +682,32 @@
 .work-card:nth-child(7) { animation-delay: 0.3s; }
 .work-card:nth-child(8) { animation-delay: 0.35s; }
 .work-card:nth-child(9) { animation-delay: 0.4s; }
+
+.work-category {
+    display: inline-block;
+    padding: 2px 8px;
+    background-color: #f0f0f0;
+    color: #666;
+    font-size: 12px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+}
+
+/* 课程和单元信息样式 */
+.work-course-info, .work-unit-info {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+}
+
+.course-label, .unit-label {
+    font-weight: 500;
+    margin-right: 4px;
+}
+
+.course-name, .unit-name {
+    color: #333;
+    font-weight: 400;
+}

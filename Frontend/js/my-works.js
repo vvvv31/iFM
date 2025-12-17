@@ -9,6 +9,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // 绑定事件
     bindEvents();
     
+    // 加载已发布作品
+    loadPublishedWorks();
+    
     // 加载草稿
     loadDrafts();
     
@@ -450,4 +453,96 @@ function cancelReview(workId) {
         alert(`取消审核作品 ID: ${workId}`);
         // 实际应用中调用取消审核API
     }
+}
+
+
+function loadPublishedWorks() {
+    // 从localStorage获取已发布作品
+    const publishedWorks = JSON.parse(localStorage.getItem('publishedWorks') || '[]');
+    
+    if (publishedWorks.length > 0) {
+        // 渲染已发布作品
+        renderPublishedWorks(publishedWorks);
+        // 重新检查空状态
+        checkEmptyState();
+        // 应用过滤
+        applyFilters();
+        // 更新作品统计数据
+        updateWorkStats();
+    }
+}
+
+function renderPublishedWorks(works) {
+    const worksGrid = document.querySelector('#worksGrid');
+    
+    works.forEach(work => {
+        // 创建作品卡片
+        const workCard = createWorkCard(work);
+        // 添加到作品网格
+        worksGrid.appendChild(workCard);
+    });
+}
+
+function createWorkCard(work) {
+    const card = document.createElement('div');
+    card.className = 'work-card';
+    card.setAttribute('data-work-id', work.id);
+    card.setAttribute('data-status', work.status);
+    card.setAttribute('data-category', work.category);
+    
+    // 构建卡片HTML，包含课程和单元信息
+    card.innerHTML = `
+        <div class="work-status published">已发布</div>
+        <div class="work-thumbnail">
+            <div class="thumbnail-overlay">
+                <span class="play-icon">▶</span>
+                <span class="audio-duration">${work.duration || '00:00'}</span>
+            </div>
+        </div>
+        <div class="work-info">
+            <h3 class="work-title">${work.title || '未命名作品'}</h3>
+            <div class="work-category">${work.category || '其他'}</div>
+            ${work.course ? `
+            <div class="work-course-info">
+                <span class="course-label">课程：</span>
+                <span class="course-name">${work.course.name}</span>
+            </div>` : ''}
+            ${work.unit ? `
+            <div class="work-unit-info">
+                <span class="unit-label">单元：</span>
+                <span class="unit-name">${work.unit.name}</span>
+            </div>` : ''}
+            <div class="work-meta">
+                <span class="views-count">${work.views || 0}次播放</span>
+                <span class="rating">★★★★★</span>
+            </div>
+            <div class="work-stats-small">
+                <div class="stat-small">
+                    <i class="fas fa-heart"></i>
+                    <span>${work.likes || 0}</span>
+                </div>
+                <div class="stat-small">
+                    <i class="fas fa-comment"></i>
+                    <span>${work.comments || 0}</span>
+                </div>
+                <div class="stat-small">
+                    <i class="fas fa-share"></i>
+                    <span>${work.shares || 0}</span>
+                </div>
+            </div>
+            <div class="work-actions">
+                <button class="action-btn-small edit" onclick="editWork('${work.id}')">
+                    <i class="fas fa-edit"></i> 编辑
+                </button>
+                <button class="action-btn-small" onclick="viewAnalytics('${work.id}')">
+                    <i class="fas fa-chart-line"></i> 数据
+                </button>
+                <button class="action-btn-small" onclick="shareWork('${work.id}')">
+                    <i class="fas fa-share"></i> 分享
+                </button>
+            </div>
+        </div>
+    `;
+    
+    return card;
 }

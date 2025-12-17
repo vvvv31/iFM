@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
@@ -17,6 +17,12 @@
       --album-size: 360px;
       --album-rect-expanded-width: 760px;
       --album-height: 360px;
+
+      /* 字幕样式变量（可被面板内动态覆盖） */
+      --sub-font-size: 16px;
+      --sub-line-height: 1.75;
+      --sub-font-weight: 400;
+      --sub-font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans CJK SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
     }
 
     body { margin:0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background:#fff; color:#333; }
@@ -56,6 +62,21 @@
     .player-content { display:flex; flex-direction:column; gap:16px; align-items:center; position:relative; width:100%; max-width:900px; }
 
     .player-album { display:flex; align-items:center; justify-content:center; width:100%; }
+
+    /* 初始封面容器：280x280 */
+    .album-cover {
+      width: 280px;
+      height: 280px;
+      background-color: #E0FFFF;
+      border: 3px solid #FF8C00;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      box-shadow: 0 8px 25px rgba(255, 140, 0, 0.2);
+      transition: width 280ms ease, height 280ms ease;
+    }
     .album-image {
       width: var(--album-size);
       height: var(--album-size);
@@ -73,7 +94,7 @@
     .inner-art { transition: opacity 180ms ease; }
     .subtitle-panel { position:absolute; left:12px; right:12px; top:12px; bottom:12px; background: rgba(255,255,255,0.96); border-radius:8px; padding:10px; display:flex; flex-direction:column; gap:8px; box-shadow:0 8px 20px rgba(0,0,0,0.06); overflow:hidden; }
 
-    /* Controls layout: volume above buttons; main controls centered; mode left of prev; rate right of next */
+    /* Controls layout */
     .player-controls-large { display:flex; flex-direction:column; gap:8px; align-items:center; width:100%; }
     .controls-top { display:flex; align-items:center; justify-content:center; gap:12px; width:100%; }
     .controls-top .volume-wrap { display:flex; gap:8px; align-items:center; }
@@ -103,10 +124,45 @@
 
     @media (max-width:1100px) {
       .player-container { grid-template-columns: 1fr; }
-      :root { --album-rect-expanded-width: calc(100% - 40px); }
+      :root { --album-size: 280px; }
     }
 
     audio { display:none !important; }
+
+    /* ===== 字幕面板内布局 ===== */
+    .subtitle-header {
+      display:flex; align-items:center; justify-content:space-between;
+      gap:8px; padding:4px 0; border-bottom:1px solid #f0f0f0;
+    }
+    .subtitle-title { font-weight:700; color:#333; font-size:14px; }
+    .subtitle-actions { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+    .sub-btn {
+      border:1px solid #ffdcb3; background:#fff; color:#555; cursor:pointer;
+      padding:6px 10px; border-radius:8px; font-size:12px;
+    }
+    .sub-btn.primary { background:#ff8c00; border-color:#ff8c00; color:#fff; }
+    .subtitle-scroll { flex:1; overflow-y:auto; padding:8px 2px; margin-top:6px; }
+    .cue-item { padding:8px 10px; border-radius:8px; color:#333; cursor:default; display:flex; align-items:flex-start; gap:8px; }
+    .cue-time { flex:0 0 auto; font-size:12px; color:#999; min-width:54px; text-align:right; font-variant-numeric:tabular-nums; }
+    .cue-text { flex:1; white-space:pre-wrap; word-break:break-word; }
+    .cue-item.active { background:#fff3e0; border-left:3px solid #ff9a2a; }
+    .subtitle-empty { color:#888; font-size:13px; text-align:center; padding:20px 6px; }
+
+    /* 应用可定制变量到字幕 */
+    .subtitle-panel { font-family: var(--sub-font-family); }
+    .cue-item .cue-text {
+      font-size: var(--sub-font-size);
+      line-height: var(--sub-line-height);
+      font-weight: var(--sub-font-weight);
+    }
+
+    /* ===== 点击后：album-cover 改为 600x280，字幕区域充满 ===== */
+    .album-cover.subtitles-open { width: 600px; height: 280px; }
+    .album-cover.subtitles-open .subtitle-panel {
+      position: absolute; left: 0; right: 0; top: 0; bottom: 0;
+      border-radius: 12px; padding: 12px; background: rgba(255,255,255,0.96); box-shadow: none;
+    }
+    @media (max-width: 700px) { .album-cover.subtitles-open { width: 100%; height: 280px; } }
   </style>
 </head>
 <body>
@@ -165,7 +221,7 @@
 
         <div class="player-content">
           <div class="player-album">
-            <div class="album-cover">
+            <div class="album-cover" id="albumCover">
               <div class="album-image" id="albumImage" role="button" tabindex="0" aria-label="切换字幕模式">
                 <div class="inner-art" id="innerArt" aria-hidden="true">
                   <svg width="120" height="120" viewBox="0 0 24 24" fill="none">
@@ -178,7 +234,7 @@
             </div>
           </div>
 
-          <!-- Controls: volume on top, main buttons below with mode left and rate right -->
+          <!-- Controls -->
           <div class="player-controls-large">
             <div class="controls-top">
               <div class="volume-wrap">
@@ -192,7 +248,6 @@
             </div>
 
             <div class="controls-bottom">
-              <!-- play mode (left of prev) -->
               <div class="control-side" style="position:relative;">
                 <div style="position:relative;">
                   <button id="modeBtn" class="mini-btn" title="播放模式" aria-label="播放模式">
@@ -208,14 +263,12 @@
                 </div>
               </div>
 
-              <!-- prev / play / next (center) -->
               <div style="display:flex; align-items:center; gap:12px;">
                 <button class="control-btn-large prev-btn" id="page-prev" title="上一章"><i class="fas fa-step-backward"></i></button>
                 <button class="play-btn-large play-active" id="page-play" title="播放/暂停"><i class="fas fa-play-circle"></i></button>
                 <button class="control-btn-large next-btn" id="page-next" title="下一章"><i class="fas fa-step-forward"></i></button>
               </div>
 
-              <!-- rate (right of next) -->
               <div class="control-side" style="position:relative;">
                 <div style="position:relative;">
                   <button id="rateBtn" class="mini-btn" title="倍速" aria-label="倍速"><span id="rateText" style="font-weight:700; font-size:13px;">1x</span></button>
@@ -230,6 +283,7 @@
                   </div>
                 </div>
               </div>
+
             </div>
           </div>
 
@@ -262,7 +316,6 @@
 
   <script>
   (function () {
-    // API endpoints placeholder (kept for backward compatibility)
     const API = {
       course: (id) => `/api/course/${encodeURIComponent(id)}`,
       chapterAudio: (cid) => `/api/chapter/${encodeURIComponent(cid)}/audio`,
@@ -285,11 +338,11 @@
     const nowPlaying = document.getElementById('now-playing');
     const nowDuration = document.getElementById('now-duration');
 
+    const albumCover = document.getElementById('albumCover');
     const albumImage = document.getElementById('albumImage');
     const innerArt = document.getElementById('innerArt');
     const subtitlePlaceholder = document.getElementById('subtitlePlaceholder');
 
-    // New controls
     const modeBtn = document.getElementById('modeBtn');
     const modePop = document.getElementById('modePop');
     const rateBtn = document.getElementById('rateBtn');
@@ -300,23 +353,48 @@
     const volFill = document.getElementById('volFill');
     const volIcon = document.getElementById('volIcon');
 
-    // Local state
-    let playlist = []; // [{ id, title, src, durationText }]
+    let playlist = []; // [{ id, title, src, durationText, vtt? }]
     let index = 0;
     let playMode = 'list'; // 'single' | 'list' | 'shuffle'
     let entrySource = 'unknown'; // 'program' | 'playbar' | 'fallback'
 
     function escapeHtml(str) { return String(str || '').replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m])); }
+    function getUrlCourseId() { const params = new URLSearchParams(location.search); return params.get('id') || params.get('course') || null; }
+    function getUrlChapter() { const params = new URLSearchParams(location.search); return params.get('chapter') || params.get('chapterTitle') || null; }
 
-    // Support both 'id' (program_list.openPlayer) and 'course' param (other code)
-    function getUrlCourseId() {
-      const params = new URLSearchParams(location.search);
-      return params.get('id') || params.get('course') || null;
+    // ===== 可定制字幕样式（状态 + 应用 + 持久化） =====
+    const ROOT = document.documentElement;
+    let subStyleStore = {};
+    try { subStyleStore = JSON.parse(localStorage.getItem('subtitle.style') || '{}'); } catch {}
+    let subFontFamily = subStyleStore.fontFamily || 'system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans CJK SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif';
+    let subFontSize   = subStyleStore.fontSize   || 16;
+    let subLineHeight = subStyleStore.lineHeight || 1.75;
+    let subFontWeight = subStyleStore.weight     || 400;
+    
+    function applySubtitleStyle(targetPanel = null) {
+      ROOT.style.setProperty('--sub-font-family', subFontFamily);
+      ROOT.style.setProperty('--sub-font-size', subFontSize + 'px');
+      ROOT.style.setProperty('--sub-line-height', subLineHeight);
+      ROOT.style.setProperty('--sub-font-weight', subFontWeight);
+      
+      // 如果传入了当前字幕面板，也直接更新它的样式
+      if (targetPanel) {
+        targetPanel.style.setProperty('--sub-font-family', subFontFamily);
+        targetPanel.style.setProperty('--sub-font-size', subFontSize + 'px');
+        targetPanel.style.setProperty('--sub-line-height', subLineHeight);
+        targetPanel.style.setProperty('--sub-font-weight', subFontWeight);
+      }
     }
-    function getUrlChapter() {
-      const params = new URLSearchParams(location.search);
-      return params.get('chapter') || params.get('chapterTitle') || null;
+    
+    function persistSubtitleStyle() {
+      localStorage.setItem('subtitle.style', JSON.stringify({
+        fontFamily: subFontFamily,
+        fontSize: subFontSize,
+        lineHeight: subLineHeight,
+        weight: subFontWeight
+      }));
     }
+    applySubtitleStyle();
 
     // --- utilities for UI ---
     function formatTime(sec) {
@@ -336,7 +414,6 @@
       timeTotal.textContent = formatTime(dur);
     }
 
-    // Render chapter list from current playlist
     function renderChapterList() {
       chapterListEl.innerHTML = '';
       if (!playlist || !playlist.length) {
@@ -346,17 +423,19 @@
       playlist.forEach((ch, i) => {
         const item = document.createElement('div');
         item.className = 'chapter-item' + (i === index ? ' active' : '');
-        // dataset usage with camelCase property names
-        item.dataset.trackId = ch.id;
+        item.dataset.trackId = ch.id || '';
         item.dataset.trackSrc = ch.src || '';
-        item.innerHTML = `<span style="width:28px;flex:0 0 28px">${i+1}.</span><div style="flex:1;min-width:0"><div style="font-size:14px;color:#000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeHtml(ch.title)}</div></div><span style="margin-left:8px;color:#ff8c00">${escapeHtml(ch.durationText || '')}</span>`;
+        item.innerHTML = `<span style="width:28px;flex:0 0 28px">${i+1}.</span>
+                          <div style="flex:1;min-width:0">
+                            <div style="font-size:14px;color:#000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeHtml(ch.title || ('章节 ' + (i+1)))}</div>
+                          </div>
+                          <span style="margin-left:8px;color:#ff8c00">${escapeHtml(ch.durationText || '')}</span>`;
         item.addEventListener('click', function(e){ e.stopPropagation(); playTrackByIndex(i); });
         chapterListEl.appendChild(item);
       });
     }
 
     function renderRecommendations(seedTitle) {
-      // Generate 4 random recommendations (simple synthetic)
       const samples = [
         '流利口语训练营', '地道英语听力', '商务商务口语进阶', '旅行英语速成', '职场沟通实战', '每日一句英语', '英语发音强化'
       ];
@@ -375,7 +454,6 @@
         const btn = item.querySelector('.play-now-btn');
         btn.addEventListener('click', (e) => {
           e.stopPropagation();
-          // open same page with this fake course id to simulate navigation
           const params = new URLSearchParams();
           params.set('course', r.title);
           params.set('id', r.id);
@@ -385,23 +463,35 @@
       });
     }
 
-    // --- play / pause / next / prev using playlist ---
+    // 切歌时，确保字幕按当前曲目重置/重建
     async function playTrackByIndex(i, pushHistory = false) {
       if (i < 0 || i >= playlist.length) return;
       index = i;
       highlightChapterUI(index);
       updateNowPlayingUI(index);
+
       const track = playlist[index];
       if (track.src) {
         audio.src = track.src;
         try { audio.load(); } catch(e){}
       }
+
+      // 重置当前字幕，必要时重新构建
+      subtitleCues = [];
+      lastActiveCueIndex = -1;
+      if (showSubtitles) {
+        await ensureSubtitleCues();
+        buildSubtitlePanel();
+        updateActiveCueByTime(audio.currentTime || 0, true);
+      }
+
       try {
         const p = audio.play();
         if (p && typeof p.then === 'function') await p;
       } catch (err) {
         try { audio.load(); const p2 = audio.play(); if (p2 && typeof p2.then === 'function') await p2; } catch (_) {}
       }
+
       if (pushHistory && history && history.replaceState) {
         const params = new URLSearchParams(location.search);
         params.set('course', getUrlCourseId() || '');
@@ -410,7 +500,7 @@
       }
     }
     function prevByMode() {
-      if (playMode === 'shuffle') currentIndex = Math.floor(Math.random() * playlist.length);
+      if (playMode === 'shuffle') index = Math.floor(Math.random() * playlist.length);
       else index = (index - 1 + playlist.length) % playlist.length;
       playTrackByIndex(index);
     }
@@ -429,7 +519,6 @@
         nowPlaying.textContent = `正在播放：${t.title}`;
         nowDuration.textContent = `时长：${t.durationText || ''}`;
         courseTitleEl.textContent = t.title;
-        // set subtitle as artist if available
         courseAuthorEl.innerHTML = t.artist ? `作者：${escapeHtml(t.artist)}` : '';
       } else {
         nowPlaying.textContent = '未播放';
@@ -492,7 +581,7 @@
         };
         volBar.addEventListener('pointerdown', (e) => { e.preventDefault(); dragging = true; volBar.setPointerCapture && volBar.setPointerCapture(e.pointerId); setVolume(rectToPercent(e.clientX)); });
         document.addEventListener('pointermove', (e) => { if (!dragging) return; setVolume(rectToPercent(e.clientX)); });
-        document.addEventListener('pointerup', (e) => { if (!dragging) return; dragging = false; });
+        document.addEventListener('pointerup', () => { if (!dragging) return; dragging = false; });
         volBar.addEventListener('click', (e) => { setVolume(((e.clientX - volBar.getBoundingClientRect().left) / volBar.getBoundingClientRect().width)); });
       }
 
@@ -502,7 +591,6 @@
       updateVolIcon();
     }
 
-    // Progress seek handlers
     function onProgressClick(e) {
       if (!audio.duration) return;
       const rect = progressBar.getBoundingClientRect();
@@ -512,7 +600,6 @@
       refreshProgress();
     }
 
-    // Ended behavior according to playMode
     function onEndedHandle() {
       if (playMode === 'single') {
         audio.currentTime = 0;
@@ -526,32 +613,408 @@
       }
     }
 
-    // --- Entry detection & initialization ---
-    // Try to detect if we were opened from PlayBar (same-origin opener with element ids used in PlayBar.html)
+    // ====== 字幕逻辑 ======
+    let showSubtitles = false;
+    let autoFollow = true;
+    let subtitleCues = []; // [{start,end,text}]
+    let lastActiveCueIndex = -1;
+
+    function toTimeText(sec) {
+      if (!isFinite(sec)) return '--:--';
+      const m = Math.floor(sec / 60), s = Math.floor(sec % 60);
+      return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    }
+    // 解析 WebVTT 简易版（要求 00:00:00.000 格式）
+    function parseVTT(text) {
+      const cues = [];
+      const lines = String(text || '').split(/\r?\n/);
+      let i = 0;
+      function parseTS(ts) {
+        const m = ts.trim().match(/(\d{2}):(\d{2}):(\d{2})(?:\.(\d{1,3}))?/);
+        if (!m) return 0;
+        return (+m[1])*3600 + (+m[2])*60 + (+m[3]) + ((+m[4]||0)/1000);
+      }
+      while (i < lines.length) {
+        const ln = lines[i].trim();
+        if (/-->/i.test(ln)) {
+          const [a,b] = ln.split('-->');
+          const start = parseTS(a), end = parseTS(b);
+          i++;
+          let textBuf = [];
+          while (i < lines.length && lines[i].trim() !== '') {
+            textBuf.push(lines[i]);
+            i++;
+          }
+          cues.push({ start, end, text: textBuf.join('\n') });
+        }
+        i++;
+      }
+      return cues;
+    }
+
+    function buildSubtitlePanel() {
+      subtitlePlaceholder.innerHTML = '';
+      const panel = document.createElement('div');
+      panel.className = 'subtitle-panel';
+      panel.setAttribute('role','region');
+      panel.setAttribute('aria-label','字幕');
+
+      const header = document.createElement('div');
+      header.className = 'subtitle-header';
+      header.innerHTML = `
+        <div class="subtitle-title">字幕</div>
+        <div class="subtitle-actions" style="gap:10px; flex-wrap: wrap;">
+          <div class="subtitle-style" style="display:flex;align-items:center;gap:6px;">
+            <label style="font-size:12px;color:#666;">字体</label>
+            <select id="subFontSelect" style="max-width:240px;">
+              <option value='system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans CJK SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif'>系统默认</option>
+              <option value='"Noto Sans SC","Noto Sans CJK SC","PingFang SC","Microsoft YaHei",Arial,sans-serif'>思源黑体 / Noto Sans SC</option>
+              <option value='"PingFang SC",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif'>苹方</option>
+              <option value='"Microsoft YaHei",Arial,sans-serif'>微软雅黑</option>
+              <option value='SimSun,"Songti SC",serif'>宋体 / Serif</option>
+              <option value='Menlo,Consolas,"SFMono-Regular",monospace'>等宽 Monospace</option>
+            </select>
+            <label style="font-size:12px;color:#666;">字号</label>
+            <input id="subSizeInput" type="number" min="12" max="48" step="1" value="16" style="width:64px;">
+          </div>
+          <button id="subAutoBtn" class="sub-btn">${autoFollow ? '自动跟随：开' : '自动跟随：关'}</button>
+          <button id="subCloseBtn" class="sub-btn primary">关闭</button>
+        </div>
+      `;
+      const scroll = document.createElement('div');
+      scroll.className = 'subtitle-scroll';
+      scroll.id = 'subtitleScroll';
+
+      if (!subtitleCues.length) {
+        const empty = document.createElement('div'); empty.className = 'subtitle-empty';
+        empty.textContent = '暂无字幕或正在加载…';
+        scroll.appendChild(empty);
+      } else {
+        subtitleCues.forEach((c, idx) => {
+          const row = document.createElement('div');
+          row.className = 'cue-item';
+          row.dataset.index = String(idx);
+          row.innerHTML = `<span class="cue-time">${toTimeText(c.start)}</span><div class="cue-text">${escapeHtml(c.text)}</div>`;
+          scroll.appendChild(row);
+        });
+      }
+
+      // 应用当前字幕样式到面板
+      applySubtitleStyle(panel);
+
+      panel.appendChild(header);
+      panel.appendChild(scroll);
+      subtitlePlaceholder.appendChild(panel);
+
+      // 事件处理
+      const closeBtn = header.querySelector('#subCloseBtn');
+      const autoBtn = header.querySelector('#subAutoBtn');
+      const fontSel = header.querySelector('#subFontSelect');
+      const sizeInp = header.querySelector('#subSizeInput');
+
+      // 初始化控件当前值
+      if (fontSel) fontSel.value = subFontFamily;
+      if (sizeInp) sizeInp.value = String(subFontSize);
+
+      // 阻止面板事件冒泡到外层
+      panel.addEventListener('click', (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        return false;
+      });
+
+      panel.addEventListener('pointerdown', (e) => {
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        return false;
+      });
+
+      panel.addEventListener('touchstart', (e) => {
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        return false;
+      });
+
+      closeBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        exitSubtitles();
+        return false;
+      });
+
+      autoBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        autoFollow = !autoFollow;
+        autoBtn.textContent = autoFollow ? '自动跟随：开' : '自动跟随：关';
+      });
+
+      // 字体变化：立即应用到当前面板
+      fontSel && fontSel.addEventListener('change', (e) => {
+        e.stopPropagation();
+        subFontFamily = fontSel.value;
+        
+        // 立即应用到当前面板
+        if (panel) {
+          panel.style.setProperty('--sub-font-family', subFontFamily);
+        }
+        
+        // 更新根变量和保存设置
+        applySubtitleStyle(panel);
+        persistSubtitleStyle();
+      });
+
+      // 字号变化：立即应用到当前面板
+      sizeInp && sizeInp.addEventListener('input', (e) => {
+        e.stopPropagation();
+        const v = parseInt(sizeInp.value || '16', 10);
+        subFontSize = Math.max(10, Math.min(72, isNaN(v) ? 16 : v));
+        
+        // 立即应用到当前面板
+        if (panel) {
+          panel.style.setProperty('--sub-font-size', subFontSize + 'px');
+        }
+        
+        // 更新根变量和保存设置
+        applySubtitleStyle(panel);
+        persistSubtitleStyle();
+      });
+    }
+
+    function enterSubtitles() {
+      applySubtitleStyle();
+      showSubtitles = true;
+      albumCover.classList.add('subtitles-open');
+      // 直接用内联样式控制内层宽度
+      albumImage.style.width = '600px';
+      albumImage.style.height = 'var(--album-size)';
+
+      albumImage.setAttribute('aria-expanded','true');
+      innerArt.style.display = 'none';
+      subtitlePlaceholder.style.display = 'block';
+      applySubtitleStyle();
+      
+      ensureSubtitleCues().then(() => {
+        buildSubtitlePanel();
+        // 构建面板后会调用 applySubtitleStyle(panel)
+        updateActiveCueByTime(audio.currentTime || 0, true);
+      });
+    }
+    
+    function exitSubtitles() {
+      showSubtitles = false;
+      albumCover.classList.remove('subtitles-open');
+
+      albumImage.style.width = '';
+      albumImage.style.height = '';
+
+      albumImage.removeAttribute('aria-expanded');
+      subtitlePlaceholder.style.display = 'none';
+      innerArt.style.display = 'block';
+    }
+
+    function updateActiveCueByTime(t, forceScroll=false) {
+      if (!subtitleCues.length) return;
+      const idx = subtitleCues.findIndex(c => t >= c.start && t < c.end);
+      if (idx === -1) return;
+      if (idx === lastActiveCueIndex && !forceScroll) return;
+      lastActiveCueIndex = idx;
+      const scroll = document.getElementById('subtitleScroll');
+      if (!scroll) return;
+      const items = Array.from(scroll.querySelectorAll('.cue-item'));
+      items.forEach((el, i) => el.classList.toggle('active', i === idx));
+      if (autoFollow) {
+        const activeEl = items[idx];
+        if (activeEl && typeof activeEl.scrollIntoView === 'function') {
+          activeEl.scrollIntoView({ behavior:'smooth', block:'center' });
+        }
+      }
+    }
+
+    // 优先使用当前曲目的 vtt（字符串或 URL），否则 URL 参数，再否则生成示例
+    async function ensureSubtitleCues() {
+      if (subtitleCues.length) return;
+
+      const cur = playlist[index] || {};
+      const isUrl = (s) => typeof s === 'string' && (/^https?:\/\//i.test(s) || s.startsWith('data:'));
+
+      // 1) 曲目自带 vtt
+      if (cur.vtt) {
+        try {
+          if (Array.isArray(cur.vtt)) {
+            subtitleCues = cur.vtt;
+            if (subtitleCues.length) return;
+          } else if (typeof cur.vtt === 'string') {
+            if (isUrl(cur.vtt)) {
+              const res = await fetch(cur.vtt);
+              const txt = await res.text();
+              subtitleCues = parseVTT(txt);
+              if (subtitleCues.length) return;
+            } else {
+              subtitleCues = parseVTT(cur.vtt);
+              if (subtitleCues.length) return;
+            }
+          }
+        } catch {}
+      }
+
+      // 2) URL 参数
+      const params = new URLSearchParams(location.search);
+      const vttUrl = params.get('vtt') || params.get('subtitles');
+      try {
+        if (vttUrl) {
+          const res = await fetch(vttUrl);
+          const txt = await res.text();
+          subtitleCues = parseVTT(txt);
+          if (subtitleCues.length) return;
+        }
+      } catch {}
+
+      // 3) 无则生成示例
+      const dur = audio.duration || 0;
+      if (dur > 0) {
+        const pieces = Math.min(12, Math.max(6, Math.floor(dur / 10)));
+        const span = dur / pieces;
+        subtitleCues = Array.from({length: pieces}).map((_, i) => ({
+          start: Math.floor(i * span),
+          end: Math.floor((i+1) * span - 0.2),
+          text: `示例字幕第 ${i+1} 段（请提供 .vtt 以替换为真实字幕）`
+        }));
+      }
+    }
+
+    albumImage.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (!showSubtitles) enterSubtitles();  // 已在字幕模式下点击不做事
+    });
+    albumImage.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        if (!showSubtitles) enterSubtitles();
+      }
+    });
+
+    audio.addEventListener('timeupdate', () => {
+      if (showSubtitles) updateActiveCueByTime(audio.currentTime || 0);
+    });
+    audio.addEventListener('loadedmetadata', async () => {
+      await ensureSubtitleCues();
+      if (showSubtitles) {
+        buildSubtitlePanel();
+        updateActiveCueByTime(audio.currentTime || 0, true);
+      }
+    });
+
+    async function init() {
+      wireMiniControls();
+
+      const urlCourseId = getUrlCourseId();
+      if (urlCourseId) {
+        await loadFromProgramEntry(urlCourseId);
+      } else {
+        const loadedFromOpener = tryLoadFromOpener();
+        if (!loadedFromOpener) {
+          entrySource = 'fallback';
+          // 带歌词的示例歌曲 + 原有两首示例
+          playlist = [
+            {
+              id: "song-lyrics",
+              title: "SoundHelix Song 1 (Lyric Demo)",
+              artist: "SoundHelix",
+              src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+              durationText: "06:13",
+              vtt: `WEBVTT
+
+00:00:00.000 --> 00:00:06.000
+夜色轻落在都市的边缘
+
+00:00:06.000 --> 00:00:12.000
+微风拂过你温柔的侧脸
+
+00:00:12.000 --> 00:00:18.000
+咖啡杯沿还残留着思念
+
+00:00:18.000 --> 00:00:24.000
+我们在人海中擦肩
+
+00:00:24.000 --> 00:00:30.000
+一段旋律慢慢浮现
+
+00:00:30.000 --> 00:00:36.000
+像是某年某天的约见
+
+00:00:36.000 --> 00:00:42.000
+你笑着说要向前
+
+00:00:42.000 --> 00:00:48.000
+别让遗憾落在今天
+
+00:00:48.000 --> 00:00:54.000
+夜色不再那么深沉
+
+00:00:54.000 --> 00:01:00.000
+心事也变得轻一些
+
+00:01:00.000 --> 00:01:06.000
+当音乐把距离拉近
+
+00:01:06.000 --> 00:01:12.000
+你和我并肩向前
+
+00:01:12.000 --> 00:01:18.000
+灯火映照着笑脸
+
+00:01:18.000 --> 00:01:24.000
+这一刻刚刚好出现`
+            },
+            { title: "Kalimba (Test Audio)", artist: "Ninja Tuna", cover: "", src: "https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3", durationText: "00:30" },
+            { title: "Sample MP3 (700KB)", artist: "Sample Source", cover: "", src: "https://sample.cat/downloads/file_example_MP3_700KB.mp3", durationText: "00:24" }
+          ];
+          index = 0;
+          courseTitleEl.textContent = playlist[0].title;
+          courseAuthorEl.innerHTML = `作者：${escapeHtml(playlist[0].artist)}`;
+          renderChapterList();
+          renderRecommendations(playlist[0].title);
+          if (playlist[0].src) audio.src = playlist[0].src;
+        }
+      }
+
+      playBtn && playBtn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        if (audio.paused) {
+          try { const p = audio.play(); if (p && typeof p.then === 'function') await p; } catch (err) { try { audio.load(); const p2 = audio.play(); if (p2 && typeof p2.then === 'function') await p2; } catch (_) {} }
+        } else audio.pause();
+      });
+      prevBtn && prevBtn.addEventListener('click', (e) => { e.stopPropagation(); if (index > 0) playTrackByIndex(index - 1); });
+      nextBtn && nextBtn.addEventListener('click', (e) => { e.stopPropagation(); if (index < playlist.length - 1) playTrackByIndex(index + 1); });
+
+      audio.addEventListener('timeupdate', refreshProgress);
+      audio.addEventListener('loadedmetadata', refreshProgress);
+      audio.addEventListener('ended', onEndedHandle);
+
+      progressBar && progressBar.addEventListener('click', onProgressClick);
+
+      updateNowPlayingUI(index);
+    }
+
     function tryLoadFromOpener() {
       if (!window.opener) return false;
       try {
         const op = window.opener;
-        // check for pv-audio or pv-title
         const opAudio = op.document && op.document.getElementById && op.document.getElementById('pv-audio');
         const opTitle = op.document && op.document.getElementById && op.document.getElementById('pv-title');
         if (!opAudio && !opTitle) return false;
-        // compose a track from opener state
         const title = opTitle ? (opTitle.textContent || opTitle.innerText || '') : '';
         const artistEl = op.document.getElementById('pv-artist');
         const artist = artistEl ? (artistEl.textContent || artistEl.innerText || '') : '';
-        const coverEl = op.document.getElementById('pv-cover');
-        const cover = coverEl ? (coverEl.style.backgroundImage || '') : '';
         const src = opAudio ? (opAudio.currentSrc || opAudio.src || '') : '';
         const rate = opAudio ? (opAudio.playbackRate || 1) : 1;
         const vol = opAudio ? (opAudio.volume || 0.6) : 0.6;
-        // create playlist from opener's playlist items if available
         let opPlaylist = [];
         try {
-          // if opener has a playlist variable or elements, try to read them
           if (Array.isArray(op.playlist) && op.playlist.length) opPlaylist = op.playlist.map((p,i)=>({ id: p.id||('op-'+i), title: p.title||('Track '+(i+1)), artist: p.artist||'', src: p.src||'', durationText: p.durationText||'' }));
           else {
-            // fallback: single track extracted above
             opPlaylist = [{ id: 'opener-0', title: title || '来自播放栏的音频', artist: artist, src: src, durationText: '' }];
           }
         } catch (e) {
@@ -559,28 +1022,81 @@
         }
         playlist = opPlaylist;
         index = 0;
-        // set UI
         courseTitleEl.textContent = playlist[0].title || '来自播放栏的音频';
         courseAuthorEl.innerHTML = playlist[0].artist ? `作者：${escapeHtml(playlist[0].artist)}` : '';
         renderChapterList();
         renderRecommendations(playlist[0].title);
-        // set audio from opener if available
         if (playlist[0].src) {
           audio.src = playlist[0].src;
         } else if (opAudio && opAudio.currentSrc) {
           audio.src = opAudio.currentSrc;
         }
-        // adopt rate/volume
         try { setPlaybackRate(rate); setVolume(vol); } catch(e){}
         entrySource = 'playbar';
         return true;
       } catch (err) {
-        // cross-origin or other error -> cannot read opener
         return false;
       }
     }
 
-    // Parse chapters param if provided in URL (encoded JSON)
+    async function loadFromProgramEntry(courseIdFromUrl) {
+      entrySource = 'program';
+      const params = new URLSearchParams(location.search);
+      const courseParamName = params.get('course');
+      if (courseParamName) courseTitleEl.textContent = courseParamName;
+
+      const urlChapters = parseChaptersParam();
+      const urlChapterIndex = parseInt(params.get('chapterIndex') || params.get('chapter') || '0', 10) || 0;
+      if (urlChapters && urlChapters.length) {
+        playlist = urlChapters;
+        index = Math.min(Math.max(0, urlChapterIndex), playlist.length - 1);
+        courseTitleEl.textContent = courseParamName || (playlist[0] && playlist[0].title) || ('课程 ' + courseIdFromUrl);
+        courseAuthorEl.innerHTML = '';
+        renderChapterList();
+        renderRecommendations(courseTitleEl.textContent || '');
+        if (playlist[index] && playlist[index].src) audio.src = playlist[index].src;
+        updateNowPlayingUI(index);
+        return;
+      }
+
+      try {
+        const res = await fetch(API.course(courseIdFromUrl), { credentials: 'same-origin' });
+        if (res.ok) {
+          const data = await res.json();
+          const course = data.data || data.course || data;
+          if (course.title) courseTitleEl.textContent = course.title;
+          if (course.author && course.author.name) courseAuthorEl.innerHTML = `作者：<a href="/author/${course.author.id}">${escapeHtml(course.author.name)}</a>`;
+          const chapters = course.chapters || course.sections || course.list || [];
+          playlist = chapters.map((ch, i) => ({ id: ch.id || ('c-'+i), title: ch.title || ch.name || ('章节 '+(i+1)), src: ch.audioUrl||ch.src||'', durationText: ch.duration||ch.durationText||'' }));
+          if (!playlist.length) {
+            playlist = [
+              { id:'s1', title: course.title + ' - 第1节', src: '', durationText: '12:34' },
+              { id:'s2', title: course.title + ' - 第2节', src: '', durationText: '09:08' }
+            ];
+          }
+          index = Math.min(Math.max(0, urlChapterIndex), playlist.length - 1);
+          renderChapterList();
+          renderRecommendations(course.title || courseParamName || '');
+          if (playlist[index] && playlist[index].src) audio.src = playlist[index].src;
+          updateNowPlayingUI(index);
+          return;
+        }
+      } catch (err) {}
+
+      const courseTitle = params.get('course') || ('课程 ' + courseIdFromUrl);
+      courseTitleEl.textContent = courseTitle;
+      courseAuthorEl.innerHTML = '';
+      playlist = [];
+      for (let i=0;i<8;i++){
+        playlist.push({ id:'synth-'+i, title:`${courseTitle} - 第${i+1}节`, src:'', durationText: `${8 + Math.floor(Math.random()*10)}:${String(Math.floor(Math.random()*60)).padStart(2,'0')}` });
+      }
+      index = Math.min(Math.max(0, urlChapterIndex), playlist.length - 1);
+      renderChapterList();
+      renderRecommendations(courseTitle);
+      if (playlist[index] && playlist[index].src) audio.src = playlist[index].src;
+      updateNowPlayingUI(index);
+    }
+
     function parseChaptersParam() {
       const params = new URLSearchParams(location.search);
       const chaptersParam = params.get('chapters');
@@ -589,7 +1105,6 @@
         const decoded = decodeURIComponent(chaptersParam);
         const parsed = JSON.parse(decoded);
         if (!Array.isArray(parsed)) return null;
-        // Normalize to expected track objects
         const normalized = parsed.map((ch, i) => {
           if (typeof ch === 'string') {
             return { id: 'ch-' + i, title: ch, src: '', durationText: '' };
@@ -607,129 +1122,8 @@
       }
     }
 
-    // If URL contains course id -> program_list entry
-    async function loadFromProgramEntry(courseIdFromUrl) {
-      // We'll try to load from URL-embedded chapters (if provided), else call API, else synthesize.
-      entrySource = 'program';
-      const params = new URLSearchParams(location.search);
-      const courseParamName = params.get('course');
-      if (courseParamName) courseTitleEl.textContent = courseParamName;
-
-      // 1) If chapters param present -> use it (serialized by program_list)
-      const urlChapters = parseChaptersParam();
-      const urlChapterIndex = parseInt(params.get('chapterIndex') || params.get('chapter') || '0', 10) || 0;
-      if (urlChapters && urlChapters.length) {
-        playlist = urlChapters;
-        index = Math.min(Math.max(0, urlChapterIndex), playlist.length - 1);
-        // display course title from params (if provided) or fallback to generated from first chapter
-        courseTitleEl.textContent = courseParamName || (playlist[0] && playlist[0].title) || ('课程 ' + courseIdFromUrl);
-        courseAuthorEl.innerHTML = '';
-        renderChapterList();
-        renderRecommendations(courseTitleEl.textContent || '');
-        // set audio to selected chapter if it has src
-        if (playlist[index] && playlist[index].src) audio.src = playlist[index].src;
-        // update now-playing display to selected chapter (without auto-playing)
-        updateNowPlayingUI(index);
-        return;
-      }
-
-      // 2) Try API fetch by courseId
-      try {
-        const res = await fetch(API.course(courseIdFromUrl), { credentials: 'same-origin' });
-        if (res.ok) {
-          const data = await res.json();
-          const course = data.data || data.course || data;
-          if (course.title) courseTitleEl.textContent = course.title;
-          if (course.author && course.author.name) courseAuthorEl.innerHTML = `作者：<a href="/author/${course.author.id}">${escapeHtml(course.author.name)}</a>`;
-          const chapters = course.chapters || course.sections || course.list || [];
-          playlist = chapters.map((ch, i) => ({ id: ch.id || ('c-'+i), title: ch.title || ch.name || ('章节 '+(i+1)), src: ch.audioUrl||ch.src||'', durationText: ch.duration||ch.durationText||'' }));
-          if (!playlist.length) {
-            // synthesize a few sample tracks when API returns none
-            playlist = [
-              { id:'s1', title: course.title + ' - 第1节', src: '', durationText: '12:34' },
-              { id:'s2', title: course.title + ' - 第2节', src: '', durationText: '09:08' }
-            ];
-          }
-          index = Math.min(Math.max(0, urlChapterIndex), playlist.length - 1);
-          renderChapterList();
-          renderRecommendations(course.title || courseParamName || '');
-          // set audio to selected chapter if it has src
-          if (playlist[index] && playlist[index].src) audio.src = playlist[index].src;
-          updateNowPlayingUI(index);
-          return;
-        }
-      } catch (err) {
-        // ignore and fallback to synthetic
-      }
-
-      // 3) fallback synthetic content
-      const courseTitle = params.get('course') || ('课程 ' + courseIdFromUrl);
-      courseTitleEl.textContent = courseTitle;
-      courseAuthorEl.innerHTML = '';
-      playlist = [];
-      for (let i=0;i<8;i++){
-        playlist.push({ id:'synth-'+i, title:`${courseTitle} - 第${i+1}节`, src:'', durationText: `${8 + Math.floor(Math.random()*10)}:${String(Math.floor(Math.random()*60)).padStart(2,'0')}` });
-      }
-      index = Math.min(Math.max(0, urlChapterIndex), playlist.length - 1);
-      renderChapterList();
-      renderRecommendations(courseTitle);
-      if (playlist[index] && playlist[index].src) audio.src = playlist[index].src;
-      updateNowPlayingUI(index);
-    }
-
-    // Initialization sequence
-    async function init() {
-      wireMiniControls();
-
-      // Decide entry source:
-      // 1) If URL has course/id -> program entry (including chapters param)
-      // 2) else if opener is available and same-origin with recognizable elements -> playbar entry
-      // 3) else fallback to demo program (synth)
-      const urlCourseId = getUrlCourseId();
-      if (urlCourseId) {
-        await loadFromProgramEntry(urlCourseId);
-      } else {
-        const loadedFromOpener = tryLoadFromOpener();
-        if (!loadedFromOpener) {
-          entrySource = 'fallback';
-          // fallback: show a demo playlist (two sample files) similar to PlayBar.html
-          playlist = [
-            { title: "Kalimba (Test Audio)", artist: "Ninja Tuna", cover: "", src: "https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3", durationText: "00:30" },
-            { title: "Sample MP3 (700KB)", artist: "Sample Source", cover: "", src: "https://sample.cat/downloads/file_example_MP3_700KB.mp3", durationText: "00:24" }
-          ];
-          index = 0;
-          courseTitleEl.textContent = playlist[0].title;
-          courseAuthorEl.innerHTML = `作者：${escapeHtml(playlist[0].artist)}`;
-          renderChapterList();
-          renderRecommendations(playlist[0].title);
-          if (playlist[0].src) audio.src = playlist[0].src;
-        }
-      }
-
-      // wire main control buttons
-      playBtn && playBtn.addEventListener('click', async (e) => {
-        e.stopPropagation();
-        if (audio.paused) {
-          try { const p = audio.play(); if (p && typeof p.then === 'function') await p; } catch (err) { try { audio.load(); const p2 = audio.play(); if (p2 && typeof p2.then === 'function') await p2; } catch (_) {} }
-        } else audio.pause();
-      });
-      prevBtn && prevBtn.addEventListener('click', (e) => { e.stopPropagation(); if (index > 0) playTrackByIndex(index - 1); });
-      nextBtn && nextBtn.addEventListener('click', (e) => { e.stopPropagation(); if (index < playlist.length - 1) playTrackByIndex(index + 1); });
-
-      audio.addEventListener('timeupdate', refreshProgress);
-      audio.addEventListener('loadedmetadata', refreshProgress);
-      audio.removeEventListener('ended', onEndedHandle);
-      audio.addEventListener('ended', onEndedHandle);
-
-      progressBar && progressBar.addEventListener('click', onProgressClick);
-
-      // Display initial now-playing (already updated in loaders, but ensure UI is in sync)
-      updateNowPlayingUI(index);
-    }
-
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 
-    // expose small API for debugging
     window.PlayerPage = { playlist, getCurrent: () => ({ index, track: playlist[index] }), setPlayMode, setPlaybackRate, setVolume };
   })();
   </script>

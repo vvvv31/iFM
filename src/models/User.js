@@ -10,11 +10,18 @@ const UserSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    required: [true, 'Please enter an email'],
     unique: true,
     match: [
-      /^[\w\.-]+@[a-zA-Z\d\.-]+\.[a-zA-Z]{2,}$/, // 修复后：支持现代TLD格式
+      /^[\w\.-]+@[a-zA-Z\d\.-]+\.[a-zA-Z]{2,}$/,
       'Please enter a valid email address'
+    ]
+  },
+  phone: {
+    type: String,
+    unique: true,
+    match: [
+      /^1[3-9]\d{9}$/,
+      'Please enter a valid phone number'
     ]
   },
   password: {

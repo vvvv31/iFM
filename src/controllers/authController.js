@@ -6,16 +6,21 @@ const User = require('../models/User');
 const authController = {
   async register(req, res, next) {
     try {
-      const { username, email, password } = req.body;
+      const { username, email, phone, password } = req.body;
 
-      // 检查用户是否存在
-      const existingUser = await User.findOne({ email });
+      // 验证至少提供了邮箱或手机号
+      if (!email && !phone) {
+        return res.status(400).json({ message: 'Please provide either email or phone number' });
+      }
+
+      // 检查用户是否已存在（通过邮箱或手机号）
+      const existingUser = await User.findOne({ $or: [{ email }, { phone }] });
       if (existingUser) {
         return res.status(400).json({ message: 'User already exists' });
       }
 
       // 创建新用户
-      const user = await User.create({ username, email, password });
+      const user = await User.create({ username, email, phone, password });
 
       res.status(201).json({
         message: 'User registered successfully',
@@ -23,6 +28,7 @@ const authController = {
           id: user._id,
           username: user.username,
           email: user.email,
+          phone: user.phone,
         },
       });
     } catch (err) {
@@ -32,10 +38,15 @@ const authController = {
 
   async login(req, res, next) {
     try {
-      const { email, password } = req.body;
+      const { email, phone, password } = req.body;
 
-      // 检查用户是否存在
-      const user = await User.findOne({ email });
+      // 验证至少提供了邮箱或手机号
+      if (!email && !phone) {
+        return res.status(400).json({ message: 'Please provide either email or phone number' });
+      }
+
+      // 检查用户是否存在（通过邮箱或手机号）
+      const user = await User.findOne({ $or: [{ email }, { phone }] });
       if (!user) {
         return res.status(400).json({ message: '用户名或密码错误' });
       }

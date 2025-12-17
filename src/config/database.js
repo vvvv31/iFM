@@ -13,7 +13,7 @@ const connectDB = async () => {
     console.log('MongoDB connected');
   } catch (err) {
     console.error('MongoDB connection error:', err);
-    process.exit(1);
+    // MongoDB连接失败时不退出应用，只记录错误
   }
 };
 

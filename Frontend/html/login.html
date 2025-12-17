@@ -373,7 +373,7 @@
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
-                            email: loginPhone.value.trim(), // 注意：后端使用email字段，但前端输入的是手机号
+                            phone: loginPhone.value.trim(), // 现在使用phone字段发送手机号
                             password: loginPwd.value
                         })
                     });
@@ -415,7 +415,7 @@
                         },
                         body: JSON.stringify({
                             username: regUsername.value.trim(),
-                            email: regPhone.value.trim(), // 注意：后端使用email字段，但前端输入的是手机号
+                            phone: regPhone.value.trim(), // 现在使用phone字段发送手机号
                             password: regPwd.value
                         })
                     });

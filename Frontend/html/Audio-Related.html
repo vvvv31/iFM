@@ -5,33 +5,12 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Audio-Related - 星之声</title>
 
+  <link rel="stylesheet" href="../css/style.css">
   <link rel="stylesheet" href="../css/Audio-Related.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="../js/search.js" defer></script>
 
   <style>
-    /* Header styles copied from player page to ensure identical top navigation */
-    .header {
-      display:flex;
-      align-items:center;
-      gap:20px;
-      padding:12px 20px;
-      border-bottom:1px solid #eee;
-      background: #fff;
-    }
-    .logo { display:flex; align-items:center; gap:8px; }
-    .logo-img { width:36px; height:36px; border-radius:6px; background:#ffefd5; }
-    .logo-text { font-weight:700; font-size:18px; color:#333; }
-    .main-nav { display:flex; gap:12px; margin-left:12px; }
-    .nav-item { color:#666; text-decoration:none; padding:6px 8px; border-radius:6px; }
-    .nav-item.active { background:#fff4e6; color:#ff8c00; font-weight:600; }
-    .search-box { margin-left:auto; display:flex; gap:8px; align-items:center; }
-    .search-input { padding:6px 10px; border:1px solid #eee; border-radius:6px; }
-    .search-btn { background:#ff8c00; color:#fff; border:0; padding:6px 10px; border-radius:6px; cursor:pointer; }
-    .user-functions { display:flex; gap:10px; align-items:center; margin-left:12px; }
-    .func-item { color:#666; text-decoration:none; font-size:14px; display:flex; gap:6px; align-items:center; }
-    .submit-btn { background:#ff8c00; color:#fff; border:0; padding:6px 10px; border-radius:6px; cursor:pointer; }
-
     /* Page-specific small tweaks */
     .top-tabs { display:flex; gap:8px; margin:18px auto; max-width:1200px; justify-content:center; }
     .top-tab { padding:8px 14px; border-radius:6px; cursor:pointer; border:1px solid #FFDAB9; background:#fff; }
@@ -58,7 +37,7 @@
   </style>
 </head>
 <body>
-  <!-- TOP NAVIGATION (copied from player.html) -->
+  <!-- TOP NAVIGATION (使用统一的导航栏样式) -->
   <header class="header">
     <div class="logo">
       <div class="logo-img"></div>
@@ -66,7 +45,6 @@
     </div>
 
     <nav class="main-nav">
-      <!-- Using the same relative links as player.html (assumes both player.html and this file are in same folder) -->
       <a href="index.html" class="nav-item">首页</a>
       <a href="category.html" class="nav-item">分类</a>
       <a href="channel.html" class="nav-item">社区</a>

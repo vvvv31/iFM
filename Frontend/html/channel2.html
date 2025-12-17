@@ -349,7 +349,7 @@
         }
         .own-message .message-bubble {
             background: white;
-            color: #ff6b35;
+            color: #333;
             border: 1px solid #ff6b35;
             border-top-right-radius: 4px;
         }
@@ -370,7 +370,7 @@
             border-bottom: 6px solid transparent;
         }
         
-        .message-text { font-size: 14px; line-height: 1.5; }
+        .message-text { font-size: 15px; line-height: 1.6; }
         .english-text { letter-spacing: 0.3px; }
         .bilingual-text { line-height: 1.6; }
         
@@ -381,13 +381,31 @@
         }
         .system-message .message-bubble::before { display: none; }
         
+        /* 词汇高亮 - 简化样式，不使用背景色 */
         .vocabulary-highlight {
-            color: #4285F4; font-weight: 600;
-            background: rgba(66, 133, 244, 0.1); padding: 2px 6px; border-radius: 4px; margin: 0 2px;
+            color: #fff; 
+            font-weight: 700;
+            text-decoration: underline;
+            text-decoration-color: rgba(255,255,255,0.5);
+            text-underline-offset: 2px;
         }
+        .own-message .vocabulary-highlight {
+            color: #ff6b35;
+            text-decoration-color: rgba(255,107,53,0.5);
+        }
+        
+        /* 语法注释 - 移到气泡外部 */
         .grammar-note {
-            font-style: italic; color: #666; font-size: 12px; margin-top: 4px;
-            border-left: 3px solid #ff6b35; padding-left: 8px;
+            font-style: normal; 
+            color: #ff6b35; 
+            font-size: 12px; 
+            margin-top: 6px;
+            padding-left: 0;
+            border-left: none;
+        }
+        .own-message .grammar-note {
+            text-align: right;
+            color: #666;
         }
         
         .group-switch-indicator {
@@ -973,8 +991,8 @@
                                 </div>
                                 <div class="message-bubble">
                                     <div class="message-text english-text">Good morning everyone! How was your weekend?</div>
-                                    <div class="grammar-note">过去式疑问句</div>
                                 </div>
+                                <div class="grammar-note">过去式疑问句</div>
                             </div>
                         </div>
 
@@ -988,8 +1006,8 @@
                                 </div>
                                 <div class="message-bubble">
                                     <div class="message-text english-text">My weekend was great! I watched an English movie and practiced listening skills.</div>
-                                    <div class="grammar-note">过去简单式 + 并列句</div>
                                 </div>
+                                <div class="grammar-note">过去简单式 + 并列句</div>
                             </div>
                         </div>
 
@@ -1003,8 +1021,8 @@
                                 </div>
                                 <div class="message-bubble">
                                     <div class="message-text english-text">I had a productive weekend too! I learned some new <span class="vocabulary-highlight">vocabulary</span> about travel.</div>
-                                    <div class="grammar-note">学习了一些关于旅行的新词汇</div>
                                 </div>
+                                <div class="grammar-note">学习了一些关于旅行的新词汇</div>
                             </div>
                         </div>
                     </div>

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>我的-最近收听 - 星之声</title>
     <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/category.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="../js/search.js"></script>
     <style>
@@ -48,71 +49,135 @@
         .playlist-item { padding:8px 12px; cursor:pointer; }
         .playlist-item.active { background:#fff3e0; color:#ff8c00; font-weight:600; }
 
-        /* 频道卡片点击效果 */
-        .channel-card {
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border-radius: 12px;
-            overflow: hidden;
-        }
-
-        .channel-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-        }
-
-        .channel-card:active {
-            transform: translateY(-2px);
-            transition: transform 0.1s;
-        }
-
         @media (max-width: 900px) { .pv-left{min-width:0;} .pv-right{min-width:0;} .pv-inner{grid-template-columns:auto 1fr auto; column-gap:10px; padding:0 12px;} }
 
-        /* 新增：最近收听页面特定样式 */
+        /* 最近收听页面特定样式 */
         .content-block {
-            margin-bottom: 30px;
+            background: #fff;
+            border: 1px solid #FFDAB9;
+            border-radius: 12px;
+            padding: 24px 28px;
+            margin-bottom: 28px;
+            box-shadow: 0 2px 12px rgba(255, 140, 0, 0.05);
         }
 
         .content-title {
-            font-size: 16px;
-            font-weight: bold;
+            font-size: 18px;
+            font-weight: 600;
             color: #FF8C00;
-            margin-bottom: 15px;
-            padding-bottom: 8px;
+            margin-bottom: 24px;
+            padding-bottom: 12px;
             border-bottom: 2px solid #FFEDCC;
-        }
-
-        .channel-thumbnail {
-            width: 100%;
-            height: 100%;
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            font-weight: bold;
-            color: #333;
-            padding: 10px;
-            text-align: center;
-            line-height: 1.4;
+            gap: 10px;
         }
 
+        .content-title::before {
+            content: '';
+            width: 4px;
+            height: 18px;
+            background: linear-gradient(180deg, #FF8C00, #FFB366);
+            border-radius: 2px;
+        }
+
+        .content-title i {
+            font-size: 16px;
+            color: #FFB366;
+        }
+
+        /* 使用与分类页面相同的网格布局 */
+        .channels-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .channels-grid {
+                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+                gap: 18px;
+            }
+            
+            .content-block {
+                padding: 18px 20px;
+                margin-bottom: 20px;
+            }
+            
+            .content-title {
+                font-size: 16px;
+                margin-bottom: 18px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .channels-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+        }
+
+        /* 收听进度条 */
+        .listen-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.3);
+            z-index: 3;
+        }
+
+        .listen-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #FF8C00, #FFB366);
+            border-radius: 0 2px 2px 0;
+        }
+
+        /* 收听时间标签 */
+        .listen-time {
+            font-size: 11px;
+            color: #999;
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .listen-time i {
+            font-size: 10px;
+        }
+
+        /* 空状态样式 */
         .empty-state {
             text-align: center;
-            padding: 40px 20px;
+            padding: 60px 20px;
             color: #999;
-            background-color: #f9f9f9;
-            border-radius: 8px;
-            border: 1px dashed #ddd;
+            background: linear-gradient(135deg, #f9f9f9 0%, #fff 100%);
+            border-radius: 12px;
+            border: 2px dashed #FFDAB9;
         }
 
         .empty-state i {
-            font-size: 48px;
-            margin-bottom: 15px;
-            color: #ddd;
+            font-size: 64px;
+            margin-bottom: 20px;
+            color: #FFDAB9;
         }
 
         .empty-state p {
-            font-size: 14px;
+            font-size: 16px;
+            color: #999;
+        }
+
+        .empty-state a {
+            color: #FF8C00;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .empty-state a:hover {
+            text-decoration: underline;
         }
 
         /* 用户信息编辑功能样式 */
@@ -717,59 +782,240 @@
 
         <!-- 今天 -->
         <section class="content-block">
-            <div class="content-title">今天</div>
-            <div class="channel-cards">
-                <!-- 今天收听的课程 -->
+            <div class="content-title"><i class="fas fa-calendar-day"></i> 今天</div>
+            <div class="channels-grid">
+                <!-- 日常英语口语600句 -->
                 <div class="channel-card" data-course-id="2" onclick="goToProgramList(this)">
-                    <div class="channel-thumbnail">日常英语口语600句</div>
+                    <div class="channel-thumbnail" style="background-image: url('../images/daily_english.jpg');">
+                        <div class="thumbnail-overlay">
+                            <span class="play-icon"><i class="fas fa-play"></i></span>
+                        </div>
+                        <span class="video-duration">38:15</span>
+                        <div class="listen-progress">
+                            <div class="listen-progress-fill" style="width: 75%;"></div>
+                        </div>
+                    </div>
+                    <div class="channel-info">
+                        <h3 class="channel-title">日常英语口语600句</h3>
+                        <div class="channel-meta">
+                            <span class="views-count">5.0万次学习</span>
+                            <span class="rating">2024-12-21</span>
+                        </div>
+                        <div class="teacher-info">
+                            <div class="teacher-avatar">王</div>
+                            <span class="teacher-name">王老师</span>
+                        </div>
+                    </div>
                 </div>
+                
+                <!-- 职场英语沟通技巧 -->
                 <div class="channel-card" data-course-id="5" onclick="goToProgramList(this)">
-                    <div class="channel-thumbnail">职场英语沟通技巧</div>
+                    <div class="channel-thumbnail" style="background-image: url('../images/workplace_english.jpg');">
+                        <div class="thumbnail-overlay">
+                            <span class="play-icon"><i class="fas fa-play"></i></span>
+                        </div>
+                        <span class="video-duration">45:10</span>
+                        <div class="listen-progress">
+                            <div class="listen-progress-fill" style="width: 30%;"></div>
+                        </div>
+                    </div>
+                    <div class="channel-info">
+                        <h3 class="channel-title">职场英语沟通技巧</h3>
+                        <div class="channel-meta">
+                            <span class="views-count">3.2万次学习</span>
+                            <span class="rating">2024-12-21</span>
+                        </div>
+                        <div class="teacher-info">
+                            <div class="teacher-avatar">赵</div>
+                            <span class="teacher-name">赵老师</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
 
         <!-- 昨天 -->
         <section class="content-block">
-            <div class="content-title">昨天</div>
-            <div class="channel-cards">
-                <!-- 昨天收听的课程 -->
+            <div class="content-title"><i class="fas fa-history"></i> 昨天</div>
+            <div class="channels-grid">
+                <!-- 商务英语会话技巧 -->
                 <div class="channel-card" data-course-id="1" onclick="goToProgramList(this)">
-                    <div class="channel-thumbnail">商务英语会话技巧</div>
+                    <div class="channel-thumbnail" style="background-image: url('../images/business_english.jpg');">
+                        <div class="thumbnail-overlay">
+                            <span class="play-icon"><i class="fas fa-play"></i></span>
+                        </div>
+                        <span class="video-duration">45:30</span>
+                        <div class="listen-progress">
+                            <div class="listen-progress-fill" style="width: 100%;"></div>
+                        </div>
+                    </div>
+                    <div class="channel-info">
+                        <h3 class="channel-title">商务英语会话技巧</h3>
+                        <div class="channel-meta">
+                            <span class="views-count">2.5万次学习</span>
+                            <span class="rating">2024-12-20</span>
+                        </div>
+                        <div class="teacher-info">
+                            <div class="teacher-avatar">李</div>
+                            <span class="teacher-name">李老师</span>
+                        </div>
+                    </div>
                 </div>
+                
+                <!-- 英语听力进阶训练 -->
                 <div class="channel-card" data-course-id="3" onclick="goToProgramList(this)">
-                    <div class="channel-thumbnail">英语听力进阶训练</div>
+                    <div class="channel-thumbnail" style="background-image: url('../images/listening_training.jpg');">
+                        <div class="thumbnail-overlay">
+                            <span class="play-icon"><i class="fas fa-play"></i></span>
+                        </div>
+                        <span class="video-duration">52:40</span>
+                        <div class="listen-progress">
+                            <div class="listen-progress-fill" style="width: 60%;"></div>
+                        </div>
+                    </div>
+                    <div class="channel-info">
+                        <h3 class="channel-title">英语听力进阶训练</h3>
+                        <div class="channel-meta">
+                            <span class="views-count">1.4万次学习</span>
+                            <span class="rating">2024-12-20</span>
+                        </div>
+                        <div class="teacher-info">
+                            <div class="teacher-avatar">张</div>
+                            <span class="teacher-name">张老师</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
 
         <!-- 最近7天 -->
         <section class="content-block">
-            <div class="content-title">最近7天</div>
-            <div class="channel-cards">
-                <!-- 最近7天收听的课程 -->
+            <div class="content-title"><i class="fas fa-calendar-week"></i> 最近7天</div>
+            <div class="channels-grid">
+                <!-- 旅游英语实用对话 -->
                 <div class="channel-card" data-course-id="4" onclick="goToProgramList(this)">
-                    <div class="channel-thumbnail">旅游英语实用对话</div>
+                    <div class="channel-thumbnail" style="background-image: url('../images/travel_english.jpg');">
+                        <div class="thumbnail-overlay">
+                            <span class="play-icon"><i class="fas fa-play"></i></span>
+                        </div>
+                        <span class="video-duration">28:30</span>
+                        <div class="listen-progress">
+                            <div class="listen-progress-fill" style="width: 45%;"></div>
+                        </div>
+                    </div>
+                    <div class="channel-info">
+                        <h3 class="channel-title">旅游英语实用对话</h3>
+                        <div class="channel-meta">
+                            <span class="views-count">4.6万次学习</span>
+                            <span class="rating">2024-12-18</span>
+                        </div>
+                        <div class="teacher-info">
+                            <div class="teacher-avatar">刘</div>
+                            <span class="teacher-name">刘老师</span>
+                        </div>
+                    </div>
                 </div>
+                
+                <!-- 日常英语口语600句 -->
                 <div class="channel-card" data-course-id="2" onclick="goToProgramList(this)">
-                    <div class="channel-thumbnail">日常英语口语600句</div>
+                    <div class="channel-thumbnail" style="background-image: url('../images/daily_english.jpg');">
+                        <div class="thumbnail-overlay">
+                            <span class="play-icon"><i class="fas fa-play"></i></span>
+                        </div>
+                        <span class="video-duration">38:15</span>
+                        <div class="listen-progress">
+                            <div class="listen-progress-fill" style="width: 100%;"></div>
+                        </div>
+                    </div>
+                    <div class="channel-info">
+                        <h3 class="channel-title">日常英语口语600句</h3>
+                        <div class="channel-meta">
+                            <span class="views-count">5.0万次学习</span>
+                            <span class="rating">2024-12-16</span>
+                        </div>
+                        <div class="teacher-info">
+                            <div class="teacher-avatar">王</div>
+                            <span class="teacher-name">王老师</span>
+                        </div>
+                    </div>
                 </div>
+                
+                <!-- 商务英语会话技巧 -->
                 <div class="channel-card" data-course-id="1" onclick="goToProgramList(this)">
-                    <div class="channel-thumbnail">商务英语会话技巧</div>
+                    <div class="channel-thumbnail" style="background-image: url('../images/business_english.jpg');">
+                        <div class="thumbnail-overlay">
+                            <span class="play-icon"><i class="fas fa-play"></i></span>
+                        </div>
+                        <span class="video-duration">45:30</span>
+                        <div class="listen-progress">
+                            <div class="listen-progress-fill" style="width: 85%;"></div>
+                        </div>
+                    </div>
+                    <div class="channel-info">
+                        <h3 class="channel-title">商务英语会话技巧</h3>
+                        <div class="channel-meta">
+                            <span class="views-count">2.5万次学习</span>
+                            <span class="rating">2024-12-15</span>
+                        </div>
+                        <div class="teacher-info">
+                            <div class="teacher-avatar">李</div>
+                            <span class="teacher-name">李老师</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
 
         <!-- 更早 -->
         <section class="content-block">
-            <div class="content-title">更早</div>
-            <div class="channel-cards">
-                <!-- 更早收听的课程 -->
+            <div class="content-title"><i class="fas fa-archive"></i> 更早</div>
+            <div class="channels-grid">
+                <!-- 英语听力进阶训练 -->
                 <div class="channel-card" data-course-id="3" onclick="goToProgramList(this)">
-                    <div class="channel-thumbnail">英语听力进阶训练</div>
+                    <div class="channel-thumbnail" style="background-image: url('../images/listening_training.jpg');">
+                        <div class="thumbnail-overlay">
+                            <span class="play-icon"><i class="fas fa-play"></i></span>
+                        </div>
+                        <span class="video-duration">52:40</span>
+                        <div class="listen-progress">
+                            <div class="listen-progress-fill" style="width: 100%;"></div>
+                        </div>
+                    </div>
+                    <div class="channel-info">
+                        <h3 class="channel-title">英语听力进阶训练</h3>
+                        <div class="channel-meta">
+                            <span class="views-count">1.4万次学习</span>
+                            <span class="rating">2024-12-08</span>
+                        </div>
+                        <div class="teacher-info">
+                            <div class="teacher-avatar">张</div>
+                            <span class="teacher-name">张老师</span>
+                        </div>
+                    </div>
                 </div>
+                
+                <!-- 职场英语沟通技巧 -->
                 <div class="channel-card" data-course-id="5" onclick="goToProgramList(this)">
-                    <div class="channel-thumbnail">职场英语沟通技巧</div>
+                    <div class="channel-thumbnail" style="background-image: url('../images/workplace_english.jpg');">
+                        <div class="thumbnail-overlay">
+                            <span class="play-icon"><i class="fas fa-play"></i></span>
+                        </div>
+                        <span class="video-duration">45:10</span>
+                        <div class="listen-progress">
+                            <div class="listen-progress-fill" style="width: 50%;"></div>
+                        </div>
+                    </div>
+                    <div class="channel-info">
+                        <h3 class="channel-title">职场英语沟通技巧</h3>
+                        <div class="channel-meta">
+                            <span class="views-count">3.2万次学习</span>
+                            <span class="rating">2024-12-01</span>
+                        </div>
+                        <div class="teacher-info">
+                            <div class="teacher-avatar">赵</div>
+                            <span class="teacher-name">赵老师</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>

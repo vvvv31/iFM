@@ -5,10 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>课程播放 - 星之声</title>
 
-  <link rel="stylesheet" href="../css/style.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <script src="../js/search.js" defer></script>
-
   <style>
     :root{
       --left-w: 300px;
@@ -17,8 +13,6 @@
       --album-size: 360px;
       --album-rect-expanded-width: 760px;
       --album-height: 360px;
-
-      /* 字幕样式变量（可被面板内动态覆盖） */
       --sub-font-size: 16px;
       --sub-line-height: 1.75;
       --sub-font-weight: 400;
@@ -63,7 +57,6 @@
 
     .player-album { display:flex; align-items:center; justify-content:center; width:100%; }
 
-    /* 初始封面容器：280x280 */
     .album-cover {
       width: 280px;
       height: 280px;
@@ -94,7 +87,6 @@
     .inner-art { transition: opacity 180ms ease; }
     .subtitle-panel { position:absolute; left:12px; right:12px; top:12px; bottom:12px; background: rgba(255,255,255,0.96); border-radius:8px; padding:10px; display:flex; flex-direction:column; gap:8px; box-shadow:0 8px 20px rgba(0,0,0,0.06); overflow:hidden; }
 
-    /* Controls layout */
     .player-controls-large { display:flex; flex-direction:column; gap:8px; align-items:center; width:100%; }
     .controls-top { display:flex; align-items:center; justify-content:center; gap:12px; width:100%; }
     .controls-top .volume-wrap { display:flex; gap:8px; align-items:center; }
@@ -119,7 +111,7 @@
     .volume-fill { height:100%; background:#ffb74d; width:50%; }
 
     .progress-container-large { display:flex; align-items:center; gap:12px; width:100%; }
-    .progress-bar-large { flex:1; height:8px; background:#f1f1f1; border-radius:8px; overflow:hidden; position:relative; }
+    .progress-bar-large { flex:1; height:8px; background:#f1f1f1; border-radius:8px; overflow:hidden; position:relative; cursor: pointer; }
     .progress-fill-large { height:100%; background: linear-gradient(90deg,#ffd86b,#ffb94d); width:0%; }
 
     @media (max-width:1100px) {
@@ -129,7 +121,6 @@
 
     audio { display:none !important; }
 
-    /* ===== 字幕面板内布局 ===== */
     .subtitle-header {
       display:flex; align-items:center; justify-content:space-between;
       gap:8px; padding:4px 0; border-bottom:1px solid #f0f0f0;
@@ -146,27 +137,18 @@
       padding: 8px 10px;
       border-radius: 8px;
       color: #333;
-      cursor: pointer; /* 将默认的 cursor: default 改为 pointer */
+      cursor: pointer;
       display: flex;
       align-items: flex-start;
       gap: 8px;
       transition: background-color 0.2s ease;
     }
-    .cue-item:hover {
-      background-color: #fff9f0;
-    }
-
-    .cue-item.active {
-      background: #fff3e0;
-      border-left: 3px solid #ff9a2a;
-      font-weight: 500;
-    }
+    .cue-item:hover { background-color: #fff9f0; }
+    .cue-item.active { background: #fff3e0; border-left: 3px solid #ff9a2a; font-weight: 500; }
     .cue-time { flex:0 0 auto; font-size:12px; color:#999; min-width:54px; text-align:right; font-variant-numeric:tabular-nums; }
     .cue-text { flex:1; white-space:pre-wrap; word-break:break-word; }
-    .cue-item.active { background:#fff3e0; border-left:3px solid #ff9a2a; }
     .subtitle-empty { color:#888; font-size:13px; text-align:center; padding:20px 6px; }
 
-    /* 应用可定制变量到字幕 */
     .subtitle-panel { font-family: var(--sub-font-family); }
     .cue-item .cue-text {
       font-size: var(--sub-font-size);
@@ -174,19 +156,39 @@
       font-weight: var(--sub-font-weight);
     }
 
-    /* ===== 点击后：album-cover 改为 600x280，字幕区域充满 ===== */
     .album-cover.subtitles-open { width: 600px; height: 280px; }
     .album-cover.subtitles-open .subtitle-panel {
       position: absolute; left: 0; right: 0; top: 0; bottom: 0;
       border-radius: 12px; padding: 12px; background: rgba(255,255,255,0.96); box-shadow: none;
     }
     @media (max-width: 700px) { .album-cover.subtitles-open { width: 100%; height: 280px; } }
+    
+    .connection-status {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      padding: 5px 10px;
+      border-radius: 15px;
+      font-size: 12px;
+      z-index: 10000;
+      display: none;
+    }
+    .connection-status.connected {
+      display: block;
+      background-color: #4caf50;
+      color: white;
+    }
+    .connection-status.disconnected {
+      display: block;
+      background-color: #f44336;
+      color: white;
+    }
   </style>
 </head>
 <body>
-  <!-- Audio element used by player -->
-  <audio id="audioPlayer" preload="metadata" style="display:none;"></audio>
-
+  <!-- 连接状态指示器 -->
+  <div id="connectionStatus" class="connection-status"></div>
+  
   <!-- TOP NAV -->
   <header class="header">
     <div class="logo">
@@ -200,19 +202,13 @@
     </nav>
     <div class="search-box">
       <input type="text" placeholder="搜索课程、频道..." class="search-input" id="homeSearchInput">
-      <button class="search-btn" id="homeSearchBtn"><i class="fas fa-search"></i></button>
+      <button class="search-btn" id="homeSearchBtn">搜索</button>
     </div>
     <div class="user-functions">
-      <a href="my-recent.html" class="func-item">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-          <circle cx="12" cy="7" r="4"></circle>
-        </svg>
-      </a>
-      <a href="my-message.html" class="func-item"><i class="fas fa-bell"></i> 消息</a>
-      <a href="my-collect.html" class="func-item"><i class="fas fa-star"></i> 收藏</a>
-      <a href="my-recent.html" class="func-item"><i class="fas fa-history"></i> 历史</a>
-      <a href="my-creator_center.html" class="func-item"><i class="fas fa-pen"></i> 创作中心</a>
+      <a href="my-message.html" class="func-item">消息</a>
+      <a href="my-collect.html" class="func-item">收藏</a>
+      <a href="my-recent.html" class="func-item">历史</a>
+      <a href="my-creator_center.html" class="func-item">创作中心</a>
       <a href="login.html"><button class="submit-btn">登录/注册</button></a>
     </div>
   </header>
@@ -223,7 +219,10 @@
       <!-- LEFT: chapter list -->
       <aside class="chapter-sidebar" aria-labelledby="chapters-title">
         <div class="sidebar-header">
-          <h2 id="chapters-title"><i class="fas fa-list-ol"></i> 课程章节</h2>
+          <h2 id="chapters-title">课程章节</h2>
+          <button id="syncBtn" class="mini-btn" title="从播放栏同步" aria-label="同步">
+            同步
+          </button>
         </div>
         <div class="chapter-list" id="chapterList">
           <div class="chapter-item placeholder">加载中…</div>
@@ -242,10 +241,7 @@
             <div class="album-cover" id="albumCover">
               <div class="album-image" id="albumImage" role="button" tabindex="0" aria-label="切换字幕模式">
                 <div class="inner-art" id="innerArt" aria-hidden="true">
-                  <svg width="120" height="120" viewBox="0 0 24 24" fill="none">
-                    <rect x="2" y="2" width="20" height="20" rx="4" fill="#fff4e6" stroke="#ffd8a8"></rect>
-                    <path d="M6 8h12M6 12h8M6 16h10" stroke="#ff9f3b" stroke-width="1.3" stroke-linecap="round"/>
-                  </svg>
+                  点击显示字幕
                 </div>
                 <div id="subtitlePlaceholder" style="display:none;" aria-hidden="true"></div>
               </div>
@@ -257,7 +253,7 @@
             <div class="controls-top">
               <div class="volume-wrap">
                 <button id="muteBtn" class="mini-btn" title="静音/取消静音" aria-label="静音">
-                  <svg id="volIcon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3z"/></svg>
+                  音量
                 </button>
                 <div id="volBar" class="volume-bar" title="音量">
                   <div id="volFill" class="volume-fill"></div>
@@ -266,38 +262,44 @@
             </div>
 
             <div class="controls-bottom">
+              <!-- 播放模式按钮 - 使用和播放栏相同的结构 -->
               <div class="control-side" style="position:relative;">
                 <div style="position:relative;">
-                  <button id="modeBtn" class="mini-btn" title="播放模式" aria-label="播放模式">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M7 7h8v3l4-4-4-4v3H5v6h2V7zm10 10H9v-3l-4 4 4 4v-3h10v-6h-2v4z"/></svg>
+                  <button id="modeBtn" class="mini-btn" title="播放模式" aria-label="播放模式" style="display:flex; align-items:center; gap:4px;">
+                    <svg class="icon" viewBox="0 0 24 24" style="width:16px; height:16px;"><path d="M7 7h8v3l4-4-4-4v3H5v6h2V7zm10 10H9v-3l-4 4 4 4v-3h10v-6h-2v4z"></path></svg>
+                    <span id="modeText" style="font-size:12px; font-weight:bold;">列表</span>
                   </button>
-                  <div id="modePop" class="mode-popover" aria-hidden="true">
-                    <div class="mode-options">
-                      <div class="mode-item" data-mode="single" title="单曲循环">1</div>
-                      <div class="mode-item active" data-mode="list" title="列表循环">L</div>
-                      <div class="mode-item" data-mode="shuffle" title="随机">S</div>
+                  <div id="modePop" class="popover mode-popover" aria-hidden="true">
+                    <div class="mode-item" data-mode="single" title="单曲循环">
+                      <svg class="icon" viewBox="0 0 24 24"><path d="M12 5v4l-1.5-1.5C8 10 8 14 10.5 16.5S16 19 18.5 16.5L20 18c-3 3-8 3-11 0S6 9 9 6L12 5z"></path></svg>
+                    </div>
+                    <div class="mode-item active" data-mode="list" title="歌单顺序循环">
+                      <svg class="icon" viewBox="0 0 24 24"><path d="M4 6h12v2H4V6zm0 5h12v2H4v-2zm0 5h8v2H4v-2zm15-7l-3 3h2v4h2v-4h2l-3-3z"></path></svg>
+                    </div>
+                    <div class="mode-item" data-mode="shuffle" title="歌单乱序循环">
+                      <svg class="icon" viewBox="0 0 24 24"><path d="M16 3h5v5h-2V6.41l-4.29 4.3-1.42-1.42L17.59 5H16V3zM4 6h7l2 2H4V6zm0 6h5l2 2H4v-2zm12 3h1.59l-2.29 2.29 1.42 1.42L20 17.41V19h2v-5h-5v2z"></path></svg>
                     </div>
                   </div>
                 </div>
               </div>
 
               <div style="display:flex; align-items:center; gap:12px;">
-                <button class="control-btn-large prev-btn" id="page-prev" title="上一章"><i class="fas fa-step-backward"></i></button>
-                <button class="play-btn-large play-active" id="page-play" title="播放/暂停"><i class="fas fa-play-circle"></i></button>
-                <button class="control-btn-large next-btn" id="page-next" title="下一章"><i class="fas fa-step-forward"></i></button>
+                <button class="control-btn-large prev-btn" id="page-prev" title="上一章">上一首</button>
+                <button class="play-btn-large play-active" id="page-play" title="播放/暂停">播放</button>
+                <button class="control-btn-large next-btn" id="page-next" title="下一章">下一首</button>
               </div>
 
+              <!-- 倍速按钮 - 使用和播放栏相同的结构 -->
               <div class="control-side" style="position:relative;">
                 <div style="position:relative;">
-                  <button id="rateBtn" class="mini-btn" title="倍速" aria-label="倍速"><span id="rateText" style="font-weight:700; font-size:13px;">1x</span></button>
-                  <div id="ratePop" class="rate-popover" aria-hidden="true">
-                    <div class="rate-list">
-                      <div class="rate-item" data-rate="0.5">0.5x</div>
-                      <div class="rate-item active" data-rate="1">1.0x</div>
-                      <div class="rate-item" data-rate="1.25">1.25x</div>
-                      <div class="rate-item" data-rate="1.5">1.5x</div>
-                      <div class="rate-item" data-rate="2">2.0x</div>
-                    </div>
+                  <button id="rateBtn" class="mini-btn" title="倍速" aria-label="倍速" style="display:flex; align-items:center; gap:4px;">
+                    <span id="rateText" style="font-size:12px; font-weight:bold;">1x</span>
+                  </button>
+                  <div id="ratePop" class="popover rate-popover" aria-hidden="true">
+                    <div class="rate-item" data-rate="0.5">0.5x</div>
+                    <div class="rate-item active" data-rate="1">1.0x</div>
+                    <div class="rate-item" data-rate="1.5">1.5x</div>
+                    <div class="rate-item" data-rate="2">2.0x</div>
                   </div>
                 </div>
               </div>
@@ -323,7 +325,7 @@
       <!-- RIGHT: recommendations -->
       <aside class="recommend-sidebar" aria-labelledby="recommend-title">
         <div class="sidebar-header">
-          <h2 id="recommend-title"><i class="fas fa-fire"></i> 推荐课程</h2>
+          <h2 id="recommend-title">推荐课程</h2>
         </div>
         <div class="recommend-list" id="recommendList">
           <div class="recommend-item placeholder">加载中…</div>
@@ -332,19 +334,46 @@
     </div>
   </main>
 
+  <!-- 独立模式下的音频元素 -->
+  <audio id="audioPlayer" preload="metadata" style="display: none;"></audio>
+
   <script>
   (function () {
-    const API = {
-      course: (id) => `/api/course/${encodeURIComponent(id)}`,
-      chapterAudio: (cid) => `/api/chapter/${encodeURIComponent(cid)}/audio`,
-      recommendations: (id) => `/api/course/${encodeURIComponent(id)}/recommendations`
-    };
+    console.log('播放页初始化开始');
+    
+    // 检测是否在iframe中
+    const isInFrame = window !== window.parent;
+    console.log('是否在iframe中:', isInFrame);
+    
+    // 连接状态
+    let isConnectedToParent = false;
+    const connectionStatusEl = document.getElementById('connectionStatus');
+    
+    function updateConnectionStatus(connected) {
+      isConnectedToParent = connected;
+      if (connected) {
+        connectionStatusEl.textContent = '已连接到播放栏';
+        connectionStatusEl.className = 'connection-status connected';
+      } else {
+        connectionStatusEl.textContent = '未连接到播放栏';
+        connectionStatusEl.className = 'connection-status disconnected';
+      }
+    }
 
+    // 音频元素 - 只在独立模式下使用
     const audio = document.getElementById('audioPlayer');
+    
+    // 如果是在iframe中，隐藏音频元素
+    if (isInFrame) {
+      audio.style.display = 'none';
+    }
+    
+    // DOM 元素引用
     const chapterListEl = document.getElementById('chapterList');
     const recommendListEl = document.getElementById('recommendList');
     const courseTitleEl = document.getElementById('courseTitle');
     const courseAuthorEl = document.getElementById('courseAuthor');
+    const syncBtn = document.getElementById('syncBtn');
 
     const playBtn = document.getElementById('page-play');
     const prevBtn = document.getElementById('page-prev');
@@ -361,75 +390,402 @@
     const innerArt = document.getElementById('innerArt');
     const subtitlePlaceholder = document.getElementById('subtitlePlaceholder');
 
+    // 播放模式相关元素
     const modeBtn = document.getElementById('modeBtn');
+    const modeText = document.getElementById('modeText');
     const modePop = document.getElementById('modePop');
+    const modeItems = modePop ? modePop.querySelectorAll('.mode-item') : [];
+    
+    // 倍速相关元素
     const rateBtn = document.getElementById('rateBtn');
-    const ratePop = document.getElementById('ratePop');
     const rateText = document.getElementById('rateText');
+    const ratePop = document.getElementById('ratePop');
+    const rateItems = ratePop ? ratePop.querySelectorAll('.rate-item') : [];
+    
+    // 音量相关元素
     const muteBtn = document.getElementById('muteBtn');
     const volBar = document.getElementById('volBar');
     const volFill = document.getElementById('volFill');
     const volIcon = document.getElementById('volIcon');
 
-    let playlist = []; // [{ id, title, src, durationText, vtt? }]
-    let index = 0;
-    let playMode = 'list'; // 'single' | 'list' | 'shuffle'
-    let entrySource = 'unknown'; // 'program' | 'playbar' | 'fallback'
-
-    function escapeHtml(str) { return String(str || '').replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m])); }
-    function getUrlCourseId() { const params = new URLSearchParams(location.search); return params.get('id') || params.get('course') || null; }
-    function getUrlChapter() { const params = new URLSearchParams(location.search); return params.get('chapter') || params.get('chapterTitle') || null; }
-
-    // ===== 可定制字幕样式（状态 + 应用 + 持久化） =====
-    const ROOT = document.documentElement;
-    let subStyleStore = {};
-    try { subStyleStore = JSON.parse(localStorage.getItem('subtitle.style') || '{}'); } catch {}
-    let subFontFamily = subStyleStore.fontFamily || 'system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans CJK SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif';
-    let subFontSize   = subStyleStore.fontSize   || 16;
-    let subLineHeight = subStyleStore.lineHeight || 1.75;
-    let subFontWeight = subStyleStore.weight     || 400;
+    // 播放状态变量
+    let playlist = []; // 播放列表
+    let index = 0; // 当前播放索引
+    let playMode = 'list'; // 播放模式
+    let isPlaying = false; // 播放状态
+    let volume = 0.7; // 音量
+    let muted = false; // 静音状态
+    let playbackRate = 1.0; // 播放倍速
+    let syncInterval = null; // 同步定时器
+    let currentAudioDuration = 0; // 当前音频时长
     
-    function applySubtitleStyle(targetPanel = null) {
-      ROOT.style.setProperty('--sub-font-family', subFontFamily);
-      ROOT.style.setProperty('--sub-font-size', subFontSize + 'px');
-      ROOT.style.setProperty('--sub-line-height', subLineHeight);
-      ROOT.style.setProperty('--sub-font-weight', subFontWeight);
+    // ============ 从URL参数获取状态 ============
+    function getStateFromURL() {
+      try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const stateParam = urlParams.get('state');
+        
+        if (stateParam) {
+          console.log('从URL参数获取状态');
+          const decodedState = decodeURIComponent(atob(stateParam));
+          return JSON.parse(decodedState);
+        }
+      } catch (e) {
+        console.error('解析URL状态失败:', e);
+      }
+      return null;
+    }
+    
+    // ============ 从父窗口获取播放状态 ============
+    function fetchParentPlayerState() {
+      if (isInFrame && window.parent) {
+        try {
+          // 首先尝试使用postMessage请求状态
+          window.parent.postMessage({
+            type: 'GET_STATE_REQUEST'
+          }, '*');
+          
+          // 然后尝试直接调用父窗口的PlayerBar
+          if (window.parent.PlayerBar) {
+            const state = window.parent.PlayerBar.getState();
+            if (state) {
+              console.log('通过PlayerBar.getState()获取到状态');
+              return state;
+            }
+          }
+        } catch (e) {
+          console.warn('获取父窗口状态失败:', e);
+        }
+      }
+      return null;
+    }
+    
+    // ============ 初始化从父窗口或URL ============
+    function initFromParentOrURL() {
+      console.log('尝试从父窗口或URL初始化');
       
-      // 如果传入了当前字幕面板，也直接更新它的样式
-      if (targetPanel) {
-        targetPanel.style.setProperty('--sub-font-family', subFontFamily);
-        targetPanel.style.setProperty('--sub-font-size', subFontSize + 'px');
-        targetPanel.style.setProperty('--sub-line-height', subLineHeight);
-        targetPanel.style.setProperty('--sub-font-weight', subFontWeight);
+      // 首先尝试从URL获取状态
+      const urlState = getStateFromURL();
+      if (urlState) {
+        console.log('从URL成功获取状态');
+        updateConnectionStatus(true);
+        updateUIFromParentState(urlState);
+        return true;
+      }
+      
+      // 如果URL没有状态，尝试从父窗口获取
+      if (isInFrame) {
+        const parentState = fetchParentPlayerState();
+        if (parentState) {
+          console.log('从父窗口成功获取状态');
+          updateConnectionStatus(true);
+          updateUIFromParentState(parentState);
+          return true;
+        }
+      }
+      
+      console.log('无法从父窗口或URL获取状态');
+      updateConnectionStatus(false);
+      return false;
+    }
+    
+    // ============ 从父窗口状态更新UI ============
+    function updateUIFromParentState(state) {
+      if (!state) return;
+      
+      console.log('更新UI从状态:', state);
+      
+      // 更新播放列表和当前索引
+      if (state.playlist && state.playlist.length) {
+        playlist = state.playlist;
+        if (state.currentIndex !== undefined) {
+          index = state.currentIndex;
+        }
+      }
+      
+      // 更新播放状态
+      isPlaying = state.isPlaying || false;
+      
+      // 更新播放按钮
+      updatePlayButtonUI();
+      
+      // 更新进度条
+      const currentTime = state.currentTime || 0;
+      const duration = state.duration || 0;
+      currentAudioDuration = duration; // 保存当前音频时长
+      const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0;
+      progressFill.style.width = `${progressPercent}%`;
+      progressBar.setAttribute('aria-valuemax', Math.floor(duration));
+      progressBar.setAttribute('aria-valuenow', Math.floor(currentTime));
+      
+      // 更新时间显示
+      timeCur.textContent = formatTime(currentTime);
+      timeTotal.textContent = formatTime(duration);
+      
+      // 更新音量
+      if (state.volume !== undefined) {
+        volume = state.volume;
+      }
+      if (state.muted !== undefined) {
+        muted = state.muted;
+      }
+      volFill.style.width = muted ? '0%' : `${volume * 100}%`;
+      
+      // 更新倍速
+      if (state.playbackRate !== undefined) {
+        playbackRate = state.playbackRate;
+        rateText.textContent = playbackRate.toFixed(1) + 'x';
+        updateRateUI();
+      }
+      
+      // 更新播放模式
+      if (state.playMode) {
+        playMode = state.playMode;
+        updateModeUI();
+        updateModeText();
+      }
+      
+      // 更新当前播放信息
+      updateNowPlayingUI(index);
+      
+      // 更新章节列表
+      renderChapterList();
+      
+      // 更新课程标题和作者
+      const currentTrack = playlist[index];
+      if (currentTrack) {
+        courseTitleEl.textContent = currentTrack.title;
+        courseAuthorEl.textContent = currentTrack.artist || '未知作者';
+      }
+      
+      // 更新字幕（如果正在显示字幕）
+      if (showSubtitles) {
+        updateActiveCueByTime(currentTime);
       }
     }
     
-    function persistSubtitleStyle() {
-      localStorage.setItem('subtitle.style', JSON.stringify({
-        fontFamily: subFontFamily,
-        fontSize: subFontSize,
-        lineHeight: subLineHeight,
-        weight: subFontWeight
-      }));
+    // ============ 调用父窗口播放栏的控制方法 ============
+    function callParentPlayer(method, ...args) {
+      if (window.parent && window !== window.parent) {
+        try {
+          console.log('调用父窗口播放栏方法:', method, args);
+          
+          // 构建控制请求
+          const controlRequest = {
+            type: 'CONTROL_REQUEST',
+            data: {
+              action: method,
+              value: args[0]
+            }
+          };
+          
+          // 发送到父窗口
+          window.parent.postMessage(controlRequest, '*');
+          
+          return true;
+        } catch (e) {
+          console.warn(`调用父窗口播放栏方法 ${method} 失败`, e);
+        }
+      }
+      return false;
     }
-    applySubtitleStyle();
-
-    // --- utilities for UI ---
+    
+    // ===== 核心播放控制函数 =====
+    
+    // 播放/暂停
+    function togglePlay() {
+      if (isInFrame && isConnectedToParent) {
+        // 在iframe中，控制父窗口播放栏
+        callParentPlayer('togglePlay');
+        // 乐观更新本地状态
+        isPlaying = !isPlaying;
+        updatePlayButtonUI();
+      } else {
+        // 独立模式，控制本地音频
+        if (audio.paused) {
+          audio.play().then(() => {
+            isPlaying = true;
+            updatePlayButtonUI();
+          }).catch(err => console.error('播放失败:', err));
+        } else {
+          audio.pause();
+          isPlaying = false;
+          updatePlayButtonUI();
+        }
+      }
+    }
+    
+    // 上一首
+    function playPrev() {
+      if (isInFrame && isConnectedToParent) {
+        callParentPlayer('prev');
+      } else {
+        if (index > 0) {
+          playTrackByIndex(index - 1);
+        }
+      }
+    }
+    
+    // 下一首
+    function playNext() {
+      if (isInFrame && isConnectedToParent) {
+        callParentPlayer('next');
+      } else {
+        if (index < playlist.length - 1) {
+          playTrackByIndex(index + 1);
+        } else if (playMode === 'list') {
+          playTrackByIndex(0);
+        }
+      }
+    }
+    
+    // 播放指定索引的歌曲
+    function playTrackByIndex(i) {
+      if (i < 0 || i >= playlist.length) return;
+      
+      if (isInFrame && isConnectedToParent) {
+        // 在iframe中，控制父窗口播放栏
+        callParentPlayer('playIndex', i);
+        index = i;
+      } else {
+        // 独立模式，播放本地音频
+        index = i;
+        const track = playlist[index];
+        if (track && track.src) {
+          audio.src = track.src;
+          audio.load();
+          audio.play().then(() => {
+            isPlaying = true;
+            updatePlayButtonUI();
+          }).catch(err => console.error('播放失败:', err));
+        }
+      }
+      
+      highlightChapterUI(index);
+      updateNowPlayingUI(index);
+      
+      // 重置字幕
+      subtitleCues = [];
+      lastActiveCueIndex = -1;
+      if (showSubtitles) {
+        ensureSubtitleCues().then(() => {
+          buildSubtitlePanel();
+          updateActiveCueByTime(getCurrentTime(), true);
+        });
+      }
+    }
+    
+    // 设置音量
+    function setVolume(vol) {
+      vol = Math.max(0, Math.min(1, vol));
+      volume = vol;
+      
+      if (isInFrame && isConnectedToParent) {
+        callParentPlayer('setVolume', vol);
+      } else {
+        audio.volume = vol;
+        audio.muted = false;
+      }
+      
+      volFill.style.width = `${vol * 100}%`;
+    }
+    
+    // 设置播放倍速
+    function setPlaybackRate(rate) {
+      rate = parseFloat(rate);
+      playbackRate = rate;
+      
+      if (isInFrame && isConnectedToParent) {
+        callParentPlayer('setPlaybackRate', rate);
+      } else {
+        audio.playbackRate = rate;
+      }
+      
+      rateText.textContent = rate.toFixed(1) + 'x';
+      updateRateUI();
+    }
+    
+    // 设置播放模式
+    function setPlayMode(mode) {
+      playMode = mode;
+      
+      if (isInFrame && isConnectedToParent) {
+        callParentPlayer('setPlayMode', mode);
+      }
+      
+      updateModeUI();
+      updateModeText();
+    }
+    
+    // 切换静音
+    function toggleMute() {
+      muted = !muted;
+      
+      if (isInFrame && isConnectedToParent) {
+        callParentPlayer('toggleMute');
+      } else {
+        audio.muted = muted;
+      }
+      
+      volFill.style.width = muted ? '0%' : `${volume * 100}%`;
+    }
+    
+    // 跳转到指定时间
+    function seekTo(time) {
+      if (isInFrame && isConnectedToParent) {
+        callParentPlayer('seek', time);
+      } else {
+        if (audio.duration && isFinite(time)) {
+          audio.currentTime = time;
+        }
+      }
+    }
+    
+    // ===== UI更新函数 =====
+    
+    function updatePlayButtonUI() {
+      if (isPlaying) {
+        playBtn.textContent = '暂停';
+        playBtn.title = '暂停';
+      } else {
+        playBtn.textContent = '播放';
+        playBtn.title = '播放';
+      }
+    }
+    
+    function updateModeUI() {
+      modeItems.forEach(it => {
+        it.classList.toggle('active', it.getAttribute('data-mode') === playMode);
+      });
+    }
+    
+    function updateModeText() {
+      let text = '列表';
+      if (playMode === 'single') text = '单曲';
+      if (playMode === 'shuffle') text = '随机';
+      modeText.textContent = text;
+    }
+    
+    function updateRateUI() {
+      rateItems.forEach(it => {
+        it.classList.toggle('active', parseFloat(it.getAttribute('data-rate')) === playbackRate);
+      });
+    }
+    
     function formatTime(sec) {
       if (!sec || isNaN(sec) || sec <= 0) return '00:00';
       const m = Math.floor(sec / 60), s = Math.floor(sec % 60);
       return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
     }
-    function refreshProgress() {
-      const dur = audio.duration || 0;
-      const cur = audio.currentTime || 0;
-      const pct = dur ? (cur / dur) * 100 : 0;
-      const fill = document.getElementById('page-progress-fill');
-      if (fill) fill.style.width = pct + '%';
-      progressBar.setAttribute('aria-valuemax', Math.floor(dur));
-      progressBar.setAttribute('aria-valuenow', Math.floor(cur));
-      timeCur.textContent = formatTime(cur);
-      timeTotal.textContent = formatTime(dur);
+    
+    function escapeHtml(str) { 
+      return String(str || '').replace(/[&<>"']/g, m => ({ 
+        '&':'&amp;',
+        '<':'&lt;',
+        '>':'&gt;',
+        '"':'&quot;',
+        "'":'&#39;' 
+      }[m])); 
     }
 
     function renderChapterList() {
@@ -441,26 +797,27 @@
       playlist.forEach((ch, i) => {
         const item = document.createElement('div');
         item.className = 'chapter-item' + (i === index ? ' active' : '');
-        item.dataset.trackId = ch.id || '';
-        item.dataset.trackSrc = ch.src || '';
         item.innerHTML = `<span style="width:28px;flex:0 0 28px">${i+1}.</span>
                           <div style="flex:1;min-width:0">
                             <div style="font-size:14px;color:#000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeHtml(ch.title || ('章节 ' + (i+1)))}</div>
                           </div>
                           <span style="margin-left:8px;color:#ff8c00">${escapeHtml(ch.durationText || '')}</span>`;
-        item.addEventListener('click', function(e){ e.stopPropagation(); playTrackByIndex(i); });
+        item.addEventListener('click', function(e){ 
+          e.stopPropagation(); 
+          playTrackByIndex(i);
+        });
         chapterListEl.appendChild(item);
       });
     }
 
-    function renderRecommendations(seedTitle) {
+    function renderRecommendations() {
       const samples = [
-        '流利口语训练营', '地道英语听力', '商务商务口语进阶', '旅行英语速成', '职场沟通实战', '每日一句英语', '英语发音强化'
+        '流利口语训练营', '地道英语听力', '商务口语进阶', '旅行英语速成', '职场沟通实战', '每日一句英语', '英语发音强化'
       ];
       const recs = [];
       for (let i=0;i<4;i++){
         const t = samples[Math.floor(Math.random()*samples.length)];
-        recs.push({ id: 'rec-' + Math.random().toString(36).slice(2,8), title: `${t} ${Math.floor(Math.random()*100)+1}`, subtitle: seedTitle ? `Based on ${seedTitle}` : '推荐课程', shortTitle: t.slice(0,1) });
+        recs.push({ id: 'rec-' + Math.random().toString(36).slice(2,8), title: `${t} ${Math.floor(Math.random()*100)+1}`, subtitle: '推荐课程', shortTitle: t.slice(0,1) });
       }
       recommendListEl.innerHTML = '';
       recs.forEach(r => {
@@ -472,123 +829,139 @@
         const btn = item.querySelector('.play-now-btn');
         btn.addEventListener('click', (e) => {
           e.stopPropagation();
-          const params = new URLSearchParams();
-          params.set('course', r.title);
-          params.set('id', r.id);
-          location.href = location.pathname + '?' + params.toString();
+          alert('推荐功能在遥控模式下不可用');
         });
         recommendListEl.appendChild(item);
       });
     }
 
-    // 切歌时，确保字幕按当前曲目重置/重建
-    async function playTrackByIndex(i, pushHistory = false) {
-      if (i < 0 || i >= playlist.length) return;
-      index = i;
-      highlightChapterUI(index);
-      updateNowPlayingUI(index);
-
-      const track = playlist[index];
-      if (track.src) {
-        audio.src = track.src;
-        try { audio.load(); } catch(e){}
-      }
-
-      // 重置当前字幕，必要时重新构建
-      subtitleCues = [];
-      lastActiveCueIndex = -1;
-      if (showSubtitles) {
-        await ensureSubtitleCues();
-        buildSubtitlePanel();
-        updateActiveCueByTime(audio.currentTime || 0, true);
-      }
-
-      try {
-        const p = audio.play();
-        if (p && typeof p.then === 'function') await p;
-      } catch (err) {
-        try { audio.load(); const p2 = audio.play(); if (p2 && typeof p2.then === 'function') await p2; } catch (_) {}
-      }
-
-      if (pushHistory && history && history.replaceState) {
-        const params = new URLSearchParams(location.search);
-        params.set('course', getUrlCourseId() || '');
-        params.set('chapter', playlist[index].id || '');
-        history.replaceState({}, '', location.pathname + '?' + params.toString());
-      }
-    }
-    function prevByMode() {
-      if (playMode === 'shuffle') index = Math.floor(Math.random() * playlist.length);
-      else index = (index - 1 + playlist.length) % playlist.length;
-      playTrackByIndex(index);
-    }
-    function nextByMode() {
-      if (playMode === 'shuffle') index = Math.floor(Math.random() * playlist.length);
-      else index = (index + 1) % playlist.length;
-      playTrackByIndex(index);
-    }
     function highlightChapterUI(i) {
       const items = Array.from(chapterListEl.querySelectorAll('.chapter-item'));
       items.forEach((el, idx) => el.classList.toggle('active', idx === i));
     }
+    
     function updateNowPlayingUI(i) {
       const t = playlist[i];
       if (t) {
         nowPlaying.textContent = `正在播放：${t.title}`;
         nowDuration.textContent = `时长：${t.durationText || ''}`;
-        courseTitleEl.textContent = t.title;
-        courseAuthorEl.innerHTML = t.artist ? `作者：${escapeHtml(t.artist)}` : '';
       } else {
         nowPlaying.textContent = '未播放';
         nowDuration.textContent = '';
       }
-      renderChapterList();
     }
 
-    // --- UI: volume / mute / rate / mode wiring ---
-    function updateVolIcon() {
-      if (audio.muted || audio.volume === 0) {
-        volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM16 7l-2 2 2 2 2-2-2-2z"/>';
-      } else if (audio.volume < 0.5) {
-        volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 9v6c1.7-0.7 3-2.4 3-4.5S15.7 9.7 14 9z"/>';
-      } else {
-        volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 7v10c3-1 5-3.6 5-7s-2-6-5-7z"/>';
-      }
-    }
-    function setVolume(p) {
-      p = Math.max(0, Math.min(1, p));
-      audio.volume = p;
-      audio.muted = false;
-      volFill.style.width = (p * 100) + '%';
-      updateVolIcon();
-    }
-    function toggleMute() {
-      audio.muted = !audio.muted;
-      updateVolIcon();
-      if (audio.muted) volFill.style.width = '0%';
-      else volFill.style.width = (audio.volume * 100) + '%';
-    }
-    function setPlaybackRate(r) {
-      audio.playbackRate = r;
-      rateText.textContent = r.toFixed(2).replace(/\.00$/, '') + 'x';
-    }
-    function setPlayMode(mode) {
-      playMode = mode;
-      const items = Array.from(modePop.querySelectorAll('.mode-item'));
-      items.forEach(it => it.classList.toggle('active', it.getAttribute('data-mode') === mode));
-    }
-
+    // ============ 修复播放模式和倍速按钮事件 ============
     function wireMiniControls() {
-      modeBtn && modeBtn.addEventListener('click', (e) => { e.stopPropagation(); ratePop.classList.remove('show'); modePop.classList.toggle('show'); });
-      modePop && modePop.addEventListener('click', (e) => { e.stopPropagation(); const item = e.target.closest('.mode-item'); if (!item) return; setPlayMode(item.getAttribute('data-mode')); modePop.classList.remove('show'); });
+      console.log('初始化迷你控制按钮');
+      
+      // 播放模式按钮事件
+      if (modeBtn) {
+        modeBtn.addEventListener('click', (e) => { 
+          console.log('播放模式按钮被点击');
+          e.stopPropagation(); 
+          e.preventDefault();
+          
+          // 关闭其他弹出面板
+          if (ratePop.classList.contains('show')) {
+            ratePop.classList.remove('show');
+          }
+          
+          // 切换当前弹出面板
+          modePop.classList.toggle('show'); 
+        });
+      }
+      
+      // 播放模式选项事件
+      if (modePop) {
+        modePop.addEventListener('click', (e) => { 
+          console.log('播放模式弹出面板被点击');
+          e.stopPropagation(); 
+          e.preventDefault();
+          
+          const item = e.target.closest('.mode-item'); 
+          if (!item) return; 
+          
+          const mode = item.getAttribute('data-mode');
+          console.log('选择了播放模式:', mode);
+          
+          // 更新UI
+          modeItems.forEach(el => el.classList.remove('active'));
+          item.classList.add('active');
+          
+          // 设置播放模式
+          setPlayMode(mode); 
+          
+          // 关闭弹出面板
+          modePop.classList.remove('show'); 
+        });
+      }
 
-      rateBtn && rateBtn.addEventListener('click', (e) => { e.stopPropagation(); modePop.classList.remove('show'); ratePop.classList.toggle('show'); });
-      ratePop && ratePop.addEventListener('click', (e) => { e.stopPropagation(); const item = e.target.closest('.rate-item'); if (!item) return; const r = parseFloat(item.getAttribute('data-rate')); setPlaybackRate(r); Array.from(ratePop.querySelectorAll('.rate-item')).forEach(el => el.classList.toggle('active', el === item)); ratePop.classList.remove('show'); });
+      // 倍速按钮事件
+      if (rateBtn) {
+        rateBtn.addEventListener('click', (e) => { 
+          console.log('倍速按钮被点击');
+          e.stopPropagation(); 
+          e.preventDefault();
+          
+          // 关闭其他弹出面板
+          if (modePop.classList.contains('show')) {
+            modePop.classList.remove('show');
+          }
+          
+          // 切换当前弹出面板
+          ratePop.classList.toggle('show'); 
+        });
+      }
+      
+      // 倍速选项事件
+      if (ratePop) {
+        ratePop.addEventListener('click', (e) => { 
+          console.log('倍速弹出面板被点击');
+          e.stopPropagation(); 
+          e.preventDefault();
+          
+          const item = e.target.closest('.rate-item'); 
+          if (!item) return; 
+          
+          const rate = parseFloat(item.getAttribute('data-rate')); 
+          console.log('选择了倍速:', rate);
+          
+          // 更新UI
+          rateItems.forEach(el => el.classList.remove('active'));
+          item.classList.add('active');
+          
+          // 设置倍速
+          setPlaybackRate(rate); 
+          
+          // 关闭弹出面板
+          ratePop.classList.remove('show'); 
+        });
+      }
 
-      document.addEventListener('click', (e) => { if (!modeBtn.contains(e.target) && !modePop.contains(e.target)) modePop.classList.remove('show'); if (!rateBtn.contains(e.target) && !ratePop.contains(e.target)) ratePop.classList.remove('show'); });
+      // 点击页面其他地方关闭弹出面板
+      document.addEventListener('click', (e) => { 
+        // 如果点击的不是模式按钮或模式弹出面板，关闭模式弹出面板
+        if (modeBtn && !modeBtn.contains(e.target) && modePop && !modePop.contains(e.target)) {
+          modePop.classList.remove('show'); 
+        }
+        
+        // 如果点击的不是倍速按钮或倍速弹出面板，关闭倍速弹出面板
+        if (rateBtn && !rateBtn.contains(e.target) && ratePop && !ratePop.contains(e.target)) {
+          ratePop.classList.remove('show'); 
+        }
+      });
 
-      muteBtn && muteBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleMute(); });
+      // 静音按钮事件
+      if (muteBtn) {
+        muteBtn.addEventListener('click', (e) => { 
+          e.stopPropagation(); 
+          e.preventDefault();
+          toggleMute(); 
+        });
+      }
 
+      // 音量条事件
       if (volBar) {
         let dragging = false;
         const rectToPercent = (clientX) => {
@@ -597,37 +970,186 @@
           x = Math.max(0, Math.min(rect.width, x));
           return x / rect.width;
         };
-        volBar.addEventListener('pointerdown', (e) => { e.preventDefault(); dragging = true; volBar.setPointerCapture && volBar.setPointerCapture(e.pointerId); setVolume(rectToPercent(e.clientX)); });
-        document.addEventListener('pointermove', (e) => { if (!dragging) return; setVolume(rectToPercent(e.clientX)); });
-        document.addEventListener('pointerup', () => { if (!dragging) return; dragging = false; });
-        volBar.addEventListener('click', (e) => { setVolume(((e.clientX - volBar.getBoundingClientRect().left) / volBar.getBoundingClientRect().width)); });
+        
+        volBar.addEventListener('mousedown', (e) => { 
+          e.preventDefault(); 
+          dragging = true; 
+          setVolume(rectToPercent(e.clientX)); 
+        });
+        
+        document.addEventListener('mousemove', (e) => { 
+          if (!dragging) return; 
+          setVolume(rectToPercent(e.clientX)); 
+        });
+        
+        document.addEventListener('mouseup', () => { 
+          if (!dragging) return; 
+          dragging = false; 
+        });
+        
+        volBar.addEventListener('click', (e) => { 
+          e.preventDefault();
+          const rect = volBar.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const percent = Math.max(0, Math.min(1, x / rect.width));
+          setVolume(percent); 
+        });
       }
 
-      if (typeof audio.volume === 'number') setVolume(audio.volume || 0.6); else setVolume(0.6);
-      setPlaybackRate(audio.playbackRate || 1);
+      // 同步按钮事件
+      if (syncBtn) {
+        syncBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          console.log('手动同步按钮被点击');
+          if (isInFrame) {
+            console.log('手动同步');
+            initFromParentOrURL();
+          }
+        });
+      }
+
+      // 设置初始值
+      setVolume(volume);
+      setPlaybackRate(playbackRate);
       setPlayMode(playMode);
-      updateVolIcon();
+      updatePlayButtonUI();
     }
 
-    function onProgressClick(e) {
-      if (!audio.duration) return;
-      const rect = progressBar.getBoundingClientRect();
-      const x = (e.clientX || (e.touches && e.touches[0].clientX)) - rect.left;
-      const p = Math.max(0, Math.min(1, x / rect.width));
-      audio.currentTime = p * audio.duration;
-      refreshProgress();
+    // ============ 进度条事件处理 ============
+    function wireProgressBar() {
+      let dragging = false;
+      let seekTime = 0;
+      
+      function getAudioDuration() {
+        return currentAudioDuration;
+      }
+      
+      function handleProgressClick(e) {
+        const rect = progressBar.getBoundingClientRect();
+        const x = Math.max(0, Math.min(rect.width, e.clientX - rect.left));
+        const p = x / rect.width;
+        const duration = getAudioDuration();
+        
+        console.log('进度条点击:', { x, p, duration, currentAudioDuration });
+        
+        if (duration > 0) {
+          const time = p * duration;
+          seekTime = time;
+          
+          if (window.parent && window !== window.parent) {
+            // 在iframe中，发送控制请求到父窗口
+            const controlRequest = {
+              type: 'CONTROL_REQUEST',
+              data: {
+                action: 'seek',
+                value: time
+              }
+            };
+            window.parent.postMessage(controlRequest, '*');
+          } else {
+            // 独立模式
+            audio.currentTime = time;
+          }
+          
+          // 乐观更新UI
+          progressFill.style.width = `${p * 100}%`;
+          timeCur.textContent = formatTime(time);
+        }
+      }
+      
+      // 点击事件
+      progressBar.addEventListener('click', handleProgressClick);
+      
+      // 拖动事件
+      progressBar.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        dragging = true;
+        
+        // 初始点击
+        const rect = progressBar.getBoundingClientRect();
+        const x = Math.max(0, Math.min(rect.width, e.clientX - rect.left));
+        const p = x / rect.width;
+        const duration = getAudioDuration();
+        
+        if (duration > 0) {
+          seekTime = p * duration;
+          progressFill.style.width = `${p * 100}%`;
+          timeCur.textContent = formatTime(seekTime);
+        }
+        
+        const handleMouseMove = (moveEvent) => {
+          if (dragging) {
+            const rect = progressBar.getBoundingClientRect();
+            const x = Math.max(0, Math.min(rect.width, moveEvent.clientX - rect.left));
+            const p = x / rect.width;
+            const duration = getAudioDuration();
+            
+            if (duration > 0) {
+              seekTime = p * duration;
+              // 乐观更新UI
+              progressFill.style.width = `${p * 100}%`;
+              timeCur.textContent = formatTime(seekTime);
+            }
+          }
+        };
+        
+        const handleMouseUp = (upEvent) => {
+          dragging = false;
+          
+          // 最终更新
+          const rect = progressBar.getBoundingClientRect();
+          const x = Math.max(0, Math.min(rect.width, upEvent.clientX - rect.left));
+          const p = x / rect.width;
+          const duration = getAudioDuration();
+          
+          if (duration > 0) {
+            const time = p * duration;
+            seekTime = time;
+            
+            console.log('进度条拖拽结束，跳转到:', time, '秒');
+            
+            if (window.parent && window !== window.parent) {
+              const controlRequest = {
+                type: 'CONTROL_REQUEST',
+                data: {
+                  action: 'seek',
+                  value: time
+                }
+              };
+              window.parent.postMessage(controlRequest, '*');
+            } else {
+              audio.currentTime = time;
+            }
+          }
+          
+          document.removeEventListener('mousemove', handleMouseMove);
+          document.removeEventListener('mouseup', handleMouseUp);
+        };
+        
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
+      });
     }
 
     function onEndedHandle() {
       if (playMode === 'single') {
-        audio.currentTime = 0;
-        audio.play();
+        if (isInFrame && isConnectedToParent) {
+          callParentPlayer('seek', 0);
+          callParentPlayer('play');
+        } else {
+          audio.currentTime = 0;
+          audio.play();
+        }
       } else if (playMode === 'shuffle') {
         if (!playlist.length) return;
         const next = Math.floor(Math.random() * playlist.length);
         playTrackByIndex(next);
       } else {
-        if (index < playlist.length - 1) playTrackByIndex(index + 1);
+        if (index < playlist.length - 1) {
+          playTrackByIndex(index + 1);
+        } else if (playMode === 'list') {
+          playTrackByIndex(0);
+        }
       }
     }
 
@@ -642,6 +1164,7 @@
       const m = Math.floor(sec / 60), s = Math.floor(sec % 60);
       return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
     }
+    
     // 解析 WebVTT 简易版（要求 00:00:00.000 格式）
     function parseVTT(text) {
       const cues = [];
@@ -682,19 +1205,6 @@
       header.innerHTML = `
         <div class="subtitle-title">字幕</div>
         <div class="subtitle-actions" style="gap:10px; flex-wrap: wrap;">
-          <div class="subtitle-style" style="display:flex;align-items:center;gap:6px;">
-            <label style="font-size:12px;color:#666;">字体</label>
-            <select id="subFontSelect" style="max-width:240px;">
-              <option value='system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans CJK SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif'>系统默认</option>
-              <option value='"Noto Sans SC","Noto Sans CJK SC","PingFang SC","Microsoft YaHei",Arial,sans-serif'>思源黑体 / Noto Sans SC</option>
-              <option value='"PingFang SC",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif'>苹方</option>
-              <option value='"Microsoft YaHei",Arial,sans-serif'>微软雅黑</option>
-              <option value='SimSun,"Songti SC",serif'>宋体 / Serif</option>
-              <option value='Menlo,Consolas,"SFMono-Regular",monospace'>等宽 Monospace</option>
-            </select>
-            <label style="font-size:12px;color:#666;">字号</label>
-            <input id="subSizeInput" type="number" min="12" max="48" step="1" value="16" style="width:64px;">
-          </div>
           <button id="subAutoBtn" class="sub-btn">${autoFollow ? '自动跟随：开' : '自动跟随：关'}</button>
           <button id="subCloseBtn" class="sub-btn primary">关闭</button>
         </div>
@@ -716,14 +1226,14 @@
           
           // 添加点击事件：点击字幕跳转到对应时间点
           row.addEventListener('click', (e) => {
-            e.stopPropagation(); // 阻止事件冒泡
+            e.stopPropagation();
             
             // 跳转到该字幕的开始时间
-            audio.currentTime = c.start;
+            seekTo(c.start);
             
             // 如果当前是暂停状态，则开始播放
-            if (audio.paused) {
-              audio.play().catch(e => console.log('播放失败:', e));
+            if (!isPlaying) {
+              togglePlay();
             }
             
             // 立即更新激活状态
@@ -737,9 +1247,6 @@
         });
       }
 
-      // 应用当前字幕样式到面板
-      applySubtitleStyle(panel);
-
       panel.appendChild(header);
       panel.appendChild(scroll);
       subtitlePlaceholder.appendChild(panel);
@@ -747,29 +1254,11 @@
       // 事件处理
       const closeBtn = header.querySelector('#subCloseBtn');
       const autoBtn = header.querySelector('#subAutoBtn');
-      const fontSel = header.querySelector('#subFontSelect');
-      const sizeInp = header.querySelector('#subSizeInput');
-
-      // 初始化控件当前值
-      if (fontSel) fontSel.value = subFontFamily;
-      if (sizeInp) sizeInp.value = String(subFontSize);
 
       // 阻止面板事件冒泡到外层
       panel.addEventListener('click', (e) => {
         e.stopPropagation();
         e.preventDefault();
-        e.stopImmediatePropagation();
-        return false;
-      });
-
-      panel.addEventListener('pointerdown', (e) => {
-        e.stopPropagation();
-        e.stopImmediatePropagation();
-        return false;
-      });
-
-      panel.addEventListener('touchstart', (e) => {
-        e.stopPropagation();
         e.stopImmediatePropagation();
         return false;
       });
@@ -787,27 +1276,9 @@
         autoFollow = !autoFollow;
         autoBtn.textContent = autoFollow ? '自动跟随：开' : '自动跟随：关';
       });
-
-      // 字体变化
-      fontSel && fontSel.addEventListener('change', (e) => {
-        e.stopPropagation();
-        subFontFamily = fontSel.value;
-        applySubtitleStyle(panel);
-        persistSubtitleStyle();
-      });
-
-      // 字号变化
-      sizeInp && sizeInp.addEventListener('input', (e) => {
-        e.stopPropagation();
-        const v = parseInt(sizeInp.value || '16', 10);
-        subFontSize = Math.max(10, Math.min(72, isNaN(v) ? 16 : v));
-        applySubtitleStyle(panel);
-        persistSubtitleStyle();
-      });
     }
 
     function enterSubtitles() {
-      applySubtitleStyle();
       showSubtitles = true;
       albumCover.classList.add('subtitles-open');
       // 直接用内联样式控制内层宽度
@@ -817,17 +1288,10 @@
       albumImage.setAttribute('aria-expanded','true');
       innerArt.style.display = 'none';
       subtitlePlaceholder.style.display = 'block';
-      applySubtitleStyle();
       
       ensureSubtitleCues().then(() => {
         buildSubtitlePanel();
-        updateActiveCueByTime(audio.currentTime || 0, true);
-        
-        // 设置字幕面板的光标样式
-        const panel = subtitlePlaceholder.querySelector('.subtitle-panel');
-        if (panel) {
-          panel.style.cursor = 'default';
-        }
+        updateActiveCueByTime(getCurrentTime(), true);
       });
     }
     
@@ -841,6 +1305,16 @@
       albumImage.removeAttribute('aria-expanded');
       subtitlePlaceholder.style.display = 'none';
       innerArt.style.display = 'block';
+    }
+    
+    function getCurrentTime() {
+      if (isInFrame && isConnectedToParent) {
+        // 从父窗口获取时间
+        const state = fetchParentPlayerState();
+        return state ? (state.currentTime || 0) : 0;
+      } else {
+        return audio.currentTime || 0;
+      }
     }
 
     function updateActiveCueByTime(t, forceScroll = false) {
@@ -857,7 +1331,6 @@
       if (autoFollow || forceScroll) {
         const activeEl = items[idx];
         if (activeEl && typeof activeEl.scrollIntoView === 'function') {
-          // 使用平滑滚动，但如果是点击跳转，可以更快一点
           activeEl.scrollIntoView({ 
             behavior: forceScroll ? 'instant' : 'smooth', 
             block: 'center' 
@@ -871,8 +1344,7 @@
       if (subtitleCues.length) return;
 
       const cur = playlist[index] || {};
-      const isUrl = (s) => typeof s === 'string' && (/^https?:\/\//i.test(s) || s.startsWith('data:'));
-
+      
       // 1) 曲目自带 vtt
       if (cur.vtt) {
         try {
@@ -880,33 +1352,21 @@
             subtitleCues = cur.vtt;
             if (subtitleCues.length) return;
           } else if (typeof cur.vtt === 'string') {
-            if (isUrl(cur.vtt)) {
-              const res = await fetch(cur.vtt);
-              const txt = await res.text();
-              subtitleCues = parseVTT(txt);
-              if (subtitleCues.length) return;
-            } else {
-              subtitleCues = parseVTT(cur.vtt);
-              if (subtitleCues.length) return;
-            }
+            subtitleCues = parseVTT(cur.vtt);
+            if (subtitleCues.length) return;
           }
         } catch {}
       }
 
-      // 2) URL 参数
-      const params = new URLSearchParams(location.search);
-      const vttUrl = params.get('vtt') || params.get('subtitles');
-      try {
-        if (vttUrl) {
-          const res = await fetch(vttUrl);
-          const txt = await res.text();
-          subtitleCues = parseVTT(txt);
-          if (subtitleCues.length) return;
-        }
-      } catch {}
-
-      // 3) 无则生成示例
-      const dur = audio.duration || 0;
+      // 2) 无则生成示例
+      let dur = 0;
+      if (isInFrame && isConnectedToParent) {
+        const state = fetchParentPlayerState();
+        dur = state ? state.duration : 0;
+      } else {
+        dur = audio.duration || 0;
+      }
+      
       if (dur > 0) {
         const pieces = Math.min(12, Math.max(6, Math.floor(dur / 10)));
         const span = dur / pieces;
@@ -922,43 +1382,36 @@
       e.stopPropagation();
       if (!showSubtitles) enterSubtitles();  // 已在字幕模式下点击不做事
     });
-    albumImage.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        if (!showSubtitles) enterSubtitles();
-      }
-    });
 
-    audio.addEventListener('timeupdate', () => {
-      if (showSubtitles) updateActiveCueByTime(audio.currentTime || 0);
-    });
-    audio.addEventListener('loadedmetadata', async () => {
-      await ensureSubtitleCues();
-      if (showSubtitles) {
-        buildSubtitlePanel();
-        updateActiveCueByTime(audio.currentTime || 0, true);
-      }
-    });
-
+    // ====== 主初始化函数 ======
     async function init() {
+      console.log('播放页初始化');
+      
+      // 初始化迷你控制按钮（修复播放模式和倍速按钮）
       wireMiniControls();
+      wireProgressBar();
 
-      const urlCourseId = getUrlCourseId();
-      if (urlCourseId) {
-        await loadFromProgramEntry(urlCourseId);
-      } else {
-        const loadedFromOpener = tryLoadFromOpener();
-        if (!loadedFromOpener) {
-          entrySource = 'fallback';
-          // 带歌词的示例歌曲 + 原有两首示例
-          playlist = [
-            {
-              id: "song-lyrics",
-              title: "SoundHelix Song 1 (Lyric Demo)",
-              artist: "SoundHelix",
-              src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-              durationText: "06:13",
-              vtt: `WEBVTT
+      // 发送准备就绪消息给父窗口
+      if (isInFrame && window.parent) {
+        window.parent.postMessage({
+          type: 'PLAYER_PAGE_READY'
+        }, '*');
+      }
+
+      // 尝试从父窗口或URL初始化
+      const success = initFromParentOrURL();
+      
+      if (!success) {
+        console.log('使用默认播放列表');
+        // 使用默认播放列表
+        playlist = [
+          {
+            id: "song-lyrics",
+            title: "SoundHelix Song 1 (Lyric Demo)",
+            artist: "SoundHelix",
+            src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+            durationText: "06:13",
+            vtt: `WEBVTT
 
 00:00:00.000 --> 00:00:06.000
 夜色轻落在都市的边缘
@@ -1001,164 +1454,150 @@
 
 00:01:18.000 --> 00:01:24.000
 这一刻刚刚好出现`
-            },
-            { title: "Kalimba (Test Audio)", artist: "Ninja Tuna", cover: "", src: "https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3", durationText: "00:30" },
-            { title: "Sample MP3 (700KB)", artist: "Sample Source", cover: "", src: "https://sample.cat/downloads/file_example_MP3_700KB.mp3", durationText: "00:24" }
-          ];
-          index = 0;
-          courseTitleEl.textContent = playlist[0].title;
-          courseAuthorEl.innerHTML = `作者：${escapeHtml(playlist[0].artist)}`;
-          renderChapterList();
-          renderRecommendations(playlist[0].title);
-          if (playlist[0].src) audio.src = playlist[0].src;
+          },
+          { title: "Kalimba (Test Audio)", artist: "Ninja Tuna", cover: "", src: "https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3", durationText: "00:30" },
+          { title: "Sample MP3 (700KB)", artist: "Sample Source", cover: "", src: "https://sample.cat/downloads/file_example_MP3_700KB.mp3", durationText: "00:24" }
+        ];
+        index = 0;
+        courseTitleEl.textContent = playlist[0].title;
+        courseAuthorEl.innerHTML = `作者：${escapeHtml(playlist[0].artist)}`;
+        
+        if (!isInFrame) {
+          // 独立模式：设置音频源并加载
+          if (playlist[0].src) {
+            audio.src = playlist[0].src;
+            audio.load();
+          }
         }
       }
 
+      // 渲染UI
+      renderChapterList();
+      renderRecommendations();
+      updateNowPlayingUI(index);
+
+      // 事件监听
       playBtn && playBtn.addEventListener('click', async (e) => {
         e.stopPropagation();
-        if (audio.paused) {
-          try { const p = audio.play(); if (p && typeof p.then === 'function') await p; } catch (err) { try { audio.load(); const p2 = audio.play(); if (p2 && typeof p2.then === 'function') await p2; } catch (_) {} }
-        } else audio.pause();
+        e.preventDefault();
+        togglePlay();
       });
-      prevBtn && prevBtn.addEventListener('click', (e) => { e.stopPropagation(); if (index > 0) playTrackByIndex(index - 1); });
-      nextBtn && nextBtn.addEventListener('click', (e) => { e.stopPropagation(); if (index < playlist.length - 1) playTrackByIndex(index + 1); });
+      
+      prevBtn && prevBtn.addEventListener('click', (e) => { 
+        e.stopPropagation(); 
+        e.preventDefault();
+        playPrev();
+      });
+      
+      nextBtn && nextBtn.addEventListener('click', (e) => { 
+        e.stopPropagation(); 
+        e.preventDefault();
+        playNext();
+      });
 
-      audio.addEventListener('timeupdate', refreshProgress);
-      audio.addEventListener('loadedmetadata', refreshProgress);
-      audio.addEventListener('ended', onEndedHandle);
-
-      progressBar && progressBar.addEventListener('click', onProgressClick);
-
-      updateNowPlayingUI(index);
-    }
-
-    function tryLoadFromOpener() {
-      if (!window.opener) return false;
-      try {
-        const op = window.opener;
-        const opAudio = op.document && op.document.getElementById && op.document.getElementById('pv-audio');
-        const opTitle = op.document && op.document.getElementById && op.document.getElementById('pv-title');
-        if (!opAudio && !opTitle) return false;
-        const title = opTitle ? (opTitle.textContent || opTitle.innerText || '') : '';
-        const artistEl = op.document.getElementById('pv-artist');
-        const artist = artistEl ? (artistEl.textContent || artistEl.innerText || '') : '';
-        const src = opAudio ? (opAudio.currentSrc || opAudio.src || '') : '';
-        const rate = opAudio ? (opAudio.playbackRate || 1) : 1;
-        const vol = opAudio ? (opAudio.volume || 0.6) : 0.6;
-        let opPlaylist = [];
-        try {
-          if (Array.isArray(op.playlist) && op.playlist.length) opPlaylist = op.playlist.map((p,i)=>({ id: p.id||('op-'+i), title: p.title||('Track '+(i+1)), artist: p.artist||'', src: p.src||'', durationText: p.durationText||'' }));
-          else {
-            opPlaylist = [{ id: 'opener-0', title: title || '来自播放栏的音频', artist: artist, src: src, durationText: '' }];
-          }
-        } catch (e) {
-          opPlaylist = [{ id: 'opener-0', title: title || '来自播放栏的音频', artist: artist, src: src, durationText: '' }];
-        }
-        playlist = opPlaylist;
-        index = 0;
-        courseTitleEl.textContent = playlist[0].title || '来自播放栏的音频';
-        courseAuthorEl.innerHTML = playlist[0].artist ? `作者：${escapeHtml(playlist[0].artist)}` : '';
-        renderChapterList();
-        renderRecommendations(playlist[0].title);
-        if (playlist[0].src) {
-          audio.src = playlist[0].src;
-        } else if (opAudio && opAudio.currentSrc) {
-          audio.src = opAudio.currentSrc;
-        }
-        try { setPlaybackRate(rate); setVolume(vol); } catch(e){}
-        entrySource = 'playbar';
-        return true;
-      } catch (err) {
-        return false;
-      }
-    }
-
-    async function loadFromProgramEntry(courseIdFromUrl) {
-      entrySource = 'program';
-      const params = new URLSearchParams(location.search);
-      const courseParamName = params.get('course');
-      if (courseParamName) courseTitleEl.textContent = courseParamName;
-
-      const urlChapters = parseChaptersParam();
-      const urlChapterIndex = parseInt(params.get('chapterIndex') || params.get('chapter') || '0', 10) || 0;
-      if (urlChapters && urlChapters.length) {
-        playlist = urlChapters;
-        index = Math.min(Math.max(0, urlChapterIndex), playlist.length - 1);
-        courseTitleEl.textContent = courseParamName || (playlist[0] && playlist[0].title) || ('课程 ' + courseIdFromUrl);
-        courseAuthorEl.innerHTML = '';
-        renderChapterList();
-        renderRecommendations(courseTitleEl.textContent || '');
-        if (playlist[index] && playlist[index].src) audio.src = playlist[index].src;
-        updateNowPlayingUI(index);
-        return;
-      }
-
-      try {
-        const res = await fetch(API.course(courseIdFromUrl), { credentials: 'same-origin' });
-        if (res.ok) {
-          const data = await res.json();
-          const course = data.data || data.course || data;
-          if (course.title) courseTitleEl.textContent = course.title;
-          if (course.author && course.author.name) courseAuthorEl.innerHTML = `作者：<a href="/author/${course.author.id}">${escapeHtml(course.author.name)}</a>`;
-          const chapters = course.chapters || course.sections || course.list || [];
-          playlist = chapters.map((ch, i) => ({ id: ch.id || ('c-'+i), title: ch.title || ch.name || ('章节 '+(i+1)), src: ch.audioUrl||ch.src||'', durationText: ch.duration||ch.durationText||'' }));
-          if (!playlist.length) {
-            playlist = [
-              { id:'s1', title: course.title + ' - 第1节', src: '', durationText: '12:34' },
-              { id:'s2', title: course.title + ' - 第2节', src: '', durationText: '09:08' }
-            ];
-          }
-          index = Math.min(Math.max(0, urlChapterIndex), playlist.length - 1);
-          renderChapterList();
-          renderRecommendations(course.title || courseParamName || '');
-          if (playlist[index] && playlist[index].src) audio.src = playlist[index].src;
-          updateNowPlayingUI(index);
-          return;
-        }
-      } catch (err) {}
-
-      const courseTitle = params.get('course') || ('课程 ' + courseIdFromUrl);
-      courseTitleEl.textContent = courseTitle;
-      courseAuthorEl.innerHTML = '';
-      playlist = [];
-      for (let i=0;i<8;i++){
-        playlist.push({ id:'synth-'+i, title:`${courseTitle} - 第${i+1}节`, src:'', durationText: `${8 + Math.floor(Math.random()*10)}:${String(Math.floor(Math.random()*60)).padStart(2,'0')}` });
-      }
-      index = Math.min(Math.max(0, urlChapterIndex), playlist.length - 1);
-      renderChapterList();
-      renderRecommendations(courseTitle);
-      if (playlist[index] && playlist[index].src) audio.src = playlist[index].src;
-      updateNowPlayingUI(index);
-    }
-
-    function parseChaptersParam() {
-      const params = new URLSearchParams(location.search);
-      const chaptersParam = params.get('chapters');
-      if (!chaptersParam) return null;
-      try {
-        const decoded = decodeURIComponent(chaptersParam);
-        const parsed = JSON.parse(decoded);
-        if (!Array.isArray(parsed)) return null;
-        const normalized = parsed.map((ch, i) => {
-          if (typeof ch === 'string') {
-            return { id: 'ch-' + i, title: ch, src: '', durationText: '' };
-          }
-          return {
-            id: ch.id || ch.chapterId || ('ch-' + i),
-            title: ch.title || ch.name || ch[0] || ('章节 ' + (i + 1)),
-            src: ch.src || ch.audioUrl || ch.url || '',
-            durationText: ch.duration || ch.durationText || ch.time || ''
-          };
+      // 独立模式的事件监听
+      if (!isInFrame) {
+        console.log('设置独立模式事件监听');
+        
+        audio.addEventListener('timeupdate', () => {
+          const dur = audio.duration || 0;
+          const cur = audio.currentTime || 0;
+          const pct = dur ? (cur / dur) * 100 : 0;
+          progressFill.style.width = `${pct}%`;
+          progressBar.setAttribute('aria-valuemax', Math.floor(dur));
+          progressBar.setAttribute('aria-valuenow', Math.floor(cur));
+          timeCur.textContent = formatTime(cur);
+          timeTotal.textContent = formatTime(dur);
+          
+          if (showSubtitles) updateActiveCueByTime(cur);
         });
-        return normalized;
-      } catch (e) {
-        return null;
+        
+        audio.addEventListener('loadedmetadata', async () => {
+          console.log('音频元数据加载完成，时长:', audio.duration);
+          timeTotal.textContent = formatTime(audio.duration);
+          nowDuration.textContent = `时长：${formatTime(audio.duration)}`;
+          
+          await ensureSubtitleCues();
+          if (showSubtitles) {
+            buildSubtitlePanel();
+            updateActiveCueByTime(audio.currentTime || 0, true);
+          }
+        });
+        
+        audio.addEventListener('ended', onEndedHandle);
+        
+      } else {
+        // iframe模式下的事件监听
+        console.log('设置iframe模式事件监听');
+        
+        // 定时从父窗口获取状态更新UI
+        syncInterval = setInterval(() => {
+          if (isConnectedToParent) {
+            const state = fetchParentPlayerState();
+            if (state) {
+              updateUIFromParentState(state);
+            }
+          }
+        }, 1000);
+        
+        // 页面卸载时清除定时器
+        window.addEventListener('beforeunload', () => {
+          if (syncInterval) {
+            clearInterval(syncInterval);
+          }
+        });
       }
+
+      // 初始UI更新
+      updatePlayButtonUI();
+      updateModeUI();
+      updateModeText();
+      updateRateUI();
     }
 
-    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+    // ============ 监听来自父窗口的消息 ============
+    window.addEventListener('message', function(event) {
+      console.log('收到消息:', event.data);
+      
+      const { type, data } = event.data || {};
+      
+      switch (type) {
+        case 'PLAYER_BAR_STATE':
+          console.log('收到播放栏完整状态');
+          updateConnectionStatus(true);
+          updateUIFromParentState(data);
+          break;
+          
+        case 'PLAYER_BAR_UPDATE':
+          console.log('收到播放栏状态更新');
+          updateConnectionStatus(true);
+          updateUIFromParentState(data);
+          break;
+      }
+    });
 
-    window.PlayerPage = { playlist, getCurrent: () => ({ index, track: playlist[index] }), setPlayMode, setPlaybackRate, setVolume };
+    // 接收父窗口播放栏状态更新
+    window.updateFromPlayerBar = function(state) {
+      console.log('通过updateFromPlayerBar接收状态');
+      updateConnectionStatus(true);
+      updateUIFromParentState(state);
+    };
+
+    // 初始化
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+
+    // 暴露API
+    window.PlayerPage = { 
+      playlist, 
+      getCurrent: () => ({ index, track: playlist[index] }), 
+      setPlayMode, 
+      setPlaybackRate, 
+      setVolume 
+    };
   })();
   </script>
 </body>

@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>课程播放 - 星之声</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <style>
     :root{
@@ -19,20 +21,15 @@
       --sub-font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans CJK SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
     }
 
-    body { margin:0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background:#fff; color:#333; }
-    .header { display:flex; align-items:center; gap:20px; padding:12px 20px; border-bottom:1px solid #eee; background: #fff; }
-    .logo { display:flex; align-items:center; gap:8px; }
-    .logo-img { width:36px; height:36px; border-radius:6px; background:#ffefd5; }
-    .logo-text { font-weight:700; font-size:18px; color:#333; }
-    .main-nav { display:flex; gap:12px; margin-left:12px; }
-    .nav-item { color:#666; text-decoration:none; padding:6px 8px; border-radius:6px; }
-    .nav-item.active { background:#fff4e6; color:#ff8c00; font-weight:600; }
-    .search-box { margin-left:auto; display:flex; gap:8px; align-items:center; }
-    .search-input { padding:6px 10px; border:1px solid #eee; border-radius:6px; }
-    .search-btn { background:#ff8c00; color:#fff; border:0; padding:6px 10px; border-radius:6px; cursor:pointer; }
-    .user-functions { display:flex; gap:10px; align-items:center; margin-left:12px; }
-    .func-item { color:#666; text-decoration:none; font-size:14px; display:flex; gap:6px; align-items:center; }
-    .submit-btn { background:#ff8c00; color:#fff; border:0; padding:6px 10px; border-radius:6px; cursor:pointer; }
+    /* 覆盖 body padding，因为在 iframe 中不需要 */
+    body { 
+      margin:0; 
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; 
+      background:#fff; 
+      color:#333;
+      padding-top: 66px;
+      padding-bottom: 0;
+    }
 
     main.main-content.player-main { padding: 20px; max-width: 1300px; margin: 0 auto; }
 
@@ -84,7 +81,7 @@
       position: relative;
       overflow: hidden;
     }
-    .inner-art { transition: opacity 180ms ease; }
+    .inner-art { transition: opacity 180ms ease; font-size: 14px; color: #ff8c00; }
     .subtitle-panel { position:absolute; left:12px; right:12px; top:12px; bottom:12px; background: rgba(255,255,255,0.96); border-radius:8px; padding:10px; display:flex; flex-direction:column; gap:8px; box-shadow:0 8px 20px rgba(0,0,0,0.06); overflow:hidden; }
 
     .player-controls-large { display:flex; flex-direction:column; gap:8px; align-items:center; width:100%; }
@@ -92,9 +89,9 @@
     .controls-top .volume-wrap { display:flex; gap:8px; align-items:center; }
     .controls-bottom { display:flex; align-items:center; justify-content:center; gap:16px; width:100%; }
     .control-side { display:flex; align-items:center; gap:8px; min-width:72px; justify-content:center; }
-    .control-btn-large { background:transparent; border:0; font-size:20px; cursor:pointer; color:#444; display:inline-flex; align-items:center; justify-content:center; padding:6px; }
-    .play-btn-large { font-size:32px; border:0; background:transparent; cursor:pointer; color:#ff8c00; display:inline-flex; align-items:center; justify-content:center; padding:6px; }
-    .mini-btn { background:transparent; border:0; cursor:pointer; color:#444; padding:6px; border-radius:6px; display:inline-flex; align-items:center; justify-content:center; }
+    .control-btn-large { background:transparent; border:0; font-size:14px; cursor:pointer; color:#444; display:inline-flex; align-items:center; justify-content:center; padding:6px; }
+    .play-btn-large { width:50px; height:50px; border-radius:50%; border:0; background:#ff8c00; cursor:pointer; color:#fff; display:inline-flex; align-items:center; justify-content:center; padding:6px; font-size:14px; }
+    .mini-btn { background:transparent; border:0; cursor:pointer; color:#444; padding:6px; border-radius:6px; display:inline-flex; align-items:center; justify-content:center; font-size:12px; }
     .mini-btn:hover { color:#ff8c00; background:#fff8f0; }
     .mode-popover, .rate-popover { position:absolute; bottom:calc(100% + 8px); left:50%; transform:translateX(-50%); background:#fff; border:1px solid #ddd; border-radius:8px; box-shadow:0 10px 24px rgba(0,0,0,0.12); padding:8px; display:none; z-index:1000; }
     .popover.show { display:flex; }
@@ -202,13 +199,13 @@
     </nav>
     <div class="search-box">
       <input type="text" placeholder="搜索课程、频道..." class="search-input" id="homeSearchInput">
-      <button class="search-btn" id="homeSearchBtn">搜索</button>
+      <button class="search-btn" id="homeSearchBtn"><i class="fas fa-search"></i></button>
     </div>
     <div class="user-functions">
-      <a href="my-message.html" class="func-item">消息</a>
-      <a href="my-collect.html" class="func-item">收藏</a>
-      <a href="my-recent.html" class="func-item">历史</a>
-      <a href="my-creator_center.html" class="func-item">创作中心</a>
+      <a href="my-message.html" class="func-item"><i class="fas fa-bell"></i> 消息</a>
+      <a href="my-collect.html" class="func-item"><i class="fas fa-star"></i> 收藏</a>
+      <a href="my-recent.html" class="func-item"><i class="fas fa-history"></i> 历史</a>
+      <a href="my-creator_center.html" class="func-item"><i class="fas fa-pen"></i> 创作中心</a>
       <a href="login.html"><button class="submit-btn">登录/注册</button></a>
     </div>
   </header>

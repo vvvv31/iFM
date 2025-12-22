@@ -255,9 +255,249 @@
 
       <!-- CENTER: player area -->
       <section class="player-main-area" aria-label="播放器主区域">
+                  <!-- 收藏/分享按钮区域 -->
+                  <div class="fav-share-bar">
+                    <button id="favBtn" class="fav-btn" title="收藏"><i class="fas fa-star"></i> 收藏</button>
+                    <button id="shareBtn" class="share-btn" title="分享"><i class="fas fa-share-alt"></i> 分享</button>
+                  </div>
+          <style>
+            .fav-share-bar {
+              position: absolute;
+              top: 0;
+              left: 0;
+              display: flex;
+              gap: 12px;
+              z-index: 10;
+              margin: 18px 0 0 18px;
+            .fav-btn, .share-btn {
+              background: #fff8f0;
+              color: #ff8c00;
+              border: 1px solid #ffdcb3;
+              border-radius: 8px;
+              padding: 7px 18px 7px 14px;
+              font-size: 15px;
+              font-weight: 600;
+              cursor: pointer;
+              display: flex;
+              align-items: center;
+              gap: 6px;
+              transition: background 0.2s, color 0.2s;
+            }
+            .fav-btn:hover, .share-btn:hover {
+              background: #ff8c00;
+              color: #fff;
+            }
+            .fav-btn.faved {
+              background: #ff8c00;
+              color: #fff;
+              border-color: #ff8c00;
+            }
+            @media (max-width: 700px) {
+              .fav-share-bar { margin: 8px 0 0 8px; }
+              .fav-btn, .share-btn { font-size: 14px; padding: 6px 12px 6px 10px; }
+            }
+          </style>
+          <script>
+          // 收藏/分享按钮逻辑
+          (function(){
+            const favBtn = document.getElementById('favBtn');
+            const shareBtn = document.getElementById('shareBtn');
+            let faved = false;
+            if (favBtn) {
+              favBtn.addEventListener('click', function(){
+                faved = !faved;
+                favBtn.classList.toggle('faved', faved);
+                favBtn.innerHTML = faved ? '<i class="fas fa-star"></i> 已收藏' : '<i class="fas fa-star"></i> 收藏';
+              });
+            }
+            if (shareBtn) {
+              shareBtn.addEventListener('click', function(){
+                if (navigator.clipboard) {
+                  navigator.clipboard.writeText(window.location.href);
+                  shareBtn.innerHTML = '<i class="fas fa-share-alt"></i> 已复制链接';
+                  setTimeout(()=>{
+                    shareBtn.innerHTML = '<i class="fas fa-share-alt"></i> 分享';
+                  }, 1500);
+                } else {
+                  alert('请手动复制当前页面链接');
+                }
+              });
+            }
+          })();
+          </script>
         <div class="player-header">
           <h1 class="course-title" id="courseTitle">示例课程</h1>
-          <p class="course-subtitle" id="courseAuthor">示例作者</p>
+          <p class="course-subtitle">作者：<span id="courseAuthor" class="author-name-popup" tabindex="0" style="cursor:pointer;color:#ff8c00;font-weight:500;">示例作者</span></p>
+          <!-- 创作者信息浮窗 -->
+          <div id="authorPopup" class="author-popup" style="display:none;">
+            <div class="author-popup-content">
+              <button class="author-popup-close" id="authorPopupClose" title="关闭">×</button>
+              <div class="author-avatar"><img id="authorAvatarImg" src="https://api.dicebear.com/7.x/miniavs/svg?seed=1" alt="头像" /></div>
+              <div class="author-nickname" id="authorPopupName">昵称</div>
+              <div class="author-fans">粉丝数：<span id="authorPopupFans">1234</span></div>
+              <button class="author-follow-btn" id="authorFollowBtn">关注</button>
+            </div>
+          </div>
+          <style>
+            .author-popup {
+              position: fixed;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              background: #fff;
+              border-radius: 16px;
+              box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+              z-index: 9999;
+              min-width: 320px;
+              padding: 0;
+              animation: authorPopupIn 0.2s;
+            }
+            @keyframes authorPopupIn {
+              from { opacity: 0; transform: translate(-50%, -60%); }
+              to { opacity: 1; transform: translate(-50%, -50%); }
+            }
+            .author-popup-content {
+              padding: 32px 32px 24px 32px;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              position: relative;
+            }
+            .author-popup-close {
+              position: absolute;
+              top: 10px;
+              right: 10px;
+              background: none;
+              border: none;
+              font-size: 22px;
+              color: #888;
+              cursor: pointer;
+              border-radius: 50%;
+              width: 32px;
+              height: 32px;
+              line-height: 32px;
+              text-align: center;
+              transition: background 0.2s;
+            }
+            .author-popup-close:hover {
+              background: #f5f5f5;
+              color: #ff8c00;
+            }
+            .author-avatar {
+              width: 80px;
+              height: 80px;
+              border-radius: 50%;
+              overflow: hidden;
+              margin-bottom: 16px;
+              box-shadow: 0 2px 8px rgba(255,140,0,0.08);
+            }
+            .author-avatar img {
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
+              border-radius: 50%;
+            }
+            .author-nickname {
+              font-size: 20px;
+              font-weight: 700;
+              color: #333;
+              margin-bottom: 8px;
+            }
+            .author-fans {
+              font-size: 15px;
+              color: #888;
+              margin-bottom: 18px;
+            }
+            .author-follow-btn {
+              background: #ff8c00;
+              color: #fff;
+              border: none;
+              border-radius: 8px;
+              padding: 8px 28px;
+              font-size: 16px;
+              font-weight: 600;
+              cursor: pointer;
+              transition: background 0.2s;
+              box-shadow: 0 2px 8px rgba(255,140,0,0.08);
+            }
+            .author-follow-btn:hover {
+              background: #ffb94d;
+              color: #fff;
+            }
+            @media (max-width: 500px) {
+              .author-popup-content { padding: 18px 6px 12px 6px; }
+              .author-popup { min-width: 220px; }
+            }
+            .author-popup-bg {
+              position: fixed;
+              top: 0; left: 0; right: 0; bottom: 0;
+              background: rgba(0,0,0,0.18);
+              z-index: 9998;
+            }
+          </style>
+          <script>
+          // 创作者信息弹窗逻辑
+          (function(){
+            const authorName = document.getElementById('courseAuthor');
+            const authorPopup = document.getElementById('authorPopup');
+            let authorPopupBg = null;
+            const authorPopupClose = document.getElementById('authorPopupClose');
+            const authorPopupName = document.getElementById('authorPopupName');
+            const authorPopupFans = document.getElementById('authorPopupFans');
+            const authorAvatarImg = document.getElementById('authorAvatarImg');
+            const authorFollowBtn = document.getElementById('authorFollowBtn');
+
+            // 示例数据（可替换为实际数据）
+            let authorInfo = {
+              name: '星之声官方',
+              fans: 1234,
+              avatar: 'https://api.dicebear.com/7.x/miniavs/svg?seed=1',
+              followed: false
+            };
+
+            function showAuthorPopup() {
+              // 设置内容
+              authorPopupName.textContent = authorInfo.name;
+              authorPopupFans.textContent = authorInfo.fans;
+              authorAvatarImg.src = authorInfo.avatar;
+              authorFollowBtn.textContent = authorInfo.followed ? '已关注' : '关注';
+              authorFollowBtn.classList.toggle('followed', authorInfo.followed);
+              // 显示遮罩
+              if (!authorPopupBg) {
+                authorPopupBg = document.createElement('div');
+                authorPopupBg.className = 'author-popup-bg';
+                document.body.appendChild(authorPopupBg);
+                authorPopupBg.addEventListener('click', hideAuthorPopup);
+              } else {
+                authorPopupBg.style.display = 'block';
+              }
+              authorPopup.style.display = 'block';
+            }
+            function hideAuthorPopup() {
+              authorPopup.style.display = 'none';
+              if (authorPopupBg) authorPopupBg.style.display = 'none';
+            }
+            if (authorName) {
+              authorName.addEventListener('click', showAuthorPopup);
+              authorName.addEventListener('keydown', function(e){
+                if (e.key === 'Enter' || e.key === ' ') showAuthorPopup();
+              });
+            }
+            if (authorPopupClose) authorPopupClose.addEventListener('click', hideAuthorPopup);
+            // 关注按钮
+            if (authorFollowBtn) {
+              authorFollowBtn.addEventListener('click', function(){
+                authorInfo.followed = !authorInfo.followed;
+                authorFollowBtn.textContent = authorInfo.followed ? '已关注' : '关注';
+                authorFollowBtn.classList.toggle('followed', authorInfo.followed);
+              });
+            }
+            // ESC关闭
+            document.addEventListener('keydown', function(e){
+              if (authorPopup.style.display === 'block' && e.key === 'Escape') hideAuthorPopup();
+            });
+          })();
+          </script>
         </div>
 
         <div class="player-content">
@@ -343,6 +583,263 @@
             <h3 id="now-playing">未播放</h3>
             <p id="now-duration"></p>
           </div>
+          <!-- 评论区入口按钮 -->
+          <div class="comment-action-bar">
+            <button id="favBtn" class="fav-btn" title="收藏"><i class="fas fa-star"></i> 收藏</button>
+            <button id="commentEntryBtn" class="comment-entry-btn">查看/参与评论区</button>
+            <button id="shareBtn" class="share-btn" title="分享"><i class="fas fa-share-alt"></i> 分享</button>
+          </div>
+          <!-- 评论区浮窗 -->
+          <div id="commentPopup" class="comment-popup" style="display:none;">
+            <div class="comment-popup-content">
+              <button class="comment-popup-close" id="commentPopupClose" title="关闭">×</button>
+              <div class="comment-input-wrap">
+                <textarea id="commentInput" class="comment-input" placeholder="写下你的评论..." maxlength="200"></textarea>
+                <button id="commentSendBtn" class="comment-send-btn">发送</button>
+              </div>
+              <div class="comment-list" id="commentList">
+                <!-- 评论项示例 -->
+              </div>
+            </div>
+          </div>
+          <style>
+            .comment-action-bar {
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              gap: 24px;
+              margin: 24px 0 0 0;
+            }
+            .comment-entry-btn {
+              background: #fff8f0;
+              color: #ff8c00;
+              border: 1px solid #ffdcb3;
+              border-radius: 8px;
+              padding: 10px 32px;
+              font-size: 16px;
+              font-weight: 600;
+              cursor: pointer;
+              transition: background 0.2s, color 0.2s;
+              margin-top: 8px;
+            }
+            .comment-entry-btn:hover {
+              background: #ff8c00;
+              color: #fff;
+            }
+            .comment-popup {
+              position: fixed;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              background: #fff;
+              border-radius: 16px;
+              box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+              z-index: 10001;
+              min-width: 380px;
+              max-width: 96vw;
+              width: 420px;
+              padding: 0;
+              animation: commentPopupIn 0.2s;
+            }
+            @keyframes commentPopupIn {
+              from { opacity: 0; transform: translate(-50%, -60%); }
+              to { opacity: 1; transform: translate(-50%, -50%); }
+            }
+            .comment-popup-content {
+              padding: 28px 24px 18px 24px;
+              display: flex;
+              flex-direction: column;
+              align-items: stretch;
+              position: relative;
+              max-height: 80vh;
+              overflow-y: auto;
+            }
+            .comment-popup-close {
+              position: absolute;
+              top: 10px;
+              right: 10px;
+              background: none;
+              border: none;
+              font-size: 22px;
+              color: #888;
+              cursor: pointer;
+              border-radius: 50%;
+              width: 32px;
+              height: 32px;
+              line-height: 32px;
+              text-align: center;
+              transition: background 0.2s;
+            }
+            .comment-popup-close:hover {
+              background: #f5f5f5;
+              color: #ff8c00;
+            }
+            .comment-input-wrap {
+              display: flex;
+              gap: 8px;
+              margin-bottom: 18px;
+            }
+            .comment-input {
+              flex: 1;
+              min-height: 38px;
+              max-height: 80px;
+              border: 1px solid #ffdcb3;
+              border-radius: 8px;
+              padding: 8px 12px;
+              font-size: 15px;
+              resize: vertical;
+              outline: none;
+              transition: border 0.2s;
+            }
+            .comment-input:focus {
+              border-color: #ff8c00;
+            }
+            .comment-send-btn {
+              background: #ff8c00;
+              color: #fff;
+              border: none;
+              border-radius: 8px;
+              padding: 0 18px;
+              font-size: 15px;
+              font-weight: 600;
+              cursor: pointer;
+              transition: background 0.2s;
+              height: 38px;
+            }
+            .comment-send-btn:hover {
+              background: #ffb94d;
+              color: #fff;
+            }
+            .comment-list {
+              display: flex;
+              flex-direction: column;
+              gap: 14px;
+              max-height: 320px;
+              overflow-y: auto;
+              border-top: 1px solid #f5f5f5;
+              padding-top: 10px;
+            }
+            .comment-item {
+              display: flex;
+              align-items: flex-start;
+              gap: 10px;
+              background: #fff8f0;
+              border-radius: 8px;
+              padding: 10px 12px;
+              font-size: 15px;
+              box-shadow: 0 1px 4px rgba(255,140,0,0.04);
+            }
+            .fav-btn, .share-btn {
+              background: #fff8f0;
+              color: #ff8c00;
+              border: 1px solid #ffdcb3;
+              border-radius: 8px;
+              padding: 7px 18px 7px 14px;
+              font-size: 15px;
+              font-weight: 600;
+              cursor: pointer;
+              display: flex;
+              align-items: center;
+              gap: 6px;
+              transition: background 0.2s, color 0.2s;
+            }
+            .fav-btn:hover, .share-btn:hover {
+              background: #ff8c00;
+              color: #fff;
+            }
+            .fav-btn.faved {
+              background: #ff8c00;
+              color: #fff;
+              border-color: #ff8c00;
+            }
+            @media (max-width: 700px) {
+              .comment-action-bar { gap: 8px; }
+              .fav-btn, .share-btn { font-size: 14px; padding: 6px 12px 6px 10px; }
+            }
+              .comment-popup-content { padding: 12px 2vw 8px 2vw; }
+            }
+            .comment-popup-bg {
+              position: fixed;
+              top: 0; left: 0; right: 0; bottom: 0;
+              background: rgba(0,0,0,0.18);
+              z-index: 10000;
+            }
+          </style>
+          <script>
+          // 评论区弹窗逻辑
+          (function(){
+            const entryBtn = document.getElementById('commentEntryBtn');
+            const popup = document.getElementById('commentPopup');
+            let popupBg = null;
+            const closeBtn = document.getElementById('commentPopupClose');
+            const input = document.getElementById('commentInput');
+            const sendBtn = document.getElementById('commentSendBtn');
+            const list = document.getElementById('commentList');
+
+            // 示例评论数据
+            let comments = [
+              {user:'小明',avatar:'https://api.dicebear.com/7.x/miniavs/svg?seed=2',text:'很棒的内容！',time:'1分钟前'},
+              {user:'小红',avatar:'https://api.dicebear.com/7.x/miniavs/svg?seed=3',text:'支持作者！',time:'3分钟前'}
+            ];
+
+            function renderComments() {
+              list.innerHTML = '';
+              if (!comments.length) {
+                list.innerHTML = '<div style="color:#aaa;text-align:center;padding:18px 0;">暂无评论，快来抢沙发吧！</div>';
+                return;
+              }
+              comments.forEach(c => {
+                const item = document.createElement('div');
+                item.className = 'comment-item';
+                item.innerHTML = `
+                  <div class="comment-avatar"><img src="${c.avatar}" alt="头像"></div>
+                  <div class="comment-main">
+                    <div class="comment-user">${c.user}</div>
+                    <div class="comment-text">${c.text}</div>
+                    <div class="comment-time">${c.time}</div>
+                  </div>
+                `;
+                list.appendChild(item);
+              });
+            }
+
+            function showPopup() {
+              renderComments();
+              if (!popupBg) {
+                popupBg = document.createElement('div');
+                popupBg.className = 'comment-popup-bg';
+                document.body.appendChild(popupBg);
+                popupBg.addEventListener('click', hidePopup);
+              } else {
+                popupBg.style.display = 'block';
+              }
+              popup.style.display = 'block';
+            }
+            function hidePopup() {
+              popup.style.display = 'none';
+              if (popupBg) popupBg.style.display = 'none';
+            }
+            if (entryBtn) entryBtn.addEventListener('click', showPopup);
+            if (closeBtn) closeBtn.addEventListener('click', hidePopup);
+            // ESC关闭
+            document.addEventListener('keydown', function(e){
+              if (popup.style.display === 'block' && e.key === 'Escape') hidePopup();
+            });
+            // 发送评论
+            if (sendBtn) sendBtn.addEventListener('click', function(){
+              const val = input.value.trim();
+              if (!val) return;
+              comments.unshift({
+                user:'你',
+                avatar:'https://api.dicebear.com/7.x/miniavs/svg?seed=4',
+                text: val,
+                time: '刚刚'
+              });
+              input.value = '';
+              renderComments();
+            });
+          })();
+          </script>
         </div>
       </section>
 

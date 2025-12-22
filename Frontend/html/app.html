@@ -20,6 +20,7 @@
       border-top: 1px solid #e0e0e0; box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
       z-index: 29999; display: flex; align-items: center; user-select: none; pointer-events: auto;
     }
+    .pv-player-bar.hidden { display: none; }
     .pv-inner {
       width: 100%; max-width: 1200px; margin: 0 auto;
       display: grid; grid-template-columns: auto 1fr auto; align-items: center;
@@ -108,14 +109,6 @@
   </style>
 </head>
 <body>
-  <!-- 导航栏 -->
-  <!-- <div class="nav">
-    <a href="#" data-page="index.html" class="active">首页</a>
-    <a href="#" data-page="category.html">分类</a>
-    <a href="#" data-page="channel.html">社区</a>
-    <a href="#" data-page="player.html">播放器</a>
-  </div> -->
-  
   <!-- 内容区（iframe框） -->
   <div id="app-frame-wrap" style="width:100vw;height:calc(100vh - 96px);">
     <iframe id="page-frame" src="index.html"></iframe>
@@ -285,7 +278,8 @@
     let isDraggingProgress = false;
     let isDraggingVolume = false;
     let playMode = 'list';
-    let lastSyncTime = 0; // 添加同步时间记录
+    let lastSyncTime = 0;
+    let playerState = 'visible-playing'; // 播放栏状态: 'visible-playing', 'hidden-playing', 'hidden-paused'
 
     const audio = document.getElementById('pv-audio');
     const playBtn = document.getElementById('pv-play');
@@ -311,6 +305,43 @@
     const modeBtn = document.getElementById('pv-mode-btn');
     const modePop = document.getElementById('mode-pop');
     const ratePop = document.getElementById('rate-pop');
+    const playerBar = document.getElementById('pv-player');
+    const appFrameWrap = document.getElementById('app-frame-wrap');
+
+    // ============ 更新播放栏状态 ============
+    function updatePlayerState(newState) {
+      console.log('更新播放栏状态:', newState);
+      playerState = newState;
+      
+      switch(newState) {
+        case 'visible-playing':
+          // 显示播放栏，继续播放
+          playerBar.classList.remove('hidden');
+          appFrameWrap.style.height = 'calc(100vh - 96px)';
+          // 不自动播放，保持当前播放状态
+          break;
+          
+        case 'hidden-playing':
+          // 隐藏播放栏，继续播放
+          playerBar.classList.add('hidden');
+          appFrameWrap.style.height = '100vh';
+          // 不自动播放，保持当前播放状态
+          break;
+          
+        case 'hidden-paused':
+          // 隐藏播放栏，暂停播放
+          playerBar.classList.add('hidden');
+          appFrameWrap.style.height = '100vh';
+          pauseTrack();
+          break;
+          
+        default:
+          console.warn('未知的播放栏状态:', newState, '，使用默认状态: visible-playing');
+          playerBar.classList.remove('hidden');
+          appFrameWrap.style.height = 'calc(100vh - 96px)';
+          break;
+      }
+    }
 
     // ============ 跳转到播放页 ============
     function jumpToPlayerPage() {
@@ -329,66 +360,34 @@
         muted: audio.muted
       };
       
-      // 编码状态为base64，避免URL太长
+      // 编码状态为base64
       const encodedState = btoa(encodeURIComponent(JSON.stringify(state)));
       
-      // 设置iframe的src为player.html，并传递状态
+      // 设置iframe的src为player.html
       document.getElementById('page-frame').src = `player.html?state=${encodedState}`;
       
       // 更新导航栏激活状态
       document.querySelectorAll('.nav a').forEach(a => a.classList.remove('active'));
-      document.querySelector('.nav a[data-page="player.html"]').classList.add('active');
+      document.querySelector('.nav a[data-page="player.html"]')?.classList.add('active');
     }
 
-    // 点击封面跳转到播放页
+    // 点击封面或标题跳转到播放页
     coverEl.addEventListener('click', jumpToPlayerPage);
-    // 点击标题跳转到播放页
     titleEl.addEventListener('click', jumpToPlayerPage);
 
-    // ============ 通知播放页的函数 ============
-    function notifyPlayerPage() {
-      const iframe = document.getElementById('page-frame');
-      if (iframe && iframe.contentWindow) {
-        try {
-          // 构建完整的播放状态
-          const state = {
-            playlist: playlist,
-            currentIndex: currentIndex,
-            isPlaying: isPlaying,
-            currentTime: audio.currentTime || 0,
-            duration: audio.duration || 0,
-            volume: audio.volume,
-            playbackRate: audio.playbackRate,
-            playMode: playMode,
-            muted: audio.muted,
-            currentTrack: playlist[currentIndex]
-          };
-          
-          // 使用postMessage发送状态
-          iframe.contentWindow.postMessage({
-            type: 'PLAYER_BAR_STATE',
-            data: state
-          }, '*');
-          
-          console.log('发送状态到播放页:', state);
-        } catch (e) {
-          console.log('通知播放页失败:', e);
-        }
-      }
-    }
-
-    // ============ 监听来自播放页的消息 ============
+    // ============ 监听来自iframe页面的消息 ============
     window.addEventListener('message', function(event) {
-      // 检查消息是否来自我们的iframe
-      const iframe = document.getElementById('page-frame');
-      if (iframe && event.source !== iframe.contentWindow) {
-        return;
-      }
-      
       const { type, data } = event.data || {};
-      console.log('收到来自播放页的消息:', type, data);
+      console.log('收到来自页面的消息:', type, data);
       
       switch (type) {
+        case 'PAGE_STATE':
+          // 处理页面状态消息
+          if (data && data.pageName) {
+            handlePageState(data);
+          }
+          break;
+          
         case 'PLAYER_PAGE_READY':
           console.log('播放页已准备就绪，发送当前状态');
           notifyPlayerPage();
@@ -405,7 +404,78 @@
       }
     });
 
-    // 处理控制请求 - 修复seek处理逻辑
+    // ============ 修复：处理页面状态 ============
+    function handlePageState(pageData) {
+      const { pageName, state } = pageData;
+      console.log('处理页面状态:', pageName, '状态:', state);
+      
+      // 定义有效的状态值
+      const validStates = ['visible-playing', 'hidden-playing', 'hidden-paused'];
+      
+      // 如果状态有效，直接使用
+      if (validStates.includes(state)) {
+        updatePlayerState(state);
+      } else {
+        // 如果状态无效，根据页面名称回退到默认状态（兼容性处理）
+        console.warn(`无效的状态值: ${state}，将根据页面名称回退`);
+        switch(pageName) {
+          case 'index':
+          case 'category':
+          case 'channel':
+            // 情况1: 显示且播放不暂停
+            updatePlayerState('visible-playing');
+            break;
+            
+          case 'player':
+            // 情况2: 不显示但播放不暂停
+            updatePlayerState('hidden-playing');
+            break;
+            
+          case 'live':
+          case 'audio-related':
+            // 情况3: 不显示且播放暂停
+            updatePlayerState('hidden-paused');
+            break;
+            
+          default:
+            // 默认情况: 显示且播放不暂停
+            console.warn(`未知页面名称: ${pageName}，使用默认状态: visible-playing`);
+            updatePlayerState('visible-playing');
+        }
+      }
+    }
+
+    // ============ 通知播放页的函数 ============
+    function notifyPlayerPage() {
+      const iframe = document.getElementById('page-frame');
+      if (iframe && iframe.contentWindow) {
+        try {
+          const state = {
+            playlist: playlist,
+            currentIndex: currentIndex,
+            isPlaying: isPlaying,
+            currentTime: audio.currentTime || 0,
+            duration: audio.duration || 0,
+            volume: audio.volume,
+            playbackRate: audio.playbackRate,
+            playMode: playMode,
+            muted: audio.muted,
+            currentTrack: playlist[currentIndex]
+          };
+          
+          iframe.contentWindow.postMessage({
+            type: 'PLAYER_BAR_STATE',
+            data: state
+          }, '*');
+          
+          console.log('发送状态到播放页:', state);
+        } catch (e) {
+          console.log('通知播放页失败:', e);
+        }
+      }
+    }
+
+    // 处理控制请求
     function handleControlRequest(control) {
       const { action, value } = control || {};
       console.log('处理控制请求:', action, value);
@@ -435,10 +505,8 @@
           break;
         case 'seek':
           if (isFinite(value) && audio.duration > 0) {
-            // 确保跳转时间在有效范围内
             const seekTime = Math.max(0, Math.min(value, audio.duration));
             audio.currentTime = seekTime;
-            // 立即更新UI
             const percent = (seekTime / audio.duration) * 100;
             progressFill.style.width = `${percent}%`;
             knobEl.style.left = `${percent}%`;
@@ -483,7 +551,6 @@
       document.querySelectorAll('.playlist-item').forEach((item, i) => item.classList.toggle('active', i === index));
       currentIndex = index;
       
-      // 通知播放页
       notifyPlayerPage();
     }
     
@@ -588,7 +655,6 @@
       knobEl.style.left = `${percent}%`;
       timeCurEl.innerText = formatTime(audio.currentTime);
       
-      // 实时同步到播放页（每500ms同步一次）
       if (Date.now() - lastSyncTime > 500) {
         notifyPlayerPage();
         lastSyncTime = Date.now();
@@ -710,17 +776,15 @@
     
     // ============ 初始化 ============
     loadTrack(currentIndex);
+    updatePlayerState('visible-playing'); // 默认状态
     
     // 监听iframe加载完成
     document.getElementById('page-frame').addEventListener('load', function() {
-      console.log('iframe加载完成，发送状态到播放页');
-      // 延迟发送状态，确保播放页脚本已执行
-      setTimeout(notifyPlayerPage, 100);
+      console.log('iframe加载完成');
     });
     
-    // ============ 暴露全局API供播放页调用 ============
+    // ============ 暴露全局API ============
     window.PlayerBar = {
-      // 获取当前状态
       getState: () => ({
         playlist: playlist,
         currentIndex: currentIndex,
@@ -734,7 +798,6 @@
         currentTrack: playlist[currentIndex]
       }),
       
-      // 控制方法
       play: () => playTrack(),
       pause: () => pauseTrack(),
       togglePlay: () => togglePlay(),
@@ -777,10 +840,14 @@
         audio.muted = !audio.muted;
         updateVolIcon();
         notifyPlayerPage();
-      }
+      },
+      
+      // 新添加的控制播放栏显示/隐藏和状态的方法
+      updatePlayerState: (newState) => updatePlayerState(newState),
+      getPlayerState: () => playerState
     };
 
-    // 初始通知一次
+    // 初始通知
     setTimeout(() => {
       notifyPlayerPage();
     }, 1000);

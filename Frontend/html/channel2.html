@@ -846,6 +846,33 @@
     </style>
 </head>
 <body>
+            <script>
+            // ============ 通知主框架当前页面状态 ============
+            // 第一种情况：显示且播放不暂停
+            function notifyParentPage() {
+                if (window.parent !== window) {
+                    window.parent.postMessage({
+                        type: 'PAGE_STATE',
+                        data: {
+                            pageName: 'channel2',
+                            state: 'visible-playing' // 群组页：显示播放栏且播放不暂停
+                        }
+                    }, '*');
+                    // 控制台提示
+                    console.log('已通知主框架：channel2（显示播放栏，播放不中断）');
+                }
+            }
+
+            // 页面加载时通知主框架
+            window.addEventListener('load', function() {
+                setTimeout(notifyParentPage, 100); // 延迟确保主框架准备好
+            });
+
+            // 如果页面是通过iframe直接加载的，立即通知
+            if (window.parent !== window) {
+                notifyParentPage();
+            }
+            </script>
     <!-- 音频元素（页面其他逻辑用） -->
     <audio id="audioPlayer" controls style="display: none;">
         <source src="" type="audio/mpeg">

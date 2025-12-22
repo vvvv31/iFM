@@ -149,6 +149,33 @@
   </main>
 
   <script>
+  // ============ 通知主框架当前页面状态 ============
+  // 第三种情况：不显示播放栏且播放暂停
+  function notifyParentPage() {
+    if (window.parent !== window) {
+      window.parent.postMessage({
+        type: 'PAGE_STATE',
+        data: {
+          pageName: 'audio-related',
+          state: 'hidden-paused' // 录音界面：不显示播放栏且播放暂停
+        }
+      }, '*');
+      // 控制台提示
+      console.log('已通知主框架：audio-related（隐藏播放栏，暂停播放）');
+    }
+  }
+
+  // 页面加载时通知主框架
+  window.addEventListener('load', function() {
+    setTimeout(notifyParentPage, 100); // 延迟确保主框架准备好
+  });
+
+  // 如果页面是通过iframe直接加载的，立即通知
+  if (window.parent !== window) {
+    notifyParentPage();
+  }
+
+  // ============ 原有的录音页面代码保持不变 ============
   (function(){
     // --- Shared data & helpers ---
     const STORAGE_KEY = 'audioRecorderHistory';
@@ -194,7 +221,7 @@
       }
       // optional auto action: if auto=record show a friendly hint (don't auto open mic)
       if(q.auto === 'record'){
-        showMessage('请点击“开始录音”以允许麦克风并开始录制');
+        showMessage('请点击"开始录音"以允许麦克风并开始录制');
       }
     }
 
@@ -465,7 +492,7 @@
         meta.innerHTML = `<div style="font-weight:700">${r.name} ${r.evaluation?('<span class="score-pill" style="margin-left:8px;">'+r.evaluation.overallScore+'</span>'):''}</div>
                           <div class="small">时长: ${formatTime(r.duration)} · 大小: ${formatSize(r.size)} · ${r.timestamp}</div>
                           <div style="margin-top:6px;color:#333">${r.sentence?('<small>跟读：</small>'+r.sentence):''}</div>
-                          <div style="margin-top:8px;color:#666">${r.evaluation?('评测时间：'+(r.evaluation.evaluatedAt || '—')):''}</div>`;
+                          <div style="margin-top:8px;color:#666">${r.evaluation?('评测时间：'+(r.evaluation.evaluatedAt || '-')):''}</div>`;
         const actions = document.createElement('div'); actions.className='flex-row';
         const play = document.createElement('button'); play.className='btn play'; play.textContent='播放'; play.addEventListener('click', ()=>playHistory(idx));
         const dl = document.createElement('button'); dl.className='btn dl'; dl.textContent='下载'; dl.addEventListener('click', ()=>downloadHistory(idx));

@@ -514,14 +514,10 @@
             </div>
 
             <!-- 分页控制 -->
-            <div class="pagination">
-                <button class="page-btn prev-btn">上一页</button>
+            <div class="pagination" id="pagination">
+                <button class="page-btn prev-btn" disabled>上一页</button>
                 <button class="page-btn active">1</button>
-                <button class="page-btn">2</button>
-                <button class="page-btn">3</button>
-                <span class="page-ellipsis">...</span>
-                <button class="page-btn">5</button>
-                <button class="page-btn next-btn">下一页</button>
+                <button class="page-btn next-btn" disabled>下一页</button>
             </div>
 
             <!-- 空状态提示 -->
@@ -537,6 +533,96 @@
             </div>
         </section>
     </main>
+
+    <!-- 审核状态弹窗 -->
+    <div class="review-modal-overlay" id="reviewModalOverlay">
+        <div class="review-modal">
+            <div class="review-modal-header">
+                <span>审核状态</span>
+                <button class="review-modal-close" id="closeReviewModalBtn">&times;</button>
+            </div>
+            <div class="review-modal-body" id="reviewModalBody">
+                <!-- 动态填充内容 -->
+            </div>
+            <div class="review-modal-footer">
+                <button class="btn-cancel-review" id="cancelReviewBtn">取消审核</button>
+                <button class="btn-close-modal" id="closeReviewBtn">关闭</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 审核状态弹窗样式 -->
+    <style>
+        .review-modal-overlay {
+            position: fixed; left: 0; top: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5); z-index: 100000;
+            display: none; align-items: center; justify-content: center;
+        }
+        .review-modal-overlay.show { display: flex; }
+        .review-modal {
+            background: #fff; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            width: 90%; max-width: 450px; overflow: hidden;
+            animation: reviewModalFadeIn 0.3s ease;
+        }
+        @keyframes reviewModalFadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .review-modal-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 18px 24px; font-size: 18px; font-weight: 600; color: #FF8C00;
+            border-bottom: 1px solid #FFE5C0; background: #FFF8F0;
+        }
+        .review-modal-close {
+            background: none; border: none; font-size: 28px; color: #aaa; cursor: pointer;
+            transition: color 0.2s; line-height: 1;
+        }
+        .review-modal-close:hover { color: #FF8C00; }
+        .review-modal-body {
+            padding: 24px; background: #fff;
+        }
+        .review-status-icon {
+            text-align: center; margin-bottom: 20px;
+        }
+        .review-status-icon i {
+            font-size: 48px; color: #FF8C00;
+        }
+        .review-status-icon.approved i { color: #4CAF50; }
+        .review-status-icon.rejected i { color: #F44336; }
+        .review-info-item {
+            display: flex; justify-content: space-between; padding: 12px 0;
+            border-bottom: 1px solid #f5f5f5;
+        }
+        .review-info-item:last-child { border-bottom: none; }
+        .review-info-label { color: #888; font-size: 14px; }
+        .review-info-value { color: #333; font-size: 14px; font-weight: 500; }
+        .review-info-value.pending { color: #FF8C00; }
+        .review-info-value.approved { color: #4CAF50; }
+        .review-info-value.rejected { color: #F44336; }
+        .review-reason {
+            background: #FFF3E0; border-radius: 8px; padding: 12px 16px;
+            margin-top: 16px; font-size: 14px; color: #E65100;
+        }
+        .review-reason.rejected {
+            background: #FFEBEE; color: #C62828;
+        }
+        .review-modal-footer {
+            display: flex; gap: 12px; padding: 16px 24px;
+            border-top: 1px solid #f0f0f0; background: #fafafa;
+        }
+        .btn-cancel-review {
+            flex: 1; padding: 12px 20px; border: 1px solid #FF8C00; border-radius: 8px;
+            background: #fff; color: #FF8C00; font-size: 14px; font-weight: 500;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .btn-cancel-review:hover { background: #FFF3E0; }
+        .btn-close-modal {
+            flex: 1; padding: 12px 20px; border: none; border-radius: 8px;
+            background: #FF8C00; color: #fff; font-size: 14px; font-weight: 500;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .btn-close-modal:hover { background: #E67E00; }
+    </style>
 
     <!-- 头像同步脚本 -->
     <script>

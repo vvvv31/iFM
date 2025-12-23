@@ -300,12 +300,47 @@
                 <div class="username" id="displayUsername">用户名</div>
                 <div class="identity">身份</div>
                 <div class="stats">
-                    <span>关注 <b>0</b></span>
-                    <span>粉丝 <b>0</b></span>
+                    <span class="stat-item" style="cursor:pointer;color:#FF8C00;" onclick="openFollowModal('following')">
+                        <span id="followingCount">0</span> 关注
+                    </span>
+                    <span class="stat-item" style="cursor:pointer;color:#FF8C00;margin-left:12px;" onclick="openFollowModal('fans')">
+                        <span id="fansCount">0</span> 粉丝
+                    </span>
                     <span>收听时长 <b>0</b></span>
                 </div>
             </div>
         </section>
+        <script>
+        function openFollowModal(type){
+            if (document.getElementById('followModalIframe')) return;
+            const iframe = document.createElement('iframe');
+            iframe.src = 'follow-modal.html?mode=' + encodeURIComponent(type);
+            iframe.id = 'followModalIframe';
+            Object.assign(iframe.style, {position:'fixed',left:0,top:0,width:'100vw',height:'100vh',zIndex:99999,border:'none',background:'rgba(0,0,0,0.15)'});
+            document.body.appendChild(iframe);
+            window.addEventListener('message', function handler(e){
+                const msgType = (typeof e.data === 'string') ? (function(){try{return JSON.parse(e.data).type}catch(e){return e.data}})() : (e.data && e.data.type);
+                if (msgType === 'close-follow-modal' || msgType === 'closeFollowModal'){
+                    iframe.remove(); window.removeEventListener('message', handler);
+                } else if (msgType === 'followDataUpdated'){
+                    const payload = (typeof e.data === 'string') ? (function(){try{return JSON.parse(e.data).data}catch(e){return null}})() : (e.data && e.data.data);
+                    if(payload){ const f=document.getElementById('followingCount'); const g=document.getElementById('fansCount'); if(f && payload.followingCount!==undefined) f.textContent=payload.followingCount; if(g && payload.fansCount!==undefined) g.textContent=payload.fansCount; }
+                }
+            });
+        }
+        (function(){
+            function refreshCountsFromStore(){
+                try{
+                    const raw = sessionStorage.getItem('fakeFollowData_v1');
+                    if(!raw) return;
+                    const st = JSON.parse(raw);
+                    if(st.followingCount!==undefined){ const el=document.getElementById('followingCount'); if(el) el.textContent = st.followingCount; }
+                    if(st.fansCount!==undefined){ const el=document.getElementById('fansCount'); if(el) el.textContent = st.fansCount; }
+                }catch(e){}
+            }
+            if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', refreshCountsFromStore); else refreshCountsFromStore();
+        })();
+        </script>
         <section class="tab-bar">
             <button class="tab" onclick="window.location.href='my-recent.html'">最近收听</button>
             <button class="tab" onclick="window.location.href='my-collect.html'">收藏</button>

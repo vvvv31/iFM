@@ -9,6 +9,80 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="../js/search.js"></script>
     <style>
+                            /* 粉丝弹窗复用样式 */
+                        /* 让取消关注按钮靠右更明显 */
+                        .following-user-item {
+                            position: relative;
+                        }
+                        .unfollow-btn {
+                            background: #fff3e0;
+                            color: #FF8C00;
+                            border: 1px solid #FFDAB9;
+                            border-radius: 8px;
+                            padding: 4px 14px;
+                            font-size: 13px;
+                            cursor: pointer;
+                            margin-left: 8px;
+                            transition: background 0.2s;
+                            position: absolute;
+                            right: 0;
+                            top: 50%;
+                            transform: translateY(-50%);
+                            z-index: 1;
+                        }
+                        .unfollow-btn:hover {
+                            background: #FFE5C0;
+                        }
+                        .following-user-info {
+                            margin-right: 90px;
+                        }
+                /* 关注列表弹窗样式 */
+                .following-modal-overlay {
+                    position: fixed; left: 0; top: 0; right: 0; bottom: 0;
+                    background: rgba(0,0,0,0.35); z-index: 1000001;
+                    display: none; align-items: center; justify-content: center;
+                }
+                .following-modal-overlay.show { display: flex; }
+                .following-modal {
+                    background: #fff; border-radius: 14px; box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+                    width: 96vw; max-width: 420px; max-height: 80vh; display: flex; flex-direction: column;
+                    overflow: hidden;
+                }
+                .following-modal-header {
+                    display: flex; align-items: center; justify-content: space-between;
+                    padding: 18px 22px; font-size: 18px; font-weight: 600; color: #FF8C00;
+                    border-bottom: 1px solid #FFE5C0;
+                }
+                .following-modal-close {
+                    background: none; border: none; font-size: 26px; color: #aaa; cursor: pointer;
+                    transition: color 0.2s;
+                }
+                .following-modal-close:hover { color: #FF8C00; }
+                .following-modal-body {
+                    flex: 1; overflow-y: auto; padding: 18px 22px 22px 22px; background: #fff;
+                }
+                .following-user-item {
+                    display: flex; align-items: center; gap: 14px; padding: 10px 0; border-bottom: 1px solid #f7f7f7;
+                }
+                .following-user-avatar {
+                    width: 44px; height: 44px; border-radius: 50%; background: #eee; display: flex; align-items: center; justify-content: center; font-size: 22px; overflow: hidden;
+                    flex-shrink: 0;
+                }
+                .following-user-info { flex: 1; min-width: 0; }
+                .following-user-nickname { font-weight: 500; color: #222; font-size: 15px; cursor: pointer; }
+                .following-user-bio { color: #888; font-size: 13px; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+                .following-user-meta { display: flex; align-items: center; gap: 8px; margin-top: 2px; }
+                .mutual-badge { background: #FFEDCC; color: #FF8C00; font-size: 12px; border-radius: 6px; padding: 1px 7px; }
+                .unfollow-btn {
+                    background: #fff3e0; color: #FF8C00; border: 1px solid #FFDAB9; border-radius: 8px;
+                    padding: 4px 14px; font-size: 13px; cursor: pointer; margin-left: 8px; transition: background 0.2s;
+                }
+                .unfollow-btn:hover { background: #FFE5C0; }
+                @media (max-width: 500px) {
+                    .following-modal { max-width: 98vw; padding: 0; }
+                    .following-modal-body { padding: 12px 6px 16px 6px; }
+                    .following-modal-header { padding: 12px 10px; font-size: 16px; }
+                }
         /* 为固定播放栏预留空间 */
         body { padding-bottom: 96px; }
 
@@ -768,7 +842,7 @@
                 </svg>
             </a>
             <a href="my-message.html" class="func-item"><i class="fas fa-bell"></i> 消息</a>
-            <a href="my-collect.html" class="func-item"><i class="fas fa-star"></i> 收藏</a>
+            <button class="func-item" id="showFollowingBtn" type="button"><i class="fas fa-star"></i> 收藏</button>
             <a href="my-recent.html" class="func-item"><i class="fas fa-history"></i> 历史</a>
             <a href="my-creator_center.html" class="func-item"><i class="fas fa-pen"></i> 创作中心</a>
             <a href="login.html"><button class="submit-btn">登录/注册</button></a>
@@ -793,10 +867,62 @@
                 </div>
                 <div class="identity">身份</div>
                 <div class="stats">
-                    <span>关注 <b>0</b></span>
-                    <span>粉丝 <b>0</b></span>
-                    <span>收听时长 <b>0</b></span>
+                    <span class="stat-item" style="cursor:pointer;color:#FF8C00;" onclick="openFollowModal('following')">
+                        <span id="followingCount">0</span> 关注
+                    </span>
+                    <span class="stat-item" style="cursor:pointer;color:#FF8C00;margin-left:12px;" onclick="openFollowModal('fans')">
+                        <span id="fansCount">0</span> 粉丝
+                    </span>
+                    <span style="margin-left:12px;">收听时长 <b>0</b></span>
                 </div>
+            </div>
+        </section>
+        <script>
+        // 打开统一的 follow-modal.html 浮窗
+        function openFollowModal(type) {
+            if (document.getElementById('followModalIframe')) return;
+            const iframe = document.createElement('iframe');
+            iframe.src = 'follow-modal.html?mode=' + encodeURIComponent(type);
+            iframe.id = 'followModalIframe';
+            Object.assign(iframe.style, {
+                position: 'fixed', left: 0, top: 0, width: '100vw', height: '100vh', zIndex: 99999,
+                border: 'none', background: 'transparent'
+            });
+            document.body.appendChild(iframe);
+            function applyFollowData(payload){
+                if(!payload) return;
+                const f = document.getElementById('followingCount');
+                const g = document.getElementById('fansCount');
+                if(f && payload.followingCount !== undefined) f.textContent = payload.followingCount;
+                if(g && payload.fansCount !== undefined) g.textContent = payload.fansCount;
+            }
+            window.addEventListener('message', function handler(e) {
+                const msgType = (typeof e.data === 'string') ? (function(){try{return JSON.parse(e.data).type}catch(e){return e.data}})() : (e.data && e.data.type);
+                if (msgType === 'close-follow-modal' || msgType === 'closeFollowModal') {
+                    iframe.remove();
+                    window.removeEventListener('message', handler);
+                } else if (msgType === 'followDataUpdated'){
+                    const payload = (typeof e.data === 'string') ? (function(){try{return JSON.parse(e.data).data}catch(e){return null}})() : (e.data && e.data.data);
+                    applyFollowData(payload);
+                }
+            });
+        }
+        </script>
+        <script>
+        // 初始化时从 sessionStorage 读取并刷新计数
+        (function(){
+            function refreshCountsFromStore(){
+                try{
+                    const raw = sessionStorage.getItem('fakeFollowData_v1');
+                    if(!raw) return;
+                    const st = JSON.parse(raw);
+                    if(st.followingCount!==undefined){ const el = document.getElementById('followingCount'); if(el) el.textContent = st.followingCount; }
+                    if(st.fansCount!==undefined){ const el = document.getElementById('fansCount'); if(el) el.textContent = st.fansCount; }
+                }catch(e){}
+            }
+            if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', refreshCountsFromStore); else refreshCountsFromStore();
+        })();
+        </script>
             </div>
         </section>
         <section class="tab-bar">
@@ -1048,7 +1174,8 @@
         </section>
     </main>
 
-    <!-- 编辑用户资料模态框 -->
+        
+        <!-- 编辑用户资料模态框 -->
     <div class="edit-modal-overlay" id="editModalOverlay">
         <div class="edit-modal">
             <div class="edit-modal-header">
@@ -1165,7 +1292,7 @@
     });
     </script>
 
-    <!-- 用户资料编辑脚本 -->
+        
     <script>
     // 用户资料数据
     let userProfile = {

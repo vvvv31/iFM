@@ -199,8 +199,12 @@
                 <div class="username" id="displayUsername">用户名</div>
                 <div class="identity">认证创作者</div>
                 <div class="stats">
-                    <span>关注 <b>23</b></span>
-                    <span>粉丝 <b>1,256</b></span>
+                    <span class="stat-item" style="cursor:pointer;color:#FF8C00;" onclick="openFollowModal('following')">
+                        <span id="followingCount">23</span> 关注
+                    </span>
+                    <span class="stat-item" style="cursor:pointer;color:#FF8C00;margin-left:12px;" onclick="openFollowModal('fans')">
+                        <span id="fansCount">1256</span> 粉丝
+                    </span>
                     <span>收听时长 <b>4,502</b> 小时</span>
                 </div>
             </div>
@@ -580,4 +584,301 @@
     })();
     </script>
 </body>
+        <script>
+        // 浮窗弹出 follow-modal.html
+        function openFollowModal(mode) {
+            // 避免重复弹出
+            if(document.getElementById('globalFollowModalFrame')) return;
+            const mask = document.createElement('div');
+            mask.style.cssText = 'position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,0.18);z-index:999999;display:flex;align-items:center;justify-content:center;';
+            mask.id = 'globalFollowModalFrame';
+            mask.innerHTML = `<iframe src="follow-modal.html?mode=${mode}" style="border:none;width:100vw;max-width:440px;height:90vh;background:transparent;z-index:1000000;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,0.18);" allowtransparency="true"></iframe>`;
+            document.body.appendChild(mask);
+            function applyFollowData(payload){
+                if(!payload) return;
+                const f = document.getElementById('followingCount');
+                const g = document.getElementById('fansCount');
+                if(f && payload.followingCount !== undefined) f.textContent = payload.followingCount;
+                if(g && payload.fansCount !== undefined) g.textContent = payload.fansCount;
+            }
+            window.addEventListener('message', function handler(e){
+                const msgType = (typeof e.data === 'string') ? (function(){try{return JSON.parse(e.data).type}catch(e){return e.data}})() : (e.data && e.data.type);
+                if(msgType === 'closeFollowModal' || msgType === 'close-follow-modal'){
+                    mask.remove();
+                    window.removeEventListener('message', handler);
+                } else if(msgType === 'followDataUpdated'){
+                    const payload = (typeof e.data === 'string') ? (function(){try{return JSON.parse(e.data).data}catch(e){return null}})() : (e.data && e.data.data);
+                    applyFollowData(payload);
+                }
+            });
+        }
+        // 绑定按钮
+        document.addEventListener('DOMContentLoaded',function(){
+            var btn1 = document.getElementById('showFollowingBtn2');
+            var btn2 = document.getElementById('showFansBtn');
+            if(btn1) btn1.onclick = function(){openFollowModal('following');};
+            if(btn2) btn2.onclick = function(){openFollowModal('fans');};
+        });
+        // 从 sessionStorage 读取初始计数并刷新页面显示
+        (function(){
+            function refreshCountsFromStore(){
+                try{
+                    const raw = sessionStorage.getItem('fakeFollowData_v1');
+                    if(!raw) return;
+                    const st = JSON.parse(raw);
+                    if(st.followingCount!==undefined){ const el = document.getElementById('followingCount'); if(el) el.textContent = st.followingCount; }
+                    if(st.fansCount!==undefined){ const el = document.getElementById('fansCount'); if(el) el.textContent = st.fansCount; }
+                }catch(e){}
+            }
+            if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', refreshCountsFromStore); else refreshCountsFromStore();
+        })();
+        </script>
+        <!-- 关注/粉丝弹窗结构、样式和JS逻辑，自动批量插入 -->
+        <style>
+        .following-modal-overlay {
+            position: fixed; left: 0; top: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.35); z-index: 1000001;
+            display: none; align-items: center; justify-content: center;
+        }
+        .following-modal-overlay.show { display: flex; }
+        .following-modal {
+            background: #fff; border-radius: 14px; box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+            width: 96vw; max-width: 420px; max-height: 80vh; display: flex; flex-direction: column;
+            overflow: hidden;
+        }
+        .following-modal-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 18px 22px; font-size: 18px; font-weight: 600; color: #FF8C00;
+            border-bottom: 1px solid #FFE5C0;
+        }
+        .following-modal-close {
+            background: none; border: none; font-size: 26px; color: #aaa; cursor: pointer;
+            transition: color 0.2s;
+        }
+        .following-modal-close:hover { color: #FF8C00; }
+        .following-modal-body {
+            flex: 1; overflow-y: auto; padding: 18px 22px 22px 22px; background: #fff;
+        }
+        .following-user-item {
+            display: flex; align-items: center; gap: 14px; padding: 10px 0; border-bottom: 1px solid #f7f7f7;
+            position: relative;
+        }
+        .following-user-avatar {
+            width: 44px; height: 44px; border-radius: 50%; background: #eee; display: flex; align-items: center; justify-content: center; font-size: 22px; overflow: hidden;
+            flex-shrink: 0;
+            text-decoration: none;
+        }
+        .following-user-info { flex: 1; min-width: 0; margin-right: 90px; }
+        .following-user-nickname { font-weight: 500; color: #222; font-size: 15px; cursor: pointer; text-decoration: none; }
+        .following-user-bio { color: #888; font-size: 13px; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .mutual-badge { background: #FFEDCC; color: #FF8C00; font-size: 12px; border-radius: 6px; padding: 1px 7px; margin-left: 6px; }
+        .unfollow-btn {
+            background: #fff3e0; color: #FF8C00; border: 1px solid #FFDAB9; border-radius: 8px;
+            padding: 4px 14px; font-size: 13px; cursor: pointer; margin-left: 8px; transition: background 0.2s;
+            position: absolute; right: 0; top: 50%; transform: translateY(-50%); z-index: 1;
+        }
+        .unfollow-btn:hover { background: #FFE5C0; }
+        @media (max-width: 500px) {
+            .following-modal { max-width: 98vw; padding: 0; }
+            .following-modal-body { padding: 12px 6px 16px 6px; }
+            .following-modal-header { padding: 12px 10px; font-size: 16px; }
+        }
+        </style>
+        <!-- 关注列表弹窗 -->
+        <div class="following-modal-overlay" id="followingModalOverlay">
+            <div class="following-modal">
+                <div class="following-modal-header">
+                    <span>我关注的人</span>
+                    <button class="following-modal-close" id="closeFollowingModalBtn">&times;</button>
+                </div>
+                <div class="following-modal-body">
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+                        <input id="followingSearchInput" type="text" placeholder="搜索昵称/简介" style="flex:1;padding:6px 12px;border:1px solid #FFDAB9;border-radius:7px;font-size:14px;outline:none;">
+                        <select id="followingFilterSelect" style="padding:6px 10px;border:1px solid #FFDAB9;border-radius:7px;font-size:14px;">
+                            <option value="all">全部</option>
+                            <option value="mutual">互相关注</option>
+                            <option value="single">单向关注</option>
+                        </select>
+                    </div>
+                    <div id="followingListLoading" style="text-align:center;padding:32px 0;color:#aaa;">加载中...</div>
+                    <ul id="followingList" style="margin:0;padding:0;list-style:none;"></ul>
+                </div>
+            </div>
+        </div>
+        <!-- 粉丝列表弹窗 -->
+        <div class="following-modal-overlay" id="fansModalOverlay">
+            <div class="following-modal">
+                <div class="following-modal-header">
+                    <span>我的粉丝</span>
+                    <button class="following-modal-close" id="closeFansModalBtn">&times;</button>
+                </div>
+                <div class="following-modal-body">
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+                        <input id="fansSearchInput" type="text" placeholder="搜索昵称/简介" style="flex:1;padding:6px 12px;border:1px solid #FFDAB9;border-radius:7px;font-size:14px;outline:none;">
+                        <select id="fansFilterSelect" style="padding:6px 10px;border:1px solid #FFDAB9;border-radius:7px;font-size:14px;">
+                            <option value="all">全部</option>
+                            <option value="mutual">互相关注</option>
+                            <option value="single">单向粉丝</option>
+                        </select>
+                    </div>
+                    <div id="fansListLoading" style="text-align:center;padding:32px 0;color:#aaa;">加载中...</div>
+                    <ul id="fansList" style="margin:0;padding:0;list-style:none;"></ul>
+                </div>
+            </div>
+        </div>
+        <!-- 关注/粉丝弹窗JS逻辑（假数据） -->
+        <script>
+        // 关注列表
+        document.addEventListener('DOMContentLoaded', function() {
+            const showBtn = document.getElementById('showFollowingBtn');
+            const showBtn2 = document.getElementById('showFollowingBtn2');
+            const overlay = document.getElementById('followingModalOverlay');
+            const closeBtn = document.getElementById('closeFollowingModalBtn');
+            const listLoading = document.getElementById('followingListLoading');
+            const listUl = document.getElementById('followingList');
+            const fakeList = [
+                { avatar: '小A', color: '#FFB366', nickname: '小A同学', bio: '热爱英语学习，喜欢听播客。', mutual: true },
+                { avatar: 'B', color: '#85C1E9', nickname: 'Bingo', bio: '播客达人，分享英语干货。', mutual: false },
+                { avatar: 'C', color: '#96CEB4', nickname: 'Cathy', bio: '英语教师，热心答疑。', mutual: true }
+            ];
+            let searchValue = '';
+            let filterValue = 'all';
+            function renderFakeList() {
+                if (listLoading) listLoading.style.display = 'none';
+                if (listUl) {
+                    let filtered = fakeList.filter(u => {
+                        if (filterValue === 'mutual' && !u.mutual) return false;
+                        if (filterValue === 'single' && u.mutual) return false;
+                        if (searchValue && !(u.nickname.includes(searchValue) || u.bio.includes(searchValue))) return false;
+                        return true;
+                    });
+                    listUl.innerHTML = filtered.length ? filtered.map((u, idx) =>
+                        `<li class="following-user-item">
+                                <a class="following-user-avatar" style="background:${u.color};text-decoration:none;" href="user-profile.html?user=${encodeURIComponent(u.nickname)}" title="查看主页">${u.avatar}</a>
+                                <div class="following-user-info">
+                                        <a class="following-user-nickname" href="user-profile.html?user=${encodeURIComponent(u.nickname)}" style="text-decoration:none;color:#222;" title="查看主页">${u.nickname}</a>
+                                        ${u.mutual ? '<span class="mutual-badge" title="互相关注">互相关注</span>' : ''}
+                                        <div class="following-user-bio">${u.bio}</div>
+                                </div>
+                                <button class="unfollow-btn" data-idx="${fakeList.indexOf(u)}" type="button">取消关注</button>
+                        </li>`
+                    ).join('') : '<div style="color:#aaa;text-align:center;padding:32px 0;">暂无结果</div>';
+                    listUl.querySelectorAll('.unfollow-btn').forEach(btn => {
+                        btn.onclick = function() {
+                            const idx = parseInt(this.getAttribute('data-idx'));
+                            fakeList.splice(idx, 1);
+                            renderFakeList();
+                        };
+                    });
+                }
+            }
+            function showModal() {
+                overlay.classList.add('show');
+                renderFakeList();
+                const searchInput = document.getElementById('followingSearchInput');
+                const filterSelect = document.getElementById('followingFilterSelect');
+                if (searchInput) {
+                    searchInput.value = searchValue;
+                    searchInput.oninput = function() {
+                        searchValue = this.value.trim();
+                        renderFakeList();
+                    };
+                }
+                if (filterSelect) {
+                    filterSelect.value = filterValue;
+                    filterSelect.onchange = function() {
+                        filterValue = this.value;
+                        renderFakeList();
+                    };
+                }
+            }
+            if (showBtn) showBtn.addEventListener('click', showModal);
+            if (showBtn2) showBtn2.addEventListener('click', showModal);
+            if (closeBtn) closeBtn.addEventListener('click', function() {
+                overlay.classList.remove('show');
+            });
+            if (overlay) overlay.addEventListener('click', function(e) {
+                if (e.target === overlay) overlay.classList.remove('show');
+            });
+        });
+        // 粉丝列表
+        document.addEventListener('DOMContentLoaded', function() {
+            const showFansBtn = document.getElementById('showFansBtn');
+            const fansOverlay = document.getElementById('fansModalOverlay');
+            const closeFansBtn = document.getElementById('closeFansModalBtn');
+            const fansListLoading = document.getElementById('fansListLoading');
+            const fansListUl = document.getElementById('fansList');
+            const fansFakeList = [
+                { avatar: '小A', color: '#FFB366', nickname: '小A同学', bio: '热爱英语学习，喜欢听播客。', mutual: true, followed: true },
+                { avatar: 'B', color: '#85C1E9', nickname: 'Bingo', bio: '播客达人，分享英语干货。', mutual: false, followed: false },
+                { avatar: 'C', color: '#96CEB4', nickname: 'Cathy', bio: '英语教师，热心答疑。', mutual: true, followed: true }
+            ];
+            let fansSearchValue = '';
+            let fansFilterValue = 'all';
+            function renderFansList() {
+                if (fansListLoading) fansListLoading.style.display = 'none';
+                if (fansListUl) {
+                    let filtered = fansFakeList.filter(u => {
+                        if (fansFilterValue === 'mutual' && !u.mutual) return false;
+                        if (fansFilterValue === 'single' && u.mutual) return false;
+                        if (fansSearchValue && !(u.nickname.includes(fansSearchValue) || u.bio.includes(fansSearchValue))) return false;
+                        return true;
+                    });
+                    fansListUl.innerHTML = filtered.length ? filtered.map((u, idx) =>
+                        `<li class="following-user-item">
+                                <a class="following-user-avatar" style="background:${u.color};text-decoration:none;" href="user-profile.html?user=${encodeURIComponent(u.nickname)}" title="查看主页">${u.avatar}</a>
+                                <div class="following-user-info">
+                                        <a class="following-user-nickname" href="user-profile.html?user=${encodeURIComponent(u.nickname)}" style="text-decoration:none;color:#222;" title="查看主页">${u.nickname}</a>
+                                        ${u.mutual ? '<span class="mutual-badge" title="互相关注">互相关注</span>' : ''}
+                                        <div class="following-user-bio">${u.bio}</div>
+                                </div>
+                                ${u.followed ?
+                                    '<button class="unfollow-btn" data-idx="'+fansFakeList.indexOf(u)+'" type="button">取消关注</button>' :
+                                    '<button class="unfollow-btn" data-idx="'+fansFakeList.indexOf(u)+'" type="button" style="background:#FF8C00;color:#fff;border:1px solid #FF8C00;">回关</button>'}
+                        </li>`
+                    ).join('') : '<div style="color:#aaa;text-align:center;padding:32px 0;">暂无结果</div>';
+                    fansListUl.querySelectorAll('.unfollow-btn').forEach(btn => {
+                        btn.onclick = function() {
+                            const idx = parseInt(this.getAttribute('data-idx'));
+                            if (fansFakeList[idx].followed) {
+                                fansFakeList[idx].followed = false;
+                                fansFakeList[idx].mutual = false;
+                            } else {
+                                fansFakeList[idx].followed = true;
+                                fansFakeList[idx].mutual = true;
+                            }
+                            renderFansList();
+                        };
+                    });
+                }
+            }
+            function showFansModal() {
+                fansOverlay.classList.add('show');
+                renderFansList();
+                const searchInput = document.getElementById('fansSearchInput');
+                const filterSelect = document.getElementById('fansFilterSelect');
+                if (searchInput) {
+                    searchInput.value = fansSearchValue;
+                    searchInput.oninput = function() {
+                        fansSearchValue = this.value.trim();
+                        renderFansList();
+                    };
+                }
+                if (filterSelect) {
+                    filterSelect.value = fansFilterValue;
+                    filterSelect.onchange = function() {
+                        fansFilterValue = this.value;
+                        renderFansList();
+                    };
+                }
+            }
+            if (showFansBtn) showFansBtn.addEventListener('click', showFansModal);
+            if (closeFansBtn) closeFansBtn.addEventListener('click', function() {
+                fansOverlay.classList.remove('show');
+            });
+            if (fansOverlay) fansOverlay.addEventListener('click', function(e) {
+                if (e.target === fansOverlay) fansOverlay.classList.remove('show');
+            });
+        });
+        </script>
 </html>

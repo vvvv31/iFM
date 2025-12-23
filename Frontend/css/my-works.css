@@ -32,7 +32,7 @@
     gap: 20px;
 }
 
-.stat-item {
+.works-stats .stat-item {
     text-align: center;
     padding: 15px;
     background-color: white;
@@ -42,7 +42,7 @@
     cursor: pointer;
 }
 
-.stat-item:hover {
+.works-stats .stat-item:hover {
     transform: translateY(-3px);
     box-shadow: 0 4px 12px rgba(255, 140, 0, 0.15);
     border-color: #FF8C00;

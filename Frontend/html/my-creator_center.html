@@ -314,34 +314,54 @@
                 <div class="identity">认证创作者</div>
                 <div class="stats">
                     <span class="stat-item" style="cursor:pointer;color:#FF8C00;" onclick="openFollowModal('following')">
-                        <span id="followingCount">23</span> 关注
+                        <span id="followingCount">3</span> 关注
                     </span>
                     <span class="stat-item" style="cursor:pointer;color:#FF8C00;margin-left:16px;" onclick="openFollowModal('fans')">
-                        <span id="fansCount">1,256</span> 粉丝
+                        <span id="fansCount">3</span> 粉丝
                     </span>
                     <span>收听时长 <b>4,502</b> 小时</span>
                 </div>
             </div>
             <script>
             // 引用 follow-modal.html 浮窗弹窗
-            function openFollowModal(type) {
-                if (document.getElementById('followModalIframe')) return;
-                const iframe = document.createElement('iframe');
-                iframe.src = 'follow-modal.html?type=' + encodeURIComponent(type);
-                iframe.id = 'followModalIframe';
-                Object.assign(iframe.style, {
-                  position: 'fixed', left: 0, top: 0, width: '100vw', height: '100vh', zIndex: 99999,
-                  border: 'none', background: 'rgba(0,0,0,0.15)', display: 'block', transition: 'opacity 0.2s',
+            function openFollowModal(mode) {
+                if (document.getElementById('globalFollowModalFrame')) return;
+                const mask = document.createElement('div');
+                mask.style.cssText = 'position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,0.18);z-index:999999;display:flex;align-items:center;justify-content:center;';
+                mask.id = 'globalFollowModalFrame';
+                mask.innerHTML = `<iframe src="follow-modal.html?mode=${mode}" style="border:none;width:100vw;max-width:440px;height:90vh;max-height:500px;background:transparent;z-index:1000000;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,0.18);" allowtransparency="true"></iframe>`;
+                document.body.appendChild(mask);
+                function applyFollowData(payload){
+                    if(!payload) return;
+                    const f = document.getElementById('followingCount');
+                    const g = document.getElementById('fansCount');
+                    if(f && payload.followingCount !== undefined) f.textContent = payload.followingCount;
+                    if(g && payload.fansCount !== undefined) g.textContent = payload.fansCount;
+                }
+                window.addEventListener('message', function handler(e){
+                    const msgType = (typeof e.data === 'string') ? (function(){try{return JSON.parse(e.data).type}catch(ex){return e.data}})() : (e.data && e.data.type);
+                    if(msgType === 'closeFollowModal' || msgType === 'close-follow-modal'){
+                        mask.remove();
+                        window.removeEventListener('message', handler);
+                    } else if(msgType === 'followDataUpdated'){
+                        const payload = (typeof e.data === 'string') ? (function(){try{return JSON.parse(e.data).data}catch(ex){return null}})() : (e.data && e.data.data);
+                        applyFollowData(payload);
+                    }
                 });
-                document.body.appendChild(iframe);
-                                window.addEventListener('message', function handler(e) {
-                                    const msgType = (typeof e.data === 'string') ? e.data : (e.data && e.data.type);
-                                    if (msgType === 'close-follow-modal' || msgType === 'closeFollowModal') {
-                                        iframe.remove();
-                                        window.removeEventListener('message', handler);
-                                    }
-                                });
             }
+            // 从 sessionStorage 读取初始计数并刷新页面显示
+            (function(){
+                function refreshCountsFromStore(){
+                    try{
+                        const raw = sessionStorage.getItem('fakeFollowData_v1');
+                        if(!raw) return;
+                        const st = JSON.parse(raw);
+                        if(st.followingCount!==undefined){ const el = document.getElementById('followingCount'); if(el) el.textContent = st.followingCount; }
+                        if(st.fansCount!==undefined){ const el = document.getElementById('fansCount'); if(el) el.textContent = st.fansCount; }
+                    }catch(e){}
+                }
+                if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', refreshCountsFromStore); else refreshCountsFromStore();
+            })();
             </script>
         </section>
 

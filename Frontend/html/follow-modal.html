@@ -48,7 +48,8 @@
       const m = location.search.match(new RegExp('(?:[?&])'+name+'=([^&]*)'));
       return m ? decodeURIComponent(m[1]) : '';
     }
-    const mode = getQuery('mode') || 'following'; // following or fans
+    // 同时支持 mode 和 type 参数（兼容不同页面的调用方式）
+    const mode = getQuery('mode') || getQuery('type') || 'following'; // following or fans
     const modalTitle = document.getElementById('modalTitle');
     const filterSelect = document.getElementById('filterSelect');
     if(mode==='fans'){

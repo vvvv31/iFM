@@ -672,6 +672,7 @@
     const submitBtn = uploadForm.querySelector('button[type="submit"]');
     const audioTitle = document.getElementById('audio-title');
     const audioDescription = document.getElementById('audio-description');
+    const audioCategory = document.getElementById('audio-category');
     // const audioGroup = document.getElementById('audio-group');
     const audioGroupMain = document.getElementById('audio-group-main');
     const audioGroupSub = document.getElementById('audio-group-sub');
@@ -891,13 +892,13 @@
     function saveDraft() {
         const draftData = {
             id: draftId,
-            title: audioTitle.value,
+            title: audioTitle.value || '未命名草稿',
             description: audioDescription.value,
             category: audioCategory.value,
             mainGroup: audioGroupMain.value,
             subGroup: audioGroupSub.value,
             lastSaved: Date.now(),
-            status: 0 // 0表示草稿状态
+            status: 'draft' // 使用字符串 'draft' 而不是数字 0，与 my-works.js 中的过滤逻辑匹配
         };
         
         // 如果有文件，保存文件名（实际应用中可能需要保存文件引用或上传到服务器）
@@ -916,12 +917,13 @@
         
         // 显示保存成功消息
         msgBox.className = 'message success';
-        msgBox.textContent = '草稿已保存！';
+        msgBox.innerHTML = '草稿已保存！<a href="my-works.html" style="color:#fff;margin-left:10px;text-decoration:underline;">查看我的作品</a>';
         msgBox.style.display = 'block';
         
+        // 不自动隐藏，让用户可以点击链接
         setTimeout(() => {
             msgBox.style.display = 'none';
-        }, 3000);
+        }, 5000);
     }
 
     // 加载草稿

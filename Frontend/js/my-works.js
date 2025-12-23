@@ -64,10 +64,16 @@ function renderDraftCards(drafts) {
     const worksGrid = document.querySelector('#worksGrid');
     
     drafts.forEach(draft => {
+        // 检查是否已存在该草稿卡片，避免重复添加
+        const existingCard = document.querySelector(`[data-work-id="${draft.id}"]`);
+        if (existingCard) {
+            return; // 跳过已存在的草稿
+        }
+        
         // 创建草稿卡片
         const draftCard = createDraftCard(draft);
-        // 添加到作品网格
-        worksGrid.appendChild(draftCard);
+        // 添加到作品网格的开头
+        worksGrid.insertBefore(draftCard, worksGrid.firstChild);
     });
 }
 

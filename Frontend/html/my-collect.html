@@ -122,6 +122,26 @@
           .pv-right { min-width: 0; }
           .pv-inner { grid-template-columns: auto 1fr auto; column-gap: 10px; padding: 0 12px; }
         }
+        
+        /* 收藏页卡片布局优化 */
+        .content-block {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px 40px;
+        }
+        
+        .channel-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+            justify-content: center;
+        }
+        
+        .channel-cards .channel-card {
+            width: 100%;
+            max-width: 320px;
+            margin: 0 auto;
+        }
     </style>
 </head>
 <body>
@@ -196,7 +216,7 @@
             </div>
             <div class="user-detail">
                 <div class="username" id="displayUsername">用户名</div>
-                <div class="identity">身份</div>
+                <div class="identity">认证创作者</div>
                 <div class="stats">
                     <span class="stat-item" style="cursor:pointer;color:#FF8C00;" onclick="openFollowModal('following')">
                         <span id="followingCount">0</span> 关注
@@ -208,34 +228,31 @@
                 </div>
             </div>
             <script>
-            // 引用 follow-modal.html 浮窗弹窗
+            // 引用 follow-modal.html 浮窗弹窗（与创作者中心一致）
             function openFollowModal(type) {
-                if (document.getElementById('followModalIframe')) return;
-                const iframe = document.createElement('iframe');
-                iframe.src = 'follow-modal.html?mode=' + encodeURIComponent(type);
-                iframe.id = 'followModalIframe';
-                Object.assign(iframe.style, {
-                  position: 'fixed', left: 0, top: 0, width: '100vw', height: '100vh', zIndex: 99999,
-                  border: 'none', background: 'rgba(0,0,0,0.15)', display: 'block', transition: 'opacity 0.2s',
+                if (document.getElementById('globalFollowModalFrame')) return;
+                const mask = document.createElement('div');
+                mask.style.cssText = 'position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,0.18);z-index:999999;display:flex;align-items:center;justify-content:center;';
+                mask.id = 'globalFollowModalFrame';
+                mask.innerHTML = `<iframe src="follow-modal.html?mode=${type}" style="border:none;width:100vw;max-width:440px;height:90vh;max-height:500px;background:#fff;z-index:1000000;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,0.18);"></iframe>`;
+                document.body.appendChild(mask);
+                function applyFollowData(payload){
+                    if(!payload) return;
+                    const f = document.getElementById('followingCount');
+                    const g = document.getElementById('fansCount');
+                    if(f && payload.followingCount !== undefined) f.textContent = payload.followingCount;
+                    if(g && payload.fansCount !== undefined) g.textContent = payload.fansCount;
+                }
+                window.addEventListener('message', function handler(e) {
+                    const msgType = (typeof e.data === 'string') ? (function(){try{return JSON.parse(e.data).type}catch(e){return e.data}})() : (e.data && e.data.type);
+                    if (msgType === 'close-follow-modal' || msgType === 'closeFollowModal') {
+                        mask.remove();
+                        window.removeEventListener('message', handler);
+                    } else if (msgType === 'followDataUpdated'){
+                        const payload = (typeof e.data === 'string') ? (function(){try{return JSON.parse(e.data).data}catch(e){return null}})() : (e.data && e.data.data);
+                        applyFollowData(payload);
+                    }
                 });
-                document.body.appendChild(iframe);
-                                function applyFollowData(payload){
-                                    if(!payload) return;
-                                    const f = document.getElementById('followingCount');
-                                    const g = document.getElementById('fansCount');
-                                    if(f && payload.followingCount !== undefined) f.textContent = payload.followingCount;
-                                    if(g && payload.fansCount !== undefined) g.textContent = payload.fansCount;
-                                }
-                                window.addEventListener('message', function handler(e) {
-                                                    const msgType = (typeof e.data === 'string') ? (function(){try{return JSON.parse(e.data).type}catch(e){return e.data}})() : (e.data && e.data.type);
-                                                    if (msgType === 'close-follow-modal' || msgType === 'closeFollowModal') {
-                                                        iframe.remove();
-                                                        window.removeEventListener('message', handler);
-                                                    } else if (msgType === 'followDataUpdated'){
-                                                        const payload = (typeof e.data === 'string') ? (function(){try{return JSON.parse(e.data).data}catch(e){return null}})() : (e.data && e.data.data);
-                                                        applyFollowData(payload);
-                                                    }
-                                                });
             }
             </script>
                             <script>

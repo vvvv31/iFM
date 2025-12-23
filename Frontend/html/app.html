@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <meta charset="UTF-8">
   <title>星之声 App - 英语听说练习社区</title>
   <style>
@@ -109,6 +111,35 @@
   </style>
 </head>
 <body>
+    <!-- 顶部导航栏 -->
+    <header class="header">
+      <div class="logo">
+        <div class="logo-img"></div>
+        <span class="logo-text">星之声</span>
+      </div>
+      <nav class="main-nav">
+        <a href="index.html" class="nav-item active" data-page="index.html">首页</a>
+        <a href="category.html" class="nav-item" data-page="category.html">分类</a>
+        <a href="channel.html" class="nav-item" data-page="channel.html">社区</a>
+      </nav>
+      <div class="search-box">
+        <input type="text" placeholder="搜索课程、频道..." class="search-input" id="homeSearchInput">
+        <button class="search-btn" id="homeSearchBtn"><i class="fas fa-search"></i></button>
+      </div>
+      <div class="user-functions">
+        <a href="my-recent.html" class="func-item">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        </a>
+        <a href="my-message.html" class="func-item" data-page="my-message.html"><i class="fas fa-bell"></i> 消息</a>
+        <a href="my-collect.html" class="func-item" data-page="my-collect.html"><i class="fas fa-star"></i> 收藏</a>
+        <a href="my-recent.html" class="func-item" data-page="my-recent.html"><i class="fas fa-history"></i> 历史</a>
+        <a href="my-creator_center.html" class="func-item" data-page="my-creator_center.html"><i class="fas fa-pen"></i> 创作中心</a>
+        <a href="login.html" data-page="login.html"><button class="submit-btn">登录/注册</button></a>
+      </div>
+    </header>
   <!-- 内容区（iframe框） -->
   <div id="app-frame-wrap" style="width:100vw;height:calc(100vh - 96px);">
     <iframe id="page-frame" src="index.html"></iframe>
@@ -191,14 +222,22 @@
   </aside>
   
   <script>
-  // 框架跳转控制脚本
-  document.querySelectorAll('.nav a').forEach(el => {
-    el.onclick = function(e){
+    // 用户功能区跳转（只在iframe内切换页面）
+    document.querySelectorAll('.user-functions a[data-page]').forEach(el => {
+      el.addEventListener('click', function(e) {
+        e.preventDefault();
+        document.getElementById('page-frame').src = this.getAttribute('data-page');
+        // 可选：可在此处处理激活样式
+      });
+    });
+  // 框架跳转控制脚本（只拦截主导航栏，防止全局a标签跳转）
+  document.querySelectorAll('.main-nav .nav-item').forEach(el => {
+    el.addEventListener('click', function(e) {
       e.preventDefault();
       document.getElementById('page-frame').src = this.getAttribute('data-page');
-      document.querySelectorAll('.nav a').forEach(a => a.classList.remove('active'));
+      document.querySelectorAll('.main-nav .nav-item').forEach(a => a.classList.remove('active'));
       this.classList.add('active');
-    }
+    });
   });
 
   // 播放栏主控制

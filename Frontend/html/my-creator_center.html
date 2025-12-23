@@ -329,7 +329,7 @@
                 const mask = document.createElement('div');
                 mask.style.cssText = 'position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,0.18);z-index:999999;display:flex;align-items:center;justify-content:center;';
                 mask.id = 'globalFollowModalFrame';
-                mask.innerHTML = `<iframe src="follow-modal.html?mode=${mode}" style="border:none;width:100vw;max-width:440px;height:90vh;max-height:500px;background:#fff;z-index:1000000;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,0.18);"></iframe>`;
+                mask.innerHTML = `<iframe src="follow-modal.html?mode=${mode}" style="border:none;width:100vw;max-width:440px;height:90vh;max-height:500px;background:transparent;z-index:1000000;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,0.18);" allowtransparency="true"></iframe>`;
                 document.body.appendChild(mask);
                 function applyFollowData(payload){
                     if(!payload) return;

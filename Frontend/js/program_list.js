@@ -2,26 +2,7 @@
  * 节目详情页核心逻辑
  * 功能：1. 解析URL中的节目ID 2. 加载对应节目数据 3. 渲染页面内容
  */
-document.addEventListener('DOMContentLoaded', async function()  {
-    // 从URL获取课程ID
-    const urlParams = new URLSearchParams(window.location.search);
-    const courseId = urlParams.get('id') || '1';
-
-    let course;
-
-    // 尝试从API获取数据
-    try {
-        const apiData = await fetchCourseFromAPI(courseId);
-        if (apiData) {
-            course = transformAPIDataToFrontend(apiData);
-        } else {
-            // 如果API失败，使用本地数据
-            course = courseData[courseId] || courseData['1'];
-        }
-    } catch (error) {
-        console.error('课程加载失败，使用本地数据:', error);
-        course = courseData[courseId] || courseData['1'];
-    }
+document.addEventListener('DOMContentLoaded', function() {
     // -------------------------- 1. 核心数据（与category.js保持一致，实际项目建议通过接口获取） --------------------------
     const programData = [
         {
@@ -195,64 +176,6 @@ document.addEventListener('DOMContentLoaded', async function()  {
     const tabBtns = document.querySelectorAll('.tab-btn');
     const tabContents = document.querySelectorAll('.tab-content');
 
-    async function fetchCourseFromAPI(courseId) {
-        try {
-            const response = await fetch(`http://localhost:8080/api/content/program/detail?id=${courseId}`);
-
-            if (!response.ok) {
-                throw new Error(`API请求失败: ${response.status}`);
-            }
-
-            const result = await response.json();
-
-            if (result.code === 200 && result.data) {
-                return result.data;
-            } else {
-                throw new Error(result.message || '课程数据获取失败');
-            }
-        } catch (error) {
-            console.error('获取课程详情失败:', error);
-            // 返回null，让前端使用本地数据
-            return null;
-        }
-    }
-
-    function transformAPIDataToFrontend(apiData) {
-        if (!apiData) return null;
-
-        return {
-            title: apiData.title || '未知课程',
-            description: apiData.description || '暂无描述',
-            level: apiData.level || '初级到中级',
-            episodes: apiData.episodes || 0,
-            status: apiData.status || '已完结',
-            playCount: apiData.views || 0,
-            rating: apiData.rating || 4.9,
-            studentCount: apiData.studentCount || 0,
-            image: apiData.cover || '../images/english_daily.jpg',
-            objectives: '通过本课程的学习，您将能够：',
-            objectivesList: apiData.objectives || [
-                '掌握课程核心知识点',
-                '提高相关技能水平',
-                '应用于实际场景'
-            ],
-            targetAudience: apiData.targetAudience || [
-                '相关领域的学习者',
-                '希望提升技能的人士'
-            ],
-            features: apiData.features || [
-                '系统化的知识体系',
-                '丰富的实例讲解',
-                '实用的学习技巧'
-            ],
-            syllabus: apiData.syllabus || [
-                { unit: '课程导论', lessons: ['课程介绍', '学习目标'], duration: '20分钟' }
-            ],
-            chapters: apiData.chapters || [
-                { title: '课程简介', duration: '20分钟' }
-            ]
-        };
-    }
     // -------------------------- 3. 解析URL中的节目ID --------------------------
     function getProgramIdFromUrl() {
         // 从URL中提取?id=xxx参数

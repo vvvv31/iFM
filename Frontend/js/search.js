@@ -2,7 +2,7 @@
 function handleSearch() {
     // 获取首页和搜索页的搜索输入框
     const searchInput = document.getElementById('homeSearchInput') ||
-        document.querySelector('.search-box .search-input');
+                       document.querySelector('.search-box .search-input');
     if (!searchInput) return;
 
     // 获取并清理搜索关键词
@@ -245,78 +245,15 @@ function highlightKeyword(text, keyword) {
 }
 
 // 搜索数据并显示结果 - 修复：初始调用应用过滤
-async function searchDataAndDisplay(keyword) {
+function searchDataAndDisplay(keyword) {
     const lowerKeyword = keyword.toLowerCase();
 
     // 获取当前选中的过滤和排序
     const activeType = document.querySelector('.filter-option[data-type].active')?.getAttribute('data-type') || 'all';
     const activeSort = document.querySelector('.filter-option[data-sort].active')?.getAttribute('data-sort') || 'popularity';
 
-    try {
-        // 调用后端搜索API
-        const searchParams = new URLSearchParams();
-        searchParams.append('keyword', keyword);
-        searchParams.append('type', activeType === 'all' ? '' : activeType);
-        searchParams.append('sort', activeSort);
-
-        const response = await fetch(`http://localhost:8080/api/content/search?${searchParams.toString()}`);
-
-        if (!response.ok) {
-            throw new Error(`搜索请求失败: ${response.status}`);
-        }
-
-        const result = await response.json();
-
-        // 假设后端返回的数据结构为 { data: [], code: 200, message: 'success' }
-        const courses = result.data || [];
-
-        // 直接调用applyFilters进行搜索和排序
-        applyFiltersWithData(courses, keyword, activeType, activeSort);
-
-    } catch (error) {
-        console.error('搜索请求出错:', error);
-        // 降级处理：使用本地模拟数据
-        console.warn('使用本地模拟数据');
-        const filteredCourses = mockCourses.filter(course => {
-            if (keyword === "热门推荐") {
-                return true;
-            }
-            return course.title.toLowerCase().includes(lowerKeyword) ||
-                course.category.toLowerCase().includes(lowerKeyword) ||
-                course.description.toLowerCase().includes(lowerKeyword) ||
-                course.teacher.name.toLowerCase().includes(lowerKeyword);
-        });
-
-        updateSearchResults(filteredCourses, keyword);
-    }
-}
-
-function applyFiltersWithData(courses, keyword, type, sort) {
-    const lowerKeyword = keyword.toLowerCase();
-
-    // 按类型过滤
-    let filteredCourses = courses;
-    if (type !== 'all') {
-        filteredCourses = filteredCourses.filter(course => course.type === type);
-    }
-
-    // 按排序方式排序
-    if (sort === 'popularity') {
-        filteredCourses.sort((a, b) => {
-            const aViews = a.views || 0;
-            const bViews = b.views || 0;
-            return bViews - aViews;
-        });
-    } else if (sort === 'time') {
-        filteredCourses.sort((a, b) => {
-            const aTime = a.createTime || 0;
-            const bTime = b.createTime || 0;
-            return bTime - aTime;
-        });
-    }
-
-    // 更新显示结果
-    updateSearchResults(filteredCourses, keyword);
+    // 直接调用applyFilters进行搜索和排序
+    applyFilters(keyword, activeType, activeSort);
 }
 
 // 获取URL中的搜索关键词
@@ -465,18 +402,18 @@ function updateSearchResults(courses, keyword) {
     if (searchResultsGrid) {
         if (courses.length > 0) {
             const coursesHTML = courses.map(course => `
-                <div class="channel-card" data-course-id="${course.id}" data-course-type="${course.type || 'audio'}" data-course-title="${course.title}" data-course-teacher="${course.teacher || '未知老师'}">
+                <div class="channel-card" data-course-id="${course.id}" data-course-type="${course.type}" data-course-title="${course.title}" data-course-teacher="${course.teacher.name}">
                     <div class="channel-thumbnail">
                         <div class="thumbnail-overlay">
                             <span class="play-icon">${course.type === 'live' ? '🔴' : '▶'}</span>
-                            <span class="video-duration">${course.duration || '00:00'}</span>
+                            <span class="video-duration">${course.duration}</span>
                         </div>
                     </div>
                     <div class="channel-info">
                         <h3 class="channel-title">${highlightKeyword(course.title, keyword)}</h3>
                         <div class="channel-meta">
-                            <span class="views-count">${formatViewCount(course.views || 0)}次学习</span>
-                            <span class="rating">${formatRating(course.rating || 0)}</span>
+                            <span class="views-count">${course.views}</span>
+                            <span class="rating">${course.rating}</span>
                             <span class="course-type-badge" style="
                                 background-color: ${course.type === 'live' ? '#FF6B6B' : '#FF8C00'};
                                 color: white;
@@ -487,8 +424,8 @@ function updateSearchResults(courses, keyword) {
                                 ">${course.type === 'live' ? '直播' : '音频'}</span>
                         </div>
                         <div class="teacher-info">
-                            <div class="teacher-avatar">${course.teacher ? course.teacher.charAt(0) : '未'}</div>
-                            <span class="teacher-name">${course.teacher || '未知老师'}</span>
+                            <div class="teacher-avatar">${course.teacher.avatar}</div>
+                            <span class="teacher-name">${course.teacher.name}</span>
                         </div>
                     </div>
                 </div>
@@ -505,10 +442,13 @@ function updateSearchResults(courses, keyword) {
                     const courseTeacher = this.getAttribute('data-course-teacher');
 
                     if (courseType === 'live') {
+                        // 直播课程：跳转到live.html
                         window.location.href = `live.html?id=${courseId}&title=${encodeURIComponent(courseTitle)}&teacher=${encodeURIComponent(courseTeacher)}`;
-                    } else {
-                        window.location.href = `program_list.html?id=${courseId}`;
-                    }
+                      } else {
+                        // 音频课程：跳转到program_list.html
+                        const mappedId = courseIdMap[courseId] || courseId;
+                        window.location.href = `program_list.html?id=${mappedId}`;
+                      }
                 });
             });
         } else {
@@ -537,22 +477,6 @@ function updateSearchResults(courses, keyword) {
             pagination.style.display = 'flex';
         }
     }
-}
-
-// 格式化播放量
-function formatViewCount(count) {
-    if (count >= 10000) {
-        return (count / 10000).toFixed(1) + '万';
-    }
-    return count.toString();
-}
-
-// 格式化评分
-function formatRating(rating) {
-    if (typeof rating === 'number') {
-        return rating.toFixed(1);
-    }
-    return rating || '0.0';
 }
 
 // 模拟获取课程章节
@@ -641,13 +565,16 @@ document.addEventListener('DOMContentLoaded', function() {
         // 设置默认排序为热度
         const sortBtn = document.querySelector('.filter-option[data-sort="popularity"]');
         if (sortBtn) {
+            // 移除其他排序按钮的active类
             document.querySelectorAll('.filter-option[data-sort]').forEach(btn => {
                 btn.classList.remove('active');
             });
+            // 设置热度按钮为active
             sortBtn.classList.add('active');
         }
 
         const keyword = getSearchKeyword();
+        // 显示关键词
         const keywordEl = document.getElementById('search-keyword');
         if (keywordEl && keyword !== "热门推荐") {
             keywordEl.textContent = keyword;

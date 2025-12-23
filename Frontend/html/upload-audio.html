@@ -460,7 +460,34 @@
 </audio>
 
 <!-- 顶部导航栏 -->
-<!-- 顶部导航栏已删除，仅保留内容区 -->
+<header class="header">
+    <div class="logo">
+        <div class="logo-img"></div>
+        <span class="logo-text">星之声</span>
+    </div>
+    <nav class="main-nav">
+        <a href="index.html" class="nav-item">首页</a>
+        <a href="category.html" class="nav-item">分类</a>
+        <a href="channel.html" class="nav-item">社区</a>
+    </nav>
+    <div class="search-box">
+        <input type="text" placeholder="搜索课程、频道..." class="search-input" id="homeSearchInput">
+        <button class="search-btn" id="homeSearchBtn"><i class="fas fa-search"></i></button>
+    </div>
+    <div class="user-functions">
+        <a href="my-recent.html" class="func-item">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+        </a>
+        <a href="my-message.html" class="func-item"><i class="fas fa-bell"></i> 消息</a>
+        <a href="my-collect.html" class="func-item"><i class="fas fa-star"></i> 收藏</a>
+        <a href="my-recent.html" class="func-item"><i class="fas fa-history"></i> 历史</a>
+        <a href="my-creator_center.html" class="func-item"><i class="fas fa-pen"></i> 创作中心</a>
+        <a href="login.html"><button class="submit-btn">登录/注册</button></a>
+    </div>
+</header>
 
 <!-- 上传内容区域 -->
 <main class="main-content">

@@ -222,6 +222,21 @@
   </aside>
   
   <script>
+      // 顶部导航栏搜索跳转到search.html
+      function jumpToSearchPage() {
+        var input = document.getElementById('homeSearchInput');
+        var kw = input.value.trim();
+        if (kw) {
+          document.getElementById('page-frame').src = 'search.html?keyword=' + encodeURIComponent(kw);
+        } else {
+          document.getElementById('page-frame').src = 'search.html';
+        }
+        input.value = '';
+      }
+      document.getElementById('homeSearchBtn').addEventListener('click', jumpToSearchPage);
+      document.getElementById('homeSearchInput').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') jumpToSearchPage();
+      });
     // 用户功能区跳转（只在iframe内切换页面）
     document.querySelectorAll('.user-functions a[data-page]').forEach(el => {
       el.addEventListener('click', function(e) {

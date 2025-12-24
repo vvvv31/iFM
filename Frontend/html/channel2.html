@@ -349,7 +349,7 @@
         }
         .own-message .message-bubble {
             background: white;
-            color: #ff6b35;
+            color: #333;
             border: 1px solid #ff6b35;
             border-top-right-radius: 4px;
         }
@@ -370,7 +370,7 @@
             border-bottom: 6px solid transparent;
         }
         
-        .message-text { font-size: 14px; line-height: 1.5; }
+        .message-text { font-size: 15px; line-height: 1.6; }
         .english-text { letter-spacing: 0.3px; }
         .bilingual-text { line-height: 1.6; }
         
@@ -381,13 +381,31 @@
         }
         .system-message .message-bubble::before { display: none; }
         
+        /* 词汇高亮 - 简化样式，不使用背景色 */
         .vocabulary-highlight {
-            color: #4285F4; font-weight: 600;
-            background: rgba(66, 133, 244, 0.1); padding: 2px 6px; border-radius: 4px; margin: 0 2px;
+            color: #fff; 
+            font-weight: 700;
+            text-decoration: underline;
+            text-decoration-color: rgba(255,255,255,0.5);
+            text-underline-offset: 2px;
         }
+        .own-message .vocabulary-highlight {
+            color: #ff6b35;
+            text-decoration-color: rgba(255,107,53,0.5);
+        }
+        
+        /* 语法注释 - 移到气泡外部 */
         .grammar-note {
-            font-style: italic; color: #666; font-size: 12px; margin-top: 4px;
-            border-left: 3px solid #ff6b35; padding-left: 8px;
+            font-style: normal; 
+            color: #ff6b35; 
+            font-size: 12px; 
+            margin-top: 6px;
+            padding-left: 0;
+            border-left: none;
+        }
+        .own-message .grammar-note {
+            text-align: right;
+            color: #666;
         }
         
         .group-switch-indicator {
@@ -828,6 +846,33 @@
     </style>
 </head>
 <body>
+            <script>
+            // ============ 通知主框架当前页面状态 ============
+            // 第一种情况：显示且播放不暂停
+            function notifyParentPage() {
+                if (window.parent !== window) {
+                    window.parent.postMessage({
+                        type: 'PAGE_STATE',
+                        data: {
+                            pageName: 'channel2',
+                            state: 'visible-playing' // 群组页：显示播放栏且播放不暂停
+                        }
+                    }, '*');
+                    // 控制台提示
+                    console.log('已通知主框架：channel2（显示播放栏，播放不中断）');
+                }
+            }
+
+            // 页面加载时通知主框架
+            window.addEventListener('load', function() {
+                setTimeout(notifyParentPage, 100); // 延迟确保主框架准备好
+            });
+
+            // 如果页面是通过iframe直接加载的，立即通知
+            if (window.parent !== window) {
+                notifyParentPage();
+            }
+            </script>
     <!-- 音频元素（页面其他逻辑用） -->
     <audio id="audioPlayer" controls style="display: none;">
         <source src="" type="audio/mpeg">
@@ -973,8 +1018,8 @@
                                 </div>
                                 <div class="message-bubble">
                                     <div class="message-text english-text">Good morning everyone! How was your weekend?</div>
-                                    <div class="grammar-note">过去式疑问句</div>
                                 </div>
+                                <div class="grammar-note">过去式疑问句</div>
                             </div>
                         </div>
 
@@ -988,8 +1033,8 @@
                                 </div>
                                 <div class="message-bubble">
                                     <div class="message-text english-text">My weekend was great! I watched an English movie and practiced listening skills.</div>
-                                    <div class="grammar-note">过去简单式 + 并列句</div>
                                 </div>
+                                <div class="grammar-note">过去简单式 + 并列句</div>
                             </div>
                         </div>
 
@@ -1003,8 +1048,8 @@
                                 </div>
                                 <div class="message-bubble">
                                     <div class="message-text english-text">I had a productive weekend too! I learned some new <span class="vocabulary-highlight">vocabulary</span> about travel.</div>
-                                    <div class="grammar-note">学习了一些关于旅行的新词汇</div>
                                 </div>
+                                <div class="grammar-note">学习了一些关于旅行的新词汇</div>
                             </div>
                         </div>
                     </div>
@@ -1087,85 +1132,6 @@
         <i class="fas fa-bars"></i>
     </button>
 
-    <!-- 播放栏替换为 PlayBar.html 版本（仅替换播放栏相关区域，其余保持不变） -->
-    <aside id="pv-player" class="pv-player-bar">
-      <div class="pv-inner">
-        <!-- 左侧：封面与标题（最左） -->
-        <div class="pv-left">
-          <div id="pv-cover" class="pv-cover" role="button" tabindex="0" aria-label="打开播放页面"></div>
-          <div class="pv-meta">
-            <div id="pv-title" class="pv-title" role="button" tabindex="0">Kalimba (Test Audio)</div>
-            <div id="pv-artist" class="pv-artist">Ninja Tuna</div>
-          </div>
-        </div>
-
-        <!-- 中间：控制与进度（居中） -->
-        <div class="pv-center">
-          <div class="pv-controls">
-            <button id="pv-prev" class="ctrl-btn" title="上一首" aria-label="上一首">
-              <svg class="icon" viewBox="0 0 24 24"><path d="M6 6h2v12H6V6zm3.5 6l8.5 6V6l-8.5 6z"/></svg>
-            </button>
-            <button id="pv-play" class="play-btn" title="播放/暂停" aria-label="播放/暂停">
-              <svg id="play-icon" class="icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-            </button>
-            <button id="pv-next" class="ctrl-btn" title="下一首" aria-label="下一首">
-              <svg class="icon" viewBox="0 0 24 24"><path d="M16 6h2v12h-2V6zM6 18l8.5-6L6 6v12z"/></svg>
-            </button>
-
-            <!-- 循环模式按钮 + 弹层 -->
-            <div style="position: relative;">
-              <button id="pv-mode-btn" class="mode-btn" title="播放模式" aria-label="播放模式">
-                <svg class="icon" viewBox="0 0 24 24"><path d="M7 7h8v3l4-4-4-4v3H5v6h2V7zm10 10H9v-3l-4 4 4 4v-3h10v-6h-2v4z"/></svg>
-              </button>
-              <div id="mode-pop" class="popover mode-popover">
-                <div class="mode-item active" data-mode="single" title="单曲循环">
-                  <svg class="icon" viewBox="0 0 24 24"><path d="M12 5v4l-1.5-1.5C8 10 8 14 10.5 16.5S16 19 18.5 16.5L20 18c-3 3-8 3-11 0S6 9 9 6L12 5z"/></svg>
-                </div>
-                <div class="mode-item" data-mode="list" title="歌单顺序循环">
-                  <svg class="icon" viewBox="0 0 24 24"><path d="M4 6h12v2H4V6zm0 5h12v2H4v-2zm0 5h8v2H4v-2zm15-7l-3 3h2v4h2v-4h2l-3-3z"/></svg>
-                </div>
-                <div class="mode-item" data-mode="shuffle" title="歌单乱序循环">
-                  <svg class="icon" viewBox="0 0 24 24"><path d="M16 3h5v5h-2V6.41l-4.29 4.3-1.42-1.42L17.59 5H16V3zM4 6h7l2 2H4V6zm0 6h5l2 2H4v-2zm12 3h1.59l-2.29 2.29 1.42 1.42L20 17.41V19h2v-5h-5v2z"/></svg>
-                </div>
-              </div>
-            </div>
-
-            <!-- 倍速按钮 + 弹层 -->
-            <div class="rate-control" style="position: relative;">
-              <button id="pv-rate-btn" class="rate-btn" title="倍速"><span id="rate-text" style="font-size: 12px; font-weight: bold;">1x</span></button>
-              <div id="rate-pop" class="popover rate-popover">
-                <div class="rate-item" data-rate="0.5">0.5x</div>
-                <div class="rate-item active" data-rate="1">1.0x</div>
-                <div class="rate-item" data-rate="1.5">1.5x</div>
-                <div class="rate-item" data-rate="2">2.0x</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="pv-progress-row">
-            <span id="pv-time-cur" class="time small">00:00</span>
-            <div id="pv-progress" class="pv-progress">
-              <div id="pv-progress-fill" class="pv-progress-fill"></div>
-              <div id="pv-knob" class="pv-knob"></div>
-            </div>
-            <span id="pv-time-total" class="time small">00:00</span>
-          </div>
-        </div>
-
-        <!-- 右侧：音量 + 歌单（最右） -->
-        <div class="pv-right">
-          <button id="pv-mute" class="ctrl-btn" title="静音/取消静音" aria-label="静音">
-            <svg id="vol-icon" class="icon" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3z"/></svg>
-          </button>
-          <div id="pv-volume" class="pv-volume">
-            <div class="pv-volume-bar"><div id="pv-volume-fill" class="pv-volume-fill"></div></div>
-          </div>
-          <button id="pv-list-btn" class="ctrl-btn" title="播放列表" aria-label="播放列表">
-            <svg class="icon" viewBox="0 0 24 24"><path d="M3 5h18v2H3V5zm0 6h12v2H3v-2zm0 6h8v2H3v-2z"/></svg>
-          </button>
-        </div>
-      </div>
-
       <!-- 播放列表弹窗（示例） -->
       <div id="playlist-panel" class="playlist-panel" style="display:none;">
         <div class="playlist-item active" onclick="playIndex(0)">1. Kalimba (Test)</div>
@@ -1228,6 +1194,7 @@
                 name: "英语口语练习",
                 description: "每日英语口语练习，提升沟通能力，欢迎所有英语学习者加入！",
                 memberCount: 36,
+                inviteCode: "ORAL2024",
                 messages: [
                     { sender: "系统", text: "Welcome to English Speaking Practice Group! 🌟", time: "09:30", isSystem: true },
                     { sender: "English Learner", avatar: "EN", text: "Good morning everyone! How was your weekend?", time: "09:45", isOwn: false, englishText: true, grammarNote: "过去式疑问句" },
@@ -1243,6 +1210,7 @@
                 name: "托福备考群",
                 description: "托福考试备考交流，分享学习经验和备考技巧",
                 memberCount: 28,
+                inviteCode: "TOEFL888",
                 messages: [
                     { sender: "系统", text: "TOEFL备考小组 - 互相鼓励，共同进步！", time: "昨天 14:20", isSystem: true },
                     { sender: "TOEFL Master", avatar: "TM", text: "Has anyone taken the TOEFL reading section recently? Any tips?", time: "昨天 14:35", isOwn: false, englishText: true },
@@ -1257,6 +1225,7 @@
                 name: "商务英语交流",
                 description: "商务英语学习与实践，提升职场英语能力",
                 memberCount: 22,
+                inviteCode: "BIZ12345",
                 messages: [
                     { sender: "Business Pro", avatar: "BP", text: "How to professionally decline a meeting invitation?", time: "周一 10:30", isOwn: false, englishText: true },
                     { sender: "我", avatar: "ME", text: "You can say: 'Thank you for the invitation, but I have a scheduling conflict.'", time: "周一 11:15", isOwn: true, englishText: true, vocabulary: ["scheduling conflict"] }
@@ -1270,6 +1239,7 @@
                 name: "英文原版阅读",
                 description: "英文原著阅读分享，提高阅读理解和词汇量",
                 memberCount: 45,
+                inviteCode: "BOOK2024",
                 messages: [
                     { sender: "Bookworm", avatar: "BW", text: "Just finished 'The Great Gatsby'. The symbolism is fascinating!", time: "上周五 16:20", isOwn: false, englishText: true, vocabulary: ["symbolism"] },
                     { sender: "我", avatar: "ME", text: "I'm currently reading '1984'. The political themes are very thought-provoking.", time: "上周五 16:45", isOwn: true, englishText: true, vocabulary: ["thought-provoking"] }

@@ -8,121 +8,288 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="../js/search.js"></script>
     <style>
-        /* 私信页面特有样式（保留原样） */
+        /* 私信页面特有样式 - 现代化设计 */
         .message-area {
             display: flex;
-            gap: 20px;
-            min-height: 500px;
+            gap: 24px;
+            min-height: 520px;
+            max-width: 1100px;
+            margin: 0 auto;
         }
+        
+        /* 左侧联系人列表 */
         .message-list {
-            width: 280px;
-            background-color: #FFF8DC;
-            border: 1px solid #FFDAB9;
-            border-radius: 8px;
+            width: 300px;
+            background: linear-gradient(180deg, #fff 0%, #fffbf5 100%);
+            border: 1px solid rgba(255, 140, 0, 0.15);
+            border-radius: 16px;
             overflow: hidden;
+            box-shadow: 0 4px 20px rgba(255, 140, 0, 0.08);
         }
+        
         .msg-item {
             display: flex;
             align-items: center;
-            padding: 15px;
+            padding: 16px 18px;
             cursor: pointer;
-            border-bottom: 1px solid #FFDAB9;
-            transition: background-color 0.3s;
+            border-bottom: 1px solid rgba(255, 140, 0, 0.08);
+            transition: all 0.3s ease;
+            position: relative;
         }
-        .msg-item:hover { background-color: #FFEDCC; }
-        .msg-item.active { background-color: #FF8C00; color: #fff; }
-        .msg-item.active .avatar { background-color: #fff; }
-        .msg-item .avatar-wrapper { width: 40px; height: 40px; margin-right: 12px; }
-        .msg-item .avatar { width: 36px; height: 36px; background-color: #FF8C00; }
-        .msg-item span { font-size: 14px; font-weight: bold; }
+        
+        .msg-item:hover { 
+            background: linear-gradient(135deg, #fff5e6 0%, #ffedd5 100%);
+            transform: translateX(4px);
+        }
+        
+        .msg-item.active { 
+            background: linear-gradient(135deg, #FF8C00 0%, #FFA500 100%);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(255, 140, 0, 0.3);
+        }
+        
+        .msg-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: #fff;
+            border-radius: 0 2px 2px 0;
+        }
+        
+        .msg-item.active .avatar { 
+            background: linear-gradient(135deg, #fff 0%, #f5f5f5 100%);
+            border-color: #fff;
+        }
+        
+        .msg-item .avatar-wrapper { 
+            width: 48px; 
+            height: 48px; 
+            margin-right: 14px;
+            flex-shrink: 0;
+        }
+        
+        .msg-item .avatar { 
+            width: 48px; 
+            height: 48px; 
+            background: linear-gradient(135deg, #FF8C00 0%, #FFA500 100%);
+            border-radius: 50%;
+            border: 3px solid rgba(255, 140, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .msg-item:hover .avatar {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(255, 140, 0, 0.25);
+        }
+        
+        .msg-item span { 
+            font-size: 15px; 
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
 
+        /* 右侧聊天窗口 */
         .chat-window {
             flex: 1;
-            background-color: #fff;
-            border: 1px solid #FFDAB9;
-            border-radius: 8px;
+            background: linear-gradient(180deg, #fff 0%, #fffbf5 100%);
+            border: 1px solid rgba(255, 140, 0, 0.15);
+            border-radius: 16px;
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            box-shadow: 0 4px 20px rgba(255, 140, 0, 0.08);
         }
+        
         .chat-header {
-            background-color: #FF8C00;
+            background: linear-gradient(135deg, #FF8C00 0%, #FFA500 100%);
             color: #fff;
-            padding: 15px 20px;
+            padding: 16px 24px;
             display: flex;
             align-items: center;
-            border-bottom: 1px solid #FFDAB9;
+            border-bottom: none;
+            box-shadow: 0 2px 10px rgba(255, 140, 0, 0.2);
         }
-        .chat-header .avatar-wrapper { width: 40px; height: 40px; margin-right: 12px; }
-        .chat-header .avatar { width: 36px; height: 36px; background-color: #fff; }
-        .chat-header span { font-size: 16px; font-weight: bold; }
+        
+        .chat-header .avatar-wrapper { 
+            width: 44px; 
+            height: 44px; 
+            margin-right: 14px; 
+        }
+        
+        .chat-header .avatar { 
+            width: 44px; 
+            height: 44px; 
+            background: linear-gradient(135deg, #fff 0%, #f5f5f5 100%);
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+        }
+        
+        .chat-header span { 
+            font-size: 17px; 
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
 
+        /* 聊天内容区域 */
         .chat-content {
             flex: 1;
-            padding: 20px;
+            padding: 24px;
             overflow-y: auto;
-            background-color: #FFF8DC;
+            background: linear-gradient(180deg, #fffbf5 0%, #fff8f0 100%);
         }
+        
+        .chat-content::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .chat-content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        .chat-content::-webkit-scrollbar-thumb {
+            background: rgba(255, 140, 0, 0.3);
+            border-radius: 3px;
+        }
+        
+        .chat-content::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 140, 0, 0.5);
+        }
+        
+        /* 聊天气泡 */
         .chat-message {
-            max-width: 70%;
-            padding: 12px 16px;
-            border-radius: 12px;
-            margin-bottom: 15px;
+            max-width: 65%;
+            padding: 14px 18px;
+            border-radius: 18px;
+            margin-bottom: 16px;
             position: relative;
+            animation: messageSlideIn 0.3s ease;
+            line-height: 1.6;
+            font-size: 14px;
         }
+        
+        @keyframes messageSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
         .chat-message.received {
-            background-color: #fff;
-            border: 1px solid #FFDAB9;
-            color: #333;
+            background: linear-gradient(135deg, #fff 0%, #fffbf5 100%);
+            border: 1px solid rgba(255, 140, 0, 0.12);
+            color: #444;
             margin-right: auto;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
         }
+        
+        .chat-message.received:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+        }
+        
         .chat-message.sent {
-            background-color: #FF8C00;
+            background: linear-gradient(135deg, #FF8C00 0%, #FFA500 100%);
             color: #fff;
             margin-left: auto;
+            border-bottom-right-radius: 4px;
+            box-shadow: 0 3px 12px rgba(255, 140, 0, 0.3);
         }
+        
+        .chat-message.sent:hover {
+            box-shadow: 0 5px 18px rgba(255, 140, 0, 0.4);
+            transform: translateY(-1px);
+        }
+        
         .chat-message .time {
             display: block;
             font-size: 11px;
             color: #999;
-            margin-top: 5px;
+            margin-top: 8px;
             text-align: right;
         }
-        .chat-message.sent .time { color: rgba(255, 255, 255, 0.8); }
-
-        .chat-input-area {
-            padding: 15px 20px;
-            border-top: 1px solid #FFDAB9;
-            background-color: #fff;
-            display: flex;
-            gap: 10px;
+        
+        .chat-message.sent .time { 
+            color: rgba(255, 255, 255, 0.75); 
         }
+
+        /* 输入区域 */
+        .chat-input-area {
+            padding: 18px 24px;
+            border-top: 1px solid rgba(255, 140, 0, 0.1);
+            background: linear-gradient(180deg, #fff 0%, #fffbf5 100%);
+            display: flex;
+            gap: 14px;
+            align-items: center;
+        }
+        
         .chat-input-area input {
             flex: 1;
-            padding: 10px 15px;
-            border: 1px solid #FFDAB9;
-            border-radius: 20px;
+            padding: 14px 20px;
+            border: 2px solid rgba(255, 140, 0, 0.15);
+            border-radius: 25px;
             outline: none;
             font-size: 14px;
+            transition: all 0.3s ease;
+            background: #fff;
         }
+        
+        .chat-input-area input:focus {
+            border-color: #FF8C00;
+            box-shadow: 0 0 0 4px rgba(255, 140, 0, 0.1);
+        }
+        
+        .chat-input-area input::placeholder {
+            color: #aaa;
+        }
+        
         .chat-input-area button {
-            background-color: #FF8C00;
+            background: linear-gradient(135deg, #FF8C00 0%, #FFA500 100%);
             color: #fff;
             border: none;
-            padding: 10px 25px;
-            border-radius: 20px;
+            padding: 14px 28px;
+            border-radius: 25px;
             cursor: pointer;
             font-size: 14px;
-            font-weight: bold;
-            transition: background-color 0.3s;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 12px rgba(255, 140, 0, 0.3);
         }
-        .chat-input-area button:hover { background-color: #ff6b00; }
+        
+        .chat-input-area button:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 5px 18px rgba(255, 140, 0, 0.4);
+        }
+        
+        .chat-input-area button:active {
+            transform: translateY(0);
+        }
 
-        /* 响应式设计（保留原样） */
+        /* 响应式设计 */
         @media (max-width: 768px) {
-            .message-area { flex-direction: column; }
-            .message-list { width: 100%; max-height: 200px; overflow-y: auto; }
-            .chat-window { min-height: 400px; }
+            .message-area { 
+                flex-direction: column;
+                gap: 16px;
+            }
+            .message-list { 
+                width: 100%; 
+                max-height: 200px; 
+                overflow-y: auto;
+                border-radius: 12px;
+            }
+            .chat-window { 
+                min-height: 400px;
+                border-radius: 12px;
+            }
+            .chat-message {
+                max-width: 80%;
+            }
         }
 
         /* 为固定播放栏预留空间 */
@@ -227,6 +394,33 @@
     </style>
 </head>
 <body>
+            <script>
+            // ============ 通知主框架当前页面状态 ============
+            // 第一种情况：显示且播放不暂停
+            function notifyParentPage() {
+                if (window.parent !== window) {
+                    window.parent.postMessage({
+                        type: 'PAGE_STATE',
+                        data: {
+                            pageName: 'my-message',
+                            state: 'visible-playing' // 私信页：显示播放栏且播放不暂停
+                        }
+                    }, '*');
+                    // 控制台提示
+                    console.log('已通知主框架：my-message（显示播放栏，播放不中断）');
+                }
+            }
+
+            // 页面加载时通知主框架
+            window.addEventListener('load', function() {
+                setTimeout(notifyParentPage, 100); // 延迟确保主框架准备好
+            });
+
+            // 如果页面是通过iframe直接加载的，立即通知
+            if (window.parent !== window) {
+                notifyParentPage();
+            }
+            </script>
     <!-- 音频元素（保留原页面其它脚本可能使用） -->
     <audio id="audioPlayer" controls style="display: none;">
         <source src="" type="audio/mpeg">
@@ -271,14 +465,58 @@
             </div>
             <div class="user-detail">
                 <div class="username" id="displayUsername">用户名</div>
-                <div class="identity">身份</div>
+                <div class="identity">认证创作者</div>
                 <div class="stats">
-                    <span>关注 <b>0</b></span>
-                    <span>粉丝 <b>0</b></span>
+                    <span class="stat-item" style="cursor:pointer;color:#FF8C00;" onclick="openFollowModal('following')">
+                        <span id="followingCount">0</span> 关注
+                    </span>
+                    <span class="stat-item" style="cursor:pointer;color:#FF8C00;margin-left:12px;" onclick="openFollowModal('fans')">
+                        <span id="fansCount">0</span> 粉丝
+                    </span>
                     <span>收听时长 <b>0</b></span>
                 </div>
             </div>
         </section>
+        <script>
+        // 引用 follow-modal.html 浮窗弹窗（与创作者中心一致）
+        function openFollowModal(type){
+            if (document.getElementById('globalFollowModalFrame')) return;
+            const mask = document.createElement('div');
+            mask.style.cssText = 'position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,0.18);z-index:999999;display:flex;align-items:center;justify-content:center;';
+            mask.id = 'globalFollowModalFrame';
+            mask.innerHTML = `<iframe src="follow-modal.html?mode=${type}" style="border:none;width:100vw;max-width:440px;height:90vh;max-height:500px;background:#fff;z-index:1000000;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,0.18);"></iframe>`;
+            document.body.appendChild(mask);
+            function applyFollowData(payload){
+                if(!payload) return;
+                const f = document.getElementById('followingCount');
+                const g = document.getElementById('fansCount');
+                if(f && payload.followingCount !== undefined) f.textContent = payload.followingCount;
+                if(g && payload.fansCount !== undefined) g.textContent = payload.fansCount;
+            }
+            window.addEventListener('message', function handler(e){
+                const msgType = (typeof e.data === 'string') ? (function(){try{return JSON.parse(e.data).type}catch(e){return e.data}})() : (e.data && e.data.type);
+                if (msgType === 'close-follow-modal' || msgType === 'closeFollowModal'){
+                    mask.remove();
+                    window.removeEventListener('message', handler);
+                } else if (msgType === 'followDataUpdated'){
+                    const payload = (typeof e.data === 'string') ? (function(){try{return JSON.parse(e.data).data}catch(e){return null}})() : (e.data && e.data.data);
+                    applyFollowData(payload);
+                }
+            });
+        }
+        (function(){
+            function refreshCountsFromStore(){
+                try{
+                    const raw = sessionStorage.getItem('fakeFollowData_v1');
+                    if(!raw) return;
+                    const st = JSON.parse(raw);
+                    if(st.followingCount!==undefined){ const el=document.getElementById('followingCount'); if(el) el.textContent = st.followingCount; }
+                    if(st.fansCount!==undefined){ const el=document.getElementById('fansCount'); if(el) el.textContent = st.fansCount; }
+                }catch(e){}
+            }
+            if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', refreshCountsFromStore); else refreshCountsFromStore();
+        })();
+        </script>
         <section class="tab-bar">
             <button class="tab" onclick="window.location.href='my-recent.html'">最近收听</button>
             <button class="tab" onclick="window.location.href='my-collect.html'">收藏</button>
@@ -357,302 +595,6 @@
             </div>
         </section>
     </main>
-
-    <!-- 底部播放栏（完全替换为 PlayBar.html 结构） -->
-    <aside id="pv-player" class="pv-player-bar">
-      <div class="pv-inner">
-        <!-- 左侧：封面与标题 -->
-        <div class="pv-left">
-          <div id="pv-cover" class="pv-cover" role="button" tabindex="0" aria-label="打开播放页面"></div>
-          <div class="pv-meta">
-            <div id="pv-title" class="pv-title" role="button" tabindex="0">Kalimba (Test Audio)</div>
-            <div id="pv-artist" class="pv-artist">Ninja Tuna</div>
-          </div>
-        </div>
-
-        <!-- 中间：控制与进度 -->
-        <div class="pv-center">
-          <div class="pv-controls">
-            <button id="pv-prev" class="ctrl-btn" title="上一首" aria-label="上一首">
-              <svg class="icon" viewBox="0 0 24 24"><path d="M6 6h2v12H6V6zm3.5 6l8.5 6V6l-8.5 6z"/></svg>
-            </button>
-            <button id="pv-play" class="play-btn" title="播放/暂停" aria-label="播放/暂停">
-              <svg id="play-icon" class="icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-            </button>
-            <button id="pv-next" class="ctrl-btn" title="下一首" aria-label="下一首">
-              <svg class="icon" viewBox="0 0 24 24"><path d="M16 6h2v12h-2V6zM6 18l8.5-6L6 6v12z"/></svg>
-            </button>
-
-            <!-- 循环模式按钮 + 弹层 -->
-            <div style="position: relative;">
-              <button id="pv-mode-btn" class="mode-btn" title="播放模式" aria-label="播放模式">
-                <svg class="icon" viewBox="0 0 24 24"><path d="M7 7h8v3l4-4-4-4v3H5v6h2V7zm10 10H9v-3l-4 4 4 4v-3h10v-6h-2v4z"/></svg>
-              </button>
-              <div id="mode-pop" class="popover mode-popover">
-                <div class="mode-item active" data-mode="single" title="单曲循环">
-                  <svg class="icon" viewBox="0 0 24 24"><path d="M12 5v4l-1.5-1.5C8 10 8 14 10.5 16.5S16 19 18.5 16.5L20 18c-3 3-8 3-11 0S6 9 9 6L12 5z"/></svg>
-                </div>
-                <div class="mode-item" data-mode="list" title="歌单顺序循环">
-                  <svg class="icon" viewBox="0 0 24 24"><path d="M4 6h12v2H4V6zm0 5h12v2H4v-2zm0 5h8v2H4v-2zm15-7l-3 3h2v4h2v-4h2l-3-3z"/></svg>
-                </div>
-                <div class="mode-item" data-mode="shuffle" title="歌单乱序循环">
-                  <svg class="icon" viewBox="0 0 24 24"><path d="M16 3h5v5h-2V6.41l-4.29 4.3-1.42-1.42L17.59 5H16V3zM4 6h7l2 2H4V6zm0 6h5l2 2H4v-2zm12 3h1.59l-2.29 2.29 1.42 1.42L20 17.41V19h2v-5h-5v2z"/></svg>
-                </div>
-              </div>
-            </div>
-
-            <!-- 倍速按钮 + 弹层 -->
-            <div class="rate-control" style="position: relative;">
-              <button id="pv-rate-btn" class="rate-btn" title="倍速"><span id="rate-text" style="font-size: 12px; font-weight: bold;">1x</span></button>
-              <div id="rate-pop" class="popover rate-popover">
-                <div class="rate-item" data-rate="0.5">0.5x</div>
-                <div class="rate-item active" data-rate="1">1.0x</div>
-                <div class="rate-item" data-rate="1.5">1.5x</div>
-                <div class="rate-item" data-rate="2">2.0x</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="pv-progress-row">
-            <span id="pv-time-cur" class="time small">00:00</span>
-            <div id="pv-progress" class="pv-progress">
-              <div id="pv-progress-fill" class="pv-progress-fill"></div>
-              <div id="pv-knob" class="pv-knob"></div>
-            </div>
-            <span id="pv-time-total" class="time small">00:00</span>
-          </div>
-        </div>
-
-        <!-- 右侧：音量 + 播放列表开关 -->
-        <div class="pv-right">
-          <button id="pv-mute" class="ctrl-btn" title="静音/取消静音" aria-label="静音">
-            <svg id="vol-icon" class="icon" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3z"/></svg>
-          </button>
-          <div id="pv-volume" class="pv-volume">
-            <div class="pv-volume-bar"><div id="pv-volume-fill" class="pv-volume-fill"></div></div>
-          </div>
-          <button id="pv-list-btn" class="ctrl-btn" title="播放列表" aria-label="播放列表">
-            <svg class="icon" viewBox="0 0 24 24"><path d="M3 5h18v2H3V5zm0 6h12v2H3v-2zm0 6h8v2H3v-2z"/></svg>
-          </button>
-        </div>
-      </div>
-
-      <!-- 播放列表弹窗（示例） -->
-      <div id="playlist-panel" class="playlist-panel" style="display:none;">
-        <div class="playlist-item active" onclick="playIndex(0)">1. Kalimba (Test)</div>
-        <div class="playlist-item" onclick="playIndex(1)">2. Sample MP3 (Test)</div>
-      </div>
-
-      <audio id="pv-audio" preload="metadata"></audio>
-    </aside>
-
-    <!-- 播放栏脚本（完整替换为 PlayBar.html 逻辑，其他页面脚本保留） -->
-    <script>
-    ;(function () {
-      /* 两个样例音频 */
-      const playlist = [
-        { title: "Kalimba (Test Audio)", artist: "Ninja Tuna", cover: "", src: "https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3" },
-        { title: "Sample MP3 (700KB)", artist: "Sample Source", cover: "", src: "https://sample.cat/downloads/file_example_MP3_700KB.mp3" }
-      ];
-
-      let currentIndex = 0;
-      let isPlaying = false;
-      let isDraggingProgress = false;
-      let isDraggingVolume = false;
-      let playMode = 'list'; /* single | list | shuffle */
-
-      const audio = document.getElementById('pv-audio');
-      const playBtn = document.getElementById('pv-play');
-      const playIcon = document.getElementById('play-icon');
-      const prevBtn = document.getElementById('pv-prev');
-      const nextBtn = document.getElementById('pv-next');
-      const titleEl = document.getElementById('pv-title');
-      const artistEl = document.getElementById('pv-artist');
-      const coverEl = document.getElementById('pv-cover');
-      const progressEl = document.getElementById('pv-progress');
-      const progressFill = document.getElementById('pv-progress-fill');
-      const knobEl = document.getElementById('pv-knob');
-      const timeCurEl = document.getElementById('pv-time-cur');
-      const timeTotalEl = document.getElementById('pv-time-total');
-      const volEl = document.getElementById('pv-volume');
-      const volFill = document.getElementById('pv-volume-fill');
-      const listBtn = document.getElementById('pv-list-btn');
-      const playlistPanel = document.getElementById('playlist-panel');
-      const rateBtn = document.getElementById('pv-rate-btn');
-      const rateText = document.getElementById('rate-text');
-      const muteBtn = document.getElementById('pv-mute');
-      const volIcon = document.getElementById('vol-icon');
-      const modeBtn = document.getElementById('pv-mode-btn');
-      const modePop = document.getElementById('mode-pop');
-      const ratePop = document.getElementById('rate-pop');
-
-      function loadTrack(index) {
-        const track = playlist[index];
-        titleEl.innerText = track.title;
-        artistEl.innerText = track.artist;
-        coverEl.style.backgroundImage = track.cover ? `url('${track.cover}')` : '';
-        audio.src = track.src;
-        document.querySelectorAll('.playlist-item').forEach((item, i) => item.classList.toggle('active', i === index));
-      }
-      function playTrack() { audio.play().then(() => { isPlaying = true; updatePlayIcon(); }).catch(err => console.error("Play failed:", err)); }
-      function pauseTrack() { audio.pause(); isPlaying = false; updatePlayIcon(); }
-      function togglePlay() { isPlaying ? pauseTrack() : playTrack(); }
-      function updatePlayIcon() {
-        if (isPlaying) { playIcon.setAttribute('viewBox','0 0 24 24'); playIcon.innerHTML = '<path d="M6 5h4v14H6V5zm8 0h4v14h-4V5z"/>'; }
-        else { playIcon.setAttribute('viewBox','0 0 24 24'); playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>'; }
-      }
-      function formatTime(s) { if (!s || isNaN(s)) return "00:00"; const m = Math.floor(s/60), ss = Math.floor(s%60); return `${m<10?'0':''}${m}:${ss<10?'0':''}${ss}`; }
-      function stopWrap(handler) { return function(e){ e.stopPropagation(); handler(e); }; }
-
-      /* 控件事件（阻止冒泡） */
-      playBtn.addEventListener('click', stopWrap(togglePlay));
-      prevBtn.addEventListener('click', stopWrap(() => prevByMode()));
-      nextBtn.addEventListener('click', stopWrap(() => nextByMode()));
-      muteBtn.addEventListener('click', stopWrap(() => {
-        audio.muted = !audio.muted;
-        if (audio.muted || audio.volume === 0) { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 3l7 7-1.4 1.4L16 7.8V16h-2V8.6L9.4 4 11 2.4 14 3z"/>'; }
-        else if (audio.volume < 0.5) { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 9v6c1.7-0.7 3-2.4 3-4.5S15.7 9.7 14 9z"/>'; }
-        else { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 7v10c3-1 5-3.6 5-7s-2-6-5-7z"/>'; }
-      }));
-
-      /* 模式弹层 */
-      modeBtn.addEventListener('click', stopWrap(() => {
-        ratePop.classList.remove('show');
-        modePop.classList.toggle('show');
-      }));
-      modePop.addEventListener('click', stopWrap((e) => {
-        const item = e.target.closest('.mode-item');
-        if (!item) return;
-        playMode = item.getAttribute('data-mode');
-        document.querySelectorAll('#mode-pop .mode-item').forEach(el => el.classList.toggle('active', el === item));
-        modePop.classList.remove('show');
-      }));
-
-      /* 倍速弹层 */
-      rateBtn.addEventListener('click', stopWrap(() => {
-        modePop.classList.remove('show');
-        ratePop.classList.toggle('show');
-      }));
-      ratePop.addEventListener('click', stopWrap((e) => {
-        const item = e.target.closest('.rate-item');
-        if (!item) return;
-        const r = parseFloat(item.getAttribute('data-rate'));
-        audio.playbackRate = r;
-        rateText.innerText = r.toFixed(1) + 'x';
-        document.querySelectorAll('#rate-pop .rate-item').forEach(el => el.classList.toggle('active', el === item));
-        ratePop.classList.remove('show');
-      }));
-
-      /* 点击其他区域关闭弹层 */
-      document.addEventListener('click', (e) => {
-        if (!modeBtn.contains(e.target) && !modePop.contains(e.target)) modePop.classList.remove('show');
-        if (!rateBtn.contains(e.target) && !ratePop.contains(e.target)) ratePop.classList.remove('show');
-      });
-
-      /* 音频事件与切歌模式 */
-      audio.addEventListener('timeupdate', () => {
-        if (isDraggingProgress) return;
-        const percent = (audio.currentTime / audio.duration) * 100;
-        progressFill.style.width = `${percent}%`;
-        knobEl.style.left = `${percent}%`;
-        timeCurEl.innerText = formatTime(audio.currentTime);
-      });
-      audio.addEventListener('loadedmetadata', () => { timeTotalEl.innerText = formatTime(audio.duration); });
-      audio.addEventListener('ended', () => {
-        if (playMode === 'single') { audio.currentTime = 0; playTrack(); }
-        else { nextByMode(); }
-      });
-      function prevByMode() {
-        if (playMode === 'shuffle') currentIndex = Math.floor(Math.random() * playlist.length);
-        else currentIndex = (currentIndex - 1 + playlist.length) % playlist.length;
-        loadTrack(currentIndex); playTrack();
-      }
-      function nextByMode() {
-        if (playMode === 'shuffle') currentIndex = Math.floor(Math.random() * playlist.length);
-        else currentIndex = (currentIndex + 1) % playlist.length;
-        loadTrack(currentIndex); playTrack();
-      }
-
-      /* 进度条拖拽（鼠标/触摸） */
-      function handleProgressInput(clientX) {
-        const rect = progressEl.getBoundingClientRect();
-        let x = clientX - rect.left; x = Math.max(0, Math.min(x, rect.width));
-        const pct = (x / rect.width) * 100; progressFill.style.width = `${pct}%`; knobEl.style.left = `${pct}%`;
-        return (x / rect.width) * audio.duration;
-      }
-      progressEl.addEventListener('mousedown', stopWrap((e) => { isDraggingProgress = true; progressEl.classList.add('dragging'); const t = handleProgressInput(e.clientX); timeCurEl.innerText = formatTime(t); }));
-      document.addEventListener('mousemove', (e) => { if (isDraggingProgress) { e.preventDefault(); const t = handleProgressInput(e.clientX); timeCurEl.innerText = formatTime(t); } });
-      document.addEventListener('mouseup', (e) => { if (isDraggingProgress) { isDraggingProgress = false; progressEl.classList.remove('dragging'); const t = handleProgressInput(e.clientX); if (isFinite(t)) audio.currentTime = t; } });
-
-      function getTouchX(e){ return (e.touches&&e.touches[0]) ? e.touches[0].clientX : (e.changedTouches&&e.changedTouches[0] ? e.changedTouches[0].clientX : 0); }
-      progressEl.addEventListener('touchstart', (e) => { e.stopPropagation(); e.preventDefault(); isDraggingProgress = true; const t = handleProgressInput(getTouchX(e)); timeCurEl.innerText = formatTime(t); }, { passive:false });
-      document.addEventListener('touchmove', (e) => { if (isDraggingProgress) { e.preventDefault(); const t = handleProgressInput(getTouchX(e)); timeCurEl.innerText = formatTime(t); } }, { passive:false });
-      document.addEventListener('touchend', (e) => { if (isDraggingProgress) { isDraggingProgress = false; const t = handleProgressInput(getTouchX(e)); if (isFinite(t)) audio.currentTime = t; } }, { passive:false });
-
-      /* 音量拖拽（鼠标/触摸） */
-      function handleVolumeInput(clientX) {
-        const rect = volEl.getBoundingClientRect();
-        let x = clientX - rect.left; x = Math.max(0, Math.min(x, rect.width));
-        const p = x / rect.width; volFill.style.width = `${p * 100}%`; audio.volume = p;
-        if (p === 0 || audio.muted) { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 3l7 7-1.4 1.4L16 7.8V16h-2V8.6L9.4 4 11 2.4 14 3z"/>'; }
-        else if (p < 0.5) { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 9v6c1.7-0.7 3-2.4 3-4.5S15.7 9.7 14 9z"/>'; }
-        else { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 7v10c3-1 5-3.6 5-7s-2-6-5-7z"/>'; }
-      }
-      volEl.addEventListener('mousedown', stopWrap((e) => { isDraggingVolume = true; handleVolumeInput(e.clientX); }));
-      document.addEventListener('mousemove', (e) => { if (isDraggingVolume) { e.preventDefault(); handleVolumeInput(e.clientX); } });
-      document.addEventListener('mouseup', () => { isDraggingVolume = false; });
-      volEl.addEventListener('touchstart', (e) => { e.stopPropagation(); e.preventDefault(); isDraggingVolume = true; handleVolumeInput(getTouchX(e)); }, { passive:false });
-      document.addEventListener('touchmove', (e) => { if (isDraggingVolume) { e.preventDefault(); handleVolumeInput(getTouchX(e)); } }, { passive:false });
-      document.addEventListener('touchend', () => { isDraggingVolume = false; }, { passive:false });
-
-      /* 简易播放列表开关（示例） */
-      listBtn.addEventListener('click', stopWrap(() => {
-        playlistPanel.style.display = playlistPanel.style.display === 'block' ? 'none' : 'block';
-      }));
-
-      /* 提供给 HTML 的播放列表切换 */
-      window.playIndex = function(index){ currentIndex = index; loadTrack(currentIndex); playTrack(); }
-
-      /* 新增：点击封面或标题跳转 player.html 携带数据 */
-      function openPlayerPageWithData(openInNewTab = false) {
-        try {
-          const params = new URLSearchParams();
-          params.set('course', titleEl.innerText || '');
-          params.set('chapterIndex', String(currentIndex || 0));
-          const safePlaylist = playlist.map((p, i) => ({
-            id: p.id || ('p' + i),
-            title: p.title || (`Track ${i+1}`),
-            src: p.src || '',
-            duration: p.durationText || p.duration || ''
-          }));
-          params.set('chapters', encodeURIComponent(JSON.stringify(safePlaylist)));
-          const url = 'player.html?' + params.toString();
-          if (openInNewTab) window.open(url, '_blank');
-          else window.location.href = url;
-        } catch (err) {
-          try {
-            const params = new URLSearchParams();
-            params.set('course', titleEl.innerText || '');
-            params.set('chapterIndex', String(currentIndex || 0));
-            const url = 'player.html?' + params.toString();
-            if (openInNewTab) window.open(url, '_blank');
-            else window.location.href = url;
-          } catch (_) { /* ignore */ }
-        }
-      }
-      if (coverEl) {
-        coverEl.addEventListener('click', stopWrap(() => openPlayerPageWithData(false)));
-        coverEl.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openPlayerPageWithData(false); } });
-      }
-      if (titleEl) {
-        titleEl.addEventListener('click', stopWrap(() => openPlayerPageWithData(false)));
-        titleEl.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openPlayerPageWithData(false); } });
-      }
-
-      /* 初始化第一首 */
-      loadTrack(currentIndex);
-    })();
-    </script>
 
     <!-- 保留私信页面交互脚本（与播放栏无关） -->
     <script>

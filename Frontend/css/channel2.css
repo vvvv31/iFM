@@ -254,12 +254,13 @@
 }
 
 .message-text {
-    background-color: #fff3e0;
-    padding: 10px 15px;
-    border-radius: 18px 18px 18px 4px;
-    color: #000;
-    font-size: 14px;
-    max-width: 60%;
+    /* 移除背景色，继承气泡颜色 */
+    background-color: transparent;
+    padding: 0;
+    border-radius: 0;
+    color: inherit;
+    font-size: 15px;
+    max-width: 100%;
 }
 
 .message-time {
@@ -493,7 +494,7 @@
     }
 
     .message-text {
-        max-width: 70%;
+        max-width: 100%;
     }
 
     .welcome-bubble {
@@ -533,7 +534,7 @@
     }
 
     .message-text {
-        max-width: 80%;
+        max-width: 100%;
     }
 
     .welcome-bubble {
@@ -573,8 +574,8 @@
     }
 
     .message-text {
-        font-size: 13px;
-        padding: 8px 12px;
+        font-size: 14px;
+        padding: 0;
     }
 
     .message-input {

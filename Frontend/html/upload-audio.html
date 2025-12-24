@@ -296,7 +296,7 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
+            z-index: 100000;
             justify-content: center;
             align-items: center;
         }
@@ -306,7 +306,7 @@
         }
 
         .modal {
-            background-color: white;
+            background-color: #fff8f0;
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             max-width: 500px;
@@ -314,10 +314,18 @@
             margin: 0 auto;
             position: relative;
             animation: modalFadeIn 0.3s ease;
+            border: 1px solid #ffe0b2;
         }
 
         .modal-content {
             padding: 30px;
+        }
+        
+        .modal-content h3 {
+            color: #e65100;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 20px;
         }
 
         @keyframes modalFadeIn {
@@ -426,6 +434,48 @@
     </style>
 </head>
 <body>
+<script>
+    // ============ 通知主框架当前页面状态 ============
+    // 第三种情况：不显示且播放暂停
+    function notifyParentPage() {
+        if (window.parent !== window) {
+            window.parent.postMessage({
+                type: 'PAGE_STATE',
+                data: {
+                    pageName: 'upload-audio',
+                    state: 'hidden-paused' // 上传音频页：不显示播放栏且播放暂停
+                }
+            }, '*');
+            // 控制台提示
+            console.log('已通知主框架：upload-audio（隐藏播放栏，播放暂停）');
+            
+            // 在iframe中加载时隐藏导航栏，避免与主框架重复
+            hideHeaderInIframe();
+        }
+    }
+    
+    // 隐藏导航栏（在iframe中时）
+    function hideHeaderInIframe() {
+        const header = document.querySelector('header.header');
+        if (header) {
+            header.style.display = 'none';
+        }
+        // 调整body的padding-top，因为导航栏被隐藏了
+        document.body.style.paddingTop = '20px';
+    }
+
+    // 页面加载时通知主框架
+    window.addEventListener('load', function() {
+        setTimeout(notifyParentPage, 100); // 延迟确保主框架准备好
+    });
+
+    // 如果页面是通过iframe直接加载的，立即通知并隐藏导航栏
+    if (window.parent !== window) {
+        notifyParentPage();
+        // DOM加载后再次确保隐藏导航栏
+        document.addEventListener('DOMContentLoaded', hideHeaderInIframe);
+    }
+</script>
 <!-- 音频元素 -->
 <audio id="audioPlayer" controls style="display: none;">
     <source src="" type="audio/mpeg">
@@ -535,40 +585,6 @@
                 </div>
             </div>
 
-            <!-- 模态框容器 -->
-            <div id="modal-overlay" class="modal-overlay">
-                <div id="create-group-modal" class="modal">
-                    <div class="modal-content">
-                        <h3>创建新目录</h3>
-                        <div class="form-group">
-                            <label for="group-type">目录类型</label>
-                            <select id="group-type">
-                                <option value="main">课程</option>
-                                <option value="sub">单元</option>
-                            </select>
-                        </div>
-                        <div class="form-group" id="main-group-select-container" style="display: none;">
-                            <label for="parent-group">所属课程</label>
-                            <select id="parent-group">
-                                <!-- 动态加载课程列表 -->
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="new-group-name">合集名称</label>
-                            <input type="text" id="new-group-name" placeholder="请输入合集名称">
-                        </div>
-                        <div class="form-group">
-                            <label for="new-group-desc">合集描述</label>
-                            <textarea id="new-group-desc" placeholder="请输入合集描述"></textarea>
-                        </div>
-                        <div class="btn-group">
-                            <button type="button" id="submit-create-group" class="btn btn-primary">创建</button>
-                            <button type="button" id="cancel-create-group" class="btn btn-secondary">取消</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <!-- 上传进度 -->
             <div id="upload-progress-container" class="progress-container">
                 <div id="upload-progress-fill" class="progress-fill"></div>
@@ -584,93 +600,39 @@
     </div>
 </main>
 
-<!-- 使用 PlayBar.html 的播放栏（完整替换） -->
-<aside id="pv-player" class="pv-player-bar" role="region" aria-label="播放器">
-  <div class="pv-inner">
-    <!-- 左侧：封面与标题 -->
-    <div class="pv-left">
-      <div id="pv-cover" class="pv-cover" role="button" tabindex="0" aria-label="打开播放页面"></div>
-      <div class="pv-meta">
-        <div id="pv-title" class="pv-title" role="button" tabindex="0">Kalimba (Test Audio)</div>
-        <div id="pv-artist" class="pv-artist">Ninja Tuna</div>
-      </div>
-    </div>
-
-    <!-- 中间：控制与进度 -->
-    <div class="pv-center">
-      <div class="pv-controls">
-        <button id="pv-prev" class="ctrl-btn" title="上一首" aria-label="上一首">
-          <svg class="icon" viewBox="0 0 24 24"><path d="M6 6h2v12H6V6zm3.5 6l8.5 6V6l-8.5 6z"/></svg>
-        </button>
-        <button id="pv-play" class="play-btn" title="播放/暂停" aria-label="播放/暂停">
-          <svg id="play-icon" class="icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-        </button>
-        <button id="pv-next" class="ctrl-btn" title="下一首" aria-label="下一首">
-          <svg class="icon" viewBox="0 0 24 24"><path d="M16 6h2v12h-2V6zM6 18l8.5-6L6 6v12z"/></svg>
-        </button>
-
-        <!-- 播放模式按钮 + 弹层 -->
-        <div style="position: relative;">
-          <button id="pv-mode-btn" class="mode-btn" title="播放模式" aria-label="播放模式">
-            <svg class="icon" viewBox="0 0 24 24"><path d="M7 7h8v3l4-4-4-4v3H5v6h2V7zm10 10H9v-3l-4 4 4 4v-3h10v-6h-2v4z"/></svg>
-          </button>
-          <div id="mode-pop" class="popover mode-popover">
-            <div class="mode-item active" data-mode="single" title="单曲循环">
-              <svg class="icon" viewBox="0 0 24 24"><path d="M12 5v4l-1.5-1.5C8 10 8 14 10.5 16.5S16 19 18.5 16.5L20 18c-3 3-8 3-11 0S6 9 9 6L12 5z"/></svg>
+<!-- 模态框容器 - 移到form外面，确保层级正确 -->
+<div id="modal-overlay" class="modal-overlay">
+    <div id="create-group-modal" class="modal">
+        <div class="modal-content">
+            <h3>创建新目录</h3>
+            <div class="form-group">
+                <label for="group-type">目录类型</label>
+                <select id="group-type">
+                    <option value="main">课程</option>
+                    <option value="sub">单元</option>
+                </select>
             </div>
-            <div class="mode-item" data-mode="list" title="歌单顺序循环">
-              <svg class="icon" viewBox="0 0 24 24"><path d="M4 6h12v2H4V6zm0 5h12v2H4v-2zm0 5h8v2H4v-2zm15-7l-3 3h2v4h2v-4h2l-3-3z"/></svg>
+            <div class="form-group" id="main-group-select-container" style="display: none;">
+                <label for="parent-group">所属课程</label>
+                <select id="parent-group">
+                    <!-- 动态加载课程列表 -->
+                </select>
             </div>
-            <div class="mode-item" data-mode="shuffle" title="歌单乱序循环">
-              <svg class="icon" viewBox="0 0 24 24"><path d="M16 3h5v5h-2V6.41l-4.29 4.3-1.42-1.42L17.59 5H16V3zM4 6h7l2 2H4V6zm0 6h5l2 2H4v-2zm12 3h1.59l-2.29 2.29 1.42 1.42L20 17.41V19h2v-5h-5v2z"/></svg>
+            <div class="form-group">
+                <label for="new-group-name">合集名称</label>
+                <input type="text" id="new-group-name" placeholder="请输入合集名称">
             </div>
-          </div>
+            <div class="form-group">
+                <label for="new-group-desc">合集描述</label>
+                <textarea id="new-group-desc" placeholder="请输入合集描述"></textarea>
+            </div>
+            <div class="btn-group">
+                <button type="button" id="submit-create-group" class="btn btn-primary">创建</button>
+                <button type="button" id="cancel-create-group" class="btn btn-secondary">取消</button>
+            </div>
         </div>
-
-        <!-- 倍速按钮 + 弹层 -->
-        <div class="rate-control" style="position: relative;">
-          <button id="pv-rate-btn" class="rate-btn" title="倍速"><span id="rate-text" style="font-size: 12px; font-weight: bold;">1x</span></button>
-          <div id="rate-pop" class="popover rate-popover">
-            <div class="rate-item" data-rate="0.5">0.5x</div>
-            <div class="rate-item active" data-rate="1">1.0x</div>
-            <div class="rate-item" data-rate="1.5">1.5x</div>
-            <div class="rate-item" data-rate="2">2.0x</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="pv-progress-row">
-        <span id="pv-time-cur" class="time small">00:00</span>
-        <div id="pv-progress" class="pv-progress">
-          <div id="pv-progress-fill" class="pv-progress-fill"></div>
-          <div id="pv-knob" class="pv-knob"></div>
-        </div>
-        <span id="pv-time-total" class="time small">00:00</span>
-      </div>
     </div>
-
-    <!-- 右侧：音量 + 播放列表 -->
-    <div class="pv-right">
-      <button id="pv-mute" class="ctrl-btn" title="静音/取消静音" aria-label="静音">
-        <svg id="vol-icon" class="icon" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3z"/></svg>
-      </button>
-      <div id="pv-volume" class="pv-volume">
-        <div class="pv-volume-bar"><div id="pv-volume-fill" class="pv-volume-fill"></div></div>
-      </div>
-      <button id="pv-list-btn" class="ctrl-btn" title="播放列表" aria-label="播放列表">
-        <svg class="icon" viewBox="0 0 24 24"><path d="M3 5h18v2H3V5zm0 6h12v2H3v-2zm0 6h8v2H3v-2z"/></svg>
-      </button>
-    </div>
-  </div>
-
-  <!-- 播放列表弹窗（示例） -->
-  <div id="playlist-panel" class="playlist-panel" style="display:none;">
-    <div class="playlist-item active" onclick="playIndex(0)">1. Kalimba (Test)</div>
-    <div class="playlist-item" onclick="playIndex(1)">2. Sample MP3 (Test)</div>
-  </div>
-
-  <audio id="pv-audio" preload="metadata"></audio>
-</aside>
+</div>
 
 <!-- 页面功能 JavaScript（上传相关逻辑保留） -->
 <script>
@@ -733,6 +695,7 @@
     const submitBtn = uploadForm.querySelector('button[type="submit"]');
     const audioTitle = document.getElementById('audio-title');
     const audioDescription = document.getElementById('audio-description');
+    const audioCategory = document.getElementById('audio-category');
     // const audioGroup = document.getElementById('audio-group');
     const audioGroupMain = document.getElementById('audio-group-main');
     const audioGroupSub = document.getElementById('audio-group-sub');
@@ -850,15 +813,13 @@
         newGroupNameInput.value = '';
         newGroupDescInput.value = '';
         
-        // 显示模态框
-        modalOverlay.style.display = 'block';
-        createGroupModal.style.display = 'block';
+        // 显示模态框 - 使用class切换
+        modalOverlay.classList.add('active');
     }
 
     // 隐藏创建合集模态框
     function hideCreateGroupModal() {
-        modalOverlay.style.display = 'none';
-        createGroupModal.style.display = 'none';
+        modalOverlay.classList.remove('active');
     }
 
     // 创建新合集
@@ -952,13 +913,13 @@
     function saveDraft() {
         const draftData = {
             id: draftId,
-            title: audioTitle.value,
+            title: audioTitle.value || '未命名草稿',
             description: audioDescription.value,
             category: audioCategory.value,
             mainGroup: audioGroupMain.value,
             subGroup: audioGroupSub.value,
             lastSaved: Date.now(),
-            status: 0 // 0表示草稿状态
+            status: 'draft' // 使用字符串 'draft' 而不是数字 0，与 my-works.js 中的过滤逻辑匹配
         };
         
         // 如果有文件，保存文件名（实际应用中可能需要保存文件引用或上传到服务器）
@@ -977,12 +938,13 @@
         
         // 显示保存成功消息
         msgBox.className = 'message success';
-        msgBox.textContent = '草稿已保存！';
+        msgBox.innerHTML = '草稿已保存！<a href="my-works.html" style="color:#fff;margin-left:10px;text-decoration:underline;">查看我的作品</a>';
         msgBox.style.display = 'block';
         
+        // 不自动隐藏，让用户可以点击链接
         setTimeout(() => {
             msgBox.style.display = 'none';
-        }, 3000);
+        }, 5000);
     }
 
     // 加载草稿

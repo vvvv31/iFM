@@ -5,9 +5,84 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>我的-最近收听 - 星之声</title>
     <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/category.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="../js/search.js"></script>
     <style>
+                            /* 粉丝弹窗复用样式 */
+                        /* 让取消关注按钮靠右更明显 */
+                        .following-user-item {
+                            position: relative;
+                        }
+                        .unfollow-btn {
+                            background: #fff3e0;
+                            color: #FF8C00;
+                            border: 1px solid #FFDAB9;
+                            border-radius: 8px;
+                            padding: 4px 14px;
+                            font-size: 13px;
+                            cursor: pointer;
+                            margin-left: 8px;
+                            transition: background 0.2s;
+                            position: absolute;
+                            right: 0;
+                            top: 50%;
+                            transform: translateY(-50%);
+                            z-index: 1;
+                        }
+                        .unfollow-btn:hover {
+                            background: #FFE5C0;
+                        }
+                        .following-user-info {
+                            margin-right: 90px;
+                        }
+                /* 关注列表弹窗样式 */
+                .following-modal-overlay {
+                    position: fixed; left: 0; top: 0; right: 0; bottom: 0;
+                    background: rgba(0,0,0,0.35); z-index: 1000001;
+                    display: none; align-items: center; justify-content: center;
+                }
+                .following-modal-overlay.show { display: flex; }
+                .following-modal {
+                    background: #fff; border-radius: 14px; box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+                    width: 96vw; max-width: 420px; max-height: 80vh; display: flex; flex-direction: column;
+                    overflow: hidden;
+                }
+                .following-modal-header {
+                    display: flex; align-items: center; justify-content: space-between;
+                    padding: 18px 22px; font-size: 18px; font-weight: 600; color: #FF8C00;
+                    border-bottom: 1px solid #FFE5C0;
+                }
+                .following-modal-close {
+                    background: none; border: none; font-size: 26px; color: #aaa; cursor: pointer;
+                    transition: color 0.2s;
+                }
+                .following-modal-close:hover { color: #FF8C00; }
+                .following-modal-body {
+                    flex: 1; overflow-y: auto; padding: 18px 22px 22px 22px; background: #fff;
+                }
+                .following-user-item {
+                    display: flex; align-items: center; gap: 14px; padding: 10px 0; border-bottom: 1px solid #f7f7f7;
+                }
+                .following-user-avatar {
+                    width: 44px; height: 44px; border-radius: 50%; background: #eee; display: flex; align-items: center; justify-content: center; font-size: 22px; overflow: hidden;
+                    flex-shrink: 0;
+                }
+                .following-user-info { flex: 1; min-width: 0; }
+                .following-user-nickname { font-weight: 500; color: #222; font-size: 15px; cursor: pointer; }
+                .following-user-bio { color: #888; font-size: 13px; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+                .following-user-meta { display: flex; align-items: center; gap: 8px; margin-top: 2px; }
+                .mutual-badge { background: #FFEDCC; color: #FF8C00; font-size: 12px; border-radius: 6px; padding: 1px 7px; }
+                .unfollow-btn {
+                    background: #fff3e0; color: #FF8C00; border: 1px solid #FFDAB9; border-radius: 8px;
+                    padding: 4px 14px; font-size: 13px; cursor: pointer; margin-left: 8px; transition: background 0.2s;
+                }
+                .unfollow-btn:hover { background: #FFE5C0; }
+                @media (max-width: 500px) {
+                    .following-modal { max-width: 98vw; padding: 0; }
+                    .following-modal-body { padding: 12px 6px 16px 6px; }
+                    .following-modal-header { padding: 12px 10px; font-size: 16px; }
+                }
         /* 为固定播放栏预留空间 */
         body { padding-bottom: 96px; }
 
@@ -48,71 +123,142 @@
         .playlist-item { padding:8px 12px; cursor:pointer; }
         .playlist-item.active { background:#fff3e0; color:#ff8c00; font-weight:600; }
 
-        /* 频道卡片点击效果 */
-        .channel-card {
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border-radius: 12px;
-            overflow: hidden;
-        }
-
-        .channel-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-        }
-
-        .channel-card:active {
-            transform: translateY(-2px);
-            transition: transform 0.1s;
-        }
-
         @media (max-width: 900px) { .pv-left{min-width:0;} .pv-right{min-width:0;} .pv-inner{grid-template-columns:auto 1fr auto; column-gap:10px; padding:0 12px;} }
 
-        /* 新增：最近收听页面特定样式 */
+        /* 最近收听页面特定样式 */
         .content-block {
-            margin-bottom: 30px;
+            background: #fff;
+            border: 1px solid #FFDAB9;
+            border-radius: 12px;
+            padding: 24px 28px;
+            margin-bottom: 28px;
+            box-shadow: 0 2px 12px rgba(255, 140, 0, 0.05);
         }
 
         .content-title {
-            font-size: 16px;
-            font-weight: bold;
+            font-size: 18px;
+            font-weight: 600;
             color: #FF8C00;
-            margin-bottom: 15px;
-            padding-bottom: 8px;
+            margin-bottom: 24px;
+            padding-bottom: 12px;
             border-bottom: 2px solid #FFEDCC;
-        }
-
-        .channel-thumbnail {
-            width: 100%;
-            height: 100%;
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            font-weight: bold;
-            color: #333;
-            padding: 10px;
-            text-align: center;
-            line-height: 1.4;
+            gap: 10px;
         }
 
+        .content-title::before {
+            content: '';
+            width: 4px;
+            height: 18px;
+            background: linear-gradient(180deg, #FF8C00, #FFB366);
+            border-radius: 2px;
+        }
+
+        .content-title i {
+            font-size: 16px;
+            color: #FFB366;
+        }
+
+        /* 使用与分类页面相同的网格布局 */
+        .channels-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+            justify-content: center;
+        }
+        
+        .channels-grid .channel-card {
+            width: 100%;
+            max-width: 320px;
+            margin: 0 auto;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .channels-grid {
+                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+                gap: 18px;
+            }
+            
+            .content-block {
+                padding: 18px 20px;
+                margin-bottom: 20px;
+            }
+            
+            .content-title {
+                font-size: 16px;
+                margin-bottom: 18px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .channels-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+        }
+
+        /* 收听进度条 */
+        .listen-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.3);
+            z-index: 3;
+        }
+
+        .listen-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #FF8C00, #FFB366);
+            border-radius: 0 2px 2px 0;
+        }
+
+        /* 收听时间标签 */
+        .listen-time {
+            font-size: 11px;
+            color: #999;
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .listen-time i {
+            font-size: 10px;
+        }
+
+        /* 空状态样式 */
         .empty-state {
             text-align: center;
-            padding: 40px 20px;
+            padding: 60px 20px;
             color: #999;
-            background-color: #f9f9f9;
-            border-radius: 8px;
-            border: 1px dashed #ddd;
+            background: linear-gradient(135deg, #f9f9f9 0%, #fff 100%);
+            border-radius: 12px;
+            border: 2px dashed #FFDAB9;
         }
 
         .empty-state i {
-            font-size: 48px;
-            margin-bottom: 15px;
-            color: #ddd;
+            font-size: 64px;
+            margin-bottom: 20px;
+            color: #FFDAB9;
         }
 
         .empty-state p {
-            font-size: 14px;
+            font-size: 16px;
+            color: #999;
+        }
+
+        .empty-state a {
+            color: #FF8C00;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .empty-state a:hover {
+            text-decoration: underline;
         }
 
         /* 用户信息编辑功能样式 */
@@ -647,6 +793,33 @@
     </style>
 </head>
 <body>
+            <script>
+            // ============ 通知主框架当前页面状态 ============
+            // 第一种情况：显示且播放不暂停
+            function notifyParentPage() {
+                if (window.parent !== window) {
+                    window.parent.postMessage({
+                        type: 'PAGE_STATE',
+                        data: {
+                            pageName: 'my-recent',
+                            state: 'visible-playing' // 最近收听页：显示播放栏且播放不暂停
+                        }
+                    }, '*');
+                    // 控制台提示
+                    console.log('已通知主框架：my-recent（显示播放栏，播放不中断）');
+                }
+            }
+
+            // 页面加载时通知主框架
+            window.addEventListener('load', function() {
+                setTimeout(notifyParentPage, 100); // 延迟确保主框架准备好
+            });
+
+            // 如果页面是通过iframe直接加载的，立即通知
+            if (window.parent !== window) {
+                notifyParentPage();
+            }
+            </script>
     <!-- 音频元素（控制倍速/播放） -->
     <audio id="audioPlayer" controls style="display: none;">
         <source src="" type="audio/mpeg">
@@ -699,12 +872,61 @@
                         <i class="fas fa-pen"></i>
                     </button>
                 </div>
-                <div class="identity">身份</div>
+                <div class="identity">认证创作者</div>
                 <div class="stats">
-                    <span>关注 <b>0</b></span>
-                    <span>粉丝 <b>0</b></span>
-                    <span>收听时长 <b>0</b></span>
+                    <span class="stat-item" style="cursor:pointer;color:#FF8C00;" onclick="openFollowModal('following')">
+                        <span id="followingCount">0</span> 关注
+                    </span>
+                    <span class="stat-item" style="cursor:pointer;color:#FF8C00;margin-left:12px;" onclick="openFollowModal('fans')">
+                        <span id="fansCount">0</span> 粉丝
+                    </span>
+                    <span style="margin-left:12px;">收听时长 <b>0</b></span>
                 </div>
+            </div>
+        </section>
+        <script>
+        // 打开统一的 follow-modal.html 浮窗（与创作者中心一致）
+        function openFollowModal(type) {
+            if (document.getElementById('globalFollowModalFrame')) return;
+            const mask = document.createElement('div');
+            mask.style.cssText = 'position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,0.18);z-index:999999;display:flex;align-items:center;justify-content:center;';
+            mask.id = 'globalFollowModalFrame';
+            mask.innerHTML = `<iframe src="follow-modal.html?mode=${type}" style="border:none;width:100vw;max-width:440px;height:90vh;max-height:500px;background:#fff;z-index:1000000;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,0.18);"></iframe>`;
+            document.body.appendChild(mask);
+            function applyFollowData(payload){
+                if(!payload) return;
+                const f = document.getElementById('followingCount');
+                const g = document.getElementById('fansCount');
+                if(f && payload.followingCount !== undefined) f.textContent = payload.followingCount;
+                if(g && payload.fansCount !== undefined) g.textContent = payload.fansCount;
+            }
+            window.addEventListener('message', function handler(e) {
+                const msgType = (typeof e.data === 'string') ? (function(){try{return JSON.parse(e.data).type}catch(e){return e.data}})() : (e.data && e.data.type);
+                if (msgType === 'close-follow-modal' || msgType === 'closeFollowModal') {
+                    mask.remove();
+                    window.removeEventListener('message', handler);
+                } else if (msgType === 'followDataUpdated'){
+                    const payload = (typeof e.data === 'string') ? (function(){try{return JSON.parse(e.data).data}catch(e){return null}})() : (e.data && e.data.data);
+                    applyFollowData(payload);
+                }
+            });
+        }
+        </script>
+        <script>
+        // 初始化时从 sessionStorage 读取并刷新计数
+        (function(){
+            function refreshCountsFromStore(){
+                try{
+                    const raw = sessionStorage.getItem('fakeFollowData_v1');
+                    if(!raw) return;
+                    const st = JSON.parse(raw);
+                    if(st.followingCount!==undefined){ const el = document.getElementById('followingCount'); if(el) el.textContent = st.followingCount; }
+                    if(st.fansCount!==undefined){ const el = document.getElementById('fansCount'); if(el) el.textContent = st.fansCount; }
+                }catch(e){}
+            }
+            if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', refreshCountsFromStore); else refreshCountsFromStore();
+        })();
+        </script>
             </div>
         </section>
         <section class="tab-bar">
@@ -717,322 +939,247 @@
 
         <!-- 今天 -->
         <section class="content-block">
-            <div class="content-title">今天</div>
-            <div class="channel-cards">
-                <!-- 今天收听的课程 -->
+            <div class="content-title"><i class="fas fa-calendar-day"></i> 今天</div>
+            <div class="channels-grid">
+                <!-- 日常英语口语600句 -->
                 <div class="channel-card" data-course-id="2" onclick="goToProgramList(this)">
-                    <div class="channel-thumbnail">日常英语口语600句</div>
+                    <div class="channel-thumbnail" style="background-image: url('../images/daily_english.jpg');">
+                        <div class="thumbnail-overlay">
+                            <span class="play-icon"><i class="fas fa-play"></i></span>
+                        </div>
+                        <span class="video-duration">38:15</span>
+                        <div class="listen-progress">
+                            <div class="listen-progress-fill" style="width: 75%;"></div>
+                        </div>
+                    </div>
+                    <div class="channel-info">
+                        <h3 class="channel-title">日常英语口语600句</h3>
+                        <div class="channel-meta">
+                            <span class="views-count">5.0万次学习</span>
+                            <span class="rating">2024-12-21</span>
+                        </div>
+                        <div class="teacher-info">
+                            <div class="teacher-avatar">王</div>
+                            <span class="teacher-name">王老师</span>
+                        </div>
+                    </div>
                 </div>
+                
+                <!-- 职场英语沟通技巧 -->
                 <div class="channel-card" data-course-id="5" onclick="goToProgramList(this)">
-                    <div class="channel-thumbnail">职场英语沟通技巧</div>
+                    <div class="channel-thumbnail" style="background-image: url('../images/workplace_english.jpg');">
+                        <div class="thumbnail-overlay">
+                            <span class="play-icon"><i class="fas fa-play"></i></span>
+                        </div>
+                        <span class="video-duration">45:10</span>
+                        <div class="listen-progress">
+                            <div class="listen-progress-fill" style="width: 30%;"></div>
+                        </div>
+                    </div>
+                    <div class="channel-info">
+                        <h3 class="channel-title">职场英语沟通技巧</h3>
+                        <div class="channel-meta">
+                            <span class="views-count">3.2万次学习</span>
+                            <span class="rating">2024-12-21</span>
+                        </div>
+                        <div class="teacher-info">
+                            <div class="teacher-avatar">赵</div>
+                            <span class="teacher-name">赵老师</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
 
         <!-- 昨天 -->
         <section class="content-block">
-            <div class="content-title">昨天</div>
-            <div class="channel-cards">
-                <!-- 昨天收听的课程 -->
+            <div class="content-title"><i class="fas fa-history"></i> 昨天</div>
+            <div class="channels-grid">
+                <!-- 商务英语会话技巧 -->
                 <div class="channel-card" data-course-id="1" onclick="goToProgramList(this)">
-                    <div class="channel-thumbnail">商务英语会话技巧</div>
+                    <div class="channel-thumbnail" style="background-image: url('../images/business_english.jpg');">
+                        <div class="thumbnail-overlay">
+                            <span class="play-icon"><i class="fas fa-play"></i></span>
+                        </div>
+                        <span class="video-duration">45:30</span>
+                        <div class="listen-progress">
+                            <div class="listen-progress-fill" style="width: 100%;"></div>
+                        </div>
+                    </div>
+                    <div class="channel-info">
+                        <h3 class="channel-title">商务英语会话技巧</h3>
+                        <div class="channel-meta">
+                            <span class="views-count">2.5万次学习</span>
+                            <span class="rating">2024-12-20</span>
+                        </div>
+                        <div class="teacher-info">
+                            <div class="teacher-avatar">李</div>
+                            <span class="teacher-name">李老师</span>
+                        </div>
+                    </div>
                 </div>
+                
+                <!-- 英语听力进阶训练 -->
                 <div class="channel-card" data-course-id="3" onclick="goToProgramList(this)">
-                    <div class="channel-thumbnail">英语听力进阶训练</div>
+                    <div class="channel-thumbnail" style="background-image: url('../images/listening_training.jpg');">
+                        <div class="thumbnail-overlay">
+                            <span class="play-icon"><i class="fas fa-play"></i></span>
+                        </div>
+                        <span class="video-duration">52:40</span>
+                        <div class="listen-progress">
+                            <div class="listen-progress-fill" style="width: 60%;"></div>
+                        </div>
+                    </div>
+                    <div class="channel-info">
+                        <h3 class="channel-title">英语听力进阶训练</h3>
+                        <div class="channel-meta">
+                            <span class="views-count">1.4万次学习</span>
+                            <span class="rating">2024-12-20</span>
+                        </div>
+                        <div class="teacher-info">
+                            <div class="teacher-avatar">张</div>
+                            <span class="teacher-name">张老师</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
 
         <!-- 最近7天 -->
         <section class="content-block">
-            <div class="content-title">最近7天</div>
-            <div class="channel-cards">
-                <!-- 最近7天收听的课程 -->
+            <div class="content-title"><i class="fas fa-calendar-week"></i> 最近7天</div>
+            <div class="channels-grid">
+                <!-- 旅游英语实用对话 -->
                 <div class="channel-card" data-course-id="4" onclick="goToProgramList(this)">
-                    <div class="channel-thumbnail">旅游英语实用对话</div>
+                    <div class="channel-thumbnail" style="background-image: url('../images/travel_english.jpg');">
+                        <div class="thumbnail-overlay">
+                            <span class="play-icon"><i class="fas fa-play"></i></span>
+                        </div>
+                        <span class="video-duration">28:30</span>
+                        <div class="listen-progress">
+                            <div class="listen-progress-fill" style="width: 45%;"></div>
+                        </div>
+                    </div>
+                    <div class="channel-info">
+                        <h3 class="channel-title">旅游英语实用对话</h3>
+                        <div class="channel-meta">
+                            <span class="views-count">4.6万次学习</span>
+                            <span class="rating">2024-12-18</span>
+                        </div>
+                        <div class="teacher-info">
+                            <div class="teacher-avatar">刘</div>
+                            <span class="teacher-name">刘老师</span>
+                        </div>
+                    </div>
                 </div>
+                
+                <!-- 日常英语口语600句 -->
                 <div class="channel-card" data-course-id="2" onclick="goToProgramList(this)">
-                    <div class="channel-thumbnail">日常英语口语600句</div>
+                    <div class="channel-thumbnail" style="background-image: url('../images/daily_english.jpg');">
+                        <div class="thumbnail-overlay">
+                            <span class="play-icon"><i class="fas fa-play"></i></span>
+                        </div>
+                        <span class="video-duration">38:15</span>
+                        <div class="listen-progress">
+                            <div class="listen-progress-fill" style="width: 100%;"></div>
+                        </div>
+                    </div>
+                    <div class="channel-info">
+                        <h3 class="channel-title">日常英语口语600句</h3>
+                        <div class="channel-meta">
+                            <span class="views-count">5.0万次学习</span>
+                            <span class="rating">2024-12-16</span>
+                        </div>
+                        <div class="teacher-info">
+                            <div class="teacher-avatar">王</div>
+                            <span class="teacher-name">王老师</span>
+                        </div>
+                    </div>
                 </div>
+                
+                <!-- 商务英语会话技巧 -->
                 <div class="channel-card" data-course-id="1" onclick="goToProgramList(this)">
-                    <div class="channel-thumbnail">商务英语会话技巧</div>
+                    <div class="channel-thumbnail" style="background-image: url('../images/business_english.jpg');">
+                        <div class="thumbnail-overlay">
+                            <span class="play-icon"><i class="fas fa-play"></i></span>
+                        </div>
+                        <span class="video-duration">45:30</span>
+                        <div class="listen-progress">
+                            <div class="listen-progress-fill" style="width: 85%;"></div>
+                        </div>
+                    </div>
+                    <div class="channel-info">
+                        <h3 class="channel-title">商务英语会话技巧</h3>
+                        <div class="channel-meta">
+                            <span class="views-count">2.5万次学习</span>
+                            <span class="rating">2024-12-15</span>
+                        </div>
+                        <div class="teacher-info">
+                            <div class="teacher-avatar">李</div>
+                            <span class="teacher-name">李老师</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
 
         <!-- 更早 -->
         <section class="content-block">
-            <div class="content-title">更早</div>
-            <div class="channel-cards">
-                <!-- 更早收听的课程 -->
+            <div class="content-title"><i class="fas fa-archive"></i> 更早</div>
+            <div class="channels-grid">
+                <!-- 英语听力进阶训练 -->
                 <div class="channel-card" data-course-id="3" onclick="goToProgramList(this)">
-                    <div class="channel-thumbnail">英语听力进阶训练</div>
+                    <div class="channel-thumbnail" style="background-image: url('../images/listening_training.jpg');">
+                        <div class="thumbnail-overlay">
+                            <span class="play-icon"><i class="fas fa-play"></i></span>
+                        </div>
+                        <span class="video-duration">52:40</span>
+                        <div class="listen-progress">
+                            <div class="listen-progress-fill" style="width: 100%;"></div>
+                        </div>
+                    </div>
+                    <div class="channel-info">
+                        <h3 class="channel-title">英语听力进阶训练</h3>
+                        <div class="channel-meta">
+                            <span class="views-count">1.4万次学习</span>
+                            <span class="rating">2024-12-08</span>
+                        </div>
+                        <div class="teacher-info">
+                            <div class="teacher-avatar">张</div>
+                            <span class="teacher-name">张老师</span>
+                        </div>
+                    </div>
                 </div>
+                
+                <!-- 职场英语沟通技巧 -->
                 <div class="channel-card" data-course-id="5" onclick="goToProgramList(this)">
-                    <div class="channel-thumbnail">职场英语沟通技巧</div>
+                    <div class="channel-thumbnail" style="background-image: url('../images/workplace_english.jpg');">
+                        <div class="thumbnail-overlay">
+                            <span class="play-icon"><i class="fas fa-play"></i></span>
+                        </div>
+                        <span class="video-duration">45:10</span>
+                        <div class="listen-progress">
+                            <div class="listen-progress-fill" style="width: 50%;"></div>
+                        </div>
+                    </div>
+                    <div class="channel-info">
+                        <h3 class="channel-title">职场英语沟通技巧</h3>
+                        <div class="channel-meta">
+                            <span class="views-count">3.2万次学习</span>
+                            <span class="rating">2024-12-01</span>
+                        </div>
+                        <div class="teacher-info">
+                            <div class="teacher-avatar">赵</div>
+                            <span class="teacher-name">赵老师</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
     </main>
 
-    <!-- 替换底部播放栏为 PlayBar.html 版本 -->
-    <aside id="pv-player" class="pv-player-bar" role="region" aria-label="播放器">
-      <div class="pv-inner">
-        <!-- 左侧：封面与标题 -->
-        <div class="pv-left">
-          <div id="pv-cover" class="pv-cover"></div>
-          <div class="pv-meta">
-            <div id="pv-title" class="pv-title">Kalimba (Test Audio)</div>
-            <div id="pv-artist" class="pv-artist">Ninja Tuna</div>
-          </div>
-        </div>
-
-        <!-- 中间：控制与进度 -->
-        <div class="pv-center">
-          <div class="pv-controls">
-            <button id="pv-prev" class="ctrl-btn" title="上一首" aria-label="上一首">
-              <svg class="icon" viewBox="0 0 24 24"><path d="M6 6h2v12H6V6zm3.5 6l8.5 6V6l-8.5 6z"/></svg>
-            </button>
-            <button id="pv-play" class="play-btn" title="播放/暂停" aria-label="播放/暂停">
-              <svg id="play-icon" class="icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-            </button>
-            <button id="pv-next" class="ctrl-btn" title="下一首" aria-label="下一首">
-              <svg class="icon" viewBox="0 0 24 24"><path d="M16 6h2v12h-2V6zM6 18l8.5-6L6 6v12z"/></svg>
-            </button>
-
-            <!-- 播放模式 -->
-            <div style="position: relative;">
-              <button id="pv-mode-btn" class="mode-btn" title="播放模式" aria-label="播放模式">
-                <svg class="icon" viewBox="0 0 24 24"><path d="M7 7h8v3l4-4-4-4v3H5v6h2V7zm10 10H9v-3l-4 4 4 4v-3h10v-6h-2v4z"/></svg>
-              </button>
-              <div id="mode-pop" class="popover mode-popover" style="display:none;">
-                <div class="mode-item active" data-mode="single" title="单曲循环">
-                  <svg class="icon" viewBox="0 0 24 24"><path d="M12 5v4l-1.5-1.5C8 10 8 14 10.5 16.5S16 19 18.5 16.5L20 18c-3 3-8 3-11 0S6 9 9 6L12 5z"/></svg>
-                </div>
-                <div class="mode-item" data-mode="list" title="歌单顺序循环">
-                  <svg class="icon" viewBox="0 0 24 24"><path d="M4 6h12v2H4V6zm0 5h12v2H4v-2zm0 5h8v2H4v-2zm15-7l-3 3h2v4h2v-4h2l-3-3z"/></svg>
-                </div>
-                <div class="mode-item" data-mode="shuffle" title="歌单乱序循环">
-                  <svg class="icon" viewBox="0 0 24 24"><path d="M16 3h5v5h-2V6.41l-4.29 4.3-1.42-1.42L17.59 5H16V3zM4 6h7l2 2H4V6zm0 6h5l2 2H4v-2zm12 3h1.59l-2.29 2.29 1.42 1.42L20 17.41V19h2v-5h-5v2z"/></svg>
-                </div>
-              </div>
-            </div>
-
-            <!-- 倍速 -->
-            <div class="rate-control" style="position: relative;">
-              <button id="pv-rate-btn" class="rate-btn" title="倍速"><span id="rate-text" style="font-size: 12px; font-weight: bold;">1x</span></button>
-              <div id="rate-pop" class="popover rate-popover" style="display:none;">
-                <div class="rate-item" data-rate="0.5">0.5x</div>
-                <div class="rate-item active" data-rate="1">1.0x</div>
-                <div class="rate-item" data-rate="1.5">1.5x</div>
-                <div class="rate-item" data-rate="2">2.0x</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="pv-progress-row">
-            <span id="pv-time-cur" class="time small">00:00</span>
-            <div id="pv-progress" class="pv-progress">
-              <div id="pv-progress-fill" class="pv-progress-fill"></div>
-              <div id="pv-knob" class="pv-knob"></div>
-            </div>
-            <span id="pv-time-total" class="time small">00:00</span>
-          </div>
-        </div>
-
-        <!-- 右侧：音量 + 播放列表开关 -->
-        <div class="pv-right">
-          <button id="pv-mute" class="ctrl-btn" title="静音/取消静音" aria-label="静音">
-            <svg id="vol-icon" class="icon" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3z"/></svg>
-          </button>
-          <div id="pv-volume" class="pv-volume" title="音量">
-            <div class="pv-volume-bar"><div id="pv-volume-fill" class="pv-volume-fill"></div></div>
-          </div>
-          <button id="pv-list-btn" class="ctrl-btn" title="播放列表" aria-label="播放列表">▤</button>
-        </div>
-      </div>
-
-      <!-- 播放列表弹窗（示例） -->
-      <div id="playlist-panel" class="playlist-panel">
-        <div class="playlist-item active" onclick="playIndex(0)">1. Kalimba (Test)</div>
-        <div class="playlist-item" onclick="playIndex(1)">2. Sample MP3 (Test)</div>
-      </div>
-
-      <audio id="pv-audio" preload="metadata"></audio>
-    </aside>
-
-    <!-- PlayBar 业务脚本（来自 PlayBar.html） -->
-    <script>
-    ;(function () {
-      const playlist = [
-        { title: "Kalimba (Test Audio)", artist: "Ninja Tuna", cover: "", src: "https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3" },
-        { title: "Sample MP3 (700KB)", artist: "Sample Source", cover: "", src: "https://sample.cat/downloads/file_example_MP3_700KB.mp3" }
-      ];
-
-      let currentIndex = 0;
-      let isPlaying = false;
-      let isDraggingProgress = false;
-      let isDraggingVolume = false;
-      let playMode = 'list'; /* single | list | shuffle */
-
-      const audio = document.getElementById('pv-audio');
-      const playBtn = document.getElementById('pv-play');
-      const playIcon = document.getElementById('play-icon');
-      const prevBtn = document.getElementById('pv-prev');
-      const nextBtn = document.getElementById('pv-next');
-      const titleEl = document.getElementById('pv-title');
-      const artistEl = document.getElementById('pv-artist');
-      const coverEl = document.getElementById('pv-cover');
-      const progressEl = document.getElementById('pv-progress');
-      const progressFill = document.getElementById('pv-progress-fill');
-      const knobEl = document.getElementById('pv-knob');
-      const timeCurEl = document.getElementById('pv-time-cur');
-      const timeTotalEl = document.getElementById('pv-time-total');
-      const volEl = document.getElementById('pv-volume');
-      const volFill = document.getElementById('pv-volume-fill');
-      const listBtn = document.getElementById('pv-list-btn');
-      const playlistPanel = document.getElementById('playlist-panel');
-      const rateBtn = document.getElementById('pv-rate-btn');
-      const rateText = document.getElementById('rate-text');
-      const muteBtn = document.getElementById('pv-mute');
-      const volIcon = document.getElementById('vol-icon');
-      const modeBtn = document.getElementById('pv-mode-btn');
-      const modePop = document.getElementById('mode-pop');
-      const ratePop = document.getElementById('rate-pop');
-
-      function loadTrack(index) {
-        const track = playlist[index];
-        titleEl.innerText = track.title;
-        artistEl.innerText = track.artist;
-        coverEl.style.backgroundImage = track.cover ? `url('${track.cover}')` : '';
-        audio.src = track.src;
-        document.querySelectorAll('.playlist-item').forEach((item, i) => item.classList.toggle('active', i === index));
-      }
-      function playTrack() { audio.play().then(() => { isPlaying = true; updatePlayIcon(); }).catch(err => console.error("Play failed:", err)); }
-      function pauseTrack() { audio.pause(); isPlaying = false; updatePlayIcon(); }
-      function togglePlay() { isPlaying ? pauseTrack() : playTrack(); }
-      function updatePlayIcon() {
-        playIcon.setAttribute('viewBox','0 0 24 24');
-        playIcon.innerHTML = isPlaying ? '<path d="M6 5h4v14H6V5zm8 0h4v14h-4V5z"/>' : '<path d="M8 5v14l11-7z"/>';
-      }
-      function formatTime(s) { if (!s || isNaN(s)) return "00:00"; const m = Math.floor(s/60), ss = Math.floor(s%60); return `${m<10?'0':''}${m}:${ss<10?'0':''}${ss}`; }
-      function stopWrap(handler) { return function(e){ e.stopPropagation(); handler(e); }; }
-
-      /* 控件事件（阻止冒泡） */
-      playBtn.addEventListener('click', stopWrap(togglePlay));
-      prevBtn.addEventListener('click', stopWrap(() => prevByMode()));
-      nextBtn.addEventListener('click', stopWrap(() => nextByMode()));
-      muteBtn.addEventListener('click', stopWrap(() => {
-        audio.muted = !audio.muted;
-        if (audio.muted || audio.volume === 0) { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 3l7 7-1.4 1.4L16 7.8V16h-2V8.6L9.4 4 11 2.4 14 3z"/>'; }
-        else if (audio.volume < 0.5) { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 9v6c1.7-0.7 3-2.4 3-4.5S15.7 9.7 14 9z"/>'; }
-        else { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 7v10c3-1 5-3.6 5-7s-2-6-5-7z"/>'; }
-      }));
-
-      /* 模式弹层 */
-      modeBtn.addEventListener('click', stopWrap(() => {
-        ratePop.style.display = 'none';
-        modePop.style.display = modePop.style.display === 'flex' ? 'none' : 'flex';
-      }));
-      modePop.addEventListener('click', stopWrap((e) => {
-        const item = e.target.closest('.mode-item');
-        if (!item) return;
-        playMode = item.getAttribute('data-mode');
-        document.querySelectorAll('#mode-pop .mode-item').forEach(el => el.classList.toggle('active', el === item));
-        modePop.style.display = 'none';
-      }));
-
-      /* 倍速弹层 */
-      rateBtn.addEventListener('click', stopWrap(() => {
-        modePop.style.display = 'none';
-        ratePop.style.display = ratePop.style.display === 'flex' ? 'none' : 'flex';
-      }));
-      ratePop.addEventListener('click', stopWrap((e) => {
-        const item = e.target.closest('.rate-item');
-        if (!item) return;
-        const r = parseFloat(item.getAttribute('data-rate'));
-        audio.playbackRate = r;
-        rateText.innerText = r.toFixed(1) + 'x';
-        document.querySelectorAll('#rate-pop .rate-item').forEach(el => el.classList.toggle('active', el === item));
-        ratePop.style.display = 'none';
-      }));
-
-      /* 点击其他区域关闭弹层 */
-      document.addEventListener('click', (e) => {
-        if (!modeBtn.contains(e.target) && !modePop.contains(e.target)) modePop.style.display = 'none';
-        if (!rateBtn.contains(e.target) && !ratePop.contains(e.target)) ratePop.style.display = 'none';
-      });
-
-      /* 音频事件与切歌模式 */
-      audio.addEventListener('timeupdate', () => {
-        if (isDraggingProgress) return;
-        const percent = (audio.currentTime / audio.duration) * 100;
-        progressFill.style.width = `${percent}%`;
-        knobEl.style.left = `${percent}%`;
-        timeCurEl.innerText = formatTime(audio.currentTime);
-      });
-      audio.addEventListener('loadedmetadata', () => { timeTotalEl.innerText = formatTime(audio.duration); });
-      audio.addEventListener('ended', () => {
-        if (playMode === 'single') { audio.currentTime = 0; playTrack(); }
-        else { nextByMode(); }
-      });
-      function prevByMode() {
-        if (playMode === 'shuffle') currentIndex = Math.floor(Math.random() * playlist.length);
-        else currentIndex = (currentIndex - 1 + playlist.length) % playlist.length;
-        loadTrack(currentIndex); playTrack();
-      }
-      function nextByMode() {
-        if (playMode === 'shuffle') currentIndex = Math.floor(Math.random() * playlist.length);
-        else currentIndex = (currentIndex + 1) % playlist.length;
-        loadTrack(currentIndex); playTrack();
-      }
-
-      /* 进度条拖拽（鼠标/触摸） */
-      function handleProgressInput(clientX) {
-        const rect = progressEl.getBoundingClientRect();
-        let x = clientX - rect.left; x = Math.max(0, Math.min(x, rect.width));
-        const pct = (x / rect.width) * 100; progressFill.style.width = `${pct}%`; knobEl.style.left = `${pct}%`;
-        return (x / rect.width) * audio.duration;
-      }
-      progressEl.addEventListener('mousedown', stopWrap((e) => { isDraggingProgress = true; progressEl.classList.add('dragging'); const t = handleProgressInput(e.clientX); timeCurEl.innerText = formatTime(t); }));
-      document.addEventListener('mousemove', (e) => { if (isDraggingProgress) { e.preventDefault(); const t = handleProgressInput(e.clientX); timeCurEl.innerText = formatTime(t); } });
-      document.addEventListener('mouseup', (e) => { if (isDraggingProgress) { isDraggingProgress = false; progressEl.classList.remove('dragging'); const t = handleProgressInput(e.clientX); if (isFinite(t)) audio.currentTime = t; } });
-
-      function getTouchX(e){ return (e.touches&&e.touches[0]) ? e.touches[0].clientX : (e.changedTouches&&e.changedTouches[0] ? e.changedTouches[0].clientX : 0); }
-      progressEl.addEventListener('touchstart', (e) => { e.stopPropagation(); e.preventDefault(); isDraggingProgress = true; const t = handleProgressInput(getTouchX(e)); timeCurEl.innerText = formatTime(t); }, { passive:false });
-      document.addEventListener('touchmove', (e) => { if (isDraggingProgress) { e.preventDefault(); const t = handleProgressInput(getTouchX(e)); timeCurEl.innerText = formatTime(t); } }, { passive:false });
-      document.addEventListener('touchend', (e) => { if (isDraggingProgress) { isDraggingProgress = false; const t = handleProgressInput(getTouchX(e)); if (isFinite(t)) audio.currentTime = t; } }, { passive:false });
-
-      /* 音量拖拽（鼠标/触摸） */
-      function handleVolumeInput(clientX) {
-        const rect = volEl.getBoundingClientRect();
-        let x = clientX - rect.left; x = Math.max(0, Math.min(x, rect.width));
-        const p = x / rect.width; volFill.style.width = `${p * 100}%`; audio.volume = p;
-        if (p === 0 || audio.muted) { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 3l7 7-1.4 1.4L16 7.8V16h-2V8.6L9.4 4 11 2.4 14 3z"/>'; }
-        else if (p < 0.5) { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 9v6c1.7-0.7 3-2.4 3-4.5S15.7 9.7 14 9z"/>'; }
-        else { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 7v10c3-1 5-3.6 5-7s-2-6-5-7z"/>'; }
-      }
-      volEl.addEventListener('mousedown', stopWrap((e) => { isDraggingVolume = true; handleVolumeInput(e.clientX); }));
-      document.addEventListener('mousemove', (e) => { if (isDraggingVolume) { e.preventDefault(); handleVolumeInput(e.clientX); } });
-      document.addEventListener('mouseup', () => { isDraggingVolume = false; });
-      volEl.addEventListener('touchstart', (e) => { e.stopPropagation(); e.preventDefault(); isDraggingVolume = true; handleVolumeInput(getTouchX(e)); }, { passive:false });
-      document.addEventListener('touchmove', (e) => { if (isDraggingVolume) { e.preventDefault(); handleVolumeInput(getTouchX(e)); } }, { passive:false });
-      document.addEventListener('touchend', () => { isDraggingVolume = false; }, { passive:false });
-
-      /* 简易播放列表开关（示例） */
-      listBtn.addEventListener('click', stopWrap(() => {
-        playlistPanel.style.display = playlistPanel.style.display === 'block' ? 'none' : 'block';
-      }));
-
-      /* 提供给 HTML 的播放列表切换 */
-      window.playIndex = function(index){ currentIndex = index; loadTrack(currentIndex); playTrack(); }
-
-      /* 初始化第一首 */
-      loadTrack(currentIndex);
-    })();
-    </script>
-
-    <!-- 编辑用户资料模态框 -->
+        
+        <!-- 编辑用户资料模态框 -->
     <div class="edit-modal-overlay" id="editModalOverlay">
         <div class="edit-modal">
             <div class="edit-modal-header">
@@ -1149,7 +1296,7 @@
     });
     </script>
 
-    <!-- 用户资料编辑脚本 -->
+        
     <script>
     // 用户资料数据
     let userProfile = {

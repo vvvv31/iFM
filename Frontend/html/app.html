@@ -127,7 +127,7 @@
         <button class="search-btn" id="homeSearchBtn"><i class="fas fa-search"></i></button>
       </div>
       <div class="user-functions">
-        <a href="my-recent.html" class="func-item">
+        <a href="javascript:void(0);" class="func-item" data-page="my-recent.html">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
             <circle cx="12" cy="7" r="4"></circle>
@@ -237,12 +237,23 @@
       document.getElementById('homeSearchInput').addEventListener('keydown', function(e) {
         if (e.key === 'Enter') jumpToSearchPage();
       });
-    // 用户功能区跳转（只在iframe内切换页面）
-    document.querySelectorAll('.user-functions a[data-page]').forEach(el => {
+    // 用户功能区跳转（拦截所有用户功能链接，优先在 iframe 内打开本地页面，防止跳出）
+    document.querySelectorAll('.user-functions a').forEach(el => {
       el.addEventListener('click', function(e) {
-        e.preventDefault();
-        document.getElementById('page-frame').src = this.getAttribute('data-page');
-        // 可选：可在此处处理激活样式
+        try {
+          const dataPage = this.getAttribute('data-page');
+          const hrefAttr = this.getAttribute('href') || '';
+          const target = dataPage || hrefAttr || '';
+          // 忽略 javascript: 或 空 href
+          if (target && target.indexOf('javascript:') === -1 && target.endsWith('.html') && !target.startsWith('http') && !target.startsWith('//')) {
+            e.preventDefault();
+            document.getElementById('page-frame').src = target;
+            return;
+          }
+        } catch (err) {
+          // 若发生异常，回退为默认行为
+        }
+        // 其他链接使用默认行为（例如外部链接或特殊按钮）
       });
     });
   // 框架跳转控制脚本（只拦截主导航栏，防止全局a标签跳转）

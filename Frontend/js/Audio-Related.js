@@ -408,10 +408,12 @@ function startRecording() {
         
         // 录音停止时处理
         mediaRecorder.onstop = () => {
-            // 显示MP3转换状态
             if (selectedFormat === 'mp3') {
                 showMP3ConversionStatus(true);
                 convertToMP3();
+            } else if (selectedFormat === 'wav') {
+                // 直接转换为 WAV
+                convertToWav();
             } else {
                 processWebMAudio();
             }
@@ -635,40 +637,90 @@ function saveRecording() {
         showMessage('没有录音可保存');
         return;
     }
-    
-    const recording = window.currentRecording;
-    
-    // 添加到历史记录
-    recordingHistory.unshift(recording);
-    
-    // 限制历史记录数量（最多20条）
-    if (recordingHistory.length > 20) {
-        recordingHistory = recordingHistory.slice(0, 20);
-    }
-    
-    // 保存到localStorage
-    localStorage.setItem('audioRecorderHistory', JSON.stringify(recordingHistory));
-    
-    // 重新加载录音列表
-    loadRecordings();
-    
-    // 更新统计信息
-    updateStats();
-    
-    // 禁用保存按钮
-    document.getElementById('saveRecordBtn').disabled = true;
-    
-    let message = '录音已保存: ' + recording.name + ' (' + recording.format.toUpperCase() + '格式)';
-    if (recording.sentence) {
-        message += ' - 跟读练习';
-    }
-    showMessage(message);
-    
-    // 自动切换到下一个句子
-    if (recording.sentence && currentSentenceIndex < followSentences.length - 1) {
-        currentSentenceIndex++;
-        updateSentenceDisplay();
-    }
+
+    // 异步保存前确保为 WAV 格式
+    (async function() {
+        let recording = window.currentRecording;
+
+        const blob = recording.blob;
+        const mime = blob && blob.type ? blob.type : '';
+        if (!mime.includes('wav')) {
+            try {
+                showMessage('正在转换为 WAV（保存前）...');
+                const wavBlob = await convertBlobToWav(blob);
+                // 更新 recording 对象
+                recording.blob = wavBlob;
+                if (recording.blobUrl) URL.revokeObjectURL(recording.blobUrl);
+                recording.blobUrl = URL.createObjectURL(wavBlob);
+                recording.format = 'wav';
+                recording.size = wavBlob.size;
+                window.currentRecording = recording;
+            } catch (err) {
+                console.error('保存前 WAV 转换失败:', err);
+                showMessage('WAV 转换失败，将以原格式保存');
+            }
+        }
+
+        // 继续保存流程
+        recording = window.currentRecording;
+
+        // 添加到历史记录
+        recordingHistory.unshift(recording);
+
+        // 限制历史记录数量（最多20条）
+        if (recordingHistory.length > 20) {
+            recordingHistory = recordingHistory.slice(0, 20);
+        }
+
+        // 保存到localStorage
+        localStorage.setItem('audioRecorderHistory', JSON.stringify(recordingHistory));
+
+        // 重新加载录音列表
+        loadRecordings();
+
+        // 更新统计信息
+        updateStats();
+
+        // 禁用保存按钮
+        document.getElementById('saveRecordBtn').disabled = true;
+
+        let message = '录音已保存: ' + recording.name + ' (' + recording.format.toUpperCase() + '格式)';
+        if (recording.sentence) {
+            message += ' - 跟读练习';
+        }
+        showMessage(message);
+
+        // 自动切换到下一个句子
+        if (recording.sentence && currentSentenceIndex < followSentences.length - 1) {
+            currentSentenceIndex++;
+            updateSentenceDisplay();
+        }
+    })();
+}
+
+// 将任意音频 Blob 转换为 WAV（返回 Promise<Blob>）
+function convertBlobToWav(inputBlob) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const arrayBuffer = e.target.result;
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            const ctx = new AudioCtx();
+            ctx.decodeAudioData(arrayBuffer).then(audioBuffer => {
+                const channelData = audioBuffer.getChannelData(0);
+                const sampleRate = audioBuffer.sampleRate || 44100;
+                const wavBuffer = encodeWAV(channelData, sampleRate);
+                const wavBlob = new Blob([wavBuffer], { type: 'audio/wav' });
+                try { ctx.close(); } catch (e) {}
+                resolve(wavBlob);
+            }).catch(err => {
+                try { ctx.close(); } catch (e) {}
+                reject(err);
+            });
+        };
+        reader.onerror = reject;
+        reader.readAsArrayBuffer(inputBlob);
+    });
 }
 
 function setRecordingTimePreset(minutes) {
@@ -1438,4 +1490,111 @@ function showMessage(message) {
             messageEl.parentNode.removeChild(messageEl);
         }
     }, 3000);
+}
+
+// 将录音转换为 WAV 格式并生成 Blob
+function convertToWav() {
+    const audioBlob = new Blob(audioChunks, { type: 'audio/webm;codecs=opus' });
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const arrayBuffer = e.target.result;
+
+        const OfflineCtx = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+        const offlineCtx = new OfflineCtx(1, Math.max(1, 44100 * recordingSeconds), 44100);
+
+        offlineCtx.decodeAudioData(arrayBuffer).then(audioBuffer => {
+            const channelData = audioBuffer.getChannelData(0);
+            const sampleRate = audioBuffer.sampleRate || 44100;
+
+            const wavBuffer = encodeWAV(channelData, sampleRate);
+            const wavBlob = new Blob([wavBuffer], { type: 'audio/wav' });
+
+            const recording = {
+                id: Date.now(),
+                name: document.getElementById('recordingName').value || '我的录音',
+                timestamp: new Date().toLocaleString(),
+                duration: recordingSeconds,
+                size: wavBlob.size,
+                format: 'wav',
+                sentence: currentSentenceIndex >= 0 ? followSentences[currentSentenceIndex] : null,
+                evaluation: null,
+                blob: wavBlob,
+                blobUrl: URL.createObjectURL(wavBlob)
+            };
+
+            window.currentRecording = recording;
+
+            // 更新UI
+            updateRecordingUI('stopped');
+            document.getElementById('saveRecordBtn').disabled = false;
+            document.getElementById('visualizerStatusText').textContent = '录音完成';
+            document.getElementById('statusIndicator').classList.remove('recording-indicator');
+            document.getElementById('statusIndicator').style.backgroundColor = '#4CAF50';
+
+            // 停止所有轨道以释放麦克风
+            if (audioStream && audioStream.getTracks) {
+                audioStream.getTracks().forEach(track => track.stop());
+            }
+
+            // 停止音频可视化
+            stopAudioVisualization();
+
+            showMessage('录音完成: ' + recording.name + ' (WAV格式)');
+        }).catch(err => {
+            console.error('WAV转换失败:', err);
+            showMessage('WAV转换失败，将保存为WebM格式');
+            processWebMAudio();
+        });
+    };
+
+    reader.readAsArrayBuffer(audioBlob);
+}
+
+// 将 Float32Array PCM 数据编码为带有 WAV 头的 ArrayBuffer
+function encodeWAV(samples, sampleRate) {
+    const buffer = new ArrayBuffer(44 + samples.length * 2);
+    const view = new DataView(buffer);
+
+    function writeString(view, offset, string) {
+        for (let i = 0; i < string.length; i++) {
+            view.setUint8(offset + i, string.charCodeAt(i));
+        }
+    }
+
+    /* RIFF identifier */
+    writeString(view, 0, 'RIFF');
+    /* file length */
+    view.setUint32(4, 36 + samples.length * 2, true);
+    /* RIFF type */
+    writeString(view, 8, 'WAVE');
+    /* format chunk identifier */
+    writeString(view, 12, 'fmt ');
+    /* format chunk length */
+    view.setUint32(16, 16, true);
+    /* sample format (raw) */
+    view.setUint16(20, 1, true);
+    /* channel count */
+    view.setUint16(22, 1, true);
+    /* sample rate */
+    view.setUint32(24, sampleRate, true);
+    /* byte rate (sampleRate * blockAlign) */
+    view.setUint32(28, sampleRate * 2, true);
+    /* block align (channelCount * bytesPerSample) */
+    view.setUint16(32, 2, true);
+    /* bits per sample */
+    view.setUint16(34, 16, true);
+    /* data chunk identifier */
+    writeString(view, 36, 'data');
+    /* data chunk length */
+    view.setUint32(40, samples.length * 2, true);
+
+    // 写入 PCM16 数据
+    let offset = 44;
+    for (let i = 0; i < samples.length; i++, offset += 2) {
+        let s = Math.max(-1, Math.min(1, samples[i]));
+        view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+    }
+
+    return buffer;
 }

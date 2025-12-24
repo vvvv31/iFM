@@ -179,6 +179,7 @@
             <a href="my-collect.html" class="func-item"><i class="fas fa-star"></i> 收藏</a>
             <a href="my-recent.html" class="func-item"><i class="fas fa-history"></i> 历史</a>
             <a href="my-creator_center.html" class="func-item"><i class="fas fa-pen"></i> 创作中心</a>
+            <div id="auth-section">
             <a href="login.html"><button class="submit-btn">登录/注册</button></a>
         </div>
     </header>
@@ -495,5 +496,175 @@ if (titleEl) {
 loadTrack(currentIndex);
 })();
     </script>
+
+
+<!-- 登录状态检查脚本 -->
+<script>
+    // 检查用户是否已登录
+    function checkLoginStatus() {
+        const authToken = localStorage.getItem('authToken');
+        const authSection = document.getElementById('auth-section');
+        
+        if (authToken) {
+            // 用户已登录，显示用户菜单
+            authSection.innerHTML = `
+                <div class="user-menu">
+                    <button class="submit-btn" onclick="showUserMenu()">个人中心</button>
+                    <div class="dropdown-menu" id="user-dropdown" style="display: none;">
+                        <a href="my-profile.html" class="dropdown-item">我的资料</a>
+                        <a href="#" class="dropdown-item" onclick="logout()">退出登录</a>
+                    </div>
+                </div>
+            `;
+            
+            // 更新用户信息区
+            const usernameElement = document.querySelector('.username');
+            if (usernameElement) {
+                usernameElement.textContent = '已登录用户';
+            }
+        }
+    }
+    
+    // 显示用户菜单
+    function showUserMenu() {
+        const dropdown = document.getElementById('user-dropdown');
+        dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+    }
+    
+    // 登出功能
+    function logout() {
+        localStorage.removeItem('authToken');
+        location.reload();
+    }
+    
+    // 页面加载时检查登录状态
+    window.addEventListener('DOMContentLoaded', checkLoginStatus);
+    
+    // 点击其他区域关闭下拉菜单
+    document.addEventListener('click', function(event) {
+        const dropdown = document.getElementById('user-dropdown');
+        const userMenu = document.querySelector('.user-menu');
+        
+        if (dropdown && userMenu && !userMenu.contains(event.target)) {
+            dropdown.style.display = 'none';
+        }
+    });
+</script>
+
+<style>
+    .user-menu {
+        position: relative;
+        display: inline-block;
+    }
+    
+    .dropdown-menu {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background-color: white;
+        min-width: 150px;
+        box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        border-radius: 4px;
+        z-index: 1000;
+        margin-top: 5px;
+    }
+    
+    .dropdown-item {
+        display: block;
+        padding: 10px 15px;
+        color: #333;
+        text-decoration: none;
+        font-size: 14px;
+    }
+    
+    .dropdown-item:hover {
+        background-color: #f5f5f5;
+    }
+</style>
+
+
+<!-- 登录状态检查脚本 -->
+<script>
+    // 检查用户是否已登录
+    function checkLoginStatus() {
+        const authToken = localStorage.getItem('authToken');
+        const authSection = document.getElementById('auth-section');
+        
+        if (authToken) {
+            // 用户已登录，显示用户菜单
+            authSection.innerHTML = `
+                <div class="user-menu">
+                    <button class="submit-btn" onclick="showUserMenu()">个人中心</button>
+                    <div class="dropdown-menu" id="user-dropdown" style="display: none;">
+                        <a href="my-profile.html" class="dropdown-item">我的资料</a>
+                        <a href="#" class="dropdown-item" onclick="logout()">退出登录</a>
+                    </div>
+                </div>
+            `;
+            
+            // 更新用户信息区
+            const usernameElement = document.querySelector('.username');
+            if (usernameElement) {
+                usernameElement.textContent = '已登录用户';
+            }
+        }
+    }
+    
+    // 显示用户菜单
+    function showUserMenu() {
+        const dropdown = document.getElementById('user-dropdown');
+        dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+    }
+    
+    // 登出功能
+    function logout() {
+        localStorage.removeItem('authToken');
+        location.reload();
+    }
+    
+    // 页面加载时检查登录状态
+    window.addEventListener('DOMContentLoaded', checkLoginStatus);
+    
+    // 点击其他区域关闭下拉菜单
+    document.addEventListener('click', function(event) {
+        const dropdown = document.getElementById('user-dropdown');
+        const userMenu = document.querySelector('.user-menu');
+        
+        if (dropdown && userMenu && !userMenu.contains(event.target)) {
+            dropdown.style.display = 'none';
+        }
+    });
+</script>
+
+<style>
+    .user-menu {
+        position: relative;
+        display: inline-block;
+    }
+    
+    .dropdown-menu {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background-color: white;
+        min-width: 150px;
+        box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        border-radius: 4px;
+        z-index: 1000;
+        margin-top: 5px;
+    }
+    
+    .dropdown-item {
+        display: block;
+        padding: 10px 15px;
+        color: #333;
+        text-decoration: none;
+        font-size: 14px;
+    }
+    
+    .dropdown-item:hover {
+        background-color: #f5f5f5;
+    }
+</style>
 </body>
 </html>

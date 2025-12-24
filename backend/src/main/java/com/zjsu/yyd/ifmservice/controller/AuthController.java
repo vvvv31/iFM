@@ -67,7 +67,29 @@ public class AuthController {
             Map<String, Object> result = new HashMap<>();
             result.put("token", token);
             result.put("userId", u.getUserId());
-            result.put("userInfo", u);
+            
+            // 创建用户信息的Map，避免直接返回Hibernate代理对象
+            Map<String, Object> userInfo = new HashMap<>();
+            userInfo.put("userId", u.getUserId());
+            userInfo.put("phone", u.getPhone());
+            userInfo.put("username", u.getUsername());
+            userInfo.put("level", u.getLevel());
+            userInfo.put("avatarUrl", u.getAvatarUrl());
+            userInfo.put("createdAt", u.getCreatedAt());
+            userInfo.put("updatedAt", u.getUpdatedAt());
+            
+            // 手动构建profile信息，避免Hibernate代理问题
+            Map<String, Object> profile = new HashMap<>();
+            if (u.getProfile() != null) {
+                profile.put("totalListenTime", u.getProfile().getTotalListenTime());
+                profile.put("fansCount", u.getProfile().getFansCount());
+                profile.put("followCount", u.getProfile().getFollowCount());
+                profile.put("subscribeCreatorIds", u.getProfile().getSubscribeCreatorIds());
+                profile.put("collectAudioIds", u.getProfile().getCollectAudioIds());
+            }
+            userInfo.put("profile", profile);
+            
+            result.put("userInfo", userInfo);
 
             return Result.success(result);
         } catch (Exception e) {

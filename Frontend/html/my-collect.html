@@ -142,27 +142,6 @@
             max-width: 320px;
             margin: 0 auto;
         }
-        .username-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .edit-username-btn {
-            background: none;
-            border: none;
-            color: #999;
-            cursor: pointer;
-            padding: 4px;
-            font-size: 14px;
-            transition: color 0.2s;
-            display: flex;
-            align-items: center;
-        }
-
-        .edit-username-btn:hover {
-            color: #FF8C00;
-        }
     </style>
 </head>
 <body>
@@ -236,21 +215,16 @@
                 <div class="avatar" id="userAvatar"></div>
             </div>
             <div class="user-detail">
-                <div class="username-wrapper">
-                    <div class="username" id="displayUsername">用户名</div>
-                    <button class="edit-username-btn" onclick="openEditModal('username')" title="编辑资料">
-                        <i class="fas fa-pen"></i>
-                    </button>
-                </div>
+                <div class="username" id="displayUsername">用户名</div>
                 <div class="identity">认证创作者</div>
                 <div class="stats">
                     <span class="stat-item" style="cursor:pointer;color:#FF8C00;" onclick="openFollowModal('following')">
                         <span id="followingCount">0</span> 关注
                     </span>
-                    <span class="stat-item" style="cursor:pointer;color:#FF8C00;margin-left:12px;" onclick="openFollowModal('fans')">
+                    <span class="stat-item" style="cursor:pointer;color:#FF8C00;margin-left:16px;" onclick="openFollowModal('fans')">
                         <span id="fansCount">0</span> 粉丝
                     </span>
-                    <span style="margin-left:12px;">收听时长 <b>0</b></span>
+                    <span>收听时长 <b>0</b></span>
                 </div>
             </div>
             <script>

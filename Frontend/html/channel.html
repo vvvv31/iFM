@@ -77,7 +77,109 @@
         .rate-item:hover { background: #f7f7f7; }
         .rate-item.active { color: #ff8c00; font-weight: 700; background: #fff4e6; }
 
-        @media (max-width: 900px) { .pv-left{min-width:0;} .pv-right{min-width:0;} .pv-inner{grid-template-columns:auto 1fr auto; column-gap:10px; padding:0 12px;} }
+        @media (max-width: 900px) { 
+  .pv-left{min-width:0;} 
+  .pv-right{min-width:0;} 
+  .pv-inner{grid-template-columns:auto 1fr auto; column-gap:10px; padding:0 12px;} 
+  
+  /* 频道页面布局调整 */
+  .channel-container {
+    grid-template-columns: 260px 1fr;
+    gap: 15px;
+  }
+  
+  .hot-sidebar {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  /* 频道页面移动端布局 */
+  .channel-container {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .channel-sidebar {
+    order: 2;
+  }
+  
+  .main-content {
+    order: 1;
+  }
+  
+  /* 帖子卡片调整 */
+  .post-card {
+    padding: 12px;
+  }
+  
+  .post-body {
+    font-size: 14px;
+  }
+  
+  .post-images {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 6px;
+  }
+  
+  /* 评论区调整 */
+  .comments-section {
+    padding: 10px 0;
+  }
+  
+  .comment-item {
+    gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  /* 移动端进一步调整 */
+  .main.channel-main {
+    padding-bottom: 120px;
+  }
+  
+  /* 帖子卡片调整 */
+  .post-card {
+    padding: 10px;
+  }
+  
+  .post-header .avatar {
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
+  }
+  
+  .author-name {
+    font-size: 13px;
+  }
+  
+  .post-time {
+    font-size: 11px;
+  }
+  
+  .post-body {
+    font-size: 13px;
+  }
+  
+  .post-images {
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  }
+  
+  /* 评论输入框调整 */
+  .comment-composer {
+    padding: 8px;
+  }
+  
+  .comment-input {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+  
+  .comment-submit-btn {
+    padding: 6px 14px;
+    font-size: 12px;
+  }
+}
 
         /* 以下为页面其他样式，原样保留 */
         .playlist-panel { background:#fff; border:1px solid #eee; border-radius:8px; box-shadow:0 8px 30px rgba(0,0,0,0.12); overflow:auto; padding:8px; position:absolute; bottom:110px; right:24px; display:none; }

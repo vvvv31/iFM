@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>标准用户信息模块</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* 标准用户信息模块样式 */
+        .user-info {
+            background-color: #FFF8DC;
+            border: 1px solid #FFDAB9;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .avatar-wrapper {
+            width: 60px;
+            height: 60px;
+            border: 1px solid #FF8C00;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #FF8C00;
+            background-image: url('https://via.placeholder.com/50');
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .user-detail {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            flex: 1;
+        }
+        
+        .username-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .username {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .edit-username-btn {
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            padding: 2px;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+        
+        .edit-username-btn:hover {
+            color: #FF8C00;
+        }
+        
+        .identity {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .stats {
+            display: flex;
+            gap: 12px;
+            font-size: 12px;
+            color: #666;
+            flex-wrap: wrap;
+        }
+        
+        .stat-item {
+            cursor: pointer;
+            color: #FF8C00;
+            transition: opacity 0.3s;
+        }
+        
+        .stat-item:hover {
+            opacity: 0.8;
+        }
+        
+        .stats span b {
+            color: #FF8C00;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- 标准用户信息模块结构 -->
+    <section class="user-info">
+        <div class="avatar-wrapper">
+            <div class="avatar" id="userAvatar"></div>
+        </div>
+        <div class="user-detail">
+            <div class="username-wrapper">
+                <div class="username" id="displayUsername">已登录用户</div>
+                <button class="edit-username-btn" onclick="openEditModal('username')" title="编辑资料">
+                    <i class="fas fa-pen"></i>
+                </button>
+            </div>
+            <div class="identity">认证创作者</div>
+            <div class="stats">
+                <span class="stat-item" onclick="openFollowModal('following')">
+                    <span id="followingCount">0</span> 关注
+                </span>
+                <span class="stat-item" onclick="openFollowModal('fans')">
+                    <span id="fansCount">0</span> 粉丝
+                </span>
+                <span>收听时长 <b id="listenDuration">0</b></span>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // 示例JavaScript函数（实际项目中可能需要根据页面调整）
+        function openEditModal(type) {
+            console.log('打开编辑模态框:', type);
+            // 实际实现中可以加载模态框内容
+        }
+        
+        function openFollowModal(type) {
+            console.log('打开关注模态框:', type);
+            // 实际实现中可以加载模态框内容
+        }
+        
+        // 更新用户信息的函数
+        function updateUserInfo() {
+            const username = localStorage.getItem('username') || '已登录用户';
+            const following = localStorage.getItem('following') || '0';
+            const fans = localStorage.getItem('fans') || '0';
+            const listenDuration = localStorage.getItem('listenDuration') || '0';
+            
+            document.getElementById('displayUsername').textContent = username;
+            document.getElementById('followingCount').textContent = following;
+            document.getElementById('fansCount').textContent = fans;
+            document.getElementById('listenDuration').textContent = listenDuration;
+        }
+        
+        // 页面加载时更新用户信息
+        window.addEventListener('DOMContentLoaded', updateUserInfo);
+    </script>
+</body>
+</html>

@@ -276,6 +276,7 @@
             .message-area { 
                 flex-direction: column;
                 gap: 16px;
+                padding: 0 16px;
             }
             .message-list { 
                 width: 100%; 
@@ -289,6 +290,116 @@
             }
             .chat-message {
                 max-width: 80%;
+            }
+
+            /* 编辑模态框响应式 */
+            .edit-modal {
+                width: 90%;
+                margin: 20px auto;
+                max-height: 90vh;
+            }
+
+            .avatar-type-options {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .color-presets,
+            .emoji-presets {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            /* 头像裁剪模态框响应式 */
+            .crop-modal {
+                width: 95%;
+                margin: 20px auto;
+            }
+
+            .crop-container {
+                height: 300px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .message-area {
+                padding: 0 12px;
+            }
+
+            .message-list {
+                max-height: 150px;
+            }
+
+            .msg-item {
+                padding: 12px 16px;
+            }
+
+            .msg-item .avatar-wrapper {
+                width: 42px;
+                height: 42px;
+            }
+
+            .msg-item .avatar {
+                width: 42px;
+                height: 42px;
+            }
+
+            .msg-item span {
+                font-size: 14px;
+            }
+
+            .chat-window {
+                min-height: 350px;
+            }
+
+            .chat-header {
+                padding: 12px 16px;
+            }
+
+            .chat-header .username {
+                font-size: 18px;
+            }
+
+            .chat-messages {
+                padding: 16px;
+            }
+
+            .chat-message {
+                max-width: 85%;
+                padding: 12px 16px;
+            }
+
+            .chat-input-area {
+                padding: 12px 16px;
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .chat-input-area input {
+                width: 100%;
+            }
+
+            .chat-input-area button {
+                width: 100%;
+            }
+
+            /* 编辑模态框响应式 */
+            .edit-modal-header h2 {
+                font-size: 20px;
+            }
+
+            .edit-form-group {
+                margin-bottom: 16px;
+            }
+
+            .edit-btn-cancel,
+            .edit-btn-save {
+                padding: 8px 16px;
+                font-size: 14px;
+            }
+
+            /* 头像裁剪模态框响应式 */
+            .crop-container {
+                height: 250px;
             }
         }
 
@@ -482,8 +593,11 @@
     <!-- 主要内容区（保留原样） -->
     <main class="main-content">
         <section class="user-info">
-            <div class="avatar-wrapper">
+            <div class="avatar-wrapper" onclick="openEditModal('avatar')" title="点击修改头像">
                 <div class="avatar" id="userAvatar"></div>
+                <div class="avatar-edit-overlay">
+                    <i class="fas fa-camera"></i>
+                </div>
             </div>
             <div class="user-detail">
                 <div class="username-wrapper">
@@ -530,8 +644,15 @@
                     applyFollowData(payload);
                 }
             });
-        }
-        (function(){
+            }
+            
+            // 打开编辑模态框
+            function openEditModal(focusField) {
+                console.log('打开编辑模态框:', focusField);
+                // 实际实现中可以加载模态框内容
+            }
+            
+            (function(){
             function refreshCountsFromStore(){
                 try{
                     const raw = sessionStorage.getItem('fakeFollowData_v1');
@@ -836,6 +957,445 @@
             dropdown.style.display = 'none';
         }
     });
+
+// 用户资料数据
+let userProfile = {
+    username: "已登录用户",
+    avatar: {
+        type: "color", // "color", "emoji", "image"
+        value: "#FF8C00"
+    },
+    bio: "这里是个人简介...",
+    location: "",
+    email: ""
+};
+
+// DOM 元素
+const editProfileModalOverlay = document.getElementById('edit-profile-modal-overlay');
+const editProfileModal = document.getElementById('edit-profile-modal');
+const editProfileBtn = document.getElementById('edit-profile-btn');
+const closeModalBtn = document.querySelector('.edit-modal-close');
+const toastNotification = document.getElementById('toast-notification');
+
+// 头像编辑相关元素
+const avatarColorType = document.getElementById('avatar-type-color');
+const avatarEmojiType = document.getElementById('avatar-type-emoji');
+const avatarImageType = document.getElementById('avatar-type-image');
+const avatarOptions = document.getElementById('avatar-options');
+const avatarImageInput = document.getElementById('avatar-image-input');
+const avatarPreview = document.getElementById('avatar-preview');
+const currentAvatarDisplay = document.getElementById('current-avatar-display');
+
+// 头像类型切换
+avatarColorType && avatarColorType.addEventListener('change', () => {
+    updateAvatarOptions();
+    userProfile.avatar.type = 'color';
+    updateAvatarPreview();
+});
+
+avatarEmojiType && avatarEmojiType.addEventListener('change', () => {
+    updateAvatarOptions();
+    userProfile.avatar.type = 'emoji';
+    updateAvatarPreview();
+});
+
+avatarImageType && avatarImageType.addEventListener('change', () => {
+    updateAvatarOptions();
+    userProfile.avatar.type = 'image';
+    updateAvatarPreview();
+});
+
+// 更新头像选项面板
+function updateAvatarOptions() {
+    const options = avatarOptions.querySelectorAll('.avatar-options > div');
+    options.forEach(option => {
+        option.style.display = 'none';
+    });
+
+    if (avatarColorType.checked) {
+        document.getElementById('avatar-color-options').style.display = 'block';
+    } else if (avatarEmojiType.checked) {
+        document.getElementById('avatar-emoji-options').style.display = 'block';
+    } else if (avatarImageType.checked) {
+        document.getElementById('avatar-image-options').style.display = 'block';
+    }
+}
+
+// 颜色预设选择
+const colorPresets = document.querySelectorAll('.color-presets button');
+colorPresets.forEach(preset => {
+    preset.addEventListener('click', () => {
+        userProfile.avatar.value = preset.style.backgroundColor;
+        updateAvatarPreview();
+    });
+});
+
+// 表情预设选择
+const emojiPresets = document.querySelectorAll('.emoji-presets button');
+emojiPresets.forEach(preset => {
+    preset.addEventListener('click', () => {
+        userProfile.avatar.value = preset.textContent;
+        updateAvatarPreview();
+    });
+});
+
+// 上传头像图片
+avatarImageInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+        if (file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                userProfile.avatar.value = event.target.result;
+                updateAvatarPreview();
+            };
+            reader.readAsDataURL(file);
+        } else {
+            showToast('请选择图片文件', 'error');
+        }
+    }
+});
+
+// 更新头像预览
+function updateAvatarPreview() {
+    const preview = avatarPreview;
+    preview.innerHTML = '';
+
+    switch (userProfile.avatar.type) {
+        case 'color':
+            const colorDiv = document.createElement('div');
+            colorDiv.className = 'avatar-color';
+            colorDiv.style.backgroundColor = userProfile.avatar.value;
+            preview.appendChild(colorDiv);
+            break;
+        case 'emoji':
+            const emojiSpan = document.createElement('span');
+            emojiSpan.className = 'avatar-emoji';
+            emojiSpan.textContent = userProfile.avatar.value;
+            preview.appendChild(emojiSpan);
+            break;
+        case 'image':
+            const img = document.createElement('img');
+            img.className = 'avatar-img';
+            img.src = userProfile.avatar.value;
+            preview.appendChild(img);
+            break;
+    }
+}
+
+// 更新当前头像显示
+function updateCurrentAvatarDisplay() {
+    const display = currentAvatarDisplay;
+    display.innerHTML = '';
+
+    switch (userProfile.avatar.type) {
+        case 'color':
+            const colorDiv = document.createElement('div');
+            colorDiv.className = 'avatar-color';
+            colorDiv.style.backgroundColor = userProfile.avatar.value;
+            display.appendChild(colorDiv);
+            break;
+        case 'emoji':
+            const emojiSpan = document.createElement('span');
+            emojiSpan.className = 'avatar-emoji';
+            emojiSpan.textContent = userProfile.avatar.value;
+            display.appendChild(emojiSpan);
+            break;
+        case 'image':
+            const img = document.createElement('img');
+            img.className = 'avatar-img';
+            img.src = userProfile.avatar.value;
+            display.appendChild(img);
+            break;
+    }
+}
+
+// 显示 Toast 提示
+function showToast(message, type = 'info') {
+    toastNotification.textContent = message;
+    toastNotification.className = `toast-notification ${type}`;
+    toastNotification.classList.add('show');
+
+    setTimeout(() => {
+        toastNotification.classList.remove('show');
+    }, 3000);
+}
+
+// 显示编辑模态框
+function showEditModal() {
+    editProfileModalOverlay.classList.add('show');
+    updateAvatarOptions();
+    updateAvatarPreview();
+    
+    // 填充表单数据
+    document.getElementById('username-input').value = userProfile.username;
+    document.getElementById('bio-input').value = userProfile.bio;
+    document.getElementById('location-input').value = userProfile.location;
+    document.getElementById('email-input').value = userProfile.email;
+    
+    // 设置头像类型单选按钮
+    document.getElementById(`avatar-type-${userProfile.avatar.type}`).checked = true;
+}
+
+// 隐藏编辑模态框
+function hideEditModal() {
+    editProfileModalOverlay.classList.remove('show');
+}
+
+// 保存用户资料
+function saveUserProfile() {
+    // 获取表单数据
+    const username = document.getElementById('username-input').value;
+    const bio = document.getElementById('bio-input').value;
+    const location = document.getElementById('location-input').value;
+    const email = document.getElementById('email-input').value;
+    
+    // 验证表单数据
+    if (!username.trim()) {
+        showToast('用户名不能为空', 'error');
+        return;
+    }
+    
+    // 更新用户资料
+    userProfile.username = username;
+    userProfile.bio = bio;
+    userProfile.location = location;
+    userProfile.email = email;
+    
+    // 更新页面显示
+    document.getElementById('current-username-display').textContent = userProfile.username;
+    updateCurrentAvatarDisplay();
+    
+    // 隐藏模态框
+    hideEditModal();
+    
+    // 显示成功提示
+    showToast('资料保存成功', 'success');
+}
+
+// 字符计数
+const bioInput = document.getElementById('bio-input');
+const bioCharCount = document.getElementById('bio-char-count');
+bioInput.addEventListener('input', () => {
+    const count = bioInput.value.length;
+    bioCharCount.textContent = `${count}/100`;
+    
+    if (count > 100) {
+        bioCharCount.style.color = '#f5222d';
+    } else {
+        bioCharCount.style.color = '#999';
+    }
+});
+
+// 绑定事件
+if (editProfileBtn) {
+    editProfileBtn.addEventListener('click', showEditModal);
+}
+
+if (closeModalBtn) {
+    closeModalBtn.addEventListener('click', hideEditModal);
+}
+
+if (editProfileModalOverlay) {
+    editProfileModalOverlay.addEventListener('click', (e) => {
+        if (e.target === editProfileModalOverlay) {
+            hideEditModal();
+        }
+    });
+}
+
+// 保存按钮
+const saveBtn = document.querySelector('.edit-btn-save');
+if (saveBtn) {
+    saveBtn.addEventListener('click', saveUserProfile);
+}
+
+// 取消按钮
+const cancelBtn = document.querySelector('.edit-btn-cancel');
+if (cancelBtn) {
+    cancelBtn.addEventListener('click', hideEditModal);
+}
+
+// 页面加载时初始化
+window.addEventListener('load', () => {
+    updateCurrentAvatarDisplay();
+    document.getElementById('current-username-display').textContent = userProfile.username;
+});
+
+// 头像裁剪相关功能
+const cropModalOverlay = document.getElementById('crop-modal-overlay');
+const cropModal = document.getElementById('crop-modal');
+const cropImg = document.getElementById('crop-img');
+const cropZoomSlider = document.getElementById('crop-zoom-slider');
+const cropArea = document.getElementById('crop-area');
+const cropConfirmBtn = document.querySelector('.crop-btn-confirm');
+const cropCancelBtn = document.querySelector('.crop-btn-cancel');
+const cropCloseBtn = document.querySelector('.crop-modal-close');
+
+let currentCropImage = null;
+let currentScale = 1;
+let isDragging = false;
+let startX, startY, translateX, translateY;
+
+// 打开裁剪模态框
+function openCropModal(imageSrc) {
+    currentCropImage = imageSrc;
+    cropImg.src = imageSrc;
+    cropImg.style.transform = 'scale(1)';
+    cropZoomSlider.value = 100;
+    currentScale = 1;
+    
+    // 重置位置
+    cropImg.style.left = '0';
+    cropImg.style.top = '0';
+    translateX = 0;
+    translateY = 0;
+    
+    cropModalOverlay.classList.add('show');
+}
+
+// 关闭裁剪模态框
+function closeCropModal() {
+    cropModalOverlay.classList.remove('show');
+    currentCropImage = null;
+}
+
+// 缩放图片
+function zoomImage(scale) {
+    currentScale = scale;
+    cropImg.style.transform = `scale(${scale})`;
+}
+
+// 拖拽图片
+function startDrag(e) {
+    isDragging = true;
+    startX = e.clientX - translateX;
+    startY = e.clientY - translateY;
+}
+
+function drag(e) {
+    if (!isDragging) return;
+    
+    translateX = e.clientX - startX;
+    translateY = e.clientY - startY;
+    
+    cropImg.style.left = `${translateX}px`;
+    cropImg.style.top = `${translateY}px`;
+}
+
+function stopDrag() {
+    isDragging = false;
+}
+
+// 裁剪图片
+function cropImage() {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    // 设置画布大小为头像尺寸
+    const avatarSize = 200;
+    canvas.width = avatarSize;
+    canvas.height = avatarSize;
+    
+    // 创建图片对象
+    const img = new Image();
+    img.src = currentCropImage;
+    
+    img.onload = () => {
+        // 计算裁剪区域
+        const imgWidth = img.width * currentScale;
+        const imgHeight = img.height * currentScale;
+        const cropX = Math.max(0, (imgWidth - avatarSize) / 2 - translateX / currentScale);
+        const cropY = Math.max(0, (imgHeight - avatarSize) / 2 - translateY / currentScale);
+        
+        // 绘制裁剪后的图片
+        ctx.drawImage(img, cropX, cropY, avatarSize, avatarSize, 0, 0, avatarSize, avatarSize);
+        
+        // 获取裁剪后的图片数据
+        const croppedImageDataURL = canvas.toDataURL('image/png');
+        
+        // 更新用户头像
+        userProfile.avatar.type = 'image';
+        userProfile.avatar.value = croppedImageDataURL;
+        updateAvatarPreview();
+        
+        // 关闭裁剪模态框
+        closeCropModal();
+    };
+}
+
+// 绑定头像裁剪事件
+if (avatarImageInput) {
+    avatarImageInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    openCropModal(event.target.result);
+                };
+                reader.readAsDataURL(file);
+            } else {
+                showToast('请选择图片文件', 'error');
+            }
+        }
+    });
+}
+
+if (cropZoomSlider) {
+    cropZoomSlider.addEventListener('input', (e) => {
+        const scale = parseFloat(e.target.value) / 100;
+        zoomImage(scale);
+    });
+}
+
+if (cropImg) {
+    cropImg.addEventListener('mousedown', startDrag);
+    cropImg.addEventListener('touchstart', (e) => {
+        const touch = e.touches[0];
+        startX = touch.clientX - translateX;
+        startY = touch.clientY - translateY;
+        isDragging = true;
+    });
+}
+
+if (cropArea) {
+    cropArea.addEventListener('mousemove', drag);
+    cropArea.addEventListener('touchmove', (e) => {
+        if (!isDragging) return;
+        e.preventDefault();
+        const touch = e.touches[0];
+        translateX = touch.clientX - startX;
+        translateY = touch.clientY - startY;
+        cropImg.style.left = `${translateX}px`;
+        cropImg.style.top = `${translateY}px`;
+    });
+    
+    cropArea.addEventListener('mouseup', stopDrag);
+    cropArea.addEventListener('mouseleave', stopDrag);
+    cropArea.addEventListener('touchend', stopDrag);
+    cropArea.addEventListener('touchcancel', stopDrag);
+}
+
+if (cropConfirmBtn) {
+    cropConfirmBtn.addEventListener('click', cropImage);
+}
+
+if (cropCancelBtn) {
+    cropCancelBtn.addEventListener('click', closeCropModal);
+}
+
+if (cropCloseBtn) {
+    cropCloseBtn.addEventListener('click', closeCropModal);
+}
+
+if (cropModalOverlay) {
+    cropModalOverlay.addEventListener('click', (e) => {
+        if (e.target === cropModalOverlay) {
+            closeCropModal();
+        }
+    });
+}
 </script>
 
 <style>
@@ -866,6 +1426,485 @@
     
     .dropdown-item:hover {
         background-color: #f5f5f5;
+    }
+
+    /* 编辑模态框样式 */
+    .edit-modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 30000;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .edit-modal-overlay.show {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .edit-modal {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        width: 100%;
+        max-width: 500px;
+        max-height: 90vh;
+        overflow-y: auto;
+        position: relative;
+    }
+
+    .edit-modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 24px;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .edit-modal-header h2 {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .edit-modal-close {
+        background: none;
+        border: none;
+        font-size: 24px;
+        color: #999;
+        cursor: pointer;
+        padding: 0;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+        transition: background-color 0.2s;
+    }
+
+    .edit-modal-close:hover {
+        background-color: #f5f5f5;
+    }
+
+    .edit-modal-body {
+        padding: 24px;
+    }
+
+    /* 头像编辑 */
+    .avatar-edit-section {
+        margin-bottom: 24px;
+        text-align: center;
+    }
+
+    .avatar-preview {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        margin: 0 auto 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        background-color: #f5f5f5;
+    }
+
+    .avatar-color {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+    }
+
+    .avatar-emoji {
+        font-size: 60px;
+        line-height: 1;
+    }
+
+    .avatar-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+    }
+
+    .avatar-placeholder {
+        color: #999;
+        font-size: 14px;
+        text-align: center;
+    }
+
+    .avatar-type-options {
+        display: flex;
+        justify-content: center;
+        gap: 24px;
+        margin-bottom: 20px;
+    }
+
+    .edit-radio-group {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        font-size: 14px;
+        color: #333;
+    }
+
+    .edit-radio-group input[type="radio"] {
+        width: 16px;
+        height: 16px;
+        accent-color: #FF8C00;
+    }
+
+    .avatar-options {
+        background-color: #f9f9f9;
+        padding: 20px;
+        border-radius: 8px;
+        text-align: left;
+    }
+
+    .avatar-options > div {
+        margin-bottom: 20px;
+    }
+
+    .avatar-options > div:last-child {
+        margin-bottom: 0;
+    }
+
+    .avatar-options label {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        color: #333;
+    }
+
+    .color-presets {
+        display: flex;
+        gap: 12px;
+        margin-top: 12px;
+    }
+
+    .color-presets button {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: 2px solid transparent;
+        cursor: pointer;
+        transition: border-color 0.2s;
+    }
+
+    .color-presets button:hover {
+        border-color: #FF8C00;
+    }
+
+    .emoji-presets {
+        display: flex;
+        gap: 12px;
+        margin-top: 12px;
+        flex-wrap: wrap;
+    }
+
+    .emoji-presets button {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        border: 2px solid #e0e0e0;
+        background-color: #fff;
+        font-size: 24px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .emoji-presets button:hover {
+        border-color: #FF8C00;
+        transform: scale(1.1);
+    }
+
+    .edit-help-text {
+        font-size: 12px;
+        color: #999;
+        margin-top: 8px;
+    }
+
+    /* 表单样式 */
+    .edit-form-group {
+        margin-bottom: 24px;
+    }
+
+    .edit-form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        color: #333;
+    }
+
+    .edit-form-control {
+        width: 100%;
+        height: 44px;
+        padding: 0 12px;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        font-size: 14px;
+        transition: border-color 0.2s;
+    }
+
+    .edit-form-control:focus {
+        outline: none;
+        border-color: #FF8C00;
+        box-shadow: 0 0 0 3px rgba(255, 140, 0, 0.1);
+    }
+
+    .edit-form-footer {
+        margin-top: 8px;
+        font-size: 12px;
+        color: #999;
+    }
+
+    .char-count {
+        float: right;
+    }
+
+    /* 模态框底部 */
+    .edit-modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        padding: 20px 24px;
+        border-top: 1px solid #e0e0e0;
+    }
+
+    .edit-btn-cancel {
+        padding: 8px 16px;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        background-color: #fff;
+        color: #333;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .edit-btn-cancel:hover {
+        background-color: #f5f5f5;
+    }
+
+    .edit-btn-save {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 4px;
+        background-color: #FF8C00;
+        color: #fff;
+        font-size: 14px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .edit-btn-save:hover {
+        background-color: #e67e00;
+    }
+
+    /* Toast 提示 */
+    .toast-notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 12px 20px;
+        border-radius: 4px;
+        color: #fff;
+        font-size: 14px;
+        z-index: 31000;
+        opacity: 0;
+        transform: translateY(-20px);
+        transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .toast-notification.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .toast-notification.success {
+        background-color: #52c41a;
+    }
+
+    .toast-notification.error {
+        background-color: #f5222d;
+    }
+
+    .toast-notification.info {
+        background-color: #1890ff;
+    }
+
+    /* 头像裁剪模态框 */
+    .crop-modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 30000;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .crop-modal-overlay.show {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .crop-modal {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        width: 100%;
+        max-width: 600px;
+        max-height: 90vh;
+        overflow-y: auto;
+        position: relative;
+    }
+
+    .crop-modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 24px;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .crop-modal-header h3 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .crop-modal-close {
+        background: none;
+        border: none;
+        font-size: 24px;
+        color: #999;
+        cursor: pointer;
+        padding: 0;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+        transition: background-color 0.2s;
+    }
+
+    .crop-modal-close:hover {
+        background-color: #f5f5f5;
+    }
+
+    .crop-modal-body {
+        padding: 24px;
+    }
+
+    .crop-container {
+        margin-bottom: 20px;
+    }
+
+    .crop-area {
+        width: 100%;
+        height: 300px;
+        border: 2px dashed #e0e0e0;
+        border-radius: 8px;
+        overflow: hidden;
+        position: relative;
+        background-color: #f9f9f9;
+    }
+
+    .crop-img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: auto;
+        height: auto;
+        cursor: grab;
+    }
+
+    .crop-img:active {
+        cursor: grabbing;
+    }
+
+    .crop-controls {
+        background-color: #f9f9f9;
+        padding: 20px;
+        border-radius: 8px;
+    }
+
+    .zoom-control {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .zoom-control label {
+        font-size: 14px;
+        font-weight: 500;
+        color: #333;
+        white-space: nowrap;
+    }
+
+    .zoom-control input[type="range"] {
+        flex: 1;
+        height: 4px;
+        accent-color: #FF8C00;
+    }
+
+    .crop-modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        padding: 20px 24px;
+        border-top: 1px solid #e0e0e0;
+    }
+
+    .crop-btn-cancel {
+        padding: 8px 16px;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        background-color: #fff;
+        color: #333;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .crop-btn-cancel:hover {
+        background-color: #f5f5f5;
+    }
+
+    .crop-btn-confirm {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 4px;
+        background-color: #FF8C00;
+        color: #fff;
+        font-size: 14px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .crop-btn-confirm:hover {
+        background-color: #e67e00;
     }
 </style>
 
@@ -953,5 +1992,141 @@
         background-color: #f5f5f5;
     }
 </style>
+
+<!-- 编辑模态框 -->
+<div id="edit-profile-modal-overlay" class="edit-modal-overlay">
+    <div id="edit-profile-modal" class="edit-modal">
+        <div class="edit-modal-header">
+            <h2>编辑个人资料</h2>
+            <button class="edit-modal-close">×</button>
+        </div>
+        <div class="edit-modal-body">
+            <!-- 头像编辑 -->
+            <div class="avatar-edit-section">
+                <div id="avatar-preview" class="avatar-preview">
+                    <!-- 头像预览将通过JavaScript动态生成 -->
+                </div>
+                
+                <div class="avatar-type-options">
+                    <label class="edit-radio-group">
+                        <input type="radio" name="avatar-type" id="avatar-type-color" value="color">
+                        <span>颜色</span>
+                    </label>
+                    <label class="edit-radio-group">
+                        <input type="radio" name="avatar-type" id="avatar-type-emoji" value="emoji">
+                        <span>表情</span>
+                    </label>
+                    <label class="edit-radio-group">
+                        <input type="radio" name="avatar-type" id="avatar-type-image" value="image">
+                        <span>图片</span>
+                    </label>
+                </div>
+                
+                <div id="avatar-options" class="avatar-options">
+                    <!-- 头像选项将根据选择的类型动态显示 -->
+                    <div id="avatar-color-options">
+                        <label>颜色选择</label>
+                        <div class="color-presets">
+                            <button style="background-color: #FF8C00;"></button>
+                            <button style="background-color: #FFD700;"></button>
+                            <button style="background-color: #32CD32;"></button>
+                            <button style="background-color: #1E90FF;"></button>
+                            <button style="background-color: #9370DB;"></button>
+                            <button style="background-color: #FF69B4;"></button>
+                            <button style="background-color: #DC143C;"></button>
+                            <button style="background-color: #FF4500;"></button>
+                        </div>
+                        <div class="edit-help-text">选择预设颜色或使用自定义颜色</div>
+                    </div>
+                    
+                    <div id="avatar-emoji-options">
+                        <label>表情选择</label>
+                        <div class="emoji-presets">
+                            <button>😊</button>
+                            <button>😂</button>
+                            <button>🤔</button>
+                            <button>😎</button>
+                            <button>😍</button>
+                            <button>🎉</button>
+                            <button>🎵</button>
+                            <button>🎧</button>
+                            <button>📻</button>
+                            <button>🎙️</button>
+                            <button>🎤</button>
+                            <button>🎼</button>
+                        </div>
+                        <div class="edit-help-text">选择你喜欢的表情作为头像</div>
+                    </div>
+                    
+                    <div id="avatar-image-options">
+                        <label>上传图片</label>
+                        <input type="file" id="avatar-image-input" accept="image/*" style="display: none;">
+                        <button id="avatar-image-btn" class="edit-btn-save">选择图片</button>
+                        <div class="edit-help-text">支持JPG、PNG等格式，建议使用正方形图片</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 基本信息 -->
+            <div class="edit-form-group">
+                <label for="username-input">用户名</label>
+                <input type="text" id="username-input" class="edit-form-control" placeholder="请输入用户名">
+            </div>
+            
+            <div class="edit-form-group">
+                <label for="bio-input">个人简介</label>
+                <textarea id="bio-input" class="edit-form-control" rows="3" placeholder="请输入个人简介（最多100字）"></textarea>
+                <div class="edit-form-footer">
+                    <span id="bio-char-count" class="char-count">0/100</span>
+                </div>
+            </div>
+            
+            <div class="edit-form-group">
+                <label for="location-input">所在地</label>
+                <input type="text" id="location-input" class="edit-form-control" placeholder="请输入所在地">
+            </div>
+            
+            <div class="edit-form-group">
+                <label for="email-input">邮箱</label>
+                <input type="email" id="email-input" class="edit-form-control" placeholder="请输入邮箱">
+            </div>
+        </div>
+        <div class="edit-modal-footer">
+            <button class="edit-btn-cancel">取消</button>
+            <button class="edit-btn-save">保存</button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast 提示 -->
+<div id="toast-notification" class="toast-notification"></div>
+
+<!-- 头像裁剪模态框 -->
+<div id="crop-modal-overlay" class="crop-modal-overlay">
+    <div id="crop-modal" class="crop-modal">
+        <div class="crop-modal-header">
+            <h3>裁剪头像</h3>
+            <button class="crop-modal-close">×</button>
+        </div>
+        <div class="crop-modal-body">
+            <div class="crop-container">
+                <div id="crop-area" class="crop-area">
+                    <img id="crop-img" class="crop-img" src="" alt="裁剪区域">
+                </div>
+            </div>
+            <div class="crop-controls">
+                <div class="zoom-control">
+                    <label>缩放</label>
+                    <input type="range" id="crop-zoom-slider" min="50" max="200" value="100" step="1">
+                </div>
+            </div>
+        </div>
+        <div class="crop-modal-footer">
+            <button class="crop-btn-cancel">取消</button>
+            <button class="crop-btn-confirm">确认裁剪</button>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>

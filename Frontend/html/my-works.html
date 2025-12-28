@@ -123,6 +123,188 @@
           .pv-right { min-width: 0; }
           .pv-inner { grid-template-columns: auto 1fr auto; column-gap: 10px; padding: 0 12px; }
         }
+
+        /* 作品页面响应式设计 */
+        @media (max-width: 768px) {
+            /* 用户信息区 */
+            .user-info {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                padding: 16px;
+            }
+            
+            .avatar-wrapper {
+                margin-bottom: 16px;
+            }
+            
+            .avatar {
+                width: 80px;
+                height: 80px;
+            }
+            
+            .username {
+                font-size: 20px;
+            }
+            
+            .stats {
+                justify-content: center;
+            }
+            
+            /* 选项卡 */
+            .tab-bar {
+                overflow-x: auto;
+                padding: 0 8px;
+            }
+            
+            .tab {
+                padding: 8px 12px;
+                font-size: 14px;
+            }
+            
+            /* 内容块 */
+            .content-block {
+                padding: 16px;
+            }
+            
+            /* 作品统计 */
+            .works-stats {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+            
+            /* 作品网格 */
+            .works-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 16px;
+            }
+            
+            .work-card {
+                padding: 12px;
+            }
+            
+            .work-title {
+                font-size: 16px;
+            }
+            
+            /* 操作按钮 */
+            .action-btn {
+                padding: 8px 16px;
+                font-size: 14px;
+            }
+            
+            /* 编辑模态框 */
+            .edit-modal {
+                width: 90%;
+                max-width: 500px;
+                max-height: 90vh;
+                margin: 5vh auto;
+            }
+            
+            /* 头像裁剪模态框 */
+            .crop-modal {
+                width: 95%;
+                max-width: 500px;
+                max-height: 90vh;
+                margin: 5vh auto;
+            }
+            
+            .crop-container {
+                height: 300px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            /* 用户信息区 */
+            .user-info {
+                padding: 12px;
+            }
+            
+            .avatar {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .username {
+                font-size: 18px;
+            }
+            
+            .identity {
+                font-size: 12px;
+            }
+            
+            .stats {
+                font-size: 12px;
+            }
+            
+            /* 作品网格 */
+            .works-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            /* 作品信息 */
+            .work-course-info,
+            .work-unit-info {
+                font-size: 12px;
+            }
+            
+            /* 作品操作按钮 */
+            .work-actions {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .action-btn-small {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            /* 编辑模态框 */
+            .edit-modal {
+                width: 95%;
+                max-width: 100%;
+            }
+            
+            .modal-content h2 {
+                font-size: 20px;
+            }
+            
+            .form-group {
+                margin-bottom: 16px;
+            }
+            
+            .form-group label {
+                font-size: 14px;
+            }
+            
+            .form-group input, 
+            .form-group select, 
+            .form-group textarea {
+                font-size: 14px;
+                padding: 8px;
+            }
+            
+            /* 头像裁剪模态框 */
+            .crop-modal {
+                width: 98%;
+                max-width: 100%;
+            }
+            
+            .crop-container {
+                height: 250px;
+            }
+            
+            .crop-modal-footer {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .crop-btn-cancel, 
+            .crop-btn-confirm {
+                width: 100%;
+                font-size: 14px;
+            }
+        }
         .username-wrapper {
             display: flex;
             align-items: center;
@@ -221,8 +403,11 @@
     <main class="main-content">
         <!-- 用户信息区 -->
         <section class="user-info">
-            <div class="avatar-wrapper">
+            <div class="avatar-wrapper" onclick="openEditModal('avatar')" title="点击修改头像">
                 <div class="avatar" id="userAvatar"></div>
+                <div class="avatar-edit-overlay">
+                    <i class="fas fa-camera"></i>
+                </div>
             </div>
             <div class="user-detail">
                 <div class="username-wrapper">
@@ -902,6 +1087,13 @@
                 }
             });
         }
+        
+        // 打开编辑模态框
+        function openEditModal(focusField) {
+            console.log('打开编辑模态框:', focusField);
+            // 实际实现中可以加载模态框内容
+        }
+        
         // 绑定按钮
         document.addEventListener('DOMContentLoaded',function(){
             var btn1 = document.getElementById('showFollowingBtn2');
@@ -972,6 +1164,465 @@
             .following-modal { max-width: 98vw; padding: 0; }
             .following-modal-body { padding: 12px 6px 16px 6px; }
             .following-modal-header { padding: 12px 10px; font-size: 16px; }
+        }
+
+        /* 编辑模态框样式 */
+        .edit-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .edit-modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .edit-modal {
+            background-color: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            transform: translateY(-20px);
+            transition: transform 0.3s ease;
+        }
+
+        .edit-modal.show {
+            transform: translateY(0);
+        }
+
+        .edit-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .edit-modal-header h2 {
+            margin: 0;
+            font-size: 18px;
+            color: #333;
+        }
+
+        .edit-modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+        .edit-modal-close:hover {
+            background-color: #f5f5f5;
+        }
+
+        .edit-modal-body {
+            padding: 20px;
+        }
+
+        .edit-modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            padding: 16px 20px;
+            border-top: 1px solid #e5e5e5;
+        }
+
+        /* 表单样式 */
+        .edit-form-group {
+            margin-bottom: 20px;
+        }
+
+        .edit-form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .edit-form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        .edit-form-control:focus {
+            outline: none;
+            border-color: #FF8C00;
+            box-shadow: 0 0 0 2px rgba(255, 140, 0, 0.1);
+        }
+
+        .edit-form-footer {
+            margin-top: 8px;
+            text-align: right;
+        }
+
+        /* 按钮样式 */
+        .edit-btn-cancel, .edit-btn-save {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .edit-btn-cancel {
+            background-color: #f5f5f5;
+            color: #666;
+        }
+
+        .edit-btn-cancel:hover {
+            background-color: #e5e5e5;
+        }
+
+        .edit-btn-save {
+            background-color: #FF8C00;
+            color: white;
+        }
+
+        .edit-btn-save:hover {
+            background-color: #e67e00;
+        }
+
+        /* 字符计数 */
+        .char-count {
+            font-size: 12px;
+            color: #999;
+        }
+
+        /* 头像编辑样式 */
+        .avatar-edit-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .avatar-preview {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            overflow: hidden;
+            border: 2px solid #e5e5e5;
+        }
+
+        .avatar-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .avatar-color {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+        }
+
+        .avatar-emoji {
+            font-size: 50px;
+        }
+
+        .avatar-placeholder {
+            color: #999;
+            font-size: 14px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        /* 头像类型选项 */
+        .avatar-type-options {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 16px;
+        }
+
+        .edit-radio-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .edit-radio-group input[type="radio"] {
+            cursor: pointer;
+        }
+
+        /* 头像选项 */
+        .avatar-options {
+            width: 100%;
+        }
+
+        .emoji-options, .color-options, .custom-avatar-options {
+            margin-bottom: 16px;
+        }
+
+        .emoji-presets {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .emoji-presets button {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #ddd;
+            border-radius: 50%;
+            background-color: #f5f5f5;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .emoji-presets button:hover {
+            border-color: #FF8C00;
+            transform: scale(1.1);
+        }
+
+        .color-presets {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .color-presets button {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #ddd;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .color-presets button:hover {
+            border-color: #333;
+            transform: scale(1.1);
+        }
+
+        /* Toast 提示样式 */
+        .toast-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 4px;
+            color: white;
+            font-size: 14px;
+            z-index: 1001;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .toast-notification.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(0);
+        }
+
+        .toast-notification.success {
+            background-color: #52c41a;
+        }
+
+        .toast-notification.error {
+            background-color: #f5222d;
+        }
+
+        .toast-notification.info {
+            background-color: #1890ff;
+        }
+
+        /* 头像裁剪模态框样式 */
+        .crop-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1002;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .crop-modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .crop-modal {
+            background-color: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            transform: translateY(-20px);
+            transition: transform 0.3s ease;
+        }
+
+        .crop-modal.show {
+            transform: translateY(0);
+        }
+
+        .crop-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .crop-modal-header h3 {
+            margin: 0;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .crop-modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+        .crop-modal-close:hover {
+            background-color: #f5f5f5;
+        }
+
+        .crop-modal-body {
+            padding: 20px;
+        }
+
+        .crop-container {
+            margin-bottom: 16px;
+        }
+
+        .crop-area {
+            width: 100%;
+            height: 300px;
+            border: 2px dashed #e5e5e5;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+            background-color: #f5f5f5;
+        }
+
+        .crop-img {
+            max-width: none;
+            max-height: none;
+            position: absolute;
+            cursor: grab;
+        }
+
+        .crop-controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .zoom-control {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .zoom-control label {
+            font-size: 14px;
+            color: #333;
+        }
+
+        .crop-modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            padding: 16px 20px;
+            border-top: 1px solid #e5e5e5;
+        }
+
+        .crop-btn-cancel, .crop-btn-confirm {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .crop-btn-cancel {
+            background-color: #f5f5f5;
+            color: #666;
+        }
+
+        .crop-btn-cancel:hover {
+            background-color: #e5e5e5;
+        }
+
+        .crop-btn-confirm {
+            background-color: #FF8C00;
+            color: white;
+        }
+
+        .crop-btn-confirm:hover {
+            background-color: #e67e00;
+        }
+
+        /* 帮助文本 */
+        .edit-help-text {
+            font-size: 12px;
+            color: #999;
+            margin-top: 8px;
+            margin-bottom: 0;
         }
         </style>
         <!-- 关注列表弹窗 -->
@@ -1170,5 +1821,576 @@
                 if (e.target === fansOverlay) fansOverlay.classList.remove('show');
             });
         });
+        
+        // 用户资料数据管理
+        let userProfile = {
+            username: '',
+            avatarType: 'color',
+            avatarColor: '#FF8C00',
+            avatarEmoji: '🎤',
+            avatarUrl: ''
+        };
+
+        // 从sessionStorage加载用户资料
+        function loadUserProfile() {
+            const savedProfile = sessionStorage.getItem('userProfile');
+            if (savedProfile) {
+                userProfile = JSON.parse(savedProfile);
+            } else {
+                // 清除旧的localStorage数据（如果存在）
+                localStorage.removeItem('userProfile');
+            }
+            updateDisplayedProfile();
+        }
+
+        // 更新页面上显示的用户资料
+        function updateDisplayedProfile() {
+            const profileAvatar = document.querySelector('.profile-avatar');
+            const usernameElement = document.querySelector('.user-name');
+            const menuAvatar = document.querySelector('.user-menu-avatar');
+
+            if (profileAvatar) {
+                if (userProfile.avatarType === 'custom' && userProfile.avatarUrl) {
+                    profileAvatar.innerHTML = `<img src="${userProfile.avatarUrl}" alt="头像" class="avatar-img">`;
+                } else if (userProfile.avatarType === 'emoji') {
+                    profileAvatar.innerHTML = `<span class="avatar-emoji">${userProfile.avatarEmoji}</span>`;
+                } else {
+                    profileAvatar.innerHTML = `<div class="avatar-color" style="background-color: ${userProfile.avatarColor}"></div>`;
+                }
+            }
+
+            if (usernameElement) {
+                usernameElement.textContent = userProfile.username || '已登录用户';
+            }
+
+            if (menuAvatar) {
+                if (userProfile.avatarType === 'custom' && userProfile.avatarUrl) {
+                    menuAvatar.innerHTML = `<img src="${userProfile.avatarUrl}" alt="头像" class="avatar-img">`;
+                } else if (userProfile.avatarType === 'emoji') {
+                    menuAvatar.innerHTML = `<span class="avatar-emoji">${userProfile.avatarEmoji}</span>`;
+                } else {
+                    menuAvatar.innerHTML = `<div class="avatar-color" style="background-color: ${userProfile.avatarColor}"></div>`;
+                }
+            }
+        }
+
+        // 颜色变亮函数
+        function lightenColor(color, percent) {
+            const num = parseInt(color.replace('#', ''), 16);
+            const amt = Math.round(2.55 * percent);
+            const R = (num >> 16) + amt;
+            const G = (num >> 8 & 0x00FF) + amt;
+            const B = (num & 0x0000FF) + amt;
+            return '#' + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
+                (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 +
+                (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1);
+        }
+
+        // 编辑模态框控制
+        function openEditModal() {
+            const editModalOverlay = document.getElementById('editModalOverlay');
+            const usernameInput = document.getElementById('usernameInput');
+            const avatarTypeColor = document.getElementById('avatarTypeColor');
+            const avatarTypeEmoji = document.getElementById('avatarTypeEmoji');
+            const avatarTypeCustom = document.getElementById('avatarTypeCustom');
+            const avatarColorInput = document.getElementById('avatarColorInput');
+            const avatarEmojiInput = document.getElementById('avatarEmojiInput');
+            const avatarPreview = document.getElementById('avatarPreview');
+
+            // 填充当前用户资料
+            usernameInput.value = userProfile.username || '';
+            avatarTypeColor.checked = userProfile.avatarType === 'color';
+            avatarTypeEmoji.checked = userProfile.avatarType === 'emoji';
+            avatarTypeCustom.checked = userProfile.avatarType === 'custom';
+            avatarColorInput.value = userProfile.avatarColor;
+            avatarEmojiInput.value = userProfile.avatarEmoji;
+
+            // 更新头像预览
+            updateAvatarPreview();
+
+            // 显示模态框
+            editModalOverlay.classList.add('show');
+
+            // 聚焦到用户名输入框
+            setTimeout(() => {
+                usernameInput.focus();
+            }, 100);
+        }
+
+        function closeEditModal() {
+            const editModalOverlay = document.getElementById('editModalOverlay');
+            editModalOverlay.classList.remove('show');
+        }
+
+        // 更新头像预览
+        function updateAvatarPreview() {
+            const avatarPreview = document.getElementById('avatarPreview');
+            const avatarTypeColor = document.getElementById('avatarTypeColor');
+            const avatarTypeEmoji = document.getElementById('avatarTypeEmoji');
+            const avatarTypeCustom = document.getElementById('avatarTypeCustom');
+            const avatarColorInput = document.getElementById('avatarColorInput');
+            const avatarEmojiInput = document.getElementById('avatarEmojiInput');
+
+            if (avatarTypeColor.checked) {
+                avatarPreview.innerHTML = `<div class="avatar-color" style="background-color: ${avatarColorInput.value}"></div>`;
+            } else if (avatarTypeEmoji.checked) {
+                avatarPreview.innerHTML = `<span class="avatar-emoji">${avatarEmojiInput.value}</span>`;
+            } else {
+                if (userProfile.avatarUrl) {
+                    avatarPreview.innerHTML = `<img src="${userProfile.avatarUrl}" alt="头像" class="avatar-img">`;
+                } else {
+                    avatarPreview.innerHTML = `<div class="avatar-placeholder">点击上传头像</div>`;
+                }
+            }
+        }
+
+        // 选择预设头像颜色
+        function selectPresetColor(color) {
+            const avatarColorInput = document.getElementById('avatarColorInput');
+            avatarColorInput.value = color;
+            updateAvatarPreview();
+        }
+
+        // 选择预设头像表情
+        function selectPresetAvatar(emoji) {
+            const avatarEmojiInput = document.getElementById('avatarEmojiInput');
+            avatarEmojiInput.value = emoji;
+            updateAvatarPreview();
+        }
+
+        // 预览头像
+        function previewAvatar() {
+            const fileInput = document.getElementById('avatarFileInput');
+            fileInput.click();
+        }
+
+        // 头像文件选择处理
+        function handleAvatarFileChange(event) {
+            const file = event.target.files[0];
+            if (file) {
+                if (!file.type.match('image.*')) {
+                    alert('请选择有效的图片文件！');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    openCropModal(e.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // 头像裁剪功能
+        let currentCropImage = null;
+        let cropImageTransform = { x: 0, y: 0, scale: 1 };
+        let isDragging = false;
+        let dragStart = { x: 0, y: 0 };
+
+        function openCropModal(imageSrc) {
+            currentCropImage = imageSrc;
+            const cropModalOverlay = document.getElementById('cropModalOverlay');
+            const cropImage = document.getElementById('cropImage');
+            const cropZoomSlider = document.getElementById('cropZoomSlider');
+
+            cropImage.src = imageSrc;
+            cropZoomSlider.value = 100;
+            cropImageTransform = { x: 0, y: 0, scale: 1 };
+
+            // 等待图像加载完成后居中
+            cropImage.onload = function() {
+                centerImage();
+            };
+
+            cropModalOverlay.classList.add('show');
+        }
+
+        function closeCropModal() {
+            const cropModalOverlay = document.getElementById('cropModalOverlay');
+            cropModalOverlay.classList.remove('show');
+            currentCropImage = null;
+            document.getElementById('avatarFileInput').value = '';
+        }
+
+        function centerImage() {
+            const cropImage = document.getElementById('cropImage');
+            const cropArea = document.querySelector('.crop-area');
+
+            // 计算缩放比例以适应裁剪区域
+            const scaleX = cropArea.clientWidth / cropImage.naturalWidth;
+            const scaleY = cropArea.clientHeight / cropImage.naturalHeight;
+            const scale = Math.min(scaleX, scaleY) * 0.8; // 留出一些边距
+
+            cropImageTransform.scale = scale;
+            cropImageTransform.x = (cropArea.clientWidth - cropImage.naturalWidth * scale) / 2;
+            cropImageTransform.y = (cropArea.clientHeight - cropImage.naturalHeight * scale) / 2;
+
+            updateImageTransform();
+        }
+
+        function updateImageTransform() {
+            const cropImage = document.getElementById('cropImage');
+            cropImage.style.transform = `translate(${cropImageTransform.x}px, ${cropImageTransform.y}px) scale(${cropImageTransform.scale})`;
+        }
+
+        function initCropEvents() {
+            const cropImage = document.getElementById('cropImage');
+            const cropArea = document.querySelector('.crop-area');
+
+            // 拖拽事件
+            cropImage.addEventListener('mousedown', function(e) {
+                isDragging = true;
+                dragStart.x = e.clientX - cropImageTransform.x;
+                dragStart.y = e.clientY - cropImageTransform.y;
+                cropImage.style.cursor = 'grabbing';
+            });
+
+            document.addEventListener('mousemove', function(e) {
+                if (isDragging) {
+                    cropImageTransform.x = e.clientX - dragStart.x;
+                    cropImageTransform.y = e.clientY - dragStart.y;
+                    updateImageTransform();
+                }
+            });
+
+            document.addEventListener('mouseup', function() {
+                isDragging = false;
+                cropImage.style.cursor = 'grab';
+            });
+
+            // 缩放事件
+            const cropZoomSlider = document.getElementById('cropZoomSlider');
+            cropZoomSlider.addEventListener('input', function() {
+                updateZoom();
+            });
+        }
+
+        function updateZoom() {
+            const cropZoomSlider = document.getElementById('cropZoomSlider');
+            const scale = parseFloat(cropZoomSlider.value) / 100;
+            cropImageTransform.scale = scale;
+            updateImageTransform();
+        }
+
+        function confirmCrop() {
+            const cropImage = document.getElementById('cropImage');
+            const cropArea = document.querySelector('.crop-area');
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            // 设置画布大小为头像大小（100x100）
+            canvas.width = 100;
+            canvas.height = 100;
+
+            // 计算裁剪区域
+            const scaleX = canvas.width / (cropArea.clientWidth * cropImageTransform.scale);
+            const scaleY = canvas.height / (cropArea.clientHeight * cropImageTransform.scale);
+
+            // 绘制裁剪后的图像
+            ctx.drawImage(
+                cropImage,
+                -cropImageTransform.x * scaleX,
+                -cropImageTransform.y * scaleY,
+                cropImage.naturalWidth * scaleX,
+                cropImage.naturalHeight * scaleY
+            );
+
+            // 获取裁剪后的图像数据URL
+            const croppedImageUrl = canvas.toDataURL('image/png');
+
+            // 更新用户资料
+            userProfile.avatarType = 'custom';
+            userProfile.avatarUrl = croppedImageUrl;
+
+            // 更新头像预览
+            updateAvatarPreview();
+
+            // 关闭裁剪模态框
+            closeCropModal();
+        }
+
+        // 字符计数
+        function updateCharCount() {
+            const usernameInput = document.getElementById('usernameInput');
+            const charCount = document.getElementById('charCount');
+            charCount.textContent = `${usernameInput.value.length}/20`;
+        }
+
+        // 保存用户资料
+        function saveProfile() {
+            const usernameInput = document.getElementById('usernameInput');
+            const avatarTypeColor = document.getElementById('avatarTypeColor');
+            const avatarTypeEmoji = document.getElementById('avatarTypeEmoji');
+            const avatarTypeCustom = document.getElementById('avatarTypeCustom');
+            const avatarColorInput = document.getElementById('avatarColorInput');
+            const avatarEmojiInput = document.getElementById('avatarEmojiInput');
+
+            // 验证用户名
+            const username = usernameInput.value.trim();
+            if (!username) {
+                showToast('请输入用户名！', 'error');
+                return;
+            }
+
+            if (username.length > 20) {
+                showToast('用户名不能超过20个字符！', 'error');
+                return;
+            }
+
+            // 更新用户资料
+            userProfile.username = username;
+            
+            if (avatarTypeColor.checked) {
+                userProfile.avatarType = 'color';
+                userProfile.avatarColor = avatarColorInput.value;
+            } else if (avatarTypeEmoji.checked) {
+                userProfile.avatarType = 'emoji';
+                userProfile.avatarEmoji = avatarEmojiInput.value;
+            } else {
+                userProfile.avatarType = 'custom';
+                // 自定义头像URL已经在裁剪时更新
+            }
+
+            // 保存到sessionStorage
+            sessionStorage.setItem('userProfile', JSON.stringify(userProfile));
+
+            // 更新页面显示
+            updateDisplayedProfile();
+
+            // 关闭模态框
+            closeEditModal();
+
+            // 显示成功提示
+            showToast('个人资料更新成功！', 'success');
+        }
+
+        // Toast提示
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toastNotification');
+            toast.textContent = message;
+            toast.className = `toast-notification ${type} show`;
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUserProfile();
+
+            // 绑定编辑按钮事件
+            const editProfileBtn = document.querySelector('.edit-profile-btn');
+            if (editProfileBtn) {
+                editProfileBtn.addEventListener('click', openEditModal);
+            }
+
+            // 绑定模态框关闭事件
+            const closeBtn = document.querySelector('.edit-modal-close');
+            if (closeBtn) {
+                closeBtn.addEventListener('click', closeEditModal);
+            }
+
+            // 绑定保存按钮事件
+            const saveBtn = document.querySelector('.edit-btn-save');
+            if (saveBtn) {
+                saveBtn.addEventListener('click', saveProfile);
+            }
+
+            // 绑定取消按钮事件
+            const cancelBtn = document.querySelector('.edit-btn-cancel');
+            if (cancelBtn) {
+                cancelBtn.addEventListener('click', closeEditModal);
+            }
+
+            // 绑定头像类型切换事件
+            const avatarTypeColor = document.getElementById('avatarTypeColor');
+            const avatarTypeEmoji = document.getElementById('avatarTypeEmoji');
+            const avatarTypeCustom = document.getElementById('avatarTypeCustom');
+            if (avatarTypeColor) avatarTypeColor.addEventListener('change', updateAvatarPreview);
+            if (avatarTypeEmoji) avatarTypeEmoji.addEventListener('change', updateAvatarPreview);
+            if (avatarTypeCustom) avatarTypeCustom.addEventListener('change', updateAvatarPreview);
+
+            // 绑定头像颜色和表情变化事件
+            const avatarColorInput = document.getElementById('avatarColorInput');
+            const avatarEmojiInput = document.getElementById('avatarEmojiInput');
+            if (avatarColorInput) avatarColorInput.addEventListener('input', updateAvatarPreview);
+            if (avatarEmojiInput) avatarEmojiInput.addEventListener('input', updateAvatarPreview);
+
+            // 绑定头像文件选择事件
+            const avatarFileInput = document.getElementById('avatarFileInput');
+            if (avatarFileInput) avatarFileInput.addEventListener('change', handleAvatarFileChange);
+
+            // 绑定字符计数事件
+            const usernameInput = document.getElementById('usernameInput');
+            if (usernameInput) usernameInput.addEventListener('input', updateCharCount);
+
+            // 绑定裁剪模态框事件
+            const cropModalClose = document.querySelector('.crop-modal-close');
+            const cropBtnCancel = document.querySelector('.crop-btn-cancel');
+            const cropBtnConfirm = document.querySelector('.crop-btn-confirm');
+            if (cropModalClose) cropModalClose.addEventListener('click', closeCropModal);
+            if (cropBtnCancel) cropBtnCancel.addEventListener('click', closeCropModal);
+            if (cropBtnConfirm) cropBtnConfirm.addEventListener('click', confirmCrop);
+
+            // 初始化裁剪事件
+            initCropEvents();
+
+            // 点击模态框外部关闭模态框
+            const editModalOverlay = document.getElementById('editModalOverlay');
+            if (editModalOverlay) {
+                editModalOverlay.addEventListener('click', function(e) {
+                    if (e.target === editModalOverlay) {
+                        closeEditModal();
+                    }
+                });
+            }
+
+            const cropModalOverlay = document.getElementById('cropModalOverlay');
+            if (cropModalOverlay) {
+                cropModalOverlay.addEventListener('click', function(e) {
+                    if (e.target === cropModalOverlay) {
+                        closeCropModal();
+                    }
+                });
+            }
+
+            // ESC键关闭模态框
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    const editModalOverlay = document.getElementById('editModalOverlay');
+                    const cropModalOverlay = document.getElementById('cropModalOverlay');
+                    
+                    if (editModalOverlay.classList.contains('show')) {
+                        closeEditModal();
+                    } else if (cropModalOverlay.classList.contains('show')) {
+                        closeCropModal();
+                    }
+                }
+            });
+        });
         </script>
+
+        <!-- 编辑模态框 -->
+        <div id="editModalOverlay" class="edit-modal-overlay">
+            <div class="edit-modal">
+                <div class="edit-modal-header">
+                    <h2>编辑个人资料</h2>
+                    <button class="edit-modal-close" onclick="closeEditModal()">×</button>
+                </div>
+                <div class="edit-modal-body">
+                    <!-- 头像编辑 -->
+                    <div class="avatar-edit-section">
+                        <div id="avatarPreview" class="avatar-preview">
+                            <div class="avatar-color" style="background-color: #FF8C00"></div>
+                        </div>
+                        
+                        <!-- 头像类型选择 -->
+                        <div class="avatar-type-options">
+                            <label class="edit-radio-group">
+                                <input type="radio" id="avatarTypeColor" name="avatarType" value="color" checked>
+                                <span>颜色</span>
+                            </label>
+                            <label class="edit-radio-group">
+                                <input type="radio" id="avatarTypeEmoji" name="avatarType" value="emoji">
+                                <span>表情</span>
+                            </label>
+                            <label class="edit-radio-group">
+                                <input type="radio" id="avatarTypeCustom" name="avatarType" value="custom">
+                                <span>自定义</span>
+                            </label>
+                        </div>
+                        
+                        <!-- 头像选项 -->
+                        <div class="avatar-options">
+                            <!-- 颜色选项 -->
+                            <div class="color-options">
+                                <label for="avatarColorInput">选择颜色：</label>
+                                <input type="color" id="avatarColorInput" value="#FF8C00" style="width: 100%; height: 40px; border: none; border-radius: 4px;">
+                                <div class="color-presets">
+                                    <button style="background-color: #FF8C00" onclick="selectPresetColor('#FF8C00')"></button>
+                                    <button style="background-color: #FF6B6B" onclick="selectPresetColor('#FF6B6B')"></button>
+                                    <button style="background-color: #4ECDC4" onclick="selectPresetColor('#4ECDC4')"></button>
+                                    <button style="background-color: #45B7D1" onclick="selectPresetColor('#45B7D1')"></button>
+                                    <button style="background-color: #96CEB4" onclick="selectPresetColor('#96CEB4')"></button>
+                                    <button style="background-color: #FECA57" onclick="selectPresetColor('#FECA57')"></button>
+                                    <button style="background-color: #DDA0DD" onclick="selectPresetColor('#DDA0DD')"></button>
+                                    <button style="background-color: #98D8C8" onclick="selectPresetColor('#98D8C8')"></button>
+                                </div>
+                            </div>
+                            
+                            <!-- 表情选项 -->
+                            <div class="emoji-options">
+                                <label for="avatarEmojiInput">选择表情：</label>
+                                <input type="text" id="avatarEmojiInput" value="🎤" maxlength="1" style="width: 100%; height: 40px; text-align: center; font-size: 20px; border: 1px solid #ddd; border-radius: 4px;">
+                                <div class="emoji-presets">
+                                    <button onclick="selectPresetAvatar('🎤')">🎤</button>
+                                    <button onclick="selectPresetAvatar('🎧')">🎧</button>
+                                    <button onclick="selectPresetAvatar('🎵')">🎵</button>
+                                    <button onclick="selectPresetAvatar('🎼')">🎼</button>
+                                    <button onclick="selectPresetAvatar('🎹')">🎹</button>
+                                    <button onclick="selectPresetAvatar('🎸')">🎸</button>
+                                    <button onclick="selectPresetAvatar('🎻')">🎻</button>
+                                    <button onclick="selectPresetAvatar('🎤')">🎤</button>
+                                    <button onclick="selectPresetAvatar('🎭')">🎭</button>
+                                    <button onclick="selectPresetAvatar('🎪')">🎪</button>
+                                </div>
+                            </div>
+                            
+                            <!-- 自定义头像选项 -->
+                            <div class="custom-avatar-options">
+                                <button type="button" style="width: 100%; padding: 10px; background-color: #f5f5f5; border: 1px solid #ddd; border-radius: 4px; cursor: pointer;" onclick="previewAvatar()">
+                                    <i class="fa fa-upload"></i> 上传头像
+                                </button>
+                                <input type="file" id="avatarFileInput" accept="image/*" style="display: none;">
+                                <p class="edit-help-text">支持 PNG、JPG、JPEG 格式，大小不超过 2MB</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 用户名编辑 -->
+                    <div class="edit-form-group">
+                        <label for="usernameInput">用户名：</label>
+                        <input type="text" id="usernameInput" class="edit-form-control" placeholder="请输入用户名" maxlength="20">
+                        <div class="edit-form-footer">
+                            <span id="charCount" class="char-count">0/20</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="edit-modal-footer">
+                    <button type="button" class="edit-btn-cancel" onclick="closeEditModal()">取消</button>
+                    <button type="button" class="edit-btn-save" onclick="saveProfile()">保存</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast 提示 -->
+        <div id="toastNotification" class="toast-notification"></div>
+
+        <!-- 头像裁剪模态框 -->
+        <div id="cropModalOverlay" class="crop-modal-overlay">
+            <div class="crop-modal">
+                <div class="crop-modal-header">
+                    <h3>裁剪头像</h3>
+                    <button class="crop-modal-close" onclick="closeCropModal()">×</button>
+                </div>
+                <div class="crop-modal-body">
+                    <div class="crop-container">
+                        <div class="crop-area">
+                            <img id="cropImage" class="crop-img" alt="裁剪头像">
+                        </div>
+                    </div>
+                    <div class="crop-controls">
+                        <div class="zoom-control">
+                            <label for="cropZoomSlider">缩放：</label>
+                            <input type="range" id="cropZoomSlider" min="50" max="200" value="100">
+                        </div>
+                    </div>
+                </div>
+                <div class="crop-modal-footer">
+                    <button type="button" class="crop-btn-cancel" onclick="closeCropModal()">取消</button>
+                    <button type="button" class="crop-btn-confirm" onclick="confirmCrop()">确定</button>
+                </div>
+            </div>
+        </div>
 </html>

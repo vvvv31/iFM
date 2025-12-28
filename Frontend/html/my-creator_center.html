@@ -115,6 +115,20 @@
             .stat-value { font-size: 28px; }
             .action-icon { font-size: 32px; width: 50px; height: 50px; }
             .channel-cards { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+            
+            /* 编辑模态框响应式 */
+            .edit-modal {
+                width: 90%;
+            }
+            
+            /* 裁剪模态框响应式 */
+            .crop-modal {
+                width: 90%;
+            }
+            
+            .crop-container {
+                height: 300px;
+            }
         }
         @media (max-width: 480px) {
             .creator-stats, .creator-actions { gap: 10px; }
@@ -122,6 +136,52 @@
             .stat-value { font-size: 24px; }
             .action-title { font-size: 16px; }
             .channel-cards { grid-template-columns: 1fr; }
+            
+            /* 编辑模态框响应式 */
+            .edit-modal {
+                width: 95%;
+                padding: 15px;
+            }
+            
+            .edit-modal-header h3 {
+                font-size: 20px;
+            }
+            
+            .edit-form-group input {
+                font-size: 14px;
+            }
+            
+            /* 裁剪模态框响应式 */
+            .crop-modal {
+                width: 95%;
+                padding: 15px;
+            }
+            
+            .crop-modal-header h3 {
+                font-size: 20px;
+            }
+            
+            .crop-container {
+                height: 250px;
+            }
+            
+            .crop-hint {
+                font-size: 13px;
+            }
+            
+            .crop-controls {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .crop-modal-footer {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .crop-btn-cancel, .crop-btn-confirm {
+                width: 100%;
+            }
         }
 
         /* 与 my-recent.html 保持一致的用户名编辑按钮样式（可复用） */
@@ -332,6 +392,9 @@
         <section class="user-info">
             <div class="avatar-wrapper" onclick="openEditModal('avatar')" title="点击修改头像">
                 <div class="avatar" id="userAvatar"></div>
+                <div class="avatar-edit-overlay">
+                    <i class="fas fa-camera"></i>
+                </div>
             </div>
             <div class="user-detail">
                 <div class="username-wrapper">
@@ -991,6 +1054,123 @@
 
         // 页面加载时初始化
         document.addEventListener('DOMContentLoaded', loadUserProfile);
+        
+        // 关注/粉丝弹窗功能
+        function initFollowModal() {
+            // 为关注和粉丝数添加点击事件
+            const followingCount = document.getElementById('followingCount');
+            const fansCount = document.getElementById('fansCount');
+            
+            if (followingCount) {
+                followingCount.addEventListener('click', function() {
+                    openFollowModal('following');
+                });
+                // 添加悬停样式
+                followingCount.style.cursor = 'pointer';
+                followingCount.style.color = '#FF8C00';
+            }
+            
+            if (fansCount) {
+                fansCount.addEventListener('click', function() {
+                    openFollowModal('fans');
+                });
+                // 添加悬停样式
+                fansCount.style.cursor = 'pointer';
+                fansCount.style.color = '#FF8C00';
+            }
+            
+            // 监听弹窗事件
+            window.addEventListener('message', function(e) {
+                try {
+                    const data = typeof e.data === 'string' ? JSON.parse(e.data) : e.data;
+                    if (data.type === 'followDataUpdated') {
+                        // 更新关注和粉丝数
+                        if (followingCount) {
+                            followingCount.textContent = data.data.followingCount;
+                        }
+                        if (fansCount) {
+                            fansCount.textContent = data.data.fansCount;
+                        }
+                    } else if (data.type === 'closeFollowModal') {
+                        closeFollowModal();
+                    }
+                } catch (error) {
+                    console.error('处理弹窗消息出错:', error);
+                }
+            });
+        }
+        
+        // 打开关注/粉丝弹窗
+        function openFollowModal(type) {
+            // 创建弹窗容器
+            const modalOverlay = document.createElement('div');
+            modalOverlay.id = 'follow-modal-overlay';
+            modalOverlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 10000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            `;
+            
+            // 创建弹窗内容
+            const modalContent = document.createElement('div');
+            modalContent.id = 'follow-modal-content';
+            modalContent.style.cssText = `
+                width: 90%;
+                max-width: 500px;
+                height: 80vh;
+                background: white;
+                border-radius: 12px;
+                overflow: hidden;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            `;
+            
+            // 创建iframe
+            const iframe = document.createElement('iframe');
+            iframe.src = `follow-modal.html?mode=${type}`;
+            iframe.style.cssText = `
+                width: 100%;
+                height: 100%;
+                border: none;
+            `;
+            
+            // 组装并添加到页面
+            modalContent.appendChild(iframe);
+            modalOverlay.appendChild(modalContent);
+            document.body.appendChild(modalOverlay);
+            
+            // 点击遮罩层关闭
+            modalOverlay.addEventListener('click', function(e) {
+                if (e.target === modalOverlay) {
+                    closeFollowModal();
+                }
+            });
+            
+            // ESC键关闭
+            document.addEventListener('keydown', function escHandler(e) {
+                if (e.key === 'Escape') {
+                    closeFollowModal();
+                    document.removeEventListener('keydown', escHandler);
+                }
+            });
+        }
+        
+        // 关闭关注/粉丝弹窗
+        function closeFollowModal() {
+            const modalOverlay = document.getElementById('follow-modal-overlay');
+            if (modalOverlay) {
+                modalOverlay.remove();
+            }
+        }
+        
+        // 初始化关注/粉丝弹窗功能
+        document.addEventListener('DOMContentLoaded', initFollowModal);
         </script>
     
 

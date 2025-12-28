@@ -353,10 +353,21 @@
             .profile-header {
                 flex-direction: column;
                 text-align: center;
+                padding: 16px;
+            }
+
+            .profile-avatar {
+                width: 100px;
+                height: 100px;
+            }
+
+            .profile-username {
+                font-size: 24px;
             }
 
             .profile-actions {
                 justify-content: center;
+                flex-wrap: wrap;
             }
 
             .profile-stats {
@@ -387,6 +398,91 @@
 
             .tab-item {
                 text-align: center;
+            }
+
+            /* 编辑模态框响应式 */
+            .edit-modal {
+                width: 90%;
+                margin: 20px auto;
+                max-height: 90vh;
+            }
+
+            .avatar-type-options {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .color-presets,
+            .emoji-presets {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            /* 头像裁剪模态框响应式 */
+            .crop-modal {
+                width: 95%;
+                margin: 20px auto;
+            }
+
+            .crop-container {
+                height: 300px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 10px;
+            }
+
+            .profile-avatar {
+                width: 80px;
+                height: 80px;
+            }
+
+            .profile-username {
+                font-size: 20px;
+            }
+
+            .profile-stats {
+                gap: 16px;
+            }
+
+            .stat-number {
+                font-size: 18px;
+            }
+
+            .channel-list {
+                grid-template-columns: 1fr;
+            }
+
+            .follow-btn,
+            .message-btn {
+                padding: 8px 16px;
+                font-size: 14px;
+            }
+
+            .tab-item {
+                padding: 12px 16px;
+                font-size: 14px;
+            }
+
+            /* 编辑模态框响应式 */
+            .edit-modal-header h2 {
+                font-size: 20px;
+            }
+
+            .edit-form-group {
+                margin-bottom: 16px;
+            }
+
+            .edit-btn-cancel,
+            .edit-btn-save {
+                padding: 8px 16px;
+                font-size: 14px;
+            }
+
+            /* 头像裁剪模态框响应式 */
+            .crop-container {
+                height: 250px;
             }
         }
     </style>
@@ -702,6 +798,70 @@
             const params = new URLSearchParams(window.location.search);
             return params.get(name);
         }
+        
+        // 关注/粉丝弹窗功能
+        function initFollowModal() {
+            // 获取关注和粉丝数元素
+            const followersElement = document.querySelector('.profile-stats .stat-item:nth-child(2)');
+            const followingElement = document.querySelector('.profile-stats .stat-item:nth-child(3)');
+            
+            // 为关注和粉丝数添加点击事件和样式
+            if (followersElement) {
+                followersElement.addEventListener('click', function() {
+                    openFollowModal('fans');
+                });
+                followersElement.style.cursor = 'pointer';
+                followersElement.style.color = '#FF8C00';
+            }
+            
+            if (followingElement) {
+                followingElement.addEventListener('click', function() {
+                    openFollowModal('following');
+                });
+                followingElement.style.cursor = 'pointer';
+                followingElement.style.color = '#FF8C00';
+            }
+            
+            // 监听弹窗事件
+            window.addEventListener('message', function(e) {
+                try {
+                    const data = typeof e.data === 'string' ? JSON.parse(e.data) : e.data;
+                    if (data.type === 'closeFollowModal' || data.type === 'close-follow-modal') {
+                        closeFollowModal();
+                    }
+                } catch (error) {
+                    console.error('处理弹窗消息出错:', error);
+                }
+            });
+        }
+        
+        // 打开关注/粉丝弹窗
+        function openFollowModal(type) {
+            // 检查是否已存在弹窗
+            if (document.getElementById('globalFollowModalFrame')) return;
+            
+            // 创建遮罩层
+            const mask = document.createElement('div');
+            mask.style.cssText = 'position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,0.18);z-index:999999;display:flex;align-items:center;justify-content:center;';
+            mask.id = 'globalFollowModalFrame';
+            
+            // 创建iframe
+            mask.innerHTML = `<iframe src="follow-modal.html?mode=${type}" style="border:none;width:100vw;max-width:440px;height:90vh;max-height:500px;background:#fff;z-index:1000000;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,0.18);"></iframe>`;
+            
+            // 添加到页面
+            document.body.appendChild(mask);
+        }
+        
+        // 关闭关注/粉丝弹窗
+        function closeFollowModal() {
+            const modalFrame = document.getElementById('globalFollowModalFrame');
+            if (modalFrame) {
+                modalFrame.remove();
+            }
+        }
+        
+        // 页面加载时初始化关注/粉丝弹窗功能
+        window.addEventListener('DOMContentLoaded', initFollowModal);
 
         // 私信按钮功能
         const messageBtn = document.querySelector('.message-btn');
@@ -1071,10 +1231,10 @@
       function stopWrap(handler) { return function(e){ e.stopPropagation(); handler(e); }; }
 
       /* 控件事件（阻止冒泡） */
-      playBtn.addEventListener('click', stopWrap(togglePlay));
-      prevBtn.addEventListener('click', stopWrap(() => prevByMode()));
-      nextBtn.addEventListener('click', stopWrap(() => nextByMode()));
-      muteBtn.addEventListener('click', stopWrap(() => {
+      playBtn && playBtn.addEventListener('click', stopWrap(togglePlay));
+      prevBtn && prevBtn.addEventListener('click', stopWrap(() => prevByMode()));
+      nextBtn && nextBtn.addEventListener('click', stopWrap(() => nextByMode()));
+      muteBtn && muteBtn.addEventListener('click', stopWrap(() => {
         audio.muted = !audio.muted;
         if (audio.muted || audio.volume === 0) { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 3l7 7-1.4 1.4L16 7.8V16h-2V8.6L9.4 4 11 2.4 14 3z"/>'; }
         else if (audio.volume < 0.5) { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 9v6c1.7-0.7 3-2.4 3-4.5S15.7 9.7 14 9z"/>'; }
@@ -1082,11 +1242,11 @@
       }));
 
       /* 模式弹层 */
-      modeBtn.addEventListener('click', stopWrap(() => {
-        ratePop.style.display = 'none';
-        modePop.style.display = modePop.style.display === 'flex' ? 'none' : 'flex';
+      modeBtn && modeBtn.addEventListener('click', stopWrap(() => {
+        if (ratePop) ratePop.style.display = 'none';
+        if (modePop) modePop.style.display = modePop.style.display === 'flex' ? 'none' : 'flex';
       }));
-      modePop.addEventListener('click', stopWrap((e) => {
+      modePop && modePop.addEventListener('click', stopWrap((e) => {
         const item = e.target.closest('.mode-item');
         if (!item) return;
         playMode = item.getAttribute('data-mode');

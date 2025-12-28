@@ -381,14 +381,42 @@
                     const data = await response.json();
                     
                     if (response.ok) {
-                        // 登录成功，存储令牌
-                        localStorage.setItem('authToken', data.data.token);
-                        localStorage.setItem('userId', data.data.userId);
-                        localStorage.setItem('userInfo', JSON.stringify(data.data.userInfo));
-                        alert(`登录成功！欢迎回来！`);
-                        
-                        // 跳转到首页
-                        window.location.href = '/html/app.html';
+                                                // 登录成功，存储令牌并广播
+                                                if (data && data.code === 200 && data.data && data.data.token) {
+                                                    const token = data.data.token;
+                                                    const userId = data.data.userId;
+                                                    const userInfo = data.data.userInfo || {};
+                                                    try {
+                                                        localStorage.setItem('authToken', token);
+                                                        localStorage.setItem('userId', String(userId));
+                                                        sessionStorage.setItem('userProfile', JSON.stringify(userInfo));
+                                                    } catch (e) {
+                                                        console.warn('storage set failed', e);
+                                                    }
+                                                    // 向父窗口和所有同源 iframe 广播登录事件
+                                                    const payload = { type: 'AUTH_UPDATE', token: token, userInfo: userInfo };
+                                                    try {
+                                                        if (window.parent && window.parent !== window) {
+                                                            window.parent.postMessage(payload, '*');
+                                                        }
+                                                    } catch (e) {}
+                                                    try {
+                                                        if (window.frames && window.frames.length) {
+                                                            for (let i = 0; i < window.frames.length; i++) {
+                                                                try { window.frames[i].postMessage(payload, '*'); } catch (err) {}
+                                                            }
+                                                        }
+                                                    } catch (e) {}
+                                                    if (typeof window.__auth_local_update === 'function') {
+                                                        window.__auth_local_update(payload);
+                                                    } else {
+                                                        // window.location.reload(); // 可选：兜底刷新
+                                                    }
+                                                    alert(`登录成功！欢迎回来！`);
+                                                    window.location.href = 'app.html';
+                                                } else {
+                                                    alert(`登录失败: ${data.message || '手机号或密码错误'}`);
+                                                }
                     } else {
                         // 登录失败
                         alert(`登录失败: ${data.message || '手机号或密码错误'}`);

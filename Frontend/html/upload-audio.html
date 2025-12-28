@@ -574,14 +574,8 @@
             <div class="form-group">
                 <label for="audio-group">选择合集</label>
                 <div class="group-selector">
-                    <select id="audio-group-main" style="margin-bottom: 10px;">
-                        <option value="">选择课程</option>
-                        <!-- 动态加载课程列表 -->
-                    </select>
-                    <select id="audio-group-sub" disabled>
-                        <option value="">选择单元</option>
-                        <!-- 动态加载单元列表 -->
-                    </select>
+                    <select id="audio-group-main" style="margin-bottom: 10px;"></select>
+                    <select id="audio-group-sub" disabled></select>
                     <div style="margin-top: 10px;">
                         <button type="button" id="create-main-group-btn" class="btn btn-secondary" style="margin-right: 10px;">创建课程</button>
                         <button type="button" id="create-sub-group-btn" class="btn btn-secondary" disabled>创建单元</button>
@@ -605,35 +599,37 @@
 </main>
 
 <!-- 模态框容器 - 移到form外面，确保层级正确 -->
+<!-- 真实创作课程弹窗 -->
 <div id="modal-overlay" class="modal-overlay">
     <div id="create-group-modal" class="modal">
         <div class="modal-content">
-            <h3>创建新目录</h3>
+            <h3>创作新课程</h3>
             <div class="form-group">
-                <label for="group-type">目录类型</label>
-                <select id="group-type">
-                    <option value="main">课程</option>
-                    <option value="sub">单元</option>
-                </select>
-            </div>
-            <div class="form-group" id="main-group-select-container" style="display: none;">
-                <label for="parent-group">所属课程</label>
-                <select id="parent-group">
-                    <!-- 动态加载课程列表 -->
-                </select>
+                <label for="new-program-title">课程标题</label>
+                <input type="text" id="new-program-title" placeholder="请输入课程标题">
             </div>
             <div class="form-group">
-                <label for="new-group-name">合集名称</label>
-                <input type="text" id="new-group-name" placeholder="请输入合集名称">
+                <label for="new-program-intro">课程简介</label>
+                <textarea id="new-program-intro" placeholder="请输入课程简介"></textarea>
             </div>
             <div class="form-group">
-                <label for="new-group-desc">合集描述</label>
-                <textarea id="new-group-desc" placeholder="请输入合集描述"></textarea>
+                <label for="new-program-faq">常见问题</label>
+                <textarea id="new-program-faq" placeholder="可选"></textarea>
             </div>
+            <div class="form-group">
+                <label for="new-program-cover">封面图片URL</label>
+                <input type="text" id="new-program-cover" placeholder="http://...jpg/png">
+            </div>
+            <div class="form-group">
+                <label for="new-program-tags">标签ID（英文逗号分隔）</label>
+                <input type="text" id="new-program-tags" placeholder="如 1,2,3">
+            </div>
+                <!-- 创作者ID输入项已移除，自动从localStorage获取 -->
             <div class="btn-group">
                 <button type="button" id="submit-create-group" class="btn btn-primary">创建</button>
                 <button type="button" id="cancel-create-group" class="btn btn-secondary">取消</button>
             </div>
+            <div id="create-group-msg" class="message" style="display:none;"></div>
         </div>
     </div>
 </div>
@@ -716,202 +712,48 @@
     const modalOverlay = document.getElementById('modal-overlay');
 
     // 模拟课程与单元数据
-    let groupsData = {
-        main: [
-            { id: 'main_1', name: '商务英语会话技巧', description: '商务英语会话技巧课程，包含中级到高级内容' },
-            { id: 'main_2', name: '科技前沿', description: '最新科技资讯和深度分析' },
-            { id: 'main_3', name: '音乐天地', description: '各种音乐类型的分享和推荐' }
-        ],
-        sub: [
-            { id: 'sub_1_1', mainId: 'main_1', name: '第一单元：商务会议', description: '商务会议相关英语表达' },
-            { id: 'sub_1_2', mainId: 'main_1', name: '第二单元：商务谈判', description: '商务谈判技巧和常用语' },
-            { id: 'sub_1_3', mainId: 'main_1', name: '第三单元：商务邮件', description: '商务邮件写作技巧' },
-            { id: 'sub_2_1', mainId: 'main_2', name: '人工智能', description: 'AI技术的发展和应用' },
-            { id: 'sub_2_2', mainId: 'main_2', name: '区块链', description: '区块链技术和加密货币' },
-            { id: 'sub_3_1', mainId: 'main_3', name: '流行音乐', description: '当下流行的音乐' },
-            { id: 'sub_3_2', mainId: 'main_3', name: '古典音乐', description: '经典古典音乐作品' }
-        ]
-    };
-
-    // 从本地存储加载合集数据
-    function loadGroupsData() {
-        const saved = localStorage.getItem('groupsData');
-        if (saved) {
-            try {
-                groupsData = JSON.parse(saved);
-            } catch (error) {
-                console.error('加载合集数据失败:', error);
-            }
-        }
-    }
-
-    // 保存合集数据到本地存储
-    function saveGroupsData() {
-        localStorage.setItem('groupsData', JSON.stringify(groupsData));
-    }
-
-    // 加载大合集列表
-    function loadMainGroups() {
-        const mainGroups = groupsData.main || [];
-        
-        // 清空现有选项
-        audioGroupMain.innerHTML = '<option value="">选择课程</option>';
-        parentGroupSelect.innerHTML = '<option value="">选择课程</option>';
-        
-        // 添加大合集选项
-        mainGroups.forEach(group => {
-            const option1 = document.createElement('option');
-            option1.value = group.id;
-            option1.textContent = group.name;
-            audioGroupMain.appendChild(option1);
-            
-            const option2 = document.createElement('option');
-            option2.value = group.id;
-            option2.textContent = group.name;
-            parentGroupSelect.appendChild(option2);
-        });
-    }
-
-    // 加载小合集列表
-    function loadSubGroups(mainGroupId) {
-        const subGroups = groupsData.sub || [];
-        
-        // 清空现有选项
-        audioGroupSub.innerHTML = '<option value="">选择单元</option>';
-        
-        // 如果没有选择大合集，禁用小合集选择
-        if (!mainGroupId) {
-            audioGroupSub.disabled = true;
-            createSubGroupBtn.disabled = true;
-            return;
-        }
-        
-        // 启用小合集选择
-        audioGroupSub.disabled = false;
-        createSubGroupBtn.disabled = false;
-        
-        // 添加小合集选项
-        subGroups
-            .filter(subGroup => subGroup.mainId === mainGroupId)
-            .forEach(subGroup => {
-                const option = document.createElement('option');
-                option.value = subGroup.id;
-                option.textContent = subGroup.name;
-                audioGroupSub.appendChild(option);
+    // 课程下拉框仅用后端接口数据渲染
+    async function loadMainGroups() {
+        const audioGroupMain = document.getElementById('audio-group-main');
+        if (!audioGroupMain) return;
+        audioGroupMain.innerHTML = '<option value="">请选择课程</option>';
+        try {
+            // 获取所有节目（课程）
+            const token = localStorage.getItem('access_token') || localStorage.getItem('authToken') || '';
+            const res = await fetch('http://localhost:8080/programs', {
+                headers: { 'Authorization': 'Bearer ' + token }
             });
-    }
-
-    // 显示创建合集模态框
-    function showCreateGroupModal(type = 'main', parentId = '') {
-        // 设置默认类型
-        groupTypeSelect.value = type;
-        
-        // 切换所属大合集选择的显示
-        if (type === 'sub') {
-            mainGroupSelectContainer.style.display = 'block';
-        } else {
-            mainGroupSelectContainer.style.display = 'none';
-        }
-        
-        // 清空输入框
-        newGroupNameInput.value = '';
-        newGroupDescInput.value = '';
-        
-        // 显示模态框 - 使用class切换
-        modalOverlay.classList.add('active');
-    }
-
-    // 隐藏创建合集模态框
-    function hideCreateGroupModal() {
-        modalOverlay.classList.remove('active');
-    }
-
-    // 创建新合集
-    function createGroup() {
-        const type = groupTypeSelect.value;
-        const name = newGroupNameInput.value.trim();
-        const description = newGroupDescInput.value.trim();
-        
-        // 验证输入
-        if (!name) {
-            alert('请输入合集名称');
-            return;
-        }
-        
-        // 生成唯一ID
-        const timestamp = Date.now();
-        const random = Math.floor(Math.random() * 1000);
-        
-        if (type === 'main') {
-            // 创建大合集
-            const newMainGroup = {
-                id: `main_${timestamp}_${random}`,
-                name: name,
-                description: description
-            };
-            
-            groupsData.main.push(newMainGroup);
-        } else {
-            // 创建小合集
-            const parentId = parentGroupSelect.value;
-            
-            if (!parentId) {
-                alert('请选择所属大合集');
-                return;
-            }
-            
-            const newSubGroup = {
-                id: `sub_${parentId.split('_')[1]}_${timestamp}_${random}`,
-                mainId: parentId,
-                name: name,
-                description: description
-            };
-            
-            groupsData.sub.push(newSubGroup);
-        }
-        
-        // 保存数据
-        saveGroupsData();
-        
-        // 重新加载合集列表
-        loadMainGroups();
-        loadSubGroups(audioGroupMain.value);
-        
-        // 隐藏模态框
-        hideCreateGroupModal();
-        
-        // 显示成功提示
-        msgBox.className = 'message success';
-        msgBox.textContent = '合集创建成功！';
-        msgBox.style.display = 'block';
-        msgBox.style.display = 'none';
-        setTimeout(() => {
-            msgBox.style.display = 'none';
-        }, 3000);
-    }
-
-    // 初始化页面
-    function initPage() {
-        if (isDraftMode) {
-            // 修改页面标题
-            formTitle.textContent = '创建新草稿';
-            submitBtn.textContent = '保存草稿';
-            
-            // 添加保存草稿按钮
-            const saveDraftBtn = document.createElement('button');
-            saveDraftBtn.type = 'button';
-            saveDraftBtn.className = 'btn btn-secondary';
-            saveDraftBtn.textContent = '手动保存';
-            saveDraftBtn.onclick = saveDraft;
-            submitBtn.parentNode.insertBefore(saveDraftBtn, submitBtn.nextSibling);
-            
-            // 加载已有草稿
-            loadDraft();
-            
-            // 启动自动保存
-            startAutoSave();
+            const data = await res.json();
+            const programs = Array.isArray(data.data) ? data.data : [];
+            programs.forEach(program => {
+                const option = document.createElement('option');
+                option.value = program.programId || program.id;
+                option.textContent = program.title;
+                audioGroupMain.appendChild(option);
+            });
+        } catch (err) {
+            console.error('加载课程失败', err);
         }
     }
+
+    // 小合集（单元）可根据实际后端接口实现，这里暂时清空
+    function loadSubGroups(mainGroupId) {
+        const audioGroupSub = document.getElementById('audio-group-sub');
+        if (!audioGroupSub) return;
+        audioGroupSub.innerHTML = '<option value="">请选择单元</option>';
+        audioGroupSub.disabled = true;
+        const createSubGroupBtn = document.getElementById('create-sub-group-btn');
+        if (createSubGroupBtn) createSubGroupBtn.disabled = true;
+    }
+    // 以下代码原本应在表单初始化函数内，这里注释掉以修复语法错误
+    // const saveDraftBtn = document.createElement('button');
+    // saveDraftBtn.type = 'button';
+    // saveDraftBtn.className = 'btn btn-secondary';
+    // saveDraftBtn.textContent = '手动保存';
+    // saveDraftBtn.onclick = saveDraft;
+    // submitBtn.parentNode.insertBefore(saveDraftBtn, submitBtn.nextSibling);
+    // loadDraft();
+    // startAutoSave();
 
     // 保存草稿
     function saveDraft() {
@@ -1004,48 +846,113 @@
 
     // 初始化合集选择器
     function initGroupSelector() {
-        // 加载合集数据
-        loadGroupsData();
-        
-        // 加载大合集列表
         loadMainGroups();
-        
-        // 事件监听器：大合集选择变化
         audioGroupMain.addEventListener('change', (e) => {
             loadSubGroups(e.target.value);
         });
-        
-        // 事件监听器：合集类型选择变化
-        groupTypeSelect.addEventListener('change', (e) => {
-            if (e.target.value === 'sub') {
-                mainGroupSelectContainer.style.display = 'block';
-            } else {
-                mainGroupSelectContainer.style.display = 'none';
-            }
-        });
-        
-        // 事件监听器：创建大合集按钮
-        createMainGroupBtn.addEventListener('click', () => {
-            showCreateGroupModal('main');
-        });
-        
-        // 事件监听器：创建小合集按钮
-        createSubGroupBtn.addEventListener('click', () => {
-            showCreateGroupModal('sub');
-        });
-        
-        // 事件监听器：提交创建合集
-        submitCreateGroupBtn.addEventListener('click', createGroup);
-        
-        // 事件监听器：取消创建合集
-        cancelCreateGroupBtn.addEventListener('click', hideCreateGroupModal);
-        
+        // 变量获取（每次都重新获取，防止为null）
+        const getEl = id => document.getElementById(id);
+        const createMainGroupBtn = getEl('create-main-group-btn');
+        const cancelCreateGroupBtn = getEl('cancel-create-group');
+        const submitCreateGroupBtn = getEl('submit-create-group');
+        const modalOverlay = getEl('modal-overlay');
+        // 事件监听器：创建课程按钮
+        if (createMainGroupBtn && modalOverlay) createMainGroupBtn.onclick = () => { modalOverlay.classList.add('active'); };
+        // 事件监听器：取消按钮
+        if (cancelCreateGroupBtn && modalOverlay) cancelCreateGroupBtn.onclick = () => {
+            modalOverlay.classList.remove('active');
+            getEl('create-group-msg').style.display = 'none';
+        };
         // 事件监听器：点击模态框外部关闭
-        modalOverlay.addEventListener('click', (e) => {
+        if (modalOverlay) modalOverlay.onclick = (e) => {
             if (e.target === modalOverlay) {
-                hideCreateGroupModal();
+                modalOverlay.classList.remove('active');
+                getEl('create-group-msg').style.display = 'none';
             }
-        });
+        };
+        // 事件监听器：提交创建课程
+        if (submitCreateGroupBtn && modalOverlay) submitCreateGroupBtn.onclick = async () => {
+            const title = getEl('new-program-title').value.trim();
+            const introduction = getEl('new-program-intro').value.trim() || '';
+            const faq = getEl('new-program-faq').value.trim();
+            const coverUrl = getEl('new-program-cover').value.trim();
+            const tagIds = getEl('new-program-tags').value.trim().split(',').filter(x=>x).map(x=>parseInt(x));
+            const msgBox = getEl('create-group-msg');
+            msgBox.style.display = 'none';
+            // 自动获取创建者ID
+            let creatorId = null;
+            try {
+                // 常见存储字段，按优先级依次尝试
+                creatorId = localStorage.getItem('userId')
+                    || localStorage.getItem('id')
+                    || (function(){
+                        try {
+                            const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+                            return userInfo && (userInfo.id || userInfo.userId);
+                        } catch(e) { return null; }
+                    })();
+                creatorId = parseInt(creatorId);
+            } catch(e) { creatorId = null; }
+            if (!title) {
+                msgBox.textContent = '标题为必填';
+                msgBox.className = 'message error';
+                msgBox.style.display = 'block';
+                return;
+            }
+            if (!creatorId || isNaN(creatorId)) {
+                msgBox.textContent = '未检测到有效的创建者ID，请重新登录';
+                msgBox.className = 'message error';
+                msgBox.style.display = 'block';
+                return;
+            }
+            const token = localStorage.getItem('access_token') || localStorage.getItem('authToken') || '';
+            try {
+                const res = await fetch('http://localhost:8080/programs', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify({ title, introduction, faq, coverUrl, creatorId, tagIds })
+                });
+                const data = await res.json();
+                console.log('创建课程返回', data);
+                // 兼容多种后端返回结构
+                const isSuccess = (data && (
+                    data.code === 0 ||
+                    data.success === true ||
+                    data.message === 'success' ||
+                    (typeof data === 'object' && data.id) // 有id字段也算成功
+                ));
+                if (isSuccess) {
+                    msgBox.textContent = '创建成功！';
+                    msgBox.className = 'message success';
+                    msgBox.style.display = 'block';
+                    // 刷新课程下拉框并选中新建项（兼容不同结构）
+                    await loadMainGroups();
+                    const audioGroupMain2 = document.getElementById('audio-group-main');
+                    if (audioGroupMain2) {
+                        if (data.data && (data.data.programId || data.data.id)) {
+                            audioGroupMain2.value = data.data.programId || data.data.id;
+                        } else if (data.id) {
+                            audioGroupMain2.value = data.id;
+                        }
+                    }
+                    setTimeout(() => {
+                        modalOverlay.classList.remove('active');
+                        msgBox.style.display = 'none';
+                    }, 1200);
+                } else {
+                    msgBox.textContent = '创建失败：' + (data && (data.message || JSON.stringify(data)) || '未知错误');
+                    msgBox.className = 'message error';
+                    msgBox.style.display = 'block';
+                }
+            } catch (err) {
+                msgBox.textContent = '网络或服务器错误：' + (err.message || err);
+                msgBox.className = 'message error';
+                msgBox.style.display = 'block';
+            }
+        };
     }
 
     // 格式化时间
@@ -1077,33 +984,74 @@
             }
             
             // 正常上传流程
+            // ====== 真正上传音频文件到后端 ======
+            const file = fileInput.files[0];
+            if (!file) {
+                msgBox.className = 'message error';
+                msgBox.textContent = '请选择音频文件';
+                msgBox.style.display = 'block';
+                return;
+            }
+            const formData = new FormData();
+            formData.append('audio', file);
+            formData.append('title', audioTitle.value);
+            formData.append('description', audioDescription.value);
+            formData.append('category', audioCategory.value);
+            formData.append('mainGroup', audioGroupMain.value);
+            formData.append('subGroup', audioGroupSub.value);
+
             msgBox.className = 'message info';
             msgBox.textContent = '开始上传...';
             msgBox.style.display = 'block';
-
             progressContainer.style.display = 'block';
-            let p = 0;
-            const timer = setInterval(() => {
-                p = Math.min(100, p + Math.floor(Math.random() * 15) + 5);
-                progressFill.style.width = p + '%';
-                progressText.textContent = p + '%';
-                if (p >= 100) {
-                    clearInterval(timer);
-                    msgBox.className = 'message success';
-                    msgBox.textContent = '上传成功！';
-                    msgBox.style.display = 'block';
-                    
-                    // 如果是草稿模式，删除本地存储的草稿
-                    if (isDraftMode) {
-                        localStorage.removeItem(draftId);
-                    }
-                    
-                    // 5秒后跳转到我的作品页面
-                    setTimeout(() => {
-                        window.location.href = 'my-works.html';
-                    }, 5000);
+            progressFill.style.width = '0%';
+            progressText.textContent = '0%';
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', '/api/upload/audio', true);
+            const token = localStorage.getItem('access_token') || localStorage.getItem('authToken');
+            if (token) xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+            xhr.upload.onprogress = function(e) {
+                if (e.lengthComputable) {
+                    const percent = Math.round((e.loaded / e.total) * 100);
+                    progressFill.style.width = percent + '%';
+                    progressText.textContent = percent + '%';
                 }
-            }, 500);
+            };
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    try {
+                        const res = JSON.parse(xhr.responseText);
+                        if (res.code === 0) {
+                            msgBox.className = 'message success';
+                            msgBox.textContent = '上传成功！';
+                            msgBox.style.display = 'block';
+                            // 跳转到我的作品页面
+                            setTimeout(() => {
+                                window.location.href = 'my-works.html';
+                            }, 2000);
+                        } else {
+                            msgBox.className = 'message error';
+                            msgBox.textContent = res.message || '上传失败';
+                            msgBox.style.display = 'block';
+                        }
+                    } catch (err) {
+                        msgBox.className = 'message error';
+                        msgBox.textContent = '上传失败，服务器响应异常';
+                        msgBox.style.display = 'block';
+                    }
+                } else {
+                    msgBox.className = 'message error';
+                    msgBox.textContent = '上传失败，网络或服务器错误';
+                    msgBox.style.display = 'block';
+                }
+            };
+            xhr.onerror = function() {
+                msgBox.className = 'message error';
+                msgBox.textContent = '上传失败，网络错误';
+                msgBox.style.display = 'block';
+            };
+            xhr.send(formData);
         }
     });
 
@@ -1125,10 +1073,25 @@
     });
 
     // 页面加载完成后初始化
+    // 健壮的页面初始化方案
+    function initPage() {
+        // 草稿功能安全调用（如无实现也不会报错）
+        try { loadDraft && loadDraft(); } catch(e) { console.warn('loadDraft异常', e); }
+        try { startAutoSave && startAutoSave(); } catch(e) { console.warn('startAutoSave异常', e); }
+        // 其它初始化逻辑可在此补充
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         initPage();
-        initGroupSelector();
+        setTimeout(() => {
+            try {
+                initGroupSelector();
+            } catch(e) {
+                console.error('initGroupSelector 错误:', e);
+            }
+        }, 0);
     });
+    console.log('>>> initGroupSelector executed');
 </script>
 
 <!-- PlayBar 业务脚本（完整替换为 PlayBar.html 版本） -->

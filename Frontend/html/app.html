@@ -248,6 +248,129 @@
       }
     }
   </style>
+</style>
+
+<!-- 登录广播监听与 UI 更新脚本 -->
+<script>
+// 登录广播增强脚本
+(function(){
+  // 将 auth-section 完全替换为个人中心按钮（不会遗留 test5）
+  function showPersonalCenter(userInfo) {
+    const place = document.getElementById('auth-section');
+    const btnHtml = `<button id="logout-btn" class="submit-btn">退出登录</button>`;
+    if (place) {
+      place.innerHTML = btnHtml;
+      const logoutBtn = document.getElementById('logout-btn');
+      logoutBtn && logoutBtn.addEventListener('click', function(e){
+        e.preventDefault();
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('userInfo');
+        sessionStorage.removeItem('userProfile');
+        place.innerHTML = `<a href="login.html" data-page="login.html"><button class="submit-btn">登录/注册</button></a>`;
+        const iframe = document.getElementById('page-frame');
+        if (iframe) iframe.src = 'index.html';
+      });
+    } else {
+      const root = document.querySelector('.user-functions') || document.body;
+      if (root) {
+        const btn = document.createElement('button');
+        btn.id = 'logout-btn';
+        btn.className = 'submit-btn';
+        btn.textContent = '退出登录';
+        btn.onclick = function(e){
+          e.preventDefault();
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('userInfo');
+          sessionStorage.removeItem('userProfile');
+          btn.outerHTML = `<a href="login.html" data-page="login.html"><button class="submit-btn">登录/注册</button></a>`;
+          const iframe = document.getElementById('page-frame');
+          if (iframe) iframe.src = 'index.html';
+        };
+        root.appendChild(btn);
+      }
+    }
+
+    // 尝试移除页面上其他“test5”文本节点或 id 为 test5 的元素（防止重复显示）
+    try {
+      const byId = document.getElementById('test5');
+      if (byId) byId.remove();
+    } catch(e){}
+    // 另外按文本查找（谨慎）：移除首个包含 "test5" 的元素（如果确实是遗留）
+    try {
+      const els = Array.from(document.querySelectorAll('body *'));
+      const found = els.find(el => (el.textContent || '').trim() === 'test5');
+      if (found) found.remove();
+    } catch(e){}
+  }
+
+  // 确保 iframe 立即加载 index.html（相对路径），如需改路径请自行替换为 '/html/index.html' 等
+  function ensureIframeShowsIndex() {
+    const iframe = document.getElementById('page-frame') || document.querySelector('iframe');
+    if (!iframe) return;
+    try {
+      // 如果当前 src 不是 index.html，就强制设置并触发加载
+      const cur = (iframe.getAttribute('src') || '').split('?')[0];
+      if (cur !== 'index.html') {
+        iframe.src = 'index.html';
+      } else {
+        // 如果已经是 index.html，尝试 reload 子文档（若同源）
+        try { iframe.contentWindow && iframe.contentWindow.location && iframe.contentWindow.location.reload(); } catch(e) {}
+      }
+    } catch(e){}
+  }
+
+  // 接收到登录广播后的统一处理
+  function handleAuthUpdate(payload) {
+    if (!payload) return;
+    try {
+      // 1) 更新顶部为个人中心、移除test5
+      showPersonalCenter(payload.userInfo || {});
+      // 2) 立刻让 iframe 显示 index 页面
+      ensureIframeShowsIndex();
+    } catch (e) {
+      console.error('handleAuthUpdate error', e);
+    }
+  }
+
+  // 本地直接调用接口（如果登录在同一 window）
+  window.__auth_local_update = function(payload) { handleAuthUpdate(payload); };
+
+  // 监听 postMessage（login 页面会发 AUTH_UPDATE）
+  window.addEventListener('message', function(ev){
+    if (!ev || !ev.data) return;
+    var data = ev.data;
+    try { if (typeof data === 'string') data = JSON.parse(data); } catch(e){}
+    if (!data || data.type !== 'AUTH_UPDATE') return;
+    handleAuthUpdate(data);
+  });
+
+  // 页面加载时检查 localStorage（防止登录已发生但没有 message）
+  window.addEventListener('DOMContentLoaded', function(){
+    try {
+      const token = localStorage.getItem('authToken');
+      const userRaw = sessionStorage.getItem('userProfile') || localStorage.getItem('userInfo');
+      const userInfo = userRaw ? JSON.parse(userRaw) : null;
+      if (token) {
+        // 小延迟确保 DOM 已就绪
+        setTimeout(()=> handleAuthUpdate({ type:'AUTH_UPDATE', token, userInfo }), 50);
+      }
+    } catch(e){}
+  });
+
+  // 监听 storage（跨 tab）
+  window.addEventListener('storage', function(e){
+    if (!e) return;
+    if (e.key === 'authToken' || e.key === 'userProfile' || e.key === 'userInfo') {
+      try {
+        const token = localStorage.getItem('authToken');
+        const userRaw = sessionStorage.getItem('userProfile') || localStorage.getItem('userInfo');
+        const userInfo = userRaw ? JSON.parse(userRaw) : null;
+        handleAuthUpdate({ type:'AUTH_UPDATE', token, userInfo });
+      } catch(err){}
+    }
+  });
+})();
+</script>
 </head>
 <body>
     <!-- 顶部导航栏 -->
@@ -507,45 +630,37 @@
     const rateBtn = document.getElementById('pv-rate-btn');
     const rateText = document.getElementById('rate-text');
     const muteBtn = document.getElementById('pv-mute');
-    const volIcon = document.getElementById('vol-icon');
-    const modeBtn = document.getElementById('pv-mode-btn');
-    const modePop = document.getElementById('mode-pop');
-    const ratePop = document.getElementById('rate-pop');
-    const playerBar = document.getElementById('pv-player');
-    const appFrameWrap = document.getElementById('app-frame-wrap');
-
-    // ============ 更新播放栏状态 ============
-    function updatePlayerState(newState) {
-      console.log('更新播放栏状态:', newState);
-      playerState = newState;
-      
-      switch(newState) {
-        case 'visible-playing':
-          // 显示播放栏，继续播放
-          playerBar.classList.remove('hidden');
-          appFrameWrap.style.height = 'calc(100vh - 96px)';
-          // 不自动播放，保持当前播放状态
-          break;
-          
-        case 'hidden-playing':
-          // 隐藏播放栏，继续播放
-          playerBar.classList.add('hidden');
-          appFrameWrap.style.height = '100vh';
-          // 不自动播放，保持当前播放状态
-          break;
-          
-        case 'hidden-paused':
-          // 隐藏播放栏，暂停播放
-          playerBar.classList.add('hidden');
-          appFrameWrap.style.height = '100vh';
-          pauseTrack();
-          break;
-          
-        default:
-          console.warn('未知的播放栏状态:', newState, '，使用默认状态: visible-playing');
-          playerBar.classList.remove('hidden');
-          appFrameWrap.style.height = 'calc(100vh - 96px)';
-          break;
+    const place = document.getElementById('auth-section');
+    const btnHtml = `<button id="logout-btn" class="submit-btn">退出登录</button>`;
+    if (place) {
+      place.innerHTML = btnHtml;
+      const logoutBtn = document.getElementById('logout-btn');
+      logoutBtn && logoutBtn.addEventListener('click', function(e){
+        e.preventDefault();
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('userInfo');
+        sessionStorage.removeItem('userProfile');
+        place.innerHTML = `<a href="login.html" data-page="login.html"><button class="submit-btn">登录/注册</button></a>`;
+        const iframe = document.getElementById('page-frame');
+        if (iframe) iframe.src = 'index.html';
+      });
+    } else {
+      const root = document.querySelector('.user-functions') || document.body;
+      if (root) {
+        const btn = document.createElement('button');
+        btn.id = 'logout-btn';
+        btn.className = 'submit-btn';
+        btn.textContent = '退出登录';
+        btn.onclick = function(e){
+          e.preventDefault();
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('userInfo');
+          sessionStorage.removeItem('userProfile');
+          btn.outerHTML = `<a href="login.html" data-page="login.html"><button class="submit-btn">登录/注册</button></a>`;
+          const iframe = document.getElementById('page-frame');
+          if (iframe) iframe.src = 'index.html';
+        };
+        root.appendChild(btn);
       }
     }
 
@@ -1058,7 +1173,7 @@
       notifyPlayerPage();
     }, 1000);
   })();
-  </script>
+</script>
 
 
 <!-- 登录状态检查脚本 -->

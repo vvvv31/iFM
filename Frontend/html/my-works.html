@@ -405,13 +405,46 @@
         <section class="user-info">
             <div class="avatar-wrapper" onclick="openEditModal('avatar')" title="点击修改头像">
                 <div class="avatar" id="userAvatar"></div>
-                <div class="avatar-edit-overlay">
-                    <i class="fas fa-camera"></i>
-                </div>
             </div>
             <div class="user-detail">
                 <div class="username-wrapper">
                     <div class="username" id="displayUsername">用户名</div>
+                    <script>
+                    function getUsernameFromStorage() {
+                        let username = '';
+                        try {
+                            let userProfile = sessionStorage.getItem('userProfile');
+                            if (userProfile) {
+                                let obj = JSON.parse(userProfile);
+                                if (obj.username) return obj.username;
+                                if (obj.name) return obj.name;
+                            }
+                        } catch(e){}
+                        try {
+                            let userInfo = localStorage.getItem('userInfo');
+                            if (userInfo) {
+                                let obj = JSON.parse(userInfo);
+                                if (obj.username) return obj.username;
+                                if (obj.name) return obj.name;
+                            }
+                        } catch(e){}
+                        return '';
+                    }
+                    function updateDisplayUsername() {
+                        var el = document.getElementById('displayUsername');
+                        var username = getUsernameFromStorage();
+                        el.textContent = username || '未登录';
+                    }
+                    if(document.readyState === 'loading') {
+                        document.addEventListener('DOMContentLoaded', updateDisplayUsername);
+                    } else {
+                        updateDisplayUsername();
+                    }
+                    window.addEventListener('storage', updateDisplayUsername);
+                    window.addEventListener('DOMContentLoaded', function() {
+                        setTimeout(updateDisplayUsername, 0);
+                    });
+                    </script>
                     <button class="edit-username-btn" onclick="openEditModal('username')" title="编辑资料">
                         <i class="fas fa-pen"></i>
                     </button>
@@ -908,12 +941,7 @@
                     </div>
                 </div>
             `;
-            
-            // 更新用户信息区
-            const usernameElement = document.querySelector('.username');
-            if (usernameElement) {
-                usernameElement.textContent = '已登录用户';
-            }
+            // 不再覆盖 .username 的内容，保持真实用户名
         }
     }
     

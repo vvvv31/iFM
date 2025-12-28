@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>创建节目 - 星之声</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        body { background: #fff8f0; font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif; }
+        .container { max-width: 500px; margin: 40px auto; background: #fff; border-radius: 12px; box-shadow: 0 4px 24px #ff98001a; padding: 32px; }
+        h1 { text-align: center; color: #ff9800; margin-bottom: 32px; }
+        .form-group { margin-bottom: 22px; }
+        label { display: block; margin-bottom: 8px; color: #ff9800; font-weight: 500; }
+        input, textarea { width: 100%; padding: 10px 14px; border: 1px solid #ffd699; border-radius: 8px; font-size: 15px; background: #fff8e1; }
+        textarea { min-height: 80px; resize: vertical; }
+        .btn { width: 100%; background: linear-gradient(90deg,#ff9800,#ff5722); color: #fff; border: none; border-radius: 8px; padding: 14px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 10px; }
+        .btn:active { background: #ff9800; }
+        .msg { margin: 18px 0 0; padding: 12px; border-radius: 8px; font-size: 15px; display: none; }
+        .msg.success { background: #f1f8e9; color: #33691e; border-left: 4px solid #8bc34a; }
+        .msg.error { background: #ffebee; color: #b71c1c; border-left: 4px solid #f44336; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>创建新节目</h1>
+    <form id="programForm">
+        <div class="form-group">
+            <label for="title">节目标题</label>
+            <input type="text" id="title" required placeholder="请输入节目标题">
+        </div>
+        <div class="form-group">
+            <label for="introduction">简介</label>
+            <textarea id="introduction" required placeholder="请输入节目简介"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="faq">常见问题</label>
+            <textarea id="faq" placeholder="可选，常见问题"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="coverUrl">封面图片URL</label>
+            <input type="text" id="coverUrl" placeholder="http://...jpg/png">
+        </div>
+        <div class="form-group">
+            <label for="tagIds">标签ID（用英文逗号分隔）</label>
+            <input type="text" id="tagIds" placeholder="如 1,2,3">
+        </div>
+        <div class="form-group">
+            <label for="creatorId">创建者ID</label>
+            <input type="number" id="creatorId" required placeholder="请输入你的用户ID">
+        </div>
+        <button type="submit" class="btn">提交</button>
+        <div id="msg" class="msg"></div>
+    </form>
+</div>
+<script>
+const form = document.getElementById('programForm');
+const msg = document.getElementById('msg');
+form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    msg.style.display = 'none';
+    const title = document.getElementById('title').value.trim();
+    const introduction = document.getElementById('introduction').value.trim();
+    const faq = document.getElementById('faq').value.trim();
+    const coverUrl = document.getElementById('coverUrl').value.trim();
+    const tagIds = document.getElementById('tagIds').value.trim().split(',').filter(x=>x).map(x=>parseInt(x));
+    const creatorId = parseInt(document.getElementById('creatorId').value);
+    if (!title || !introduction || !creatorId) {
+        msg.textContent = '标题、简介、创建者ID为必填';
+        msg.className = 'msg error';
+        msg.style.display = 'block';
+        return;
+    }
+    const token = localStorage.getItem('access_token') || localStorage.getItem('authToken') || '';
+    try {
+        const res = await axios.post('/programs', {
+            title, introduction, faq, coverUrl, creatorId, tagIds
+        }, {
+            headers: { 'Authorization': 'Bearer ' + token }
+        });
+        if (res.data && res.data.code === 0) {
+            msg.textContent = '创建成功！节目ID：' + (res.data.data && res.data.data.programId);
+            msg.className = 'msg success';
+            msg.style.display = 'block';
+            form.reset();
+        } else {
+            msg.textContent = '创建失败：' + (res.data && res.data.message || '未知错误');
+            msg.className = 'msg error';
+            msg.style.display = 'block';
+        }
+    } catch (err) {
+        msg.textContent = '网络或服务器错误：' + (err.response && err.response.data && err.response.data.message || err.message);
+        msg.className = 'msg error';
+        msg.style.display = 'block';
+    }
+});
+</script>
+</body>
+</html>

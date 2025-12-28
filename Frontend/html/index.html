@@ -1,3 +1,16 @@
+<script>
+    (function(){
+        let userInfo = sessionStorage.getItem('userProfile') || localStorage.getItem('userInfo');
+        let username = '未登录';
+        try {
+            if(userInfo) username = JSON.parse(userInfo).username || JSON.parse(userInfo).name || '未登录';
+        } catch(e){}
+        document.addEventListener('DOMContentLoaded', function(){
+            var el = document.getElementById('displayUsername');
+            if(el) el.textContent = username;
+        });
+    })();
+</script>
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -1185,9 +1198,6 @@
         <section class="user-info">
             <div class="avatar-wrapper" onclick="openEditModal('avatar')" title="点击修改头像">
                 <div class="avatar" id="userAvatar"></div>
-                <div class="avatar-edit-overlay">
-                    <i class="fas fa-camera"></i>
-                </div>
             </div>
             <div class="user-detail">
                 <div class="username-wrapper">

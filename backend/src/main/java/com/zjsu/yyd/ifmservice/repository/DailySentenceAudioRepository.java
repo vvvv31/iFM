@@ -1,6 +1,6 @@
 package com.zjsu.yyd.ifmservice.repository;
 
-import com.zjsu.yyd.ifmservice.model.DailySentenceAudio;
+import com.zjsu.yyd.ifmservice.model.dailySentence.DailySentenceAudio;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,7 +1,7 @@
 package com.zjsu.yyd.ifmservice.service;
 
-import com.zjsu.yyd.ifmservice.model.AudioDTO;
-import com.zjsu.yyd.ifmservice.model.Program;
+import com.zjsu.yyd.ifmservice.model.audio.AudioDTO;
+import com.zjsu.yyd.ifmservice.model.program.Program;
 import com.zjsu.yyd.ifmservice.model.audio.Audio;
 import com.zjsu.yyd.ifmservice.model.audio.CreateAudioRequest;
 import com.zjsu.yyd.ifmservice.model.audio.UpdateAudioRequest;

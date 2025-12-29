@@ -1,8 +1,7 @@
 package com.zjsu.yyd.ifmservice.service;
 
-import com.zjsu.yyd.ifmservice.model.DailySentenceAudio;
+import com.zjsu.yyd.ifmservice.model.dailySentence.DailySentenceAudio;
 import com.zjsu.yyd.ifmservice.model.DailySentenceAudioDTO;
-import com.zjsu.yyd.ifmservice.model.SpeechScoreResult;
 import com.zjsu.yyd.ifmservice.repository.DailySentenceAudioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

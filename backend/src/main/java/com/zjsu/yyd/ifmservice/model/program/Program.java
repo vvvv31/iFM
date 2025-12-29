@@ -1,5 +1,7 @@
-package com.zjsu.yyd.ifmservice.model;
+// Program.java
+package com.zjsu.yyd.ifmservice.model.program;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.zjsu.yyd.ifmservice.model.Tag;
 import com.zjsu.yyd.ifmservice.model.audio.Audio;
 import jakarta.persistence.*;
@@ -61,6 +63,7 @@ public class Program {
 
     /** 课程下的音频列表 */
     @OneToMany(mappedBy = "program", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference // 解决无限递归
     private List<Audio> audios;
 
     /** 创建时间 */

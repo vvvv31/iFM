@@ -1,7 +1,7 @@
 package com.zjsu.yyd.ifmservice.service;
 
-import com.zjsu.yyd.ifmservice.model.Program;
-import com.zjsu.yyd.ifmservice.model.ProgramDTO;
+import com.zjsu.yyd.ifmservice.model.program.Program;
+import com.zjsu.yyd.ifmservice.model.program.ProgramDTO;
 import com.zjsu.yyd.ifmservice.repository.ProgramRepository;
 import com.zjsu.yyd.ifmservice.repository.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;

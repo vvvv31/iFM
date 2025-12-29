@@ -1,4 +1,4 @@
-package com.zjsu.yyd.ifmservice.model;
+package com.zjsu.yyd.ifmservice.model.dailySentence;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;

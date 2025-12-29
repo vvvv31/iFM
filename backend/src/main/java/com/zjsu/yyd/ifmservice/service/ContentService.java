@@ -3,7 +3,7 @@ package com.zjsu.yyd.ifmservice.service;
 import com.zjsu.yyd.ifmservice.model.content.Banner;
 import com.zjsu.yyd.ifmservice.model.content.Category;
 import com.zjsu.yyd.ifmservice.model.content.Episode;
-import com.zjsu.yyd.ifmservice.model.Program;
+import com.zjsu.yyd.ifmservice.model.program.Program;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

@@ -1,6 +1,6 @@
 package com.zjsu.yyd.ifmservice.controller;
 
-import com.zjsu.yyd.ifmservice.model.DailySentence;
+import com.zjsu.yyd.ifmservice.model.dailySentence.DailySentence;
 import com.zjsu.yyd.ifmservice.model.DailySentenceDTO;
 import com.zjsu.yyd.ifmservice.model.Result;
 import com.zjsu.yyd.ifmservice.service.DailySentenceService;

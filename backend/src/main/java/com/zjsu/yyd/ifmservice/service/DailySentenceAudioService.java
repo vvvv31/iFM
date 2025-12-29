@@ -1,8 +1,7 @@
 package com.zjsu.yyd.ifmservice.service;
 
-import com.zjsu.yyd.ifmservice.model.DailySentenceAudio;
-import com.zjsu.yyd.ifmservice.model.DailySentenceAudioDTO;
-import com.zjsu.yyd.ifmservice.model.SpeechScoreResult;
+import com.zjsu.yyd.ifmservice.model.dailySentenceAudio.DailySentenceAudio;
+import com.zjsu.yyd.ifmservice.model.dailySentenceAudio.DailySentenceAudioDTO;
 import com.zjsu.yyd.ifmservice.repository.DailySentenceAudioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.util.List;
+import java.util.Random;
 
 @Service
 public class DailySentenceAudioService {
@@ -164,6 +164,35 @@ public class DailySentenceAudioService {
 //            throw new RuntimeException("音频评分失败: " + e.getMessage(), e);
 //        }
 //    }
+
+    /**
+     * 自动评分（假数据版，用于占位）
+     */
+    public DailySentenceAudio fakeEvaluate(Long audioId) {
+        DailySentenceAudio audio = get(audioId);
+
+        Random random = new Random();
+
+        // 生成中等偏上的伪随机分数
+        double accuracyScore = 70 + random.nextDouble() * 20;   // 70 ~ 90
+        double fluencyScore = 65 + random.nextDouble() * 20;    // 65 ~ 85
+        double standardScore = 60 + random.nextDouble() * 20;   // 60 ~ 80
+
+        // 保留一位小数，看起来更真实
+        accuracyScore = Math.round(accuracyScore * 10.0) / 10.0;
+        fluencyScore = Math.round(fluencyScore * 10.0) / 10.0;
+        standardScore = Math.round(standardScore * 10.0) / 10.0;
+
+        audio.setAccuracyScore(accuracyScore);
+        audio.setFluencyScore(fluencyScore);
+        audio.setStandardScore(standardScore);
+
+        // 使用你已有的总分计算逻辑
+        audio.calculateTotalScore();
+
+        return dailySentenceAudioRepository.save(audio);
+    }
+
 
 
 }

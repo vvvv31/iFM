@@ -1,8 +1,8 @@
 package com.zjsu.yyd.ifmservice.controller;
 
-import com.zjsu.yyd.ifmservice.model.ProgramDTO;
+import com.zjsu.yyd.ifmservice.model.program.ProgramDTO;
 import com.zjsu.yyd.ifmservice.model.Result;
-import com.zjsu.yyd.ifmservice.model.Program;
+import com.zjsu.yyd.ifmservice.model.program.Program;
 import com.zjsu.yyd.ifmservice.service.ProgramService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;

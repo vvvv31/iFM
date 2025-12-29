@@ -1,9 +1,8 @@
 package com.zjsu.yyd.ifmservice.controller;
 
-import com.zjsu.yyd.ifmservice.model.DailySentenceAudio;
-import com.zjsu.yyd.ifmservice.model.DailySentenceAudioDTO;
+import com.zjsu.yyd.ifmservice.model.dailySentenceAudio.DailySentenceAudio;
+import com.zjsu.yyd.ifmservice.model.dailySentenceAudio.DailySentenceAudioDTO;
 import com.zjsu.yyd.ifmservice.model.Result;
-import com.zjsu.yyd.ifmservice.model.SpeechScoreResult;
 import com.zjsu.yyd.ifmservice.service.DailySentenceAudioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -71,9 +70,13 @@ public class DailySentenceAudioController {
         return Result.success(dailySentenceAudioService.listByUserId(userId));
     }
 
-//    @Operation(summary = "根据音频ID进行自动评分")
-//    @GetMapping("/{id}/evaluate")
-//    public Result<SpeechScoreResult> evaluate(@PathVariable Long id) {
-//        return Result.success(dailySentenceAudioService.evaluate(id));
-//    }
+    @Operation(summary = "根据音频ID进行自动评分（假数据）")
+    @GetMapping("/{id}/evaluate")
+    public Result<DailySentenceAudio> evaluate(@PathVariable Long id) {
+        return Result.success(dailySentenceAudioService.fakeEvaluate(id));
+    }
+
+
+
+
 }

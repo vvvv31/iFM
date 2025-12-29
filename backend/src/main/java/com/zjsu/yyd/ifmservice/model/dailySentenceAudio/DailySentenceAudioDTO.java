@@ -1,4 +1,4 @@
-package com.zjsu.yyd.ifmservice.model;
+package com.zjsu.yyd.ifmservice.model.dailySentenceAudio;
 
 /**
  * 每日一句音频 DTO

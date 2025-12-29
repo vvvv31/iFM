@@ -1,6 +1,6 @@
 package com.zjsu.yyd.ifmservice.repository;
 
-import com.zjsu.yyd.ifmservice.model.Program;
+import com.zjsu.yyd.ifmservice.model.program.Program;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

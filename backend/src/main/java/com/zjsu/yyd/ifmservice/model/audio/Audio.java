@@ -1,12 +1,16 @@
+// Audio.java
 package com.zjsu.yyd.ifmservice.model.audio;
 
-import com.zjsu.yyd.ifmservice.model.Program;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.zjsu.yyd.ifmservice.model.program.Program;
+
 import jakarta.persistence.*;
+import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-
+@Data
 @Entity
 @Table(name = "audios")
 public class Audio {
@@ -42,6 +46,7 @@ public class Audio {
 
     @ManyToOne
     @JoinColumn(name = "program_id")
+    @JsonBackReference // 解决无限递归
     private Program program;
 
     @CreationTimestamp
@@ -50,133 +55,6 @@ public class Audio {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    // Getter and Setter methods
-    public Long getAudioId() {
-        return audioId;
-    }
-
-    public void setAudioId(Long audioId) {
-        this.audioId = audioId;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public String getCoverUrl() {
-        return coverUrl;
-    }
-
-    public void setCoverUrl(String coverUrl) {
-        this.coverUrl = coverUrl;
-    }
-
-    public Long getDuration() {
-        return duration;
-    }
-
-    public void setDuration(Long duration) {
-        this.duration = duration;
-    }
-
-    public Long getCreatorId() {
-        return creatorId;
-    }
-
-    public void setCreatorId(Long creatorId) {
-        this.creatorId = creatorId;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    public Integer getPlayCount() {
-        return playCount;
-    }
-
-    public void setPlayCount(Integer playCount) {
-        this.playCount = playCount;
-    }
-
-    public Integer getLikeCount() {
-        return likeCount;
-    }
-
-    public void setLikeCount(Integer likeCount) {
-        this.likeCount = likeCount;
-    }
-
-    public Integer getCommentCount() {
-        return commentCount;
-    }
-
-    public void setCommentCount(Integer commentCount) {
-        this.commentCount = commentCount;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    // 版本2新增字段的Getter和Setter方法
-    public String getFilePath() {
-        return filePath;
-    }
-
-    public void setFilePath(String filePath) {
-        this.filePath = filePath;
-    }
-
-    public String getLyricPath() {
-        return lyricPath;
-    }
-
-    public void setLyricPath(String lyricPath) {
-        this.lyricPath = lyricPath;
-    }
-
-    public Program getProgram() {
-        return program;
-    }
-
-    public void setProgram(Program program) {
-        this.program = program;
-    }
+    // Getter 和 Setter 略，与原来一致
+    // ...
 }

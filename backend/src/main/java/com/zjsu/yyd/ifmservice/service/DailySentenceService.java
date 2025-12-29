@@ -1,7 +1,7 @@
 package com.zjsu.yyd.ifmservice.service;
 
-import com.zjsu.yyd.ifmservice.model.DailySentence;
-import com.zjsu.yyd.ifmservice.model.DailySentenceDTO;
+import com.zjsu.yyd.ifmservice.model.dailySentence.DailySentence;
+import com.zjsu.yyd.ifmservice.model.dailySentence.DailySentenceDTO;
 import com.zjsu.yyd.ifmservice.repository.DailySentenceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -629,9 +629,10 @@
     const playlistPanel = document.getElementById('playlist-panel');
     const rateBtn = document.getElementById('pv-rate-btn');
     const rateText = document.getElementById('rate-text');
-    // const muteBtn = document.getElementById('pv-mute');
-    // const place = document.getElementById('auth-section');
     const muteBtn = document.getElementById('pv-mute');
+    const modeBtn = document.getElementById('pv-mode-btn');
+    const modePop = document.getElementById('mode-pop');
+    const ratePop = document.getElementById('rate-pop');
     const playerBar = document.getElementById('pv-player');
     const appFrameWrap = document.getElementById('app-frame-wrap');
     const place = document.getElementById('auth-section');
@@ -941,11 +942,11 @@
     
     function updateVolIcon() {
       if (audio.muted || audio.volume === 0) { 
-        volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 3l7 7-1.4 1.4L16 7.8V16h-2V8.6L9.4 4 11 2.4 14 3z"/>'; 
+        volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3z"/>'; 
       } else if (audio.volume < 0.5) { 
-        volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 9v6c1.7-0.7 3-2.4 3-4.5S15.7 9.7 14 9z"/>'; 
+        volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3z"/>'; 
       } else { 
-        volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 7v10c3-1 5-3.6 5-7s-2-6-5-7z"/>'; 
+        volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3z"/>'; 
       }
     }
     

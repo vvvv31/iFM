@@ -629,7 +629,11 @@
     const playlistPanel = document.getElementById('playlist-panel');
     const rateBtn = document.getElementById('pv-rate-btn');
     const rateText = document.getElementById('rate-text');
+    // const muteBtn = document.getElementById('pv-mute');
+    // const place = document.getElementById('auth-section');
     const muteBtn = document.getElementById('pv-mute');
+    const playerBar = document.getElementById('pv-player');
+    const appFrameWrap = document.getElementById('app-frame-wrap');
     const place = document.getElementById('auth-section');
     const btnHtml = `<button id="logout-btn" class="submit-btn">退出登录</button>`;
     if (place) {
@@ -695,6 +699,33 @@
     // 点击封面或标题跳转到播放页
     coverEl.addEventListener('click', jumpToPlayerPage);
     titleEl.addEventListener('click', jumpToPlayerPage);
+
+    // ============ 定义 updatePlayerState 函数（必须在 handlePageState 之前） ============
+    function updatePlayerState(newState) {
+      console.log('更新播放栏状态:', newState);
+      playerState = newState;
+      
+      switch(newState) {
+        case 'visible-playing':
+          playerBar.classList.remove('hidden');
+          appFrameWrap.style.height = 'calc(100vh - 96px)';
+          break;
+        case 'hidden-playing':
+          playerBar.classList.add('hidden');
+          appFrameWrap.style.height = '100vh';
+          break;
+        case 'hidden-paused':
+          playerBar.classList.add('hidden');
+          appFrameWrap.style.height = '100vh';
+          pauseTrack();
+          break;
+        default:
+          console.warn('未知的播放栏状态:', newState);
+          playerBar.classList.remove('hidden');
+          appFrameWrap.style.height = 'calc(100vh - 96px)';
+          break;
+      }
+    }
 
     // ============ 监听来自iframe页面的消息 ============
     window.addEventListener('message', function(event) {

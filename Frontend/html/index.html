@@ -1,15 +1,5 @@
 <script>
-    (function(){
-        let userInfo = sessionStorage.getItem('userProfile') || localStorage.getItem('userInfo');
-        let username = '未登录';
-        try {
-            if(userInfo) username = JSON.parse(userInfo).username || JSON.parse(userInfo).name || '未登录';
-        } catch(e){}
-        document.addEventListener('DOMContentLoaded', function(){
-            var el = document.getElementById('displayUsername');
-            if(el) el.textContent = username;
-        });
-    })();
+    // 用户名和头像显示已移至页面底部的 loadUserProfile 函数统一处理
 </script>
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -761,6 +751,37 @@
             align-items: center;
         }
 
+        /* 头像样式 */
+        .avatar-wrapper {
+            width: 60px;
+            height: 60px;
+            padding: 2px;       
+            box-sizing: border-box;
+            border-radius: 50%;
+            background: transparent;  /* 去掉默认渐变 */
+            border: 1px solid #ff8c00;
+            box-shadow: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+
+        .avatar {
+            width: calc(100% - 4px);   
+            height: calc(100% - 4px);
+            border-radius: 50%;
+            background: transparent;  /* 颜色由 JS 设置 */
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
         .avatar-preview {
             width: 100px;
             height: 100px;
@@ -787,7 +808,12 @@
         }
 
         .avatar-emoji {
-            font-size: 50px;
+            font-size: 28px;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            line-height: 1;
+            text-align: center;
         }
 
         .avatar-placeholder {
@@ -1557,7 +1583,228 @@ document.addEventListener('DOMContentLoaded', function() {
 })();
 
 /* PlayBar 业务脚本（来自 PlayBar.html） */
+// ;(function () {
+//   /* 两个样例音频 */
+//   const playlist = [
+//     { title: "Kalimba (Test Audio)", artist: "Ninja Tuna", cover: "", src: "https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3" },
+//     { title: "Sample MP3 (700KB)", artist: "Sample Source", cover: "", src: "https://sample.cat/downloads/file_example_MP3_700KB.mp3" }
+//   ];
+
+//   let currentIndex = 0;
+//   let isPlaying = false;
+//   let isDraggingProgress = false;
+//   let isDraggingVolume = false;
+//   let playMode = 'list'; /* single | list | shuffle */
+
+//   const audio = document.getElementById('pv-audio');
+//   const playBtn = document.getElementById('pv-play');
+//   const playIcon = document.getElementById('play-icon');
+//   const prevBtn = document.getElementById('pv-prev');
+//   const nextBtn = document.getElementById('pv-next');
+//   const titleEl = document.getElementById('pv-title');
+//   const artistEl = document.getElementById('pv-artist');
+//   const coverEl = document.getElementById('pv-cover');
+//   const progressEl = document.getElementById('pv-progress');
+//   const progressFill = document.getElementById('pv-progress-fill');
+//   const knobEl = document.getElementById('pv-knob');
+//   const timeCurEl = document.getElementById('pv-time-cur');
+//   const timeTotalEl = document.getElementById('pv-time-total');
+//   const volEl = document.getElementById('pv-volume');
+//   const volFill = document.getElementById('pv-volume-fill');
+//   const listBtn = document.getElementById('pv-list-btn');
+//   const playlistPanel = document.getElementById('playlist-panel');
+//   const rateBtn = document.getElementById('pv-rate-btn');
+//   const rateText = document.getElementById('rate-text');
+//   const muteBtn = document.getElementById('pv-mute');
+//   const volIcon = document.getElementById('vol-icon');
+//   const modeBtn = document.getElementById('pv-mode-btn');
+//   const modePop = document.getElementById('mode-pop');
+//   const ratePop = document.getElementById('rate-pop');
+
+//   function loadTrack(index) {
+//     const track = playlist[index];
+//     titleEl.innerText = track.title;
+//     artistEl.innerText = track.artist;
+//     coverEl.style.backgroundImage = track.cover ? `url('${track.cover}')` : '';
+//     audio.src = track.src;
+//     document.querySelectorAll('.playlist-item').forEach((item, i) => item.classList.toggle('active', i === index));
+//   }
+//   function playTrack() { audio.play().then(() => { isPlaying = true; updatePlayIcon(); }).catch(err => console.error("Play failed:", err)); }
+//   function pauseTrack() { audio.pause(); isPlaying = false; updatePlayIcon(); }
+//   function togglePlay() { isPlaying ? pauseTrack() : playTrack(); }
+//   function updatePlayIcon() {
+//     playIcon.setAttribute('viewBox','0 0 24 24');
+//     playIcon.innerHTML = isPlaying ? '<path d="M6 5h4v14H6V5zm8 0h4v14h-4V5z"/>' : '<path d="M8 5v14l11-7z"/>';
+//   }
+//   function formatTime(s) { if (!s || isNaN(s)) return "00:00"; const m = Math.floor(s/60), ss = Math.floor(s%60); return `${m<10?'0':''}${m}:${ss<10?'0':''}${ss}`; }
+//   function stopWrap(handler) { return function(e){ e.stopPropagation(); handler(e); }; }
+
+//   /* 控件事件（阻止冒泡） */
+//   playBtn && playBtn.addEventListener('click', stopWrap(togglePlay));
+//   prevBtn && prevBtn.addEventListener('click', stopWrap(() => prevByMode()));
+//   nextBtn && nextBtn.addEventListener('click', stopWrap(() => nextByMode()));
+//   muteBtn && muteBtn.addEventListener('click', stopWrap(() => {
+//     audio.muted = !audio.muted;
+//     if (audio.muted || audio.volume === 0) { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 3l7 7-1.4 1.4L16 7.8V16h-2V8.6L9.4 4 11 2.4 14 3z"/>'; }
+//     else if (audio.volume < 0.5) { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 9v6c1.7-0.7 3-2.4 3-4.5S15.7 9.7 14 9z"/>'; }
+//     else { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 7v10c3-1 5-3.6 5-7s-2-6-5-7z"/>'; }
+//   }));
+
+//   /* 模式弹层 */
+//   modeBtn && modeBtn.addEventListener('click', stopWrap(() => {
+//     ratePop && ratePop.classList.remove('show');
+//     modePop && modePop.classList.toggle('show');
+//   }));
+//   modePop && modePop.addEventListener('click', stopWrap((e) => {
+//     const item = e.target.closest('.mode-item');
+//     if (!item) return;
+//     playMode = item.getAttribute('data-mode');
+//     document.querySelectorAll('#mode-pop .mode-item').forEach(el => el.classList.toggle('active', el === item));
+//     modePop.classList.remove('show');
+//   }));
+
+//   /* 倍速弹层 */
+//   rateBtn && rateBtn.addEventListener('click', stopWrap(() => {
+//     modePop && modePop.classList.remove('show');
+//     ratePop && ratePop.classList.toggle('show');
+//   }));
+//   ratePop && ratePop.addEventListener('click', stopWrap((e) => {
+//     const item = e.target.closest('.rate-item');
+//     if (!item) return;
+//     const r = parseFloat(item.getAttribute('data-rate'));
+//     audio.playbackRate = r;
+//     rateText.innerText = r.toFixed(1) + 'x';
+//     document.querySelectorAll('#rate-pop .rate-item').forEach(el => el.classList.toggle('active', el === item));
+//     ratePop.classList.remove('show');
+//   }));
+
+//   /* 点击其他区域关闭弹层 */
+//   document.addEventListener('click', (e) => {
+//     if (!modeBtn.contains(e.target) && !modePop.contains(e.target)) modePop.classList.remove('show');
+//     if (!rateBtn.contains(e.target) && !ratePop.contains(e.target)) ratePop.classList.remove('show');
+//   });
+
+//   /* 音频事件与切歌模式 */
+//   audio.addEventListener('timeupdate', () => {
+//     if (isDraggingProgress) return;
+//     const percent = (audio.currentTime / audio.duration) * 100;
+//     progressFill.style.width = `${percent}%`;
+//     knobEl.style.left = `${percent}%`;
+//     timeCurEl.innerText = formatTime(audio.currentTime);
+//   });
+//   audio.addEventListener('loadedmetadata', () => { timeTotalEl.innerText = formatTime(audio.duration); });
+//   audio.addEventListener('ended', () => {
+//     if (playMode === 'single') { audio.currentTime = 0; playTrack(); }
+//     else { nextByMode(); }
+//   });
+//   function prevByMode() {
+//     if (playMode === 'shuffle') currentIndex = Math.floor(Math.random() * playlist.length);
+//     else currentIndex = (currentIndex - 1 + playlist.length) % playlist.length;
+//     loadTrack(currentIndex); playTrack();
+//   }
+//   function nextByMode() {
+//     if (playMode === 'shuffle') currentIndex = Math.floor(Math.random() * playlist.length);
+//     else currentIndex = (currentIndex + 1) % playlist.length;
+//     loadTrack(currentIndex); playTrack();
+//   }
+
+//   /* 进度条拖拽（鼠标/触摸） */
+//   function handleProgressInput(clientX) {
+//     const rect = progressEl.getBoundingClientRect();
+//     let x = clientX - rect.left; x = Math.max(0, Math.min(x, rect.width));
+//     const pct = (x / rect.width) * 100; progressFill.style.width = `${pct}%`; knobEl.style.left = `${pct}%`;
+//     return (x / rect.width) * audio.duration;
+//   }
+//   progressEl.addEventListener('mousedown', stopWrap((e) => { isDraggingProgress = true; progressEl.classList.add('dragging'); const t = handleProgressInput(e.clientX); timeCurEl.innerText = formatTime(t); }));
+//   document.addEventListener('mousemove', (e) => { if (isDraggingProgress) { e.preventDefault(); const t = handleProgressInput(e.clientX); timeCurEl.innerText = formatTime(t); } });
+//   document.addEventListener('mouseup', (e) => { if (isDraggingProgress) { isDraggingProgress = false; progressEl.classList.remove('dragging'); const t = handleProgressInput(e.clientX); if (isFinite(t)) audio.currentTime = t; } });
+
+//   function getTouchX(e){ return (e.touches&&e.touches[0]) ? e.touches[0].clientX : (e.changedTouches&&e.changedTouches[0] ? e.changedTouches[0].clientX : 0); }
+//   progressEl.addEventListener('touchstart', (e) => { e.stopPropagation(); e.preventDefault(); isDraggingProgress = true; const t = handleProgressInput(getTouchX(e)); timeCurEl.innerText = formatTime(t); }, { passive:false });
+//   document.addEventListener('touchmove', (e) => { if (isDraggingProgress) { e.preventDefault(); const t = handleProgressInput(getTouchX(e)); timeCurEl.innerText = formatTime(t); } }, { passive:false });
+//   document.addEventListener('touchend', (e) => { if (isDraggingProgress) { isDraggingProgress = false; const t = handleProgressInput(getTouchX(e)); if (isFinite(t)) audio.currentTime = t; } }, { passive:false });
+
+//   /* 音量拖拽（鼠标/触摸） */
+//   function handleVolumeInput(clientX) {
+//     const rect = volEl.getBoundingClientRect();
+//     let x = clientX - rect.left; x = Math.max(0, Math.min(x, rect.width));
+//     const p = x / rect.width; volFill.style.width = `${p * 100}%`; audio.volume = p;
+//     if (p === 0 || audio.muted) { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 3l7 7-1.4 1.4L16 7.8V16h-2V8.6L9.4 4 11 2.4 14 3z"/>'; }
+//     else if (p < 0.5) { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 9v6c1.7-0.7 3-2.4 3-4.5S15.7 9.7 14 9z"/>'; }
+//     else { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 7v10c3-1 5-3.6 5-7s-2-6-5-7z"/>'; }
+//   }
+//   volEl.addEventListener('mousedown', stopWrap((e) => { isDraggingVolume = true; handleVolumeInput(e.clientX); }));
+//   document.addEventListener('mousemove', (e) => { if (isDraggingVolume) { e.preventDefault(); handleVolumeInput(e.clientX); } });
+//   document.addEventListener('mouseup', () => { isDraggingVolume = false; });
+//   volEl.addEventListener('touchstart', (e) => { e.stopPropagation(); e.preventDefault(); isDraggingVolume = true; handleVolumeInput(getTouchX(e)); }, { passive:false });
+//   document.addEventListener('touchmove', (e) => { if (isDraggingVolume) { e.preventDefault(); handleVolumeInput(getTouchX(e)); } }, { passive:false });
+//   document.addEventListener('touchend', () => { isDraggingVolume = false; }, { passive:false });
+
+//   /* 简易播放列表开关（示例） */
+//   listBtn.addEventListener('click', stopWrap(() => {
+//     playlistPanel.style.display = playlistPanel.style.display === 'block' ? 'none' : 'block';
+//   }));
+
+//   /* 提供给 HTML 的播放列表切换 */
+//   window.playIndex = function(index){ currentIndex = index; loadTrack(currentIndex); playTrack(); }
+
+//   /* 新增：封面/标题跳转到 player.html 携带参数 */
+//   function openPlayerPageWithData(openInNewTab = false) {
+//     try {
+//       const params = new URLSearchParams();
+//       params.set('course', titleEl.innerText || '');
+//       params.set('chapterIndex', String(currentIndex || 0));
+//       const safePlaylist = playlist.map((p, i) => ({
+//         id: p.id || ('p' + i),
+//         title: p.title || (`Track ${i+1}`),
+//         src: p.src || '',
+//         duration: p.durationText || p.duration || ''
+//       }));
+//       params.set('chapters', encodeURIComponent(JSON.stringify(safePlaylist)));
+//       const url = 'player.html?' + params.toString();
+//       if (openInNewTab) window.open(url, '_blank');
+//       else window.location.href = url;
+//     } catch (err) {
+//       try {
+//         const params = new URLSearchParams();
+//         params.set('course', titleEl.innerText || '');
+//         params.set('chapterIndex', String(currentIndex || 0));
+//         const url = 'player.html?' + params.toString();
+//         if (openInNewTab) window.open(url, '_blank');
+//         else window.location.href = url;
+//       } catch (_) { /* ignore */ }
+//     }
+//   }
+
+//   /* 绑定封面与标题点击事件（支持键盘） */
+//   if (coverEl) {
+//     coverEl.addEventListener('click', stopWrap(() => openPlayerPageWithData(false)));
+//     coverEl.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openPlayerPageWithData(false); } });
+//   }
+//   if (titleEl) {
+//     titleEl.addEventListener('click', stopWrap(() => openPlayerPageWithData(false)));
+//     titleEl.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openPlayerPageWithData(false); } });
+//   }
+
+//   /* 初始化第一首 */
+//   loadTrack(currentIndex);
+// })();
+// ...existing code...
+/* PlayBar 业务脚本（来自 PlayBar.html） */
 ;(function () {
+  // Guard: index.html 没有播放栏 DOM 时直接跳过
+  const audio     = document.getElementById('pv-audio');
+  const playBtn   = document.getElementById('pv-play');
+  const prevBtn   = document.getElementById('pv-prev');
+  const nextBtn   = document.getElementById('pv-next');
+  const progressEl= document.getElementById('pv-progress');
+  const volEl     = document.getElementById('pv-volume');
+  const modeBtn   = document.getElementById('pv-mode-btn');
+  const modePop   = document.getElementById('mode-pop');
+  const rateBtn   = document.getElementById('pv-rate-btn');
+  const ratePop   = document.getElementById('rate-pop');
+  if (!audio) { return; }
+
   /* 两个样例音频 */
   const playlist = [
     { title: "Kalimba (Test Audio)", artist: "Ninja Tuna", cover: "", src: "https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3" },
@@ -1568,205 +1815,86 @@ document.addEventListener('DOMContentLoaded', function() {
   let isPlaying = false;
   let isDraggingProgress = false;
   let isDraggingVolume = false;
-  let playMode = 'list'; /* single | list | shuffle */
+  let playMode = 'list';
 
-  const audio = document.getElementById('pv-audio');
-  const playBtn = document.getElementById('pv-play');
-  const playIcon = document.getElementById('play-icon');
-  const prevBtn = document.getElementById('pv-prev');
-  const nextBtn = document.getElementById('pv-next');
-  const titleEl = document.getElementById('pv-title');
-  const artistEl = document.getElementById('pv-artist');
-  const coverEl = document.getElementById('pv-cover');
-  const progressEl = document.getElementById('pv-progress');
-  const progressFill = document.getElementById('pv-progress-fill');
-  const knobEl = document.getElementById('pv-knob');
-  const timeCurEl = document.getElementById('pv-time-cur');
+  const playIcon    = document.getElementById('play-icon');
+  const titleEl     = document.getElementById('pv-title');
+  const artistEl    = document.getElementById('pv-artist');
+  const coverEl     = document.getElementById('pv-cover');
+  const progressFill= document.getElementById('pv-progress-fill');
+  const knobEl      = document.getElementById('pv-knob');
+  const timeCurEl   = document.getElementById('pv-time-cur');
   const timeTotalEl = document.getElementById('pv-time-total');
-  const volEl = document.getElementById('pv-volume');
-  const volFill = document.getElementById('pv-volume-fill');
-  const listBtn = document.getElementById('pv-list-btn');
+  const volFill     = document.getElementById('pv-volume-fill');
+  const listBtn     = document.getElementById('pv-list-btn');
   const playlistPanel = document.getElementById('playlist-panel');
-  const rateBtn = document.getElementById('pv-rate-btn');
-  const rateText = document.getElementById('rate-text');
-  const muteBtn = document.getElementById('pv-mute');
-  const volIcon = document.getElementById('vol-icon');
-  const modeBtn = document.getElementById('pv-mode-btn');
-  const modePop = document.getElementById('mode-pop');
-  const ratePop = document.getElementById('rate-pop');
+  const rateText    = document.getElementById('rate-text');
+  const muteBtn     = document.getElementById('pv-mute');
+  const volIcon     = document.getElementById('vol-icon');
 
-  function loadTrack(index) {
-    const track = playlist[index];
-    titleEl.innerText = track.title;
-    artistEl.innerText = track.artist;
-    coverEl.style.backgroundImage = track.cover ? `url('${track.cover}')` : '';
-    audio.src = track.src;
-    document.querySelectorAll('.playlist-item').forEach((item, i) => item.classList.toggle('active', i === index));
-  }
-  function playTrack() { audio.play().then(() => { isPlaying = true; updatePlayIcon(); }).catch(err => console.error("Play failed:", err)); }
-  function pauseTrack() { audio.pause(); isPlaying = false; updatePlayIcon(); }
-  function togglePlay() { isPlaying ? pauseTrack() : playTrack(); }
-  function updatePlayIcon() {
-    playIcon.setAttribute('viewBox','0 0 24 24');
-    playIcon.innerHTML = isPlaying ? '<path d="M6 5h4v14H6V5zm8 0h4v14h-4V5z"/>' : '<path d="M8 5v14l11-7z"/>';
-  }
-  function formatTime(s) { if (!s || isNaN(s)) return "00:00"; const m = Math.floor(s/60), ss = Math.floor(s%60); return `${m<10?'0':''}${m}:${ss<10?'0':''}${ss}`; }
-  function stopWrap(handler) { return function(e){ e.stopPropagation(); handler(e); }; }
+  function stopWrap(handler){ return function(e){ e.stopPropagation(); handler(e); } }
+  function formatTime(s){ if (!s || isNaN(s)) return "00:00"; const m=Math.floor(s/60), ss=Math.floor(s%60); return `${m<10?'0':''}${m}:${ss<10?'0':''}${ss}`; }
 
-  /* 控件事件（阻止冒泡） */
+  // 控件事件（空值保护）
   playBtn && playBtn.addEventListener('click', stopWrap(togglePlay));
   prevBtn && prevBtn.addEventListener('click', stopWrap(() => prevByMode()));
   nextBtn && nextBtn.addEventListener('click', stopWrap(() => nextByMode()));
-  muteBtn && muteBtn.addEventListener('click', stopWrap(() => {
-    audio.muted = !audio.muted;
-    if (audio.muted || audio.volume === 0) { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 3l7 7-1.4 1.4L16 7.8V16h-2V8.6L9.4 4 11 2.4 14 3z"/>'; }
-    else if (audio.volume < 0.5) { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 9v6c1.7-0.7 3-2.4 3-4.5S15.7 9.7 14 9z"/>'; }
-    else { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 7v10c3-1 5-3.6 5-7s-2-6-5-7z"/>'; }
-  }));
+  muteBtn && muteBtn.addEventListener('click', stopWrap(() => { audio.muted = !audio.muted; updateVolIcon(); }));
 
-  /* 模式弹层 */
-  modeBtn.addEventListener('click', stopWrap(() => {
-    ratePop.classList.remove('show');
-    modePop.classList.toggle('show');
-  }));
-  modePop.addEventListener('click', stopWrap((e) => {
-    const item = e.target.closest('.mode-item');
-    if (!item) return;
-    playMode = item.getAttribute('data-mode');
-    document.querySelectorAll('#mode-pop .mode-item').forEach(el => el.classList.toggle('active', el === item));
-    modePop.classList.remove('show');
-  }));
+  // 模式/倍速弹层（空值保护）
+  modeBtn && modeBtn.addEventListener('click', stopWrap(() => { ratePop && ratePop.classList.remove('show'); modePop && modePop.classList.toggle('show'); }));
+  modePop && modePop.addEventListener('click', stopWrap((e) => { const item = e.target.closest('.mode-item'); if (!item) return; playMode = item.getAttribute('data-mode'); document.querySelectorAll('#mode-pop .mode-item').forEach(el => el.classList.toggle('active', el === item)); modePop.classList.remove('show'); }));
+  rateBtn && rateBtn.addEventListener('click', stopWrap(() => { modePop && modePop.classList.remove('show'); ratePop && ratePop.classList.toggle('show'); }));
+  ratePop && ratePop.addEventListener('click', stopWrap((e) => { const item = e.target.closest('.rate-item'); if (!item) return; const r = parseFloat(item.getAttribute('data-rate')); audio.playbackRate = r; rateText && (rateText.innerText = r.toFixed(1) + 'x'); document.querySelectorAll('#rate-pop .rate-item').forEach(el => el.classList.toggle('active', el === item)); ratePop.classList.remove('show'); }));
 
-  /* 倍速弹层 */
-  rateBtn.addEventListener('click', stopWrap(() => {
-    modePop.classList.remove('show');
-    ratePop.classList.toggle('show');
-  }));
-  ratePop.addEventListener('click', stopWrap((e) => {
-    const item = e.target.closest('.rate-item');
-    if (!item) return;
-    const r = parseFloat(item.getAttribute('data-rate'));
-    audio.playbackRate = r;
-    rateText.innerText = r.toFixed(1) + 'x';
-    document.querySelectorAll('#rate-pop .rate-item').forEach(el => el.classList.toggle('active', el === item));
-    ratePop.classList.remove('show');
-  }));
-
-  /* 点击其他区域关闭弹层 */
+  // 点击其他区域关闭弹层（空值保护）
   document.addEventListener('click', (e) => {
-    if (!modeBtn.contains(e.target) && !modePop.contains(e.target)) modePop.classList.remove('show');
-    if (!rateBtn.contains(e.target) && !ratePop.contains(e.target)) ratePop.classList.remove('show');
+    if (modeBtn && modePop && !modeBtn.contains(e.target) && !modePop.contains(e.target)) modePop.classList.remove('show');
+    if (rateBtn && ratePop && !rateBtn.contains(e.target) && !ratePop.contains(e.target)) ratePop.classList.remove('show');
   });
 
-  /* 音频事件与切歌模式 */
+  // 音频事件（空值保护）
   audio.addEventListener('timeupdate', () => {
     if (isDraggingProgress) return;
     const percent = (audio.currentTime / audio.duration) * 100;
-    progressFill.style.width = `${percent}%`;
-    knobEl.style.left = `${percent}%`;
-    timeCurEl.innerText = formatTime(audio.currentTime);
+    progressFill && (progressFill.style.width = `${percent}%`);
+    knobEl && (knobEl.style.left = `${percent}%`);
+    timeCurEl && (timeCurEl.innerText = formatTime(audio.currentTime));
   });
-  audio.addEventListener('loadedmetadata', () => { timeTotalEl.innerText = formatTime(audio.duration); });
-  audio.addEventListener('ended', () => {
-    if (playMode === 'single') { audio.currentTime = 0; playTrack(); }
-    else { nextByMode(); }
-  });
-  function prevByMode() {
-    if (playMode === 'shuffle') currentIndex = Math.floor(Math.random() * playlist.length);
-    else currentIndex = (currentIndex - 1 + playlist.length) % playlist.length;
-    loadTrack(currentIndex); playTrack();
-  }
-  function nextByMode() {
-    if (playMode === 'shuffle') currentIndex = Math.floor(Math.random() * playlist.length);
-    else currentIndex = (currentIndex + 1) % playlist.length;
-    loadTrack(currentIndex); playTrack();
+  audio.addEventListener('loadedmetadata', () => { timeTotalEl && (timeTotalEl.innerText = formatTime(audio.duration)); });
+  audio.addEventListener('ended', () => { if (playMode === 'single') { audio.currentTime = 0; playTrack(); } else { nextByMode(); } });
+
+  // 进度条（空值保护）
+  function handleProgressInput(clientX){ const rect = progressEl.getBoundingClientRect(); let x = clientX - rect.left; x = Math.max(0, Math.min(x, rect.width)); const pct = (x / rect.width) * 100; progressFill && (progressFill.style.width = `${pct}%`); knobEl && (knobEl.style.left = `${pct}%`); return (x / rect.width) * audio.duration; }
+  if (progressEl) {
+    progressEl.addEventListener('mousedown', stopWrap((e) => { isDraggingProgress = true; progressEl.classList.add('dragging'); const t = handleProgressInput(e.clientX); timeCurEl && (timeCurEl.innerText = formatTime(t)); }));
+    document.addEventListener('mousemove', (e) => { if (isDraggingProgress) { e.preventDefault(); const t = handleProgressInput(e.clientX); timeCurEl && (timeCurEl.innerText = formatTime(t)); } });
+    document.addEventListener('mouseup', (e) => { if (isDraggingProgress) { isDraggingProgress = false; progressEl.classList.remove('dragging'); const t = handleProgressInput(e.clientX); if (isFinite(t)) audio.currentTime = t; } });
   }
 
-  /* 进度条拖拽（鼠标/触摸） */
-  function handleProgressInput(clientX) {
-    const rect = progressEl.getBoundingClientRect();
-    let x = clientX - rect.left; x = Math.max(0, Math.min(x, rect.width));
-    const pct = (x / rect.width) * 100; progressFill.style.width = `${pct}%`; knobEl.style.left = `${pct}%`;
-    return (x / rect.width) * audio.duration;
-  }
-  progressEl.addEventListener('mousedown', stopWrap((e) => { isDraggingProgress = true; progressEl.classList.add('dragging'); const t = handleProgressInput(e.clientX); timeCurEl.innerText = formatTime(t); }));
-  document.addEventListener('mousemove', (e) => { if (isDraggingProgress) { e.preventDefault(); const t = handleProgressInput(e.clientX); timeCurEl.innerText = formatTime(t); } });
-  document.addEventListener('mouseup', (e) => { if (isDraggingProgress) { isDraggingProgress = false; progressEl.classList.remove('dragging'); const t = handleProgressInput(e.clientX); if (isFinite(t)) audio.currentTime = t; } });
-
-  function getTouchX(e){ return (e.touches&&e.touches[0]) ? e.touches[0].clientX : (e.changedTouches&&e.changedTouches[0] ? e.changedTouches[0].clientX : 0); }
-  progressEl.addEventListener('touchstart', (e) => { e.stopPropagation(); e.preventDefault(); isDraggingProgress = true; const t = handleProgressInput(getTouchX(e)); timeCurEl.innerText = formatTime(t); }, { passive:false });
-  document.addEventListener('touchmove', (e) => { if (isDraggingProgress) { e.preventDefault(); const t = handleProgressInput(getTouchX(e)); timeCurEl.innerText = formatTime(t); } }, { passive:false });
-  document.addEventListener('touchend', (e) => { if (isDraggingProgress) { isDraggingProgress = false; const t = handleProgressInput(getTouchX(e)); if (isFinite(t)) audio.currentTime = t; } }, { passive:false });
-
-  /* 音量拖拽（鼠标/触摸） */
-  function handleVolumeInput(clientX) {
-    const rect = volEl.getBoundingClientRect();
-    let x = clientX - rect.left; x = Math.max(0, Math.min(x, rect.width));
-    const p = x / rect.width; volFill.style.width = `${p * 100}%`; audio.volume = p;
-    if (p === 0 || audio.muted) { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 3l7 7-1.4 1.4L16 7.8V16h-2V8.6L9.4 4 11 2.4 14 3z"/>'; }
-    else if (p < 0.5) { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 9v6c1.7-0.7 3-2.4 3-4.5S15.7 9.7 14 9z"/>'; }
-    else { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 7v10c3-1 5-3.6 5-7s-2-6-5-7z"/>'; }
-  }
-  volEl.addEventListener('mousedown', stopWrap((e) => { isDraggingVolume = true; handleVolumeInput(e.clientX); }));
-  document.addEventListener('mousemove', (e) => { if (isDraggingVolume) { e.preventDefault(); handleVolumeInput(e.clientX); } });
-  document.addEventListener('mouseup', () => { isDraggingVolume = false; });
-  volEl.addEventListener('touchstart', (e) => { e.stopPropagation(); e.preventDefault(); isDraggingVolume = true; handleVolumeInput(getTouchX(e)); }, { passive:false });
-  document.addEventListener('touchmove', (e) => { if (isDraggingVolume) { e.preventDefault(); handleVolumeInput(getTouchX(e)); } }, { passive:false });
-  document.addEventListener('touchend', () => { isDraggingVolume = false; }, { passive:false });
-
-  /* 简易播放列表开关（示例） */
-  listBtn.addEventListener('click', stopWrap(() => {
-    playlistPanel.style.display = playlistPanel.style.display === 'block' ? 'none' : 'block';
-  }));
-
-  /* 提供给 HTML 的播放列表切换 */
-  window.playIndex = function(index){ currentIndex = index; loadTrack(currentIndex); playTrack(); }
-
-  /* 新增：封面/标题跳转到 player.html 携带参数 */
-  function openPlayerPageWithData(openInNewTab = false) {
-    try {
-      const params = new URLSearchParams();
-      params.set('course', titleEl.innerText || '');
-      params.set('chapterIndex', String(currentIndex || 0));
-      const safePlaylist = playlist.map((p, i) => ({
-        id: p.id || ('p' + i),
-        title: p.title || (`Track ${i+1}`),
-        src: p.src || '',
-        duration: p.durationText || p.duration || ''
-      }));
-      params.set('chapters', encodeURIComponent(JSON.stringify(safePlaylist)));
-      const url = 'player.html?' + params.toString();
-      if (openInNewTab) window.open(url, '_blank');
-      else window.location.href = url;
-    } catch (err) {
-      try {
-        const params = new URLSearchParams();
-        params.set('course', titleEl.innerText || '');
-        params.set('chapterIndex', String(currentIndex || 0));
-        const url = 'player.html?' + params.toString();
-        if (openInNewTab) window.open(url, '_blank');
-        else window.location.href = url;
-      } catch (_) { /* ignore */ }
-    }
+  // 音量（空值保护）
+  function handleVolumeInput(clientX){ const rect = volEl.getBoundingClientRect(); let x = clientX - rect.left; x = Math.max(0, Math.min(x, rect.width)); const p = x / rect.width; volFill && (volFill.style.width = `${p * 100}%`); audio.volume = p; updateVolIcon(); }
+  if (volEl) {
+    volEl.addEventListener('mousedown', stopWrap((e) => { isDraggingVolume = true; handleVolumeInput(e.clientX); }));
+    document.addEventListener('mousemove', (e) => { if (isDraggingVolume) { e.preventDefault(); handleVolumeInput(e.clientX); } });
+    document.addEventListener('mouseup', () => { isDraggingVolume = false; });
   }
 
-  /* 绑定封面与标题点击事件（支持键盘） */
-  if (coverEl) {
-    coverEl.addEventListener('click', stopWrap(() => openPlayerPageWithData(false)));
-    coverEl.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openPlayerPageWithData(false); } });
-  }
-  if (titleEl) {
-    titleEl.addEventListener('click', stopWrap(() => openPlayerPageWithData(false)));
-    titleEl.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openPlayerPageWithData(false); } });
-  }
+  // 其余播放控制/初始化保持不变
+  function loadTrack(index){ const track = playlist[index]; titleEl && (titleEl.innerText = track.title); artistEl && (artistEl.innerText = track.artist); coverEl && (coverEl.style.backgroundImage = track.cover ? `url('${track.cover}')` : ''); audio.src = track.src; document.querySelectorAll('.playlist-item').forEach((item,i)=>item.classList.toggle('active', i===index)); }
+  function playTrack(){ audio.play().then(()=>{ isPlaying = true; updatePlayIcon(); }).catch(()=>{}); }
+  function pauseTrack(){ audio.pause(); isPlaying = false; updatePlayIcon(); }
+  function togglePlay(){ isPlaying ? pauseTrack() : playTrack(); }
+  function updatePlayIcon(){ if (!playIcon) return; playIcon.setAttribute('viewBox','0 0 24 24'); playIcon.innerHTML = isPlaying ? '<path d="M6 5h4v14H6V5zm8 0h4v14h-4V5z"/>' : '<path d="M8 5v14l11-7z"/>'; }
+  function prevByMode(){ if (playMode==='shuffle') currentIndex = Math.floor(Math.random()*playlist.length); else currentIndex = (currentIndex-1+playlist.length)%playlist.length; loadTrack(currentIndex); playTrack(); }
+  function nextByMode(){ if (playMode==='shuffle') currentIndex = Math.floor(Math.random()*playlist.length); else currentIndex = (currentIndex+1)%playlist.length; loadTrack(currentIndex); playTrack(); }
 
-  /* 初始化第一首 */
   loadTrack(currentIndex);
 })();
 
 // 编辑用户资料模态框相关脚本
-// 用户资料数据
-let userProfile = {
+// 用户资料数据（使用 var 方便被内联 onclick 访问）
+var userProfile = {
   username: "已登录用户",
   avatarType: "emoji",
   avatarColor: "#FF8C00",
@@ -1778,33 +1906,85 @@ let userProfile = {
 function loadUserProfile() {
   const savedProfile = sessionStorage.getItem('userProfile');
   if (savedProfile) {
-    userProfile = JSON.parse(savedProfile);
+    try {
+      const parsed = JSON.parse(savedProfile);
+      if (parsed && typeof parsed === 'object') {
+        userProfile = parsed;
+      }
+    } catch (e) {
+      console.warn('解析 userProfile 失败:', e);
+    }
   } else {
     // 清除旧的 localStorage 数据
     localStorage.removeItem('userProfile');
+  }
+  // 确保 userProfile 总是一个对象
+  if (!userProfile || typeof userProfile !== 'object') {
+    userProfile = {
+      username: "已登录用户",
+      avatarType: "emoji",
+      avatarColor: "#FF8C00",
+      avatarEmoji: "😊",
+      avatarUrl: ""
+    };
   }
   updateDisplayedProfile();
 }
 
 // 更新页面上显示的用户资料
+// function updateDisplayedProfile() {
+//   const usernameEl = document.querySelector('.username');
+//   const avatarEl = document.querySelector('.avatar');
+  
+//   if (usernameEl) {
+//     usernameEl.textContent = userProfile.username;
+//   }
+  
+//   if (avatarEl) {
+//     if (userProfile.avatarType === "custom" && userProfile.avatarUrl) {
+//       avatarEl.innerHTML = `<img src="${userProfile.avatarUrl}" alt="用户头像" class="avatar-img">`;
+//     } else if (userProfile.avatarType === "color") {
+//       avatarEl.innerHTML = `<div class="avatar-color" style="background-color: ${userProfile.avatarColor};"></div>`;
+//     } else {
+//       avatarEl.innerHTML = `<div class="avatar-emoji" style="color: ${userProfile.avatarColor};">${userProfile.avatarEmoji}</div>`;
+//     }
+//   }
+// }
+// ...existing code...
+// ...existing code...
 function updateDisplayedProfile() {
   const usernameEl = document.querySelector('.username');
   const avatarEl = document.querySelector('.avatar');
+  const avatarWrapper = document.querySelector('.avatar-wrapper');
   
-  if (usernameEl) {
-    usernameEl.textContent = userProfile.username;
-  }
-  
-  if (avatarEl) {
+  if (usernameEl) usernameEl.textContent = userProfile.username;
+  if (avatarEl && avatarWrapper) {
+    avatarEl.innerHTML = '';
+    // 清空背景，去除遗留内联样式
+    avatarWrapper.removeAttribute('style');
+    avatarWrapper.style.background = 'transparent';
+    avatarEl.style.backgroundColor = 'transparent';
+
     if (userProfile.avatarType === "custom" && userProfile.avatarUrl) {
-      avatarEl.innerHTML = `<img src="${userProfile.avatarUrl}" alt="用户头像" class="avatar-img">`;
-    } else if (userProfile.avatarType === "color") {
-      avatarEl.innerHTML = `<div class="avatar-color" style="background-color: ${userProfile.avatarColor};"></div>`;
+      const img = document.createElement('img');
+      img.src = userProfile.avatarUrl;
+      img.alt = '用户头像';
+      img.className = 'avatar-img';
+      avatarEl.appendChild(img);
     } else {
-      avatarEl.innerHTML = `<div class="avatar-emoji" style="color: ${userProfile.avatarColor};">${userProfile.avatarEmoji}</div>`;
+      // 表情/纯色：只给内层上色
+      const color = userProfile.avatarColor || '#FF8C00';
+      avatarEl.style.backgroundColor = color;
+      if (userProfile.avatarType === "emoji") {
+        const emojiDiv = document.createElement('div');
+        emojiDiv.className = 'avatar-emoji';
+        emojiDiv.textContent = userProfile.avatarEmoji || '😊';
+        avatarEl.appendChild(emojiDiv);
+      }
     }
   }
 }
+// ...existing code...
 
 // 颜色变亮函数
 function lightenColor(color, percent) {
@@ -1818,18 +1998,42 @@ function lightenColor(color, percent) {
 }
 
 // 打开编辑模态框
+// function openEditModal() {
+//   const modalOverlay = document.getElementById('editModalOverlay');
+//   const modal = document.getElementById('editModal');
+//   const usernameInput = document.getElementById('usernameInput');
+//     const profile = window.userProfile || {};
+  
+//   // 设置当前用户名到输入框
+//     usernameInput.value = profile.username || '';
+//   usernameInput.focus();
+  
+//   // 显示模态框
+//   modalOverlay.classList.add('show');
+//   modal.classList.add('show');
+// }
+// 打开编辑模态框：同步控件并预览
 function openEditModal() {
   const modalOverlay = document.getElementById('editModalOverlay');
   const modal = document.getElementById('editModal');
   const usernameInput = document.getElementById('usernameInput');
-  
-  // 设置当前用户名到输入框
-  usernameInput.value = userProfile.username;
-  usernameInput.focus();
-  
-  // 显示模态框
-  modalOverlay.classList.add('show');
-  modal.classList.add('show');
+  const emojiPicker = document.getElementById('avatarEmojiPicker');
+  const colorPicker = document.getElementById('avatarColorPicker');
+  const typeEmoji = document.getElementById('avatarTypeEmoji');
+  const typeColor = document.getElementById('avatarTypeColor');
+  const typeCustom = document.getElementById('avatarTypeCustom');
+
+  const profile = window.userProfile || {};
+  if (usernameInput) usernameInput.value = profile.username || '';
+  if (emojiPicker)   emojiPicker.value   = profile.avatarEmoji || '😊';
+  if (colorPicker)   colorPicker.value   = profile.avatarColor || '#FF8C00';
+  if (profile.avatarType === 'color'  && typeColor)  typeColor.checked  = true;
+  else if (profile.avatarType === 'custom' && typeCustom) typeCustom.checked = true;
+  else if (typeEmoji) typeEmoji.checked = true;
+
+  updateAvatarPreview();
+  modalOverlay && modalOverlay.classList.add('show');
+  modal && modal.classList.add('show');
 }
 
 // 关闭编辑模态框
@@ -1841,32 +2045,55 @@ function closeEditModal() {
   modalOverlay.classList.remove('show');
 }
 
+// ...existing code...
 // 更新头像预览
 function updateAvatarPreview() {
   const preview = document.getElementById('avatarPreview');
-  const avatarType = document.querySelector('input[name="avatarType"]:checked').value;
+  if (!preview) return;
+  
+  const avatarTypeEl = document.querySelector('input[name="avatarType"]:checked');
+  if (!avatarTypeEl) return;
+  const avatarType = avatarTypeEl.value;
+  
+  // 确保 userProfile 存在
+  const profile = window.userProfile || {};
+  const colorPicker = document.getElementById('avatarColorPicker');
+  const emojiPicker = document.getElementById('avatarEmojiPicker');
   
   if (avatarType === "custom") {
     // 自定义头像预览
-    if (userProfile.avatarUrl) {
-      preview.innerHTML = `<img src="${userProfile.avatarUrl}" alt="头像预览" class="avatar-img">`;
+    if (profile.avatarUrl) {
+      preview.innerHTML = `<img src="${profile.avatarUrl}" alt="头像预览" class="avatar-img">`;
+      preview.style.backgroundColor = 'transparent';
     } else {
       preview.innerHTML = '<div class="avatar-placeholder">点击上传</div>';
+      preview.style.backgroundColor = '#f5f5f5';
     }
   } else if (avatarType === "color") {
     // 纯色头像预览
-    const colorPicker = document.getElementById('avatarColorPicker');
-    preview.innerHTML = `<div class="avatar-color" style="background-color: ${colorPicker.value};"></div>`;
+    preview.innerHTML = '';
+    preview.style.backgroundColor = colorPicker.value;
   } else {
-    // 表情头像预览
-    const emojiPicker = document.getElementById('avatarEmojiPicker');
-    const colorPicker = document.getElementById('avatarColorPicker');
-    preview.innerHTML = `<div class="avatar-emoji" style="color: ${colorPicker.value};">${emojiPicker.value}</div>`;
+    // 表情头像预览：表情 + 背景色
+    preview.innerHTML = `<div class="avatar-emoji">${emojiPicker.value}</div>`;
+    preview.style.backgroundColor = colorPicker.value;
   }
 }
+// ...existing code...
 
 // 选择预设头像
 function selectPresetAvatar(type, value) {
+  // 确保 userProfile 存在
+  if (!window.userProfile || typeof window.userProfile !== 'object') {
+    window.userProfile = {
+      username: "已登录用户",
+      avatarType: "emoji",
+      avatarColor: "#FF8C00",
+      avatarEmoji: "😊",
+      avatarUrl: ""
+    };
+  }
+  
   if (type === "emoji") {
     userProfile.avatarEmoji = value;
     userProfile.avatarType = "emoji";
@@ -2099,11 +2326,16 @@ function saveProfile() {
   const colorPicker = document.getElementById('avatarColorPicker');
   const emojiPicker = document.getElementById('avatarEmojiPicker');
   
-  // 更新用户资料
+// 更新用户资料
   userProfile.username = usernameInput.value;
   userProfile.avatarType = avatarType;
   userProfile.avatarColor = colorPicker.value;
   userProfile.avatarEmoji = emojiPicker.value;
+  
+  // 如果选择了非 custom 类型，清除 avatarUrl
+  if (avatarType !== 'custom') {
+    userProfile.avatarUrl = '';
+  }
   
   // 保存到 sessionStorage
   sessionStorage.setItem('userProfile', JSON.stringify(userProfile));

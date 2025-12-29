@@ -179,7 +179,7 @@
                 description: formData.get('description')
             };
             
-            fetch('http://localhost:8080/api/group/create', {
+            fetch('http://localhost:3000/api/group/create', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -206,7 +206,7 @@
          * 加载合集列表
          */
         function loadGroups() {
-            fetch('http://localhost:8080/api/group/user', {
+            fetch('http://localhost:3000/api/group/user', {
                 headers: {
                     'Authorization': `Bearer ${getAuthToken()}`
                 }

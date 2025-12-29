@@ -68,7 +68,7 @@
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>2.7.0</version>
+            <version>2.5.0</version>
         </dependency>
 
         <!-- JSON 序列化 -->
@@ -129,11 +129,11 @@
         </dependency>
 
         <!-- JSON -->
-        <dependency>
-            <groupId>com.alibaba.fastjson2</groupId>
-            <artifactId>fastjson2</artifactId>
-            <version>2.0.43</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.alibaba.fastjson2</groupId>-->
+<!--            <artifactId>fastjson2</artifactId>-->
+<!--            <version>2.0.43</version>-->
+<!--        </dependency>-->
 
         <!-- XML 解析 -->
         <dependency>

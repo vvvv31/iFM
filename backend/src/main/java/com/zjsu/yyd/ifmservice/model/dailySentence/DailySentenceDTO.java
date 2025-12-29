@@ -1,4 +1,4 @@
-package com.zjsu.yyd.ifmservice.model;
+package com.zjsu.yyd.ifmservice.model.dailySentence;
 
 /**
  * 每日一句 DTO

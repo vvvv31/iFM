@@ -1,4 +1,4 @@
-package com.zjsu.yyd.ifmservice.model.dailySentence;
+package com.zjsu.yyd.ifmservice.model.dailySentenceAudio;
 
 import jakarta.persistence.*;
 import lombok.Data;

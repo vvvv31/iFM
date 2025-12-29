@@ -48,4 +48,10 @@ public class ProgramController {
         programService.delete(id);
         return Result.success(null);
     }
+    @Operation(summary = "根据创作者ID获取该创作者的所有节目")
+    @GetMapping("/creator/{creatorId}")
+    public Result<List<Program>> listByCreatorId(@PathVariable Long creatorId) {
+        return Result.success(programService.listByCreatorId(creatorId));
+    }
+
 }

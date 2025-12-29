@@ -59,4 +59,11 @@ public class ProgramService {
     public void delete(Long id) {
         programRepository.deleteById(id);
     }
+
+
+    /** 根据创建者 ID 查询节目 */
+    public List<Program> listByCreatorId(Long creatorId) {
+        return programRepository.findByCreatorId(creatorId);
+    }
+
 }

@@ -1008,7 +1008,7 @@
             progressText.textContent = '0%';
 
             const xhr = new XMLHttpRequest();
-            xhr.open('POST', '/api/upload/audio', true);
+            xhr.open('POST', 'http://localhost:8080/api/upload/audio', true);
             const token = localStorage.getItem('access_token') || localStorage.getItem('authToken');
             if (token) xhr.setRequestHeader('Authorization', 'Bearer ' + token);
             xhr.upload.onprogress = function(e) {

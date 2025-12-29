@@ -1355,7 +1355,7 @@
                     setupEventListeners();
                     return;
                 }
-                fetch('/api/group/' + encodeURIComponent(groupIdFromUrl)).then(res => {
+                fetch('http://localhost:8080/api/group/' + encodeURIComponent(groupIdFromUrl)).then(res => {
                     if (res.ok) return res.json();
                     throw new Error('no-data');
                 }).then(json => {

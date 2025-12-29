@@ -110,7 +110,7 @@ async function loadWorkForEdit(workId) {
         }
         
         // 如果本地没有，尝试从服务器获取
-        const response = await fetch(`/api/audio/${workId}`, {
+        const response = await fetch(`http://localhost:8080/api/audio/${workId}`, {
             headers: {
                 'Authorization': `Bearer ${getAuthToken()}`,
                 'Accept': 'application/json'
@@ -455,7 +455,7 @@ function updateAudioFile(formData) {
         });
         
         // 打开连接并发送请求
-        xhr.open('PUT', `/api/audio/${editWorkId}`, true);
+        xhr.open('PUT', `http://localhost:8080/api/audio/${editWorkId}`, true);
         const token = getAuthToken();
         if (token) xhr.setRequestHeader('Authorization', `Bearer ${token}`);
         xhr.send(formData);
@@ -482,7 +482,7 @@ function handleUpdateSuccess(response) {
  */
 function loadUserGroups() {
     return new Promise((resolve, reject) => {
-        fetch('/api/group/user', {
+        fetch('http://localhost:8080/api/group/user', {
                 headers: {
                     'Authorization': `Bearer ${getAuthToken()}`,
                     'Accept': 'application/json'
@@ -570,8 +570,8 @@ function uploadAudioFile(formData) {
             reject(new Error('网络错误，上传失败'));
         });
         
-        // 打开连接并发送请求 (使用相对路径，便于部署到不同主机)
-        xhr.open('POST', '/api/upload/audio', true);
+        // 打开连接并发送请求
+        xhr.open('POST', 'http://localhost:8080/api/upload/audio', true);
         const token = getAuthToken();
         if (token) xhr.setRequestHeader('Authorization', `Bearer ${token}`);
         xhr.send(formData);
@@ -744,7 +744,7 @@ function initCreateGroupFeature() {
         
         try {
             // 发送创建合集请求
-            const response = await fetch('http://localhost:3000/api/group/create', {
+            const response = await fetch('http://localhost:8080/api/group/create', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

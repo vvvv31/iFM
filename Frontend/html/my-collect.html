@@ -433,7 +433,7 @@
         <section class="content-block">
             <div class="channel-cards">
                 <!-- 对应 program_list.html 中 ID: 1 的作品 -->
-                <div class="channel-card" data-course-id="1">
+                <div class="channel-card" data-course-id="1" onclick="goToProgramList(this)">
                     <div class="channel-thumbnail" style="background-image: url('../images/business_english.jpg');">
                         <div class="thumbnail-overlay">
                             <span class="play-icon">▶</span>
@@ -454,7 +454,7 @@
                 </div>
 
                 <!-- 对应 program_list.html 中 ID: 2 的作品 -->
-                <div class="channel-card" data-course-id="2">
+                <div class="channel-card" data-course-id="2" onclick="goToProgramList(this)">
                     <div class="channel-thumbnail" style="background-image: url('../images/daily_english.jpg');">
                         <div class="thumbnail-overlay">
                             <span class="play-icon">▶</span>
@@ -475,7 +475,7 @@
                 </div>
 
                 <!-- 对应 program_list.html 中 ID: 3 的作品 -->
-                <div class="channel-card" data-course-id="3">
+                <div class="channel-card" data-course-id="3" onclick="goToProgramList(this)">
                     <div class="channel-thumbnail" style="background-image: url('../images/listening_training.jpg');">
                         <div class="thumbnail-overlay">
                             <span class="play-icon">▶</span>
@@ -496,7 +496,7 @@
                 </div>
 
                 <!-- 对应 program_list.html 中 ID: 4 的作品 -->
-                <div class="channel-card" data-course-id="4">
+                <div class="channel-card" data-course-id="4" onclick="goToProgramList(this)">
                     <div class="channel-thumbnail" style="background-image: url('../images/travel_english.jpg');">
                         <div class="thumbnail-overlay">
                             <span class="play-icon">▶</span>
@@ -517,7 +517,7 @@
                 </div>
 
                 <!-- 对应 program_list.html 中 ID: 5 的作品 -->
-                <div class="channel-card" data-course-id="5">
+                <div class="channel-card" data-course-id="5" onclick="goToProgramList(this)">
                     <div class="channel-thumbnail" style="background-image: url('../images/workplace_english.jpg');">
                         <div class="thumbnail-overlay">
                             <span class="play-icon">▶</span>
@@ -636,6 +636,26 @@
             dropdown.style.display = 'none';
         }
     });
+
+    // 频道跳转函数
+    function goToProgramList(element) {
+        // 获取课程ID
+        const courseId = element.getAttribute('data-course-id');
+
+        // 根据课程ID决定跳转（传递课程名称作为参数）
+        const courses = {
+            '1': '商务英语会话技巧',
+            '2': '日常英语口语600句',
+            '3': '英语听力进阶训练',
+            '4': '旅游英语实用对话',
+            '5': '职场英语沟通技巧'
+        };
+
+        const courseName = courses[courseId] || '英语课程';
+
+        // 跳转到program_list.html，传递课程ID和课程名称作为URL参数
+        window.location.href = `program_list.html?course=${encodeURIComponent(courseName)}&id=${courseId}`;
+    }
 
     // 编辑模态框相关代码
     // 用户资料数据

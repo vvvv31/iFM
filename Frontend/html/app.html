@@ -285,90 +285,107 @@
           btn.outerHTML = `<a href="login.html" data-page="login.html"><button class="submit-btn">登录/注册</button></a>`;
           const iframe = document.getElementById('page-frame');
           if (iframe) iframe.src = 'index.html';
+          
+          // 重新初始化权限控制
+          updateUIForAuthState(false);
         };
         root.appendChild(btn);
       }
     }
+  
+  // 显示个人功能链接
+  updateUIForAuthState(true);
+}
 
-    // 尝试移除页面上其他“test5”文本节点或 id 为 test5 的元素（防止重复显示）
-    try {
-      const byId = document.getElementById('test5');
-      if (byId) byId.remove();
-    } catch(e){}
-    // 另外按文本查找（谨慎）：移除首个包含 "test5" 的元素（如果确实是遗留）
-    try {
-      const els = Array.from(document.querySelectorAll('body *'));
-      const found = els.find(el => (el.textContent || '').trim() === 'test5');
-      if (found) found.remove();
-    } catch(e){}
-  }
-
-  // 确保 iframe 立即加载 index.html（相对路径），如需改路径请自行替换为 '/html/index.html' 等
-  function ensureIframeShowsIndex() {
-    const iframe = document.getElementById('page-frame') || document.querySelector('iframe');
-    if (!iframe) return;
-    try {
-      // 如果当前 src 不是 index.html，就强制设置并触发加载
-      const cur = (iframe.getAttribute('src') || '').split('?')[0];
-      if (cur !== 'index.html') {
-        iframe.src = 'index.html';
-      } else {
-        // 如果已经是 index.html，尝试 reload 子文档（若同源）
-        try { iframe.contentWindow && iframe.contentWindow.location && iframe.contentWindow.location.reload(); } catch(e) {}
-      }
-    } catch(e){}
-  }
-
-  // 接收到登录广播后的统一处理
-  function handleAuthUpdate(payload) {
-    if (!payload) return;
-    try {
-      // 1) 更新顶部为个人中心、移除test5
-      showPersonalCenter(payload.userInfo || {});
-      // 2) 立刻让 iframe 显示 index 页面
-      ensureIframeShowsIndex();
-    } catch (e) {
-      console.error('handleAuthUpdate error', e);
+// 确保 iframe 立即加载 index.html（相对路径），如需改路径请自行替换为 '/html/index.html' 等
+function ensureIframeShowsIndex() {
+  const iframe = document.getElementById('page-frame') || document.querySelector('iframe');
+  if (!iframe) return;
+  try {
+    // 如果当前 src 不是 index.html，就强制设置并触发加载
+    const cur = (iframe.getAttribute('src') || '').split('?')[0];
+    if (cur !== 'index.html') {
+      iframe.src = 'index.html';
+    } else {
+      // 如果已经是 index.html，尝试 reload 子文档（若同源）
+      try { iframe.contentWindow && iframe.contentWindow.location && iframe.contentWindow.location.reload(); } catch(e) {}
     }
-  }
+  } catch(e){}
+}
 
-  // 本地直接调用接口（如果登录在同一 window）
-  window.__auth_local_update = function(payload) { handleAuthUpdate(payload); };
-
-  // 监听 postMessage（login 页面会发 AUTH_UPDATE）
-  window.addEventListener('message', function(ev){
-    if (!ev || !ev.data) return;
-    var data = ev.data;
-    try { if (typeof data === 'string') data = JSON.parse(data); } catch(e){}
-    if (!data || data.type !== 'AUTH_UPDATE') return;
-    handleAuthUpdate(data);
+// 根据登录状态更新UI
+function updateUIForAuthState(isLoggedIn) {
+  const protectedLinks = document.querySelectorAll('[id^="guest-"]');
+  const personalLinks = document.querySelectorAll('.user-functions .func-item');
+  
+  protectedLinks.forEach(link => {
+    if (isLoggedIn) {
+      // 登录后显示为个人功能链接
+      const newLink = link.cloneNode(true);
+      newLink.removeAttribute('id');
+      newLink.removeAttribute('title');
+      link.parentNode.replaceChild(newLink, link);
+    } else {
+      // 未登录时保持禁用状态
+      link.style.opacity = '0.5';
+      link.style.pointerEvents = 'auto'; // 允许点击但会触发权限检查
+    }
   });
+}
 
-  // 页面加载时检查 localStorage（防止登录已发生但没有 message）
-  window.addEventListener('DOMContentLoaded', function(){
+// 接收到登录广播后的统一处理
+function handleAuthUpdate(payload) {
+  if (!payload) return;
+  try {
+    // 1) 更新顶部为个人中心、移除test5
+    showPersonalCenter(payload.userInfo || {});
+    // 2) 立刻让 iframe 显示 index 页面
+    ensureIframeShowsIndex();
+  } catch (e) {
+    console.error('handleAuthUpdate error', e);
+  }
+}
+
+// 本地直接调用接口（如果登录在同一 window）
+window.__auth_local_update = function(payload) { handleAuthUpdate(payload); };
+
+// 监听 postMessage（login 页面会发 AUTH_UPDATE）
+window.addEventListener('message', function(ev){
+  if (!ev || !ev.data) return;
+  var data = ev.data;
+  try { if (typeof data === 'string') data = JSON.parse(data); } catch(e){}
+  if (!data || data.type !== 'AUTH_UPDATE') return;
+  handleAuthUpdate(data);
+});
+
+// 页面加载时检查 localStorage（防止登录已发生但没有 message）
+window.addEventListener('DOMContentLoaded', function(){
+  try {
+    const token = localStorage.getItem('authToken');
+    const userRaw = sessionStorage.getItem('userProfile') || localStorage.getItem('userInfo');
+    const userInfo = userRaw ? JSON.parse(userRaw) : null;
+    if (token) {
+      // 小延迟确保 DOM 已就绪
+      setTimeout(()=> handleAuthUpdate({ type:'AUTH_UPDATE', token, userInfo }), 50);
+    } else {
+      // 未登录时更新UI
+      updateUIForAuthState(false);
+    }
+  } catch(e){}
+});
+
+// 监听 storage（跨 tab）
+window.addEventListener('storage', function(e){
+  if (!e) return;
+  if (e.key === 'authToken' || e.key === 'userProfile' || e.key === 'userInfo') {
     try {
       const token = localStorage.getItem('authToken');
       const userRaw = sessionStorage.getItem('userProfile') || localStorage.getItem('userInfo');
       const userInfo = userRaw ? JSON.parse(userRaw) : null;
-      if (token) {
-        // 小延迟确保 DOM 已就绪
-        setTimeout(()=> handleAuthUpdate({ type:'AUTH_UPDATE', token, userInfo }), 50);
-      }
-    } catch(e){}
-  });
-
-  // 监听 storage（跨 tab）
-  window.addEventListener('storage', function(e){
-    if (!e) return;
-    if (e.key === 'authToken' || e.key === 'userProfile' || e.key === 'userInfo') {
-      try {
-        const token = localStorage.getItem('authToken');
-        const userRaw = sessionStorage.getItem('userProfile') || localStorage.getItem('userInfo');
-        const userInfo = userRaw ? JSON.parse(userRaw) : null;
-        handleAuthUpdate({ type:'AUTH_UPDATE', token, userInfo });
-      } catch(err){}
-    }
-  });
+      handleAuthUpdate({ type:'AUTH_UPDATE', token, userInfo });
+    } catch(err){}
+  }
+});
 })();
 </script>
 </head>
@@ -504,8 +521,31 @@
     // 用户功能区跳转（拦截所有用户功能链接，优先在 iframe 内打开本地页面，防止跳出）
     document.querySelectorAll('.user-functions a').forEach(el => {
       el.addEventListener('click', function(e) {
+        // 权限检查：如果点击的是受保护的页面且未登录，则阻止跳转
+        const dataPage = this.getAttribute('data-page');
+        const pageName = dataPage ? dataPage.replace('.html', '') : '';
+        
+        // 检查是否为受保护的路由
+        const protectedPages = ['my-recent', 'my-collect', 'my-message', 'my-creator_center'];
+        if (protectedPages.includes(pageName)) {
+          // 检查登录状态
+          const token = localStorage.getItem('authToken');
+          if (!token) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // 显示登录提示
+            showLoginPrompt();
+            
+            // 延迟跳转到登录页
+            setTimeout(() => {
+              document.getElementById('page-frame').src = 'login.html';
+            }, 1500);
+            return;
+          }
+        }
+        
         try {
-          const dataPage = this.getAttribute('data-page');
           const hrefAttr = this.getAttribute('href') || '';
           const target = dataPage || hrefAttr || '';
           // 忽略 javascript: 或 空 href
@@ -520,7 +560,73 @@
         // 其他链接使用默认行为（例如外部链接或特殊按钮）
       });
     });
-  // 框架跳转控制脚本（只拦截主导航栏，防止全局a标签跳转）
+    
+    // 显示登录提示的函数
+    function showLoginPrompt() {
+      // 创建提示元素
+      const toast = document.createElement('div');
+      toast.className = 'login-prompt-toast';
+      toast.innerHTML = `
+          <div class="login-prompt-content">
+              <i class="fas fa-user-lock"></i>
+              <span>请先登录后再访问该功能</span>
+          </div>
+      `;
+      
+      // 添加样式
+      const style = document.createElement('style');
+      style.textContent = `
+          .login-prompt-toast {
+              position: fixed;
+              top: 20px;
+              left: 50%;
+              transform: translateX(-50%);
+              background: #FF8C00;
+              color: white;
+              padding: 12px 24px;
+              border-radius: 8px;
+              font-size: 14px;
+              z-index: 100000;
+              opacity: 0;
+              animation: slideDown 0.3s ease forwards;
+          }
+          
+          .login-prompt-content {
+              display: flex;
+              align-items: center;
+              gap: 8px;
+          }
+          
+          .login-prompt-content i {
+              font-size: 16px;
+          }
+          
+          @keyframes slideDown {
+              from {
+                  opacity: 0;
+                  transform: translateX(-50%) translateY(-20px);
+              }
+              to {
+                  opacity: 1;
+                  transform: translateX(-50%) translateY(0);
+              }
+          }
+      `;
+      
+      document.head.appendChild(style);
+      document.body.appendChild(toast);
+      
+      // 3秒后移除提示
+      setTimeout(() => {
+          if (toast.parentNode) {
+              toast.parentNode.removeChild(toast);
+          }
+          if (style.parentNode) {
+              style.parentNode.removeChild(style);
+          }
+      }, 3000);
+    }
+    // 框架跳转控制脚本（只拦截主导航栏，防止全局a标签跳转）
   document.querySelectorAll('.main-nav .nav-item').forEach(el => {
     el.addEventListener('click', function(e) {
       e.preventDefault();
@@ -629,6 +735,9 @@
     const playlistPanel = document.getElementById('playlist-panel');
     const rateBtn = document.getElementById('pv-rate-btn');
     const rateText = document.getElementById('rate-text');
+    const modeBtn = document.getElementById('pv-mode-btn');
+    const modePop = document.getElementById('mode-pop');
+    const ratePop = document.getElementById('rate-pop');
     // const muteBtn = document.getElementById('pv-mute');
     // const place = document.getElementById('auth-section');
     const muteBtn = document.getElementById('pv-mute');
@@ -663,6 +772,9 @@
           btn.outerHTML = `<a href="login.html" data-page="login.html"><button class="submit-btn">登录/注册</button></a>`;
           const iframe = document.getElementById('page-frame');
           if (iframe) iframe.src = 'index.html';
+          
+          // 重新初始化权限控制
+          updateUIForAuthState(false);
         };
         root.appendChild(btn);
       }
@@ -941,7 +1053,7 @@
     
     function updateVolIcon() {
       if (audio.muted || audio.volume === 0) { 
-        volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 3l7 7-1.4 1.4L16 7.8V16h-2V8.6L9.4 4 11 2.4 14 3z"/>'; 
+        volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3z"/>'; 
       } else if (audio.volume < 0.5) { 
         volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 9v6c1.7-0.7 3-2.4 3-4.5S15.7 9.7 14 9z"/>'; 
       } else { 
@@ -993,7 +1105,7 @@
     }));
 
     document.addEventListener('click', (e) => {
-      if (!modeBtn.contains(e.target) && !modePop.contains(e.target)) modePop.classList.remove('show');
+      if (!modePop.contains(e.target)) modePop.classList.remove('show');
       if (!rateBtn.contains(e.target) && !ratePop.contains(e.target)) ratePop.classList.remove('show');
     });
 
@@ -1377,3 +1489,7 @@
 </style>
 </body>
 </html>
+
+
+
+

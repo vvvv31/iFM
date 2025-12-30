@@ -3,22 +3,28 @@ package com.zjsu.yyd.ifmservice.service;
 import com.zjsu.yyd.ifmservice.model.user.*;
 import com.zjsu.yyd.ifmservice.repository.UserProfileRepository;
 import com.zjsu.yyd.ifmservice.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
     private final UserProfileRepository userProfileRepository;
+    private final UserProfileService userProfileService;
 
     // 构造函数
-    public UserService(UserRepository userRepository, UserProfileRepository userProfileRepository) {
+    @Autowired
+    public UserService(UserRepository userRepository, UserProfileRepository userProfileRepository, UserProfileService userProfileService) {
         this.userRepository = userRepository;
         this.userProfileRepository = userProfileRepository;
+        this.userProfileService = userProfileService;
     }
 
     private static final String SALT = "com.ifm";
@@ -92,6 +98,25 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("用户不存在"));
     }
 
+    /** 
+     * 获取用户信息，如果用户不存在或为游客模式，返回null
+     * 用于认证拦截器中处理游客模式
+     */
+    public User getByIdOrNull(Long userId) {
+        if (userId == null) {
+            return null;
+        }
+        return userRepository.findById(userId).orElse(null);
+    }
+
+    /**
+     * 为指定用户创建默认的UserProfile（用于修复数据）
+     */
+    public UserProfile createDefaultProfileForUser(Long userId) {
+        User user = getById(userId);
+        return userProfileService.createDefaultProfile(user);
+    }
+
     /** 更新用户基本信息 */
     // 根据手机号查找用户
     public User findByPhone(String phone) {
@@ -133,5 +158,52 @@ public class UserService {
 
         return userRepository.save(u);
     }
+
+    /**
+     * 检查用户是否存在
+     */
+    public boolean existsById(Long userId) {
+        return userId != null && userRepository.existsById(userId);
+    }
+
+    /**
+     * 获取用户的统计数据（用于状态接口）
+     */
+    public Map<String, Object> getUserStats(Long userId) {
+        Map<String, Object> stats = new HashMap<>();
+        
+        if (userId == null) {
+            // 游客模式或无用户ID
+            stats.put("followCount", 0);
+            stats.put("fansCount", 0);
+            stats.put("collectCount", 0);
+            stats.put("listenTime", 0L);
+            return stats;
+        }
+        
+        try {
+            User user = getById(userId);
+            if (user.getProfile() != null) {
+                UserProfile profile = user.getProfile();
+                stats.put("followCount", profile.getFollowCount() != null ? profile.getFollowCount() : 0);
+                stats.put("fansCount", profile.getFansCount() != null ? profile.getFansCount() : 0);
+                stats.put("collectCount", profile.getCollectAudioIds() != null ? profile.getCollectAudioIds().size() : 0);
+                stats.put("listenTime", profile.getTotalListenTime() != null ? profile.getTotalListenTime() : 0L);
+            } else {
+                // 新用户，没有profile，初始化为0
+                stats.put("followCount", 0);
+                stats.put("fansCount", 0);
+                stats.put("collectCount", 0);
+                stats.put("listenTime", 0L);
+            }
+        } catch (Exception e) {
+            // 用户不存在，退化为游客数据
+            stats.put("followCount", 0);
+            stats.put("fansCount", 0);
+            stats.put("collectCount", 0);
+            stats.put("listenTime", 0L);
+        }
+        
+        return stats;
+    }
 }
-

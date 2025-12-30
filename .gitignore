@@ -32,3 +32,4 @@ Thumbs.db
 *.temp
 
 src/main/resources/application.yml
+backend/src/main/resources/application.yml

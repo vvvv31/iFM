@@ -18,15 +18,14 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowCredentials(true);
     }
 
-//    @Override
-//    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-//        // 配置静态资源访问路径，将/uploads/**映射到文件系统的上传目录
-//        registry.addResourceHandler("/uploads/**")
-//                .addResourceLocations("file:d:/02_Academic/ifm-service/uploads/");
-//    }
     @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {//修改为自己文件的路径
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        // 配置静态资源访问路径，将/**映射到前端文件目录
         registry.addResourceHandler("/**")
-                .addResourceLocations("file:d:/SE/github/iFM-backend/iFM/Frontend/");
+                .addResourceLocations("file:d:/02_Academic/iFM/Frontend/");
+        
+        // 配置上传文件访问路径
+        registry.addResourceHandler("/uploads/**")
+                .addResourceLocations("file:d:/02_Academic/iFM/backend/uploads/");
     }
 }

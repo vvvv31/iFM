@@ -155,6 +155,10 @@ body {
     height: 50px;
     border-radius: 50%;
     background-color: #FF8C00; /* 图片占位 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
 }
 .avatar-edit-overlay {
     position: absolute;

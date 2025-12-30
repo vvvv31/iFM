@@ -122,6 +122,13 @@
 
       <div id="eval-meta" class="small" style="text-align:center; margin-bottom:8px">显示最近一次评测结果</div>
 
+      <div style="text-align:center; margin-bottom:8px;">
+        <label class="small" for="evalSelector" style="margin-right:8px;">选择录音显示：</label>
+        <select id="evalSelector" style="min-width:280px; padding:6px; border-radius:6px;"></select>
+        <button id="refreshEvalList" class="btn" style="margin-left:8px; background:#607D8B; color:#fff;">刷新</button>
+        <button id="clearEvalSelection" class="btn" style="margin-left:6px; background:#9E9E9E; color:#fff;">清除</button>
+      </div>
+
       <div class="flex-row" style="justify-content:center; gap:18px; margin-bottom:8px">
         <div style="text-align:center; padding:12px; border:1px solid #FFDAB9; border-radius:8px; width:160px;">
           <div class="small">发音准确度</div>
@@ -201,6 +208,15 @@
       setTimeout(()=>d.remove(),2500);
     }
 
+    // 选择某条录音用于在评测页显示
+    const SELECT_KEY = 'audioRecorderSelected';
+    function setSelectedRecording(obj){
+      try{ localStorage.setItem(SELECT_KEY, JSON.stringify(obj)); }catch(e){}
+    }
+    function getSelectedRecording(){
+      try{ return JSON.parse(localStorage.getItem(SELECT_KEY)||'null'); }catch(e){return null;} 
+    }
+
     // --- Query param initialization for receiving navigation from player.html ---
     function getQueryParams(){ const p = new URLSearchParams(location.search); return { course: p.get('course'), chapter: p.get('chapter'), auto: p.get('auto') }; }
     function hashToIndex(str, max){
@@ -217,9 +233,9 @@
       // switch to follow tab
       const followTab = document.querySelector('.top-tab[data-target="panel-follow"]');
       if(followTab) followTab.click();
-      // map chapter -> sentence index (deterministic)
-      if(q.chapter){
-        const idx = hashToIndex(q.chapter, sentences.length);
+      // map chapter -> sentence index (deterministic) — 使用 dailySentences
+      if(q.chapter && window.dailySentences && window.dailySentences.length){
+        const idx = hashToIndex(q.chapter, window.dailySentences.length);
         curIdx = idx;
         renderSentence();
       }
@@ -243,13 +259,7 @@
     });
 
     // --- Follow / Recording section ---
-    const sentences = [
-      "The quick brown fox jumps over the lazy dog.",
-      "Practice makes perfect when learning a new language.",
-      "She sells seashells by the seashore on sunny Sundays.",
-      "How much wood would a woodchuck chuck if a woodchuck could chuck wood?",
-      "I scream, you scream, we all scream for ice cream."
-    ];
+    let dailySentences = []; // 存储从API获取的句子
     let curIdx = 0;
     const sentenceText = document.getElementById('sentenceText');
     const sentenceIdx = document.getElementById('sentenceIdx');
@@ -258,17 +268,111 @@
     const nextSentence = document.getElementById('nextSentence');
     const randomSentence = document.getElementById('randomSentence');
 
-    function renderSentence(){
-      sentenceText.textContent = sentences[curIdx];
-      sentenceIdx.textContent = (curIdx+1);
-      sentenceTotal.textContent = sentences.length;
-      prevSentence.disabled = curIdx===0;
-      nextSentence.disabled = curIdx===sentences.length-1;
-    }
-    prevSentence.addEventListener('click', ()=>{ if(curIdx>0){ curIdx--; renderSentence();}});
-    nextSentence.addEventListener('click', ()=>{ if(curIdx<sentences.length-1){ curIdx++; renderSentence();}});
-    randomSentence.addEventListener('click', ()=>{ curIdx = Math.floor(Math.random()*sentences.length); renderSentence(); });
+    // 从API获取每日一句
+    async function fetchDailySentences() {
+      try {
+        const response = await fetch('http://localhost:8080/daily-sentences', {
+          mode: 'cors',
+          credentials: 'include',
+          headers: { 'Accept': 'application/json' }
+        });
 
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const result = await response.json();
+
+        let list = [];
+        if (result) {
+          if (Array.isArray(result)) list = result;
+          else if (Array.isArray(result.data)) list = result.data;
+        }
+
+        // 按创建时间升序排序以确保稳定的顺序
+        list.sort((a,b)=> new Date(a.createdAt) - new Date(b.createdAt));
+        dailySentences = list || [];
+        window.dailySentences = dailySentences;
+        console.log('Loaded daily sentences:', dailySentences.length);
+        return dailySentences;
+      } catch (error) {
+        console.error('Error fetching daily sentences:', error);
+        showMessage('无法获取每日一句数据，使用示例句子');
+        dailySentences = [
+          { id: 1, english: "The quick brown fox jumps over the lazy dog.", chinese: "敏捷的棕色狐狸跳过懒惰的狗。" },
+          { id: 2, english: "Practice makes perfect when learning a new language.", chinese: "熟能生巧，学习一门新语言也是如此。" },
+          { id: 3, english: "She sells seashells by the seashore on sunny Sundays.", chinese: "她在阳光明媚的星期天在海边卖贝壳。" },
+          { id: 4, english: "How much wood would a woodchuck chuck if a woodchuck could chuck wood?", chinese: "如果土拨鼠能砍木头，它能砍多少木头？" },
+          { id: 5, english: "I scream, you scream, we all scream for ice cream.", chinese: "我尖叫，你尖叫，我们都为冰淇淋尖叫。" }
+        ];
+        window.dailySentences = dailySentences;
+        return dailySentences;
+      }
+    }
+
+    // 修改 renderSentence 函数
+    function renderSentence() {
+      if (!dailySentences || dailySentences.length === 0) {
+        sentenceText.textContent = "正在加载句子...";
+        sentenceIdx.textContent = '-';
+        sentenceTotal.textContent = 0;
+        prevSentence.disabled = true; nextSentence.disabled = true;
+        return;
+      }
+
+      const currentSentence = dailySentences[curIdx];
+      sentenceText.textContent = currentSentence.english || currentSentence.chinese || "No sentence available";
+      // 显示句子的 id（如果存在），右侧显示总数
+      sentenceIdx.textContent = currentSentence.id || (curIdx + 1);
+      sentenceTotal.textContent = dailySentences.length;
+
+      // 更新按钮状态
+      prevSentence.disabled = curIdx === 0;
+      nextSentence.disabled = curIdx === dailySentences.length - 1;
+    }
+
+    // 修改 initializeSentences 函数，确保在页面完全加载后再执行
+    async function initializeSentences() {
+        console.log('Initializing sentences...');
+        try {
+            await fetchDailySentences();
+            console.log('Sentences loaded:', dailySentences.length);
+            
+            if (dailySentences.length > 0) {
+                // 随机选择一个句子
+                curIdx = Math.floor(Math.random() * dailySentences.length);
+                console.log('Selected index:', curIdx, 'Sentence:', dailySentences[curIdx]);
+                renderSentence();
+            } else {
+                sentenceText.textContent = "暂无每日一句数据";
+            }
+        } catch (error) {
+            console.error('Failed to initialize sentences:', error);
+            renderSentence();
+        }
+    }
+
+
+    // 修改事件监听器
+    prevSentence.addEventListener('click', () => { 
+        if (curIdx > 0) { 
+            curIdx--; 
+            renderSentence();
+        }
+    });
+
+    nextSentence.addEventListener('click', () => { 
+        if (curIdx < dailySentences.length - 1) { 
+            curIdx++; 
+            renderSentence();
+        }
+    });
+
+    randomSentence.addEventListener('click', () => { 
+        if (dailySentences.length > 0) {
+            const randomIndex = Math.floor(Math.random() * dailySentences.length);
+            curIdx = randomIndex;
+            renderSentence();
+        }
+    });
+    
     // Recorder
     const startBtn = document.getElementById('startRec');
     const stopBtn = document.getElementById('stopRec');
@@ -425,42 +529,132 @@
       return buffer;
     }
 
-    async function saveRecording(){
-      if(!audioBlob) return;
+    // 修改保存录音函数
+    async function saveRecording() {
+        if (!audioBlob) return;
 
-      // 如果不是 WAV，则在保存前异步转换
-      const mime = (audioBlob && audioBlob.type) ? audioBlob.type : '';
-      if (!mime.includes('wav')) {
-        try {
-          showMessage('正在转换为 WAV（保存前）...');
-          const { wavBlob, wavUrl } = await convertToWavFromBlob(audioBlob);
-          // 替换为 WAV
-          audioBlob = wavBlob;
-          audioUrl = wavUrl;
-        } catch (err) {
-          console.error('保存前 WAV 转换失败:', err);
-          showMessage('WAV 转换失败，将以原格式保存');
+        // 如果不是 WAV，则在保存前异步转换
+        const mime = (audioBlob && audioBlob.type) ? audioBlob.type : '';
+        if (!mime.includes('wav')) {
+            try {
+                showMessage('正在转换为 WAV（上传前）...');
+                const { wavBlob, wavUrl } = await convertToWavFromBlob(audioBlob);
+                // 替换为 WAV
+                audioBlob = wavBlob;
+                audioUrl = wavUrl;
+            } catch (err) {
+                console.error('保存前 WAV 转换失败:', err);
+                showMessage('WAV 转换失败，将以原格式上传');
+            }
         }
-      }
 
-      const ext = (audioBlob && audioBlob.type && audioBlob.type.includes('wav')) ? 'wav' : 'webm';
+        // 获取当前句子 ID
+        let dailySentenceId = null;
+        if (dailySentences.length > 0 && dailySentences[curIdx]) {
+            dailySentenceId = dailySentences[curIdx].id;
+        }
 
-      const rec = {
-        id: Date.now(),
-        name: `跟读-${(new Date()).toLocaleString()}`,
-        timestamp: (new Date()).toLocaleString(),
-        duration: 30 - countdown,
-        size: audioBlob.size,
-        format: ext,
-        sentence: sentences[curIdx],
-        evaluation: null,
-        blobUrl: audioUrl
-      };
-      const hist = readHistory();
-      hist.unshift(rec);
-      writeHistory(hist);
-      saveBtn.disabled = true;
-      showMessage('录音已保存');
+        // 获取用户 ID（假设登录后存储在 localStorage）
+        let userId = localStorage.getItem('userId');
+        
+        // 如果没有登录，提示用户
+        if (!userId) {
+            showMessage('请先登录后再保存录音');
+            // 可以在这里重定向到登录页面
+            // window.location.href = 'login.html';
+            return;
+        }
+
+        if (!dailySentenceId) {
+            showMessage('未找到当前句子的ID');
+            return;
+        }
+
+        // 创建 FormData 用于上传
+        const formData = new FormData();
+        const fileName = `recording_${Date.now()}.wav`;
+        formData.append('audioFile', audioBlob, fileName);
+
+        // 构建请求 URL
+        const apiUrl = `http://localhost:8080/daily-sentence-audios/upload?dailySentenceId=${dailySentenceId}&userId=${userId}`;
+
+        try {
+            showMessage('正在上传录音...');
+            
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            
+            if (result.code === 0 || result.code === 200) {
+              // 上传成功
+              saveBtn.disabled = true;
+              showMessage('录音已上传到服务器！');
+
+              // 如果已登录（有 userId），不要写入本地历史，直接刷新后端列表
+              const userId = localStorage.getItem('userId');
+              if (userId) {
+                await renderHistory();
+              } else {
+                // 未登录则保持兼容性：写入本地历史
+                let sentenceText = "";
+                if (dailySentences.length > 0 && dailySentences[curIdx]) {
+                  const currentSentence = dailySentences[curIdx];
+                  sentenceText = currentSentence.english || "";
+                }
+                const rec = {
+                  id: Date.now(),
+                  name: `跟读-${(new Date()).toLocaleString()}`,
+                  timestamp: (new Date()).toLocaleString(),
+                  duration: 30 - countdown,
+                  size: audioBlob.size,
+                  format: 'wav',
+                  sentence: sentenceText,
+                  evaluation: null,
+                  blobUrl: audioUrl,
+                  serverData: result.data // 保存服务器返回的数据
+                };
+                const hist = readHistory(); hist.unshift(rec); writeHistory(hist);
+                renderHistory();
+                if (document.querySelector('.top-tab.active').dataset.target === 'panel-eval') renderEvaluation();
+              }
+            } else {
+              showMessage('上传失败：' + (result.message || '服务器错误'));
+            }
+        } catch (error) {
+          console.error('上传录音失败:', error);
+          const userId = localStorage.getItem('userId');
+          if (userId) {
+            // 登录用户：不要写入本地历史，提示用户
+            showMessage('上传失败：网络错误，录音未保存，请重试');
+          } else {
+            showMessage('网络错误，录音已保存到本地');
+            // 网络失败时，仍保存到本地（未登录用户兼容）
+            let sentenceText = "";
+            if (dailySentences.length > 0 && dailySentences[curIdx]) {
+              const currentSentence = dailySentences[curIdx];
+              sentenceText = currentSentence.english || "";
+            }
+            const rec = {
+              id: Date.now(),
+              name: `跟读-${(new Date()).toLocaleString()}`,
+              timestamp: (new Date()).toLocaleString(),
+              duration: 30 - countdown,
+              size: audioBlob.size,
+              format: 'wav',
+              sentence: sentenceText,
+              evaluation: null,
+              blobUrl: audioUrl
+            };
+            const hist = readHistory(); hist.unshift(rec); writeHistory(hist); saveBtn.disabled = true; renderHistory();
+          }
+        }
     }
 
     startBtn.addEventListener('click', startRecording);
@@ -469,7 +663,68 @@
 
     // --- Evaluation page ---
     // Load latest evaluated record or simulate result.
-    function renderEvaluation(){
+    async function renderEvaluation(){
+      // 如果用户已选择一条录音，优先显示所选录音的评测
+      const sel = getSelectedRecording();
+      if(sel){
+        if(sel.type === 'local'){
+          const hist = readHistory();
+          const target = hist.find(r=>String(r.id) === String(sel.id));
+          if(target){
+            if(!target.evaluation){
+              target.evaluation = simulateEvaluation(target);
+              writeHistory(hist);
+            }
+            const e = target.evaluation;
+            document.getElementById('eval-meta').textContent = `录音：${target.name} （${target.timestamp}）`;
+            document.getElementById('pronScore').textContent = (e.pronunciationAccuracy||0)+'%';
+            document.getElementById('fluScore').textContent = (e.fluency||0)+'%';
+            document.getElementById('overallScore').textContent = (e.overallScore||0)+'/100';
+            highlightProblematic(target.sentence, e);
+            const trend = loadTrend();
+            drawTrend(trend);
+            return;
+          } else {
+            showMessage('所选本地录音不存在，已清除选择');
+            setSelectedRecording(null);
+          }
+        } else if(sel.type === 'server'){
+          try{
+            const resp = await fetch(`http://localhost:8080/daily-sentence-audios/${sel.id}`, { mode: 'cors', credentials: 'include', headers:{'Accept':'application/json'} });
+            if(resp.ok){
+              const j = await resp.json();
+              const info = (j && j.data) ? j.data : (j || {});
+              // 如果服务器已有评测结果，映射展示；否则提示用户先在历史中发起评测
+              if(info && (info.totalScore || info.totalScore === 0)){
+                const e = {
+                  overallScore: info.totalScore,
+                  pronunciationAccuracy: info.accuracyScore || info.pronunciationAccuracy,
+                  fluency: info.fluencyScore || info.fluency
+                };
+                document.getElementById('eval-meta').textContent = `服务器录音：${info.id} （${info.updatedAt||info.createdAt||''}）`;
+                document.getElementById('pronScore').textContent = (e.pronunciationAccuracy||0)+'%';
+                document.getElementById('fluScore').textContent = (e.fluency||0)+'%';
+                document.getElementById('overallScore').textContent = (e.overallScore||0)+'/100';
+                const sentence = (window.dailySentences && info.dailySentenceId) ? (window.dailySentences.find(d=>d.id==info.dailySentenceId)||{}).english : '';
+                highlightProblematic(sentence, e);
+                const trend = loadTrend();
+                drawTrend(trend);
+                return;
+              } else {
+                document.getElementById('eval-meta').textContent = '所选服务器录音尚未评测。请在历史中点击「评测」触发服务端评测。';
+                document.getElementById('pronScore').textContent = '--';
+                document.getElementById('fluScore').textContent = '--';
+                document.getElementById('overallScore').textContent = '--';
+                document.getElementById('highlightSentence').textContent = '';
+                drawTrend([]);
+                return;
+              }
+            }
+          }catch(err){ console.error('获取服务器录音信息失败', err); showMessage('无法获取服务器录音信息'); }
+        }
+      }
+
+      // 原有回退逻辑：使用本地最近一条评测或模拟评测
       const hist = readHistory();
       let target = hist.find(r=>r.evaluation);
       if(!target && hist.length>0){
@@ -496,21 +751,87 @@
       drawTrend(trend);
     }
 
-    function simulateEvaluation(rec){
-      const sentence = rec.sentence||'';
-      const words = sentence.split(/\s+/).length;
-      const base = 70 + Math.round(Math.random()*20);
-      const pron = Math.min(100, base + Math.round(Math.random()*10-5));
-      const flu = Math.min(100, base + Math.round(Math.random()*10-10));
-      const overall = Math.round(pron*0.4 + flu*0.4 + 10);
-      return {
-        overallScore: overall,
-        pronunciationAccuracy: pron,
-        fluency: flu,
-        intonation: Math.round(60 + Math.random()*30),
-        pace: Math.round(70 + Math.random()*20),
-        feedback: '系统建议：多练习重音和连读。'
-      };
+    // 填充评测面板的录音选择器（包含服务器与本地）
+    async function populateEvalSelector(){
+      const sel = document.getElementById('evalSelector');
+      if(!sel) return;
+      sel.innerHTML = '';
+      const placeholder = document.createElement('option'); placeholder.value=''; placeholder.textContent='-- 请选择服务器录音 --'; sel.appendChild(placeholder);
+
+      // 列出服务器上的录音（若登录）
+      const userId = localStorage.getItem('userId');
+      if(userId){
+        try{
+          const resp = await fetch(`http://localhost:8080/daily-sentence-audios/user/${userId}`, { mode:'cors', credentials:'include' });
+          if(resp.ok){
+            const j = await resp.json();
+            let items = [];
+            if(j && (j.code===0 || j.code===200) && Array.isArray(j.data)) items = j.data;
+            else if(Array.isArray(j)) items = j;
+            else if(j && Array.isArray(j.data)) items = j.data;
+            items.forEach(it=>{
+              const o = document.createElement('option');
+              o.value = `server:${it.id}`;
+              const ts = it.createdAt ? (new Date(it.createdAt)).toLocaleString() : '';
+              const score = (it.totalScore || it.totalScore===0) ? ` · ${it.totalScore}` : '';
+              o.textContent = `服务器 · ${it.id} · ${ts}${score}`;
+              sel.appendChild(o);
+            });
+          }
+        }catch(e){ console.warn('populateEvalSelector server fetch error', e); }
+      }
+      // 如果之前选择的是本地录音，则清除（选择器仅限服务器）
+      const cur = getSelectedRecording();
+      if(cur){
+        if(cur.type === 'server'){
+          const val = `${cur.type}:${cur.id}`;
+          for(const opt of sel.options){ if(opt.value===val){ sel.value = val; break; } }
+        } else {
+          setSelectedRecording(null);
+        }
+      }
+    }
+
+    // 评测面板选择事件与刷新/清除按钮
+    document.addEventListener('DOMContentLoaded', ()=>{
+      const sel = document.getElementById('evalSelector');
+      const ref = document.getElementById('refreshEvalList');
+      const clr = document.getElementById('clearEvalSelection');
+      if(sel){
+        sel.addEventListener('change', ()=>{
+          if(!sel.value){ setSelectedRecording(null); renderEvaluation(); return; }
+          const [type,id] = sel.value.split(':');
+          setSelectedRecording({ type: type, id: id });
+          renderEvaluation();
+        });
+      }
+      if(ref) ref.addEventListener('click', async ()=>{ await populateEvalSelector(); showMessage('已刷新评测录音列表'); });
+      if(clr) clr.addEventListener('click', ()=>{ setSelectedRecording(null); const s = document.getElementById('evalSelector'); if(s) s.value=''; renderEvaluation(); showMessage('已清除选择'); });
+    });
+
+    // 也在 renderHistory 之后刷新选择器，以保持同步
+    const _oldRenderHistory = renderHistory;
+    renderHistory = async function(){
+      await _oldRenderHistory();
+      try{ await populateEvalSelector(); }catch(e){}
+    };
+
+    // 修改模拟评测函数中获取句子文本的部分
+    function simulateEvaluation(rec) {
+        const sentence = rec.sentence || '';
+        const words = sentence.split(/\s+/).length;
+        const base = 70 + Math.round(Math.random() * 20);
+        const pron = Math.min(100, base + Math.round(Math.random() * 10 - 5));
+        const flu = Math.min(100, base + Math.round(Math.random() * 10 - 10));
+        const overall = Math.round(pron * 0.4 + flu * 0.4 + 10);
+        return {
+            overallScore: overall,
+            pronunciationAccuracy: pron,
+            fluency: flu,
+            intonation: Math.round(60 + Math.random() * 30),
+            pace: Math.round(70 + Math.random() * 20),
+            feedback: '系统建议：多练习重音和连读。'
+        };
     }
 
     function highlightProblematic(sentence, evalData){
@@ -574,14 +895,145 @@
     }
 
     // --- History page ---
-    function renderHistory(){
-      const container = document.getElementById('historyContainer');
-      const hist = readHistory();
-      container.innerHTML = '';
-      if(!hist.length){
-        container.innerHTML = '<div style="text-align:center;color:#999;padding:20px;">暂无录音历史</div>'; return;
+
+    // 在评测后轮询后端，直到返回带有 totalScore 的记录或超时
+    async function pollAudioUntilEvaluated(id, timeoutMs = 15000, intervalMs = 1000) {
+      const start = Date.now();
+      while (Date.now() - start < timeoutMs) {
+        try {
+          const resp = await fetch(`http://localhost:8080/daily-sentence-audios/${id}`, { mode: 'cors', credentials: 'include', headers:{'Accept':'application/json'} });
+          if (resp.ok) {
+            const j = await resp.json();
+            const info = (j && j.data) ? j.data : (Array.isArray(j) ? j[0] : j);
+            if (info && (info.totalScore || info.totalScore === 0)) {
+              return info;
+            }
+          }
+        } catch (e) {
+          console.warn('pollAudioUntilEvaluated error', e);
+        }
+        await new Promise(r => setTimeout(r, intervalMs));
       }
-      hist.forEach((r, idx)=>{
+      return null;
+    }
+    async function renderHistory(){
+      const container = document.getElementById('historyContainer');
+      container.innerHTML = '';
+
+      // 优先使用后端数据（登录用户），若未登录则回退到本地历史
+      const userId = localStorage.getItem('userId');
+      if(userId){
+        let serverItems = [];
+        try{
+          const resp = await fetch(`http://localhost:8080/daily-sentence-audios/user/${userId}`, { mode: 'cors', credentials: 'include' });
+          if(resp.ok){
+            const j = await resp.json();
+            if(j && (j.code === 0 || j.code === 200) && Array.isArray(j.data)) serverItems = j.data;
+            else if(Array.isArray(j)) serverItems = j;
+            else if(j && Array.isArray(j.data)) serverItems = j.data;
+          } else {
+            console.warn('fetch server history status', resp.status);
+          }
+        }catch(err){ console.error('获取服务器历史失败', err); }
+
+        if(!serverItems.length){
+          container.innerHTML = '<div style="text-align:center;color:#999;padding:20px;">暂无录音历史（服务器）</div>'; return;
+        }
+
+        serverItems.forEach(item=>{
+          const div = document.createElement('div'); div.className='history-item';
+          const meta = document.createElement('div'); meta.className='history-meta';
+          const ts = item.createdAt ? (new Date(item.createdAt)).toLocaleString() : '';
+          let sentenceText = '';
+          try{ if(window.dailySentences && item.dailySentenceId){
+            const s = window.dailySentences.find(d=>d.id==item.dailySentenceId);
+            if(s) sentenceText = s.english || s.chinese || '';
+          }}catch(e){}
+          const scoreBadge = (item.totalScore || item.totalScore===0) ? (`<span class="score-pill" style="margin-left:8px;">${item.totalScore}</span>`) : '';
+          meta.innerHTML = `<div style="font-weight:700">${item.id || '音频'} ${scoreBadge}</div>
+                            <div class="small">时刻: ${ts} · 来源: 服务器 · 大小: -</div>
+                            <div style="margin-top:6px;color:#333">${sentenceText?('<small>跟读：</small>'+sentenceText):''}</div>`;
+
+          const actions = document.createElement('div'); actions.className='flex-row';
+          const play = document.createElement('button'); play.className='btn play'; play.textContent='播放';
+          play.addEventListener('click', async ()=>{
+            try{
+              // 先通过后端获取最新的音频信息（包含 audioUrl）
+              const resp = await fetch(`http://localhost:8080/daily-sentence-audios/${item.id}`, { mode: 'cors', credentials: 'include', headers:{'Accept':'application/json'} });
+              let info = item;
+              if(resp.ok){ const j = await resp.json(); if(j && j.data) info = j.data; }
+              const a = new Audio(info.audioUrl || item.audioUrl);
+              await a.play();
+              showMessage('播放：' + (item.id || '音频'));
+            }catch(err){ console.error('播放失败', err); showMessage('播放失败'); }
+          });
+
+          const dl = document.createElement('button'); dl.className='btn dl'; dl.textContent='下载';
+          dl.addEventListener('click', async ()=>{
+            try{
+              const resp = await fetch(`http://localhost:8080/daily-sentence-audios/${item.id}`, { mode: 'cors', credentials: 'include', headers:{'Accept':'application/json'} });
+              let info = item;
+              if(resp.ok){ const j = await resp.json(); if(j && j.data) info = j.data; }
+              const a = document.createElement('a'); a.href = info.audioUrl || item.audioUrl;
+              a.download = `audio_${item.id || Date.now()}.wav`; document.body.appendChild(a); a.click(); a.remove();
+            }catch(err){ console.error('下载失败', err); showMessage('下载失败'); }
+          });
+
+          const evalBtn = document.createElement('button'); evalBtn.className='btn'; evalBtn.textContent = item.totalScore ? '已评测' : '评测'; evalBtn.disabled = !!item.totalScore;
+          evalBtn.style.background = item.totalScore ? '#CE93D8' : '#9C27B0'; evalBtn.style.color = '#fff';
+          evalBtn.addEventListener('click', async ()=>{
+            try{
+              showMessage('正在评测...');
+              const resp = await fetch(`http://localhost:8080/daily-sentence-audios/${item.id}/evaluate`, { mode: 'cors', credentials: 'include', headers:{'Accept':'application/json'} });
+              if(!resp.ok){ showMessage('评测失败：' + resp.status); return; }
+              const j = await resp.json();
+              const data = (j && j.data) ? j.data : (j || {});
+              // 写入本地历史以便评测页显示
+              const simulated = {
+                overallScore: data.totalScore || data.overallScore || Math.round(Math.random()*40+60),
+                pronunciationAccuracy: data.accuracyScore || data.pronunciationAccuracy || Math.round(Math.random()*30+60),
+                fluency: data.fluencyScore || data.fluency || Math.round(Math.random()*30+60),
+                evaluatedAt: data.updatedAt || data.createdAt || (new Date()).toLocaleString(),
+                advice: data.advice || ''
+              };
+              const rec = { id: Date.now(), name: `服务器-${item.id}`, timestamp: simulated.evaluatedAt, duration: item.duration||0, size:item.size||0, format:'wav', sentence:sentenceText, evaluation: simulated, blobUrl: item.audioUrl };
+              const h = readHistory(); h.unshift(rec); writeHistory(h);
+              showMessage('评测完成：总体得分 ' + simulated.overallScore);
+              const evalTab = document.querySelector('.top-tab[data-target="panel-eval"]');
+              if(evalTab.classList.contains('active')) renderEvaluation();
+
+              // 轮询后端以获取已更新的服务器记录（每秒一次，最多等待15s），然后刷新历史列表
+              const polled = await pollAudioUntilEvaluated(item.id, 15000, 1000);
+              if (polled && (polled.totalScore || polled.totalScore === 0)) {
+                showMessage('服务器评测结果已更新：' + polled.totalScore);
+              } else {
+                showMessage('评测结果获取超时，稍后刷新可见');
+              }
+              // 重新渲染历史（会重新从后端拉取最新数据）
+              await renderHistory();
+            }catch(err){ console.error('评测失败', err); showMessage('评测失败（网络错误）'); }
+          });
+
+          const del = document.createElement('button'); del.className='btn del'; del.textContent='删除'; del.style.background='#f44336'; del.style.color='#fff';
+          del.addEventListener('click', async ()=>{
+            if(!confirm('确认从服务器删除该录音？此操作不可恢复。')) return;
+            try{
+              const delResp = await fetch(`http://localhost:8080/daily-sentence-audios/${item.id}`, { method: 'DELETE', mode: 'cors', credentials: 'include' });
+              if(delResp.ok){ showMessage('已删除'); await renderHistory(); }
+              else { showMessage('删除失败：' + delResp.status); }
+            }catch(err){ console.error('删除失败', err); showMessage('删除失败（网络错误）'); }
+          });
+
+          actions.appendChild(play); actions.appendChild(dl); actions.appendChild(evalBtn); actions.appendChild(del);
+          div.appendChild(meta); div.appendChild(actions); container.appendChild(div);
+        });
+        return;
+      }
+
+      // 未登录：使用本地历史
+      const localHist = readHistory();
+      if(!localHist || !localHist.length){ container.innerHTML = '<div style="text-align:center;color:#999;padding:20px;">暂无录音历史</div>'; return; }
+      localHist.forEach((r, idx)=>{
         const div = document.createElement('div'); div.className='history-item';
         const meta = document.createElement('div'); meta.className='history-meta';
         meta.innerHTML = `<div style="font-weight:700">${r.name} ${r.evaluation?('<span class="score-pill" style="margin-left:8px;">'+r.evaluation.overallScore+'</span>'):''}</div>
@@ -632,6 +1084,12 @@
     }
 
     document.getElementById('clearAll').addEventListener('click', ()=>{
+      const userId = localStorage.getItem('userId');
+      if(userId){
+        if(!confirm('您已登录。清空操作将影响服务器端数据，是否确认？（当前未实现服务器删除）')) return;
+        showMessage('已登录用户请在服务器端删除历史（未实现自动删除接口）');
+        return;
+      }
       if(!confirm('清空将删除全部历史录音并释放本地URL，确认？')) return;
       const hist = readHistory();
       hist.forEach(r=>{ try{ URL.revokeObjectURL(r.blobUrl); }catch(e){} });
@@ -640,12 +1098,23 @@
       showMessage('已清空历史');
     });
 
+    // 修改页面加载初始化部分
+    // 找到文件末尾的初始化代码（大约在第520行左右）
+    // 修改这部分：
     // Run query init after DOM ready
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', () => { initFromQueryParams(); renderSentence(); renderHistory(); });
-    } else {
-      initFromQueryParams(); renderSentence(); renderHistory();
-    }
+    document.addEventListener('DOMContentLoaded', async function() {
+        console.log('DOM fully loaded');
+        
+        // 延迟一点时间确保所有元素都已加载
+        setTimeout(async () => {
+            await initializeSentences();
+            initFromQueryParams();
+            renderHistory();
+            
+            // 通知主框架
+            setTimeout(notifyParentPage, 100);
+        }, 100);
+    });
   })();
   </script>
 

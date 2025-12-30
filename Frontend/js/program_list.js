@@ -163,22 +163,26 @@ document.addEventListener('DOMContentLoaded', function() {
     // -------------------------- 2. 元素获取（根据 program_list.html 的 ID） --------------------------
     const programTitle = document.getElementById('courseTitle');
     const programCover = document.getElementById('courseImage');
-    const programLevel = document.getElementById('courseLevel');
     const programEpisodes = document.getElementById('courseEpisodes');
-    const programStatus = document.getElementById('courseStatus');
     const programPlayCount = document.getElementById('playCount');
-    const programRating = document.getElementById('courseRating');
-    const programLearnCount = document.getElementById('studentCount');
-    const programDesc = document.getElementById('courseDescription');
-    const programGoals = document.getElementById('objectivesList');
-    const programTargetAudience = document.getElementById('targetAudience');
-    const programFeatures = document.getElementById('courseFeatures');
-    // 章节相关
-    const programChapters = document.getElementById('courseSyllabus');
+    const programIntroduction = document.getElementById('courseIntroduction');
+    const programFAQ = document.getElementById('faqContent');
+    // 章节侧边栏
     const sidebarChapters = document.getElementById('chapterList');
     // 标签切换
     const tabBtns = document.querySelectorAll('.tab-btn');
     const tabContents = document.querySelectorAll('.tab-content');
+
+    // 操作按钮
+    const studyBtn = document.getElementById('studyBtn');
+    const collectBtn = document.getElementById('collectBtn');
+    const shareBtn = document.getElementById('shareBtn');
+
+    // 全局状态
+    let currentProgramId = null;
+    let currentUiProgram = null;
+    let isCollected = false;
+
 
     // -------------------------- 3. 解析URL中的节目ID --------------------------
     function getProgramIdFromUrl() {
@@ -210,35 +214,17 @@ document.addEventListener('DOMContentLoaded', function() {
             coverUrl: a.coverUrl || ''
         }));
 
-        // 如果没有 audios，尝试用 tags 作为每一集
-        let chapters = [];
-        if (audios.length > 0) {
-            chapters = [{ unit: '课程目录', lessons: audios }];
-        } else if (p.tags && p.tags.length > 0) {
-            const lessonsFromTags = p.tags.map((t, idx) => ({ id: t.tagId || idx + 1, title: t.name || '未命名章节', duration: '' }));
-            chapters = [{ unit: '课程目录', lessons: lessonsFromTags }];
-        } else {
-            chapters = (p.chapters && p.chapters.length) ? p.chapters : [];
-        }
-
-        const episodesCount = chapters.reduce((sum, ch) => sum + (ch.lessons ? ch.lessons.length : 0), 0);
+        const episodesCount = audios.length;
 
         return {
             id: p.programId || p.id || 0,
             title: p.title || '未命名节目',
-            teacher: '作者' + (p.creatorId ? ' ' + p.creatorId : ''),
             cover: p.coverUrl || (audios[0] && audios[0].coverUrl) || 'https://via.placeholder.com/300x200?text=封面',
-            level: p.level || '',
             episodes: episodesCount,
-            status: p.status || '',
             playCount: p.playCount || 0,
-            rating: p.rating || 0,
-            learnCount: p.learnCount || 0,
             desc: p.introduction || p.description || '',
-            goals: p.goals && p.goals.length ? p.goals : null,
-            targetAudience: p.targetAudience || null,
-            features: p.features || null,
-            chapters: chapters
+            faq: p.faq || '',
+            audios: audios
         };
     }
 
@@ -249,94 +235,59 @@ document.addEventListener('DOMContentLoaded', function() {
         programCover.src = program.cover;
         programCover.alt = program.title;
 
-        // 仅显示集数（若有），不要访问已删除的 level/status 元素
+        console.log('renderProgram ->', program);
+
+        // 显示集数（audios 的数量），当为 0 时显示“暂无内容”
         if (program.episodes && program.episodes > 0) {
-            programEpisodes.style.display = '';
-            programEpisodes.textContent = `${program.episodes}集`;
+            if (programEpisodes) {
+                programEpisodes.style.display = '';
+                programEpisodes.textContent = `${program.episodes}集`;
+            }
         } else {
-            programEpisodes.style.display = 'none';
-        }
-        // 格式化播放量/学习人数（万次/万人）
-        programPlayCount.textContent = formatCount(program.playCount);
-        programLearnCount.textContent = formatCount(program.learnCount);
-        programRating.textContent = program.rating;
-
-        // 2. 渲染课程介绍和学习目标（仅当后端提供目标时覆盖页面）
-        programDesc.textContent = program.desc;
-        if (program.goals && program.goals.length) {
-            programGoals.innerHTML = ''; // 清空目标列表
-            program.goals.forEach(goal => {
-                const li = document.createElement('li');
-                li.textContent = goal;
-                programGoals.appendChild(li);
-            });
+            if (programEpisodes) {
+                programEpisodes.style.display = '';
+                programEpisodes.textContent = `暂无内容`;
+            }
         }
 
-        // 若后端提供 targetAudience 或 features，可选择性替换页面对应列表
-        if (program.targetAudience && program.targetAudience.length && programTargetAudience) {
-            programTargetAudience.innerHTML = '';
-            program.targetAudience.forEach(item => {
-                const li = document.createElement('li');
-                li.textContent = item;
-                programTargetAudience.appendChild(li);
-            });
+        // 格式化播放量（万次）
+        if (programPlayCount) programPlayCount.textContent = formatCount(program.playCount || 0);
+
+        // 2. 渲染课程介绍（使用 introduction 字段）
+        if (programIntroduction) programIntroduction.innerHTML = program.desc || '<p>暂无介绍</p>';
+
+        // 3. 渲染常见问题（使用 faq 字段）
+        if (programFAQ) programFAQ.innerHTML = program.faq || '<p>暂无常见问题</p>';
+
+        // 4. 渲染侧边栏章节（使用 audios）
+        if (sidebarChapters) {
+            sidebarChapters.innerHTML = '';
+            if (!program.audios || program.audios.length === 0) {
+                sidebarChapters.innerHTML = '<div class="chapter-empty">暂无内容</div>';
+            } else {
+                program.audios.forEach((audio, idx) => {
+                    const chapterItem = document.createElement('div');
+                    chapterItem.className = idx === 0 ? 'chapter-item active' : 'chapter-item';
+                    chapterItem.innerHTML = `
+                        <span class="chapter-number">${idx + 1}</span>
+                        <div class="chapter-content">
+                            <h4 class="chapter-title">${audio.title}</h4>
+                        </div>
+                        <span class="chapter-duration">${audio.duration || ''}</span>
+                    `;
+                    sidebarChapters.appendChild(chapterItem);
+                });
+            }
         }
-        if (program.features && program.features.length && programFeatures) {
-            programFeatures.innerHTML = '';
-            program.features.forEach(item => {
-                const li = document.createElement('li');
-                li.textContent = item;
-                programFeatures.appendChild(li);
-            });
+
+        // 更新全局状态并绑定按钮行为
+        currentProgramId = program.id || program.programId || null;
+        currentUiProgram = program;
+        // 检查收藏状态（异步）
+        if (currentProgramId) {
+            checkCollectionStatus(currentProgramId).catch(err => console.warn('checkCollectionStatus error', err));
         }
-
-        // 3. 渲染课程大纲（主内容区）
-        programChapters.innerHTML = '';
-        program.chapters.forEach((chapter, chapterIndex) => {
-            const unitItem = document.createElement('div');
-            unitItem.className = 'unit-item';
-            unitItem.innerHTML = `
-                <div class="unit-header">
-                    <h3>${chapter.unit}</h3>
-                    <span class="unit-duration">共${chapter.lessons.length}节课</span>
-                </div>
-                <div class="lesson-list" id="lessonList-${chapterIndex}"></div>
-            `;
-            programChapters.appendChild(unitItem);
-
-            // 渲染章节下的课时
-            const lessonList = document.getElementById(`lessonList-${chapterIndex}`);
-            chapter.lessons.forEach((lesson, lessonIndex) => {
-                const lessonItem = document.createElement('div');
-                lessonItem.className = 'lesson-item';
-                lessonItem.innerHTML = `
-                    <div class="lesson-info">
-                        <span class="lesson-number">${lessonIndex + 1}</span>
-                        <span class="lesson-title">${lesson.title}</span>
-                    </div>
-                    <span class="lesson-duration">${lesson.duration}</span>
-                    <button class="play-btn">▶</button>
-                `;
-                lessonList.appendChild(lessonItem);
-            });
-        });
-
-        // 4. 渲染侧边栏章节
-        sidebarChapters.innerHTML = '';
-        program.chapters.forEach((chapter, chapterIndex) => {
-            chapter.lessons.forEach((lesson, lessonIndex) => {
-                const chapterItem = document.createElement('div');
-                chapterItem.className = chapterIndex === 0 && lessonIndex === 0 ? 'chapter-item active' : 'chapter-item';
-                chapterItem.innerHTML = `
-                    <span class="chapter-number">${chapterIndex + 1}-${lessonIndex + 1}</span>
-                    <div class="chapter-content">
-                        <h4 class="chapter-title">${lesson.title}</h4>
-                    </div>
-                    <span class="chapter-duration">${lesson.duration}</span>
-                `;
-                sidebarChapters.appendChild(chapterItem);
-            });
-        });
+        bindActionButtons();
     }
 
     // -------------------------- 5. 辅助函数 --------------------------
@@ -353,15 +304,169 @@ document.addEventListener('DOMContentLoaded', function() {
                 // 更新按钮激活状态
                 tabBtns.forEach(b => b.classList.remove('active'));
                 this.classList.add('active');
-                // 更新内容显示
+                // 更新内容显示（匹配 data-tab 与 tab-content 的 id）
                 tabContents.forEach(content => {
                     content.classList.remove('active');
-                    if (content.id === `${tabName}Content`) {
+                    if (content.id === tabName) {
                         content.classList.add('active');
                     }
                 });
             });
         });
+    }
+
+    // -------------------------- 按钮与收藏功能 --------------------------
+    function updateCollectButton(collected) {
+        if (!collectBtn) return;
+        isCollected = !!collected;
+        // 设置按钮显示与 data 属性，供外部判断当前状态
+        if (isCollected) {
+            collectBtn.textContent = '已收藏';
+            collectBtn.classList.remove('btn-secondary');
+            collectBtn.classList.add('btn-primary');
+            collectBtn.setAttribute('data-collected', 'true');
+        } else {
+            collectBtn.textContent = '加入收藏';
+            collectBtn.classList.remove('btn-primary');
+            collectBtn.classList.add('btn-secondary');
+            collectBtn.setAttribute('data-collected', 'false');
+        }
+    }
+
+    function checkCollectionStatus(programId) {
+        if (!programId) return Promise.resolve(false);
+        // 如果未登录，直接显示未收藏状态
+        const authToken = localStorage.getItem('authToken') || localStorage.getItem('userId');
+        if (!authToken) {
+            updateCollectButton(false);
+            return Promise.resolve(false);
+        }
+
+        const url = `${API_BASE}/api/collection/check?targetId=${programId}&targetType=program`;
+        console.log('checkCollectionStatus ->', url);
+        return fetch(url, { method: 'GET', credentials: 'include' })
+            .then(res => res.json())
+            .then(json => {
+                console.log('checkCollectionStatus response', json);
+                const collected = json && typeof json.data !== 'undefined' ? json.data : false;
+                updateCollectButton(collected);
+                return collected;
+            })
+            .catch(err => {
+                console.warn('checkCollectionStatus error', err);
+                updateCollectButton(false);
+                return false;
+            });
+    }
+
+    function collectProgram(programId) {
+        const url = `${API_BASE}/api/collection/add?targetId=${programId}&targetType=program`;
+        console.log('collectProgram ->', url);
+        if (!programId) return Promise.reject(new Error('no programId'));
+        return fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include' })
+            .then(res => res.json())
+            .then(json => {
+                console.log('collectProgram response', json);
+                if (json && json.code === 0) {
+                    // 操作成功后直接更新按钮状态，无需刷新页面
+                    updateCollectButton(true);
+                    return true;
+                }
+                throw new Error(json.message || '收藏失败');
+            });
+    }
+
+    function cancelCollectProgram(programId) {
+        const url = `${API_BASE}/api/collection/remove?targetId=${programId}&targetType=program`;
+        console.log('cancelCollectProgram ->', url);
+        if (!programId) return Promise.reject(new Error('no programId'));
+        return fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include' })
+            .then(res => res.json())
+            .then(json => {
+                console.log('cancelCollectProgram response', json);
+                if (json && json.code === 0) {
+                    // 操作成功后直接更新按钮状态，无需刷新页面
+                    updateCollectButton(false);
+                    return true;
+                }
+                throw new Error(json.message || '取消收藏失败');
+            });
+    }
+
+    function copyToClipboardFallback(text) {
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.select();
+        try {
+            const successful = document.execCommand('copy');
+            document.body.removeChild(textArea);
+            return successful;
+        } catch (err) {
+            document.body.removeChild(textArea);
+            return false;
+        }
+    }
+
+    function bindActionButtons() {
+        if (studyBtn) {
+            studyBtn.onclick = function() {
+                if (!currentUiProgram) return;
+                const audios = currentUiProgram.audios || [];
+                if (!audios || audios.length === 0) {
+                    alert('该节目暂无音频内容');
+                    return;
+                }
+                const firstAudio = audios[0];
+                const audioId = firstAudio.id || firstAudio.audioId || 0;
+                const pid = currentProgramId;
+                const url = `player.html?programId=${pid}&audioId=${audioId}`;
+                console.log('navigate to', url);
+                window.location.href = url;
+            };
+        }
+
+        if (collectBtn) {
+            collectBtn.onclick = function() {
+                if (!currentProgramId) return;
+                const authToken = localStorage.getItem('authToken') || localStorage.getItem('userId');
+                if (!authToken) {
+                    alert('请先登录后再收藏');
+                    window.location.href = 'login.html';
+                    return;
+                }
+                // 以按钮上的 data-collected 属性为准，避免异步状态不一致
+                const isCurrentlyCollected = collectBtn.getAttribute('data-collected') === 'true';
+                collectBtn.disabled = true;
+                if (isCurrentlyCollected) {
+                    cancelCollectProgram(currentProgramId)
+                        .then(() => { alert('已取消收藏'); collectBtn.disabled = false; })
+                        .catch(err => { alert(err.message || '取消收藏失败'); collectBtn.disabled = false; console.warn(err); });
+                } else {
+                    collectProgram(currentProgramId)
+                        .then(() => { alert('收藏成功'); collectBtn.disabled = false; })
+                        .catch(err => { alert(err.message || '收藏失败'); collectBtn.disabled = false; console.warn(err); });
+                }
+            };
+        }
+
+        if (shareBtn) {
+            shareBtn.onclick = function() {
+                const url = window.location.href;
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(url).then(() => {
+                        alert('链接已复制到剪贴板');
+                    }).catch(err => {
+                        console.warn('clipboard failed', err);
+                        const ok = copyToClipboardFallback(url);
+                        alert(ok ? '链接已复制到剪贴板' : '复制失败，请手动复制链接');
+                    });
+                } else {
+                    const ok = copyToClipboardFallback(url);
+                    alert(ok ? '链接已复制到剪贴板' : '复制失败，请手动复制链接');
+                }
+            };
+        }
     }
 
     // -------------------------- 6. 初始化函数 --------------------------
@@ -379,15 +484,19 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // 尝试从后端获取节目详情
-        fetch(`${API_BASE}/programs/${programId}`)
+        const apiUrl = `${API_BASE}/programs/${programId}`;
+        console.log('Fetching program:', apiUrl);
+        fetch(apiUrl)
             .then(res => {
                 if (!res.ok) throw new Error('network');
                 return res.json();
             })
             .then(payload => {
+                console.log('API payload:', payload);
                 const p = payload && payload.data ? payload.data : null;
                 if (!p) throw new Error('no-data');
                 const uiProgram = mapApiProgramToUi(p);
+                console.log('Mapped UI program:', uiProgram);
                 renderProgram(uiProgram);
                 bindTabSwitchEvent();
             })
@@ -402,7 +511,23 @@ document.addEventListener('DOMContentLoaded', function() {
                     `;
                     return;
                 }
-                renderProgram(currentProgram);
+                // 将本地结构适配为 renderProgram 接受的格式
+                const fallback = {
+                    id: currentProgram.id,
+                    title: currentProgram.title,
+                    cover: currentProgram.cover,
+                    episodes: currentProgram.episodes || 0,
+                    playCount: currentProgram.playCount || 0,
+                    desc: currentProgram.desc || currentProgram.description || '',
+                    faq: '',
+                    audios: (currentProgram.chapters && currentProgram.chapters.length) ? currentProgram.chapters.reduce((acc,ch)=>{
+                        if (ch.lessons && ch.lessons.length) {
+                            ch.lessons.forEach(ls=> acc.push({ id: ls.id || 0, title: ls.title || ls, duration: ls.duration || '' }));
+                        }
+                        return acc;
+                    }, []) : []
+                };
+                renderProgram(fallback);
                 bindTabSwitchEvent();
             });
     }

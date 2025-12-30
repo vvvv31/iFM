@@ -987,15 +987,13 @@
                     <div class="program-info">
                         <h1 id="courseTitle" class="program-title">英语日常对话系列</h1>
                         <div class="program-meta">
-                            <span id="courseEpisodes" class="meta-item">共20集</span>
+                            <span id="courseEpisodes" class="meta-item" style="display: none;">共20集</span>
                         </div>
                         <div class="program-stats">
                             <span class="stat-item">播放量：<span id="playCount">12.5万</span></span>
-                            <span class="stat-item">评分：<span id="courseRating">4.9</span></span>
-                            <span class="stat-item">学习人数：<span id="studentCount">5.8万</span></span>
                         </div>
                         <div class="program-actions">
-                            <button class="action-btn btn-primary" onclick="window.location.href='player.html'">立即学习</button>
+                            <button class="action-btn btn-primary" id="studyBtn">立即学习</button>
                             <button class="action-btn btn-secondary" id="collectBtn">加入收藏</button>
                             <button class="action-btn btn-outline" id="shareBtn">分享课程</button>
                         </div>
@@ -1006,206 +1004,20 @@
                 <div class="program-tabs">
                     <div class="tab-container">
                         <button class="tab-btn active" data-tab="detail">课程详情</button>
-                        <button class="tab-btn" data-tab="syllabus">课程大纲</button>
-                        <button class="tab-btn" data-tab="reviews">学员评价</button>
                         <button class="tab-btn" data-tab="faq">常见问题</button>
                     </div>
 
                     <!-- 课程详情内容 -->
                     <div class="tab-content active" id="detail">
-                        <div class="detail-section">
-                            <h2>课程介绍</h2>
-                            <p id="courseDescription">本课程专为想要提升日常英语对话能力的学习者设计，从最基础的问候语到日常生活场景中的实用对话，循序渐进地帮助学习者掌握实用英语。</p>
-                            <p id="courseObjectives">通过本课程的学习，您将能够：</p>
-                            <ul id="objectivesList">
-                                <li>掌握日常生活中最常用的英语表达</li>
-                                <li>在各种日常场景中自信地进行英语交流</li>
-                                <li>提高听力理解能力和口语表达能力</li>
-                                <li>学习地道的英语表达方式和文化背景知识</li>
-                            </ul>
-                        </div>
-
-                        <div class="detail-section">
-                            <h2>适合人群</h2>
-                            <ul id="targetAudience">
-                                <li>英语初级到中级水平的学习者</li>
-                                <li>想要提高日常英语会话能力的学习者</li>
-                                <li>即将出国旅游、学习或工作的人士</li>
-                                <li>需要在日常生活中使用英语的学习者</li>
-                            </ul>
-                        </div>
-
-                        <div class="detail-section">
-                            <h2>课程特色</h2>
-                            <ul id="courseFeatures">
-                                <li>情景对话：真实生活场景中的对话练习</li>
-                                <li>语音讲解：清晰的发音指导和语调练习</li>
-                                <li>互动练习：丰富的练习活动巩固所学内容</li>
-                                <li>文化背景：介绍英语国家的文化习俗和礼仪</li>
-                                <li>实用词汇：每个场景的核心词汇和表达方式</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <!-- 课程大纲内容 -->
-                    <div class="tab-content" id="syllabus">
-                        <div class="syllabus-section">
-                            <h2>课程大纲</h2>
-                            <div id="courseSyllabus">
-                                <!-- 大纲内容将通过JavaScript动态生成 -->
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 学员评价内容 -->
-                    <div class="tab-content" id="reviews">
-                        <div class="write-review">
-                            <h3>写下您的评价</h3>
-                            <form class="review-form">
-                                <div class="review-field">
-                                    <label for="rating">您的评分</label>
-                                    <input type="hidden" id="rating" name="rating" value="0">
-                                    <div class="rating-input">
-                                        <span class="rating-star" data-rating="1" onclick="setRating(1)"><i class="fas fa-star"></i></span>
-                                        <span class="rating-star" data-rating="2" onclick="setRating(2)"><i class="fas fa-star"></i></span>
-                                        <span class="rating-star" data-rating="3" onclick="setRating(3)"><i class="fas fa-star"></i></span>
-                                        <span class="rating-star" data-rating="4" onclick="setRating(4)"><i class="fas fa-star"></i></span>
-                                        <span class="rating-star" data-rating="5" onclick="setRating(5)"><i class="fas fa-star"></i></span>
-                                    </div>
-                                </div>
-                                <div class="review-field">
-                                    <label for="reviewContent">您的评价内容</label>
-                                    <textarea id="reviewContent" rows="5" placeholder="请分享您对本课程的看法和学习体验..."></textarea>
-                                </div>
-                                <button type="button" id="submitReview" disabled>提交评价</button>
-                            </form>
-                        </div>
-
-                        <div class="reviews-header">
-                            <div class="overall-rating">
-                                <div class="rating-stars">
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star-half-alt"></i>
-                                </div>
-                                <div>
-                                    <span class="rating-score">4.9</span>
-                                    <span class="rating-count">(2358条评价)</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="rating-distribution">
-                            <div class="rating-bar">
-                                <span class="rating-label">5星</span>
-                                <div class="progress-bar">
-                                    <div class="progress-fill" style="width: 85%"></div>
-                                </div>
-                                <span class="rating-percentage">85%</span>
-                            </div>
-                            <div class="rating-bar">
-                                <span class="rating-label">4星</span>
-                                <div class="progress-bar">
-                                    <div class="progress-fill" style="width: 10%"></div>
-                                </div>
-                                <span class="rating-percentage">10%</span>
-                            </div>
-                            <div class="rating-bar">
-                                <span class="rating-label">3星</span>
-                                <div class="progress-bar">
-                                    <div class="progress-fill" style="width: 3%"></div>
-                                </div>
-                                <span class="rating-percentage">3%</span>
-                            </div>
-                            <div class="rating-bar">
-                                <span class="rating-label">2星</span>
-                                <div class="progress-bar">
-                                    <div class="progress-fill" style="width: 1%"></div>
-                                </div>
-                                <span class="rating-percentage">1%</span>
-                            </div>
-                            <div class="rating-bar">
-                                <span class="rating-label">1星</span>
-                                <div class="progress-bar">
-                                    <div class="progress-fill" style="width: 1%"></div>
-                                </div>
-                                <span class="rating-percentage">1%</span>
-                            </div>
-                        </div>
-
-                        <div class="reviews-list">
-                            <div class="review-item">
-                                <div class="review-header">
-                                    <div class="user-info">
-                                        <div class="user-avatar">李</div>
-                                        <div class="user-details">
-                                            <span class="user-name">李明</span>
-                                            <span class="review-date">2023-10-15</span>
-                                        </div>
-                                    </div>
-                                    <div class="review-rating">
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                    </div>
-                                </div>
-                                <div class="review-content">
-                                    课程非常实用，对话场景贴近生活，学完之后在国外旅游时真的能用得上。老师的发音很标准，讲解也很详细，非常适合初学者。
-                                </div>
-                            </div>
-
-                            <div class="review-item">
-                                <div class="review-header">
-                                    <div class="user-info">
-                                        <div class="user-avatar">王</div>
-                                        <div class="user-details">
-                                            <span class="user-name">王芳</span>
-                                            <span class="review-date">2023-09-28</span>
-                                        </div>
-                                    </div>
-                                    <div class="review-rating">
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star-half-alt"></i>
-                                    </div>
-                                </div>
-                                <div class="review-content">
-                                    作为英语初学者，这个课程帮了我很大的忙。每节课时长适中，内容循序渐进，很容易跟上。如果能有配套的练习材料就更好了。
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="load-more-reviews">
-                            <button class="action-btn btn-outline">加载更多评价</button>
+                        <div class="detail-section" id="courseIntroduction">
+                            <!-- 课程介绍将通过JavaScript从API获取并填充 -->
                         </div>
                     </div>
 
                     <!-- 常见问题内容 -->
                     <div class="tab-content" id="faq">
-                        <div class="detail-section">
-                            <h2>课程相关问题</h2>
-                            <ul>
-                                <li><strong>问：本课程适合完全没有英语基础的人学习吗？</strong><br>
-                                答：本课程主要针对初级到中级水平的学习者，建议有一定基础（如掌握26个字母和基础词汇）的学习者学习。如果是完全零基础，建议先学习基础音标和入门词汇课程。</li>
-
-                                <li><strong>问：课程有配套的文字材料或笔记吗？</strong><br>
-                                答：有的，每节课都有配套的对话文本和重点词汇解释，学习时可以在播放器右侧查看和下载。</li>
-
-                                <li><strong>问：购买课程后有有效期限制吗？</strong><br>
-                                答：没有限制，购买后可以永久观看和学习，支持反复收听复习。</li>
-
-                                <li><strong>问：可以在手机上学习吗？</strong><br>
-                                答：可以，支持手机、平板和电脑多设备学习，进度会自动同步。</li>
-
-                                <li><strong>问：学习过程中遇到问题可以提问吗？</strong><br>
-                                答：可以，课程讨论区支持提问，老师会定期回复，也可以与其他学习者交流讨论。</li>
-                            </ul>
+                        <div class="detail-section" id="faqContent">
+                            <!-- 常见问题将通过JavaScript从API获取并填充 -->
                         </div>
                     </div>
                 </div>
@@ -1932,6 +1744,30 @@
                 courseFeatures.appendChild(li);
             });
 
+            // 一次性从后端获取课程详情（包含 introduction 和 faq），并用返回的数据覆盖页面中的相应区域
+            (function(){
+                const apiUrl = `http://localhost:8080/programs/${courseId}`;
+                fetch(apiUrl, { credentials: 'include' })
+                    .then(resp => resp.ok ? resp.json() : Promise.reject(new Error('网络响应非OK')))
+                    .then(json => {
+                        const payload = (json && (json.data || json)) ? (json.data || json) : null;
+                        if (!payload) return;
+                        // 用返回的 introduction 覆盖 #detail 内容（直接替换内部 HTML）
+                        const detailEl = document.getElementById('detail');
+                        if (detailEl && payload.introduction) {
+                            detailEl.innerHTML = payload.introduction;
+                        }
+                        // 用返回的 faq 覆盖 #faq 内容
+                        const faqEl = document.getElementById('faq');
+                        if (faqEl && payload.faq) {
+                            faqEl.innerHTML = payload.faq;
+                        }
+                    })
+                    .catch(err => {
+                        console.warn('获取课程接口失败，使用本地数据回退：', err);
+                    });
+            })();
+
             // 更新课程大纲
             const courseSyllabus = document.getElementById('courseSyllabus');
             courseSyllabus.innerHTML = '';
@@ -2001,22 +1837,7 @@
                 });
             });
 
-            // 收藏按钮功能
-            const collectBtn = document.getElementById('collectBtn');
-            let isCollected = false;
-            collectBtn.addEventListener('click', function() {
-                isCollected = !isCollected;
-                if (isCollected) {
-                    this.textContent = '已收藏';
-                    this.classList.add('btn-primary');
-                    this.classList.remove('btn-secondary');
-                    alert('已添加到收藏');
-                } else {
-                    this.textContent = '加入收藏';
-                    this.classList.remove('btn-primary');
-                    this.classList.add('btn-secondary');
-                }
-            });
+            // 收藏按钮逻辑已移至外部脚本（js/program_list.js）
 
             // 分享按钮功能
             const shareBtn = document.getElementById('shareBtn');

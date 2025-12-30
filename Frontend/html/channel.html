@@ -1241,7 +1241,7 @@ loadTrack(currentIndex);
             const isJoined = myJoinedGroupIds.has(g.id);
             const el = document.createElement('div'); el.className='group-item';
             el.setAttribute('data-group-id', g.id);
-            el.innerHTML = `<div class="group-info"><h3>${escapeHtml(g.name)}</h3><p>${escapeHtml(g.desc)}</p></div><div class="group-buttons"><span class="members-count">已加入${g.members}人</span><button class="join-btn" data-id="${g.id}" ${isJoined ? 'disabled' : ''}>${isJoined ? '已加入' : '加入'}</button><span class="invite-code" title="点击复制" style="cursor:pointer;">邀请码：${g.inviteCode || 'N/A'}</span></div>`;
+            el.innerHTML = `<div class="group-info"><h3>${escapeHtml(g.name)}</h3><p>${escapeHtml(g.desc)}</p></div><div class="group-buttons"><span class="members-count">已加入${g.members}人</span><button class="join-btn" data-id="${g.id}">${isJoined ? '已加入' : '加入'}</button><span class="invite-code" title="点击复制" style="cursor:pointer;">邀请码：${g.inviteCode || 'N/A'}</span></div>`;
             // clicking the group navigates to the chat/detail page for that group
             el.querySelector('.group-info').addEventListener('click', ()=>{
               window.location.href = `channel2.html?groupId=${encodeURIComponent(g.id)}`;
@@ -1711,12 +1711,17 @@ loadTrack(currentIndex);
           const btn = e.target.closest('.join-btn'); if(!btn) return;
           e.stopPropagation(); // prevent parent group click from firing navigation
           const id = parseInt(btn.getAttribute('data-id'));
+          
           if(!myJoinedGroupIds.has(id)){
+            // 未加入状态：加入群组
             myJoinedGroupIds.add(id);
             saveJoinedGroups(); // persist to localStorage
             renderJoinedGroups(); // refresh left sidebar
+            btn.textContent = '已加入';
+          } else {
+            // 已加入状态：进入群组页面
+            window.location.href = `channel2.html?groupId=${encodeURIComponent(id)}`;
           }
-          btn.textContent = '已加入'; btn.disabled = true;
         });
 
         // Join by invite code handler

@@ -1416,7 +1416,7 @@ loadTrack(currentIndex);
               
               try {
                 const token = localStorage.getItem('authToken') || '';
-                const username = localStorage.getItem('username') || '用户';
+                const userId = localStorage.getItem('userId') || '1';
                 
                 const response = await fetch(`http://localhost:8080/api/posts/${postId}/comments`, {
                   method: 'POST',
@@ -1425,7 +1425,7 @@ loadTrack(currentIndex);
                     'Content-Type': 'application/json'
                   },
                   body: JSON.stringify({
-                    author: username,
+                    author: parseInt(userId),
                     text: text
                   })
                 });
@@ -1524,6 +1524,8 @@ loadTrack(currentIndex);
           });
         }
 
+        let currentPosts = [];
+
         // 从后端API获取动态
         async function fetchPosts() {
             try {
@@ -1540,7 +1542,7 @@ loadTrack(currentIndex);
                     const posts = result.data.map(post => ({
                         id: post.id,
                         author: post.author,
-                        avatar: post.author.slice(0, 1).toUpperCase(),
+                        avatar: post.author.toString().slice(0, 1).toUpperCase(),
                         text: post.text,
                         images: post.images || [],
                         likes: post.likes,
@@ -1548,16 +1550,16 @@ loadTrack(currentIndex);
                         time: new Date(post.createdAt).toLocaleString(),
                         tags: post.tags || []
                     }));
-                    // 如果后端有数据，使用后端数据；如果后端没有数据，使用本地样本数据
-                    renderPosts(posts.length > 0 ? posts : samplePosts);
+                    currentPosts = posts;
+                    renderPosts(posts);
                 } else {
-                    // 如果后端返回的数据格式不正确，使用本地样本数据
-                    renderPosts(samplePosts);
+                    currentPosts = [];
+                    renderPosts([]);
                 }
             } catch (error) {
                 console.error('获取动态失败:', error);
-                // 如果API调用失败，使用本地样本数据
-                renderPosts(samplePosts);
+                currentPosts = [];
+                renderPosts([]);
             }
         }
 
@@ -1578,7 +1580,7 @@ loadTrack(currentIndex);
                         text: text,
                         images: images,
                         userId: parseInt(userId),
-                        author: username,
+                        author: parseInt(userId),
                         likes: 0,
                         comments: [],
                         tags: []
@@ -1650,17 +1652,7 @@ loadTrack(currentIndex);
                 composerSelectedFiles = [];
                 previewAreaEl.innerHTML = '';
               } else {
-                // 发布失败时使用本地样本数据作为回退
-                const newId = (samplePosts.length? Math.max(...samplePosts.map(p=>p.id))+1:1);
-                const now = new Date();
-                const username = localStorage.getItem('username') || '用户';
-                const post = { id:newId, author:username, avatar:'W', text:text, images:dataUrls, likes:0, comments:[], time: now.toLocaleString(), tags:[] };
-                samplePosts.unshift(post);
-                composerInput.value = '';
-                composerFilesEl.value = '';
-                composerSelectedFiles = [];
-                previewAreaEl.innerHTML = '';
-                renderPosts(samplePosts);
+                alert('发布失败，请稍后重试');
               }
             });
           });
@@ -1681,7 +1673,7 @@ loadTrack(currentIndex);
         // Sort - Feed (动态排序：最新/最热)
         feedSortSelect.addEventListener('change', ()=>{
           const val = feedSortSelect.value;
-          let sorted = [...samplePosts];
+          let sorted = [...currentPosts];
           if(val === 'new') {
             // 按时间排序（id越大越新）
             sorted.sort((a, b) => b.id - a.id);
@@ -1779,7 +1771,7 @@ loadTrack(currentIndex);
             feedSortSelect.style.display = 'inline-block';
             groupSortSelect.style.display = 'none';
             // Filter posts by tag
-            const filtered = samplePosts.filter(p => p.tags && p.tags.includes(tag));
+            const filtered = currentPosts.filter(p => p.tags && p.tags.includes(tag));
             if(filtered.length > 0){
               renderPosts(filtered);
             } else {

@@ -36,6 +36,16 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws IOException {
         String path = request.getRequestURI();
+        String method = request.getMethod();
+        
+        // 允许 CORS 预检请求通过
+        if ("OPTIONS".equalsIgnoreCase(method)) {
+            response.setHeader("Access-Control-Allow-Origin", "*");
+            response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+            response.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type");
+            response.setStatus(HttpServletResponse.SC_OK);
+            return true;
+        }
         
         // 检查是否为游客模式允许访问的接口
         if (isGuestAllowedPath(path)) {

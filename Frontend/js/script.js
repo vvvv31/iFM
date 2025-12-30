@@ -266,9 +266,7 @@ function initPlayerPage() {
 
 // 初始化WebSocket连接
 function initWebSocket() {
-    // 实际项目中替换为你的WebSocket服务器地址
-    const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsUri = `${wsProtocol}//${window.location.host}/ws/live`;
+    const wsUri = 'ws://localhost:8080/ws/live';
 
     ws = new WebSocket(wsUri);
 

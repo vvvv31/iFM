@@ -1379,8 +1379,8 @@
             <div class="daily-quote">
                 <div class="quote-content">
                     <span>每日一句</span>
-                    <p class="quote-text">The way to learn a language is to practice speaking it as often as possible. - Paul Pimsleur</p>
-                    <p style="margin-top: 8px; font-size: 14px; color: #666;">学习一门语言的方法是尽可能多地练习说它。 - 保罗·皮姆斯勒</p>
+                    <p class="quote-text" id="englishQuote">The way to learn a language is to practice speaking it as often as possible. - Paul Pimsleur</p>
+                    <p style="margin-top: 8px; font-size: 14px; color: #666;" id="chineseQuote">学习一门语言的方法是尽可能多地练习说它。 - 保罗·皮姆斯勒</p>
                 </div>
                 <button class="copy-btn" id="readAloudBtn">
                     <i class="fas fa-volume-up"></i> 朗读
@@ -1507,6 +1507,90 @@
     </main>
 
 <script>
+
+// 获取每日一句的函数
+async function fetchDailySentence() {
+    try {
+        console.log('开始获取每日一句...');
+        const response = await fetch('http://localhost:8080/daily-sentences');
+        console.log('响应状态:', response.status);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP错误! 状态码: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        console.log('返回的数据:', result);
+        
+        // 根据你的响应格式，code是200
+        if (result.code === 200 && result.data && result.data.length > 0) {
+            // 随机选择一条每日一句
+            const sentences = result.data;
+            const randomIndex = Math.floor(Math.random() * sentences.length);
+            const selectedSentence = sentences[randomIndex];
+            console.log('随机选择的句子:', selectedSentence);
+            
+            // 填充到页面中
+            const englishQuote = document.getElementById('englishQuote');
+            const chineseQuote = document.getElementById('chineseQuote');
+            
+            if (englishQuote) {
+                englishQuote.textContent = `${selectedSentence.english} - ${selectedSentence.author || 'Unknown'}`;
+                console.log('英文句子已更新');
+            }
+            
+            if (chineseQuote) {
+                chineseQuote.textContent = `${selectedSentence.chinese}${selectedSentence.author ? ' - ' + selectedSentence.author : ''}`;
+                console.log('中文翻译已更新');
+            }
+            
+            // 更新朗读按钮的跳转链接，使用新的句子
+            const readAloudBtn = document.getElementById('readAloudBtn');
+            if (readAloudBtn) {
+                // 移除之前的事件监听器，避免重复绑定
+                const newReadAloudBtn = readAloudBtn.cloneNode(true);
+                readAloudBtn.parentNode.replaceChild(newReadAloudBtn, readAloudBtn);
+                
+                newReadAloudBtn.addEventListener('click', function() {
+                    const text = `${selectedSentence.english} - ${selectedSentence.author || 'Unknown'}`;
+                    const url = `Audio-Related.html?auto=read&text=${encodeURIComponent(text)}`;
+                    window.location.href = url;
+                });
+                console.log('朗读按钮已更新');
+            }
+            
+            return true;
+        } else {
+            console.warn('没有获取到每日一句数据或数据格式不正确');
+            return false;
+        }
+    } catch (error) {
+        console.error('获取每日一句失败:', error);
+        // 如果获取失败，保持原默认句子
+        return false;
+    }
+}
+
+// 页面加载完成后获取每日一句
+window.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM已加载，开始获取每日一句...');
+    
+    // 延迟执行，确保所有元素都已加载
+    setTimeout(function() {
+        fetchDailySentence().then(success => {
+            if (success) {
+                console.log('每日一句已成功加载并显示');
+            } else {
+                console.log('使用默认每日一句');
+            }
+        });
+    }, 500);
+});
+
+// 如果页面是通过iframe加载的，也触发获取
+if (window.parent !== window) {
+    setTimeout(fetchDailySentence, 1000);
+}
 /* 轮播图功能 */
 document.addEventListener('DOMContentLoaded', function() {
     const carouselInner = document.getElementById('carouselInner');

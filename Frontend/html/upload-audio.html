@@ -653,7 +653,7 @@
     let autoSaveTimer = null;
     let lastSavedData = null;
 
-    const fileInput = document.getElementById('audio-file');
+    const localFileInput = document.getElementById('audio-file');
     const fileInfo = document.getElementById('file-info');
     const fileNameEl = document.getElementById('file-name');
     const fileSizeEl = document.getElementById('file-size');
@@ -661,7 +661,7 @@
     const previewContainer = document.getElementById('audio-preview');
     const previewAudio = document.getElementById('audio-player');
 
-    fileInput.addEventListener('change', async (e) => {
+    localFileInput.addEventListener('change', async (e) => {
         const file = e.target.files[0];
         if (!file) return;
         fileInfo.style.display = 'block';
@@ -769,9 +769,9 @@
         };
         
         // 如果有文件，保存文件名（实际应用中可能需要保存文件引用或上传到服务器）
-        if (fileInput.files[0]) {
-            draftData.fileName = fileInput.files[0].name;
-            draftData.fileSize = fileInput.files[0].size;
+        if (localFileInput.files[0]) {
+            draftData.fileName = localFileInput.files[0].name;
+            draftData.fileSize = localFileInput.files[0].size;
             // 尝试获取音频时长
             if (previewAudio.duration) {
                 draftData.duration = formatTime(previewAudio.duration);
@@ -829,7 +829,7 @@
     // 启动自动保存
     function startAutoSave() {
         // 监听表单变化
-        const formElements = [audioTitle, audioDescription, audioCategory, audioGroupMain, audioGroupSub, fileInput];
+        const formElements = [audioTitle, audioDescription, audioCategory, audioGroupMain, audioGroupSub, localFileInput];
         formElements.forEach(element => {
             element.addEventListener('input', () => {
                 // 清除之前的定时器
@@ -985,7 +985,7 @@
             
             // 正常上传流程
             // ====== 真正上传音频文件到后端 ======
-            const file = fileInput.files[0];
+            const file = localFileInput.files[0];
             if (!file) {
                 msgBox.className = 'message error';
                 msgBox.textContent = '请选择音频文件';
@@ -1008,7 +1008,7 @@
             progressText.textContent = '0%';
 
             const xhr = new XMLHttpRequest();
-            xhr.open('POST', '/api/upload/audio', true);
+            xhr.open('POST', 'http://localhost:8080/api/upload/audio', true);
             const token = localStorage.getItem('access_token') || localStorage.getItem('authToken');
             if (token) xhr.setRequestHeader('Authorization', 'Bearer ' + token);
             xhr.upload.onprogress = function(e) {
@@ -1153,22 +1153,24 @@ function formatTime(s) { if (!s || isNaN(s)) return "00:00"; const m = Math.floo
 function stopWrap(handler) { return function(e){ e.stopPropagation(); handler(e); }; }
 
 /* 控件事件（阻止冒泡） */
-playBtn.addEventListener('click', stopWrap(togglePlay));
-prevBtn.addEventListener('click', stopWrap(() => prevByMode()));
-nextBtn.addEventListener('click', stopWrap(() => nextByMode()));
-muteBtn.addEventListener('click', stopWrap(() => {
+if (playBtn) playBtn.addEventListener('click', stopWrap(togglePlay));
+if (prevBtn) prevBtn.addEventListener('click', stopWrap(() => prevByMode()));
+if (nextBtn) nextBtn.addEventListener('click', stopWrap(() => nextByMode()));
+if (muteBtn) muteBtn.addEventListener('click', stopWrap(() => {
   audio.muted = !audio.muted;
-  if (audio.muted || audio.volume === 0) { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3z"/>'; }
-  else if (audio.volume < 0.5) { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3z"/>'; }
-  else { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3z"/>'; }
+  if (volIcon) {
+    if (audio.muted || audio.volume === 0) { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3z"/>'; }
+    else if (audio.volume < 0.5) { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3z"/>'; }
+    else { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3z"/>'; }
+  }
 }));
 
 /* 模式弹层 */
-modeBtn.addEventListener('click', stopWrap(() => {
-  ratePop.classList.remove('show');
-  modePop.classList.toggle('show');
+if (modeBtn) modeBtn.addEventListener('click', stopWrap(() => {
+  if (ratePop) ratePop.classList.remove('show');
+  if (modePop) modePop.classList.toggle('show');
 }));
-modePop.addEventListener('click', stopWrap((e) => {
+if (modePop) modePop.addEventListener('click', stopWrap((e) => {
   const item = e.target.closest('.mode-item');
   if (!item) return;
   playMode = item.getAttribute('data-mode');
@@ -1177,39 +1179,47 @@ modePop.addEventListener('click', stopWrap((e) => {
 }));
 
 /* 倍速弹层 */
-rateBtn.addEventListener('click', stopWrap(() => {
-  modePop.classList.remove('show');
-  ratePop.classList.toggle('show');
+if (rateBtn) rateBtn.addEventListener('click', stopWrap(() => {
+  if (modePop) modePop.classList.remove('show');
+  if (ratePop) ratePop.classList.toggle('show');
 }));
-ratePop.addEventListener('click', stopWrap((e) => {
+if (ratePop) ratePop.addEventListener('click', stopWrap((e) => {
   const item = e.target.closest('.rate-item');
   if (!item) return;
-  const r = parseFloat(item.getAttribute('data-rate'));
-  audio.playbackRate = r;
-  rateText.innerText = r.toFixed(1) + 'x';
+  const rate = parseFloat(item.getAttribute('data-rate'));
+  audio.playbackRate = rate;
+  if (rateText) rateText.innerText = rate + 'x';
   document.querySelectorAll('#rate-pop .rate-item').forEach(el => el.classList.toggle('active', el === item));
   ratePop.classList.remove('show');
 }));
 
 /* 点击其他区域关闭弹层 */
 document.addEventListener('click', (e) => {
-  if (!modeBtn.contains(e.target) && !modePop.contains(e.target)) modePop.classList.remove('show');
-  if (!rateBtn.contains(e.target) && !ratePop.contains(e.target)) ratePop.classList.remove('show');
+  if (modeBtn && modePop && !modeBtn.contains(e.target) && !modePop.contains(e.target)) {
+    modePop.classList.remove('show');
+  }
+  if (rateBtn && ratePop && !rateBtn.contains(e.target) && !ratePop.contains(e.target)) {
+    ratePop.classList.remove('show');
+  }
 });
 
 /* 音频事件与切歌模式 */
-audio.addEventListener('timeupdate', () => {
-  if (isDraggingProgress) return;
-  const percent = (audio.currentTime / audio.duration) * 100;
-  progressFill.style.width = `${percent}%`;
-  knobEl.style.left = `${percent}%`;
-  timeCurEl.innerText = formatTime(audio.currentTime);
-});
-audio.addEventListener('loadedmetadata', () => { timeTotalEl.innerText = formatTime(audio.duration); });
-audio.addEventListener('ended', () => {
-  if (playMode === 'single') { audio.currentTime = 0; playTrack(); }
-  else { nextByMode(); }
-});
+if (audio) {
+  audio.addEventListener('timeupdate', () => {
+    if (isDraggingProgress) return;
+    const percent = (audio.currentTime / audio.duration) * 100;
+    if (progressFill) progressFill.style.width = `${percent}%`;
+    if (knobEl) knobEl.style.left = `${percent}%`;
+    if (timeCurEl) timeCurEl.innerText = formatTime(audio.currentTime);
+  });
+  audio.addEventListener('loadedmetadata', () => {
+    if (timeTotalEl) timeTotalEl.innerText = formatTime(audio.duration);
+  });
+  audio.addEventListener('ended', () => {
+    if (playMode === 'single') { audio.currentTime = 0; playTrack(); }
+    else { nextByMode(); }
+  });
+}
 function prevByMode() {
   if (playMode === 'shuffle') currentIndex = Math.floor(Math.random() * playlist.length);
   else currentIndex = (currentIndex - 1 + playlist.length) % playlist.length;
@@ -1254,7 +1264,7 @@ document.addEventListener('touchmove', (e) => { if (isDraggingVolume) { e.preven
 document.addEventListener('touchend', () => { isDraggingVolume = false; }, { passive:false });
 
 /* 播放列表开关 */
-listBtn.addEventListener('click', stopWrap(() => {
+if (listBtn && playlistPanel) listBtn.addEventListener('click', stopWrap(() => {
   playlistPanel.style.display = playlistPanel.style.display === 'block' ? 'none' : 'block';
 }));
 

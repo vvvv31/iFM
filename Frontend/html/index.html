@@ -1222,12 +1222,15 @@
     <main class="main-content">
         <!-- 用户信息区（与my-collect.html统一） -->
         <section class="user-info">
-            <div class="avatar-wrapper">
+            <div class="avatar-wrapper" onclick="openEditModal('avatar')" title="点击修改头像">
                 <div class="avatar" id="userAvatar"></div>
             </div>
             <div class="user-detail">
                 <div class="username-wrapper">
                     <div class="username" id="displayUsername">已登录用户</div>
+                    <button class="edit-username-btn" onclick="openEditModal('username')" title="编辑资料">
+                        <i class="fas fa-pen"></i>
+                    </button>
                 </div>
                 <div class="identity">认证创作者</div>
                 <div class="stats">
@@ -2403,11 +2406,78 @@ window.addEventListener('DOMContentLoaded', loadUserProfile);
       <button class="edit-modal-close" onclick="closeEditModal()">&times;</button>
     </div>
     <div class="edit-modal-body">
-      <!-- 用户名编辑区域 -->
+      <!-- 头像编辑 -->
       <div class="edit-form-group">
-        <label for="editUsernameInput">用户名</label>
-        <input type="text" id="editUsernameInput" maxlength="20" placeholder="请输入用户名" oninput="updateCharCount()">
-        <div class="char-count" id="charCount">0/20</div>
+        <label>头像</label>
+        <div class="avatar-edit-section">
+          <!-- 头像预览 -->
+          <div id="avatarPreview" class="avatar-preview">
+            <div class="avatar-emoji" style="color: #FF8C00;">😊</div>
+          </div>
+          
+          <!-- 头像类型选择 -->
+          <div class="avatar-type-options">
+            <div class="edit-radio-group">
+              <input type="radio" id="avatarTypeEmoji" name="avatarType" value="emoji" checked onclick="updateAvatarPreview()">
+              <label for="avatarTypeEmoji">表情</label>
+            </div>
+            <div class="edit-radio-group">
+              <input type="radio" id="avatarTypeColor" name="avatarType" value="color" onclick="updateAvatarPreview()">
+              <label for="avatarTypeColor">纯色</label>
+            </div>
+            <div class="edit-radio-group">
+              <input type="radio" id="avatarTypeCustom" name="avatarType" value="custom" onclick="updateAvatarPreview()">
+              <label for="avatarTypeCustom">自定义</label>
+            </div>
+          </div>
+          
+          <!-- 头像选项 -->
+          <div class="avatar-options">
+            <!-- 表情选择 -->
+            <div class="emoji-options">
+              <label>表情</label>
+              <input type="text" id="avatarEmojiPicker" value="😊" onchange="updateAvatarPreview()">
+              <div class="emoji-presets">
+                <button type="button" onclick="selectPresetAvatar('emoji', '😊')">😊</button>
+                <button type="button" onclick="selectPresetAvatar('emoji', '😎')">😎</button>
+                <button type="button" onclick="selectPresetAvatar('emoji', '😜')">😜</button>
+                <button type="button" onclick="selectPresetAvatar('emoji', '🤔')">🤔</button>
+                <button type="button" onclick="selectPresetAvatar('emoji', '😇')">😇</button>
+                <button type="button" onclick="selectPresetAvatar('emoji', '😈')">😈</button>
+              </div>
+            </div>
+            
+            <!-- 颜色选择 -->
+            <div class="color-options">
+              <label>颜色</label>
+              <input type="color" id="avatarColorPicker" value="#FF8C00" onchange="updateAvatarPreview()">
+              <div class="color-presets">
+                <button type="button" onclick="selectPresetAvatar('color', '#FF8C00')" style="background-color: #FF8C00;"></button>
+                <button type="button" onclick="selectPresetAvatar('color', '#4169E1')" style="background-color: #4169E1;"></button>
+                <button type="button" onclick="selectPresetAvatar('color', '#32CD32')" style="background-color: #32CD32;"></button>
+                <button type="button" onclick="selectPresetAvatar('color', '#FF1493')" style="background-color: #FF1493;"></button>
+                <button type="button" onclick="selectPresetAvatar('color', '#FFD700')" style="background-color: #FFD700;"></button>
+                <button type="button" onclick="selectPresetAvatar('color', '#8A2BE2')" style="background-color: #8A2BE2;"></button>
+              </div>
+            </div>
+            
+            <!-- 自定义头像上传 -->
+            <div class="custom-avatar-options">
+              <label>上传头像</label>
+              <input type="file" id="avatarFileInput" accept="image/*">
+              <p class="edit-help-text">支持 JPG、PNG 格式，大小不超过 5MB</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 用户名编辑 -->
+      <div class="edit-form-group">
+        <label for="usernameInput">用户名</label>
+        <input type="text" id="usernameInput" class="edit-form-control" maxlength="20" oninput="updateCharCount()">
+        <div class="edit-form-footer">
+          <span id="charCount" class="char-count">0/20</span>
+        </div>
       </div>
     </div>
     <div class="edit-modal-footer">

@@ -431,7 +431,33 @@
         .rate-item:hover { background: #f7f7f7; }
         .rate-item.active { color: #ff8c00; font-weight: 700; background: #fff4e6; }
         @media (max-width: 900px) { .pv-left { min-width: 0; } .pv-right { min-width: 0; } .pv-inner { grid-template-columns: auto 1fr auto; column-gap: 10px; padding: 0 12px; } }
-    </style>
+        /* 添加上传成功通知动画 */
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(-10px); }
+            10% { opacity: 1; transform: translateY(0); }
+            90% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-10px); }
+        }
+
+        /* 添加上传成功通知样式 */
+        .upload-success-notification {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 100000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: fadeInOut 3.5s ease;
+            font-weight: 500;
+            max-width: 300px;
+        }
+   </style>
 </head>
 <body>
 <script>
@@ -715,7 +741,7 @@
     async function loadMainGroups() {
         const audioGroupMain = document.getElementById('audio-group-main');
         if (!audioGroupMain) return;
-        audioGroupMain.innerHTML = '<option value="">请选择课程</option>';
+        audioGroupMain.innerHTML = '<option value="">请先选择课程（必选）</option>';
         
         try {
             // 获取当前登录用户的creatorId
@@ -1302,22 +1328,55 @@
     uploadForm.addEventListener('submit', (e) => {
         e.preventDefault();
         
+        // 新增：检查是否选择了课程
+        const programId = audioGroupMain.value;
+        if (!programId) {
+            msgBox.className = 'message error';
+            msgBox.textContent = '请选择课程！';
+            msgBox.style.display = 'block';
+            
+            // 滚动到课程选择区域
+            audioGroupMain.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            audioGroupMain.focus();
+            
+            setTimeout(() => {
+                msgBox.style.display = 'none';
+            }, 3000);
+            return;
+        }
+
+        // 3. 检查是否输入了标题
+        if (!audioTitle.value.trim()) {
+            msgBox.className = 'message error';
+            msgBox.textContent = '请输入音频标题！';
+            msgBox.style.display = 'block';
+            
+            audioTitle.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            audioTitle.focus();
+            
+            setTimeout(() => {
+                msgBox.style.display = 'none';
+            }, 3000);
+            return;
+        }
+        
+        // 4. 检查是否选择了文件（非草稿模式）
+        const file = fileInput.files[0];
+        if (!isDraftMode && !file) {
+            msgBox.className = 'message error';
+            msgBox.textContent = '请选择音频文件！';
+            msgBox.style.display = 'block';
+            
+            setTimeout(() => {
+                msgBox.style.display = 'none';
+            }, 3000);
+            return;
+        }
+
         if (isDraftMode) {
             // 如果是草稿模式，只保存草稿
             saveDraft();
         } else {
-            // 检查是否选择了分类
-            if (!audioCategory.value) {
-                msgBox.className = 'message warning';
-                msgBox.textContent = '请选择分类！';
-                msgBox.style.display = 'block';
-                
-                setTimeout(() => {
-                    msgBox.style.display = 'none';
-                }, 3000);
-                return;
-            }
-            
             // 正常上传流程
             // ====== 真正上传音频文件到后端 ======
             const file = fileInput.files[0];
@@ -1355,41 +1414,38 @@
                 }
             };
 
-            xhr.onload = function() {
-                let resp = {};
-                try {
-                    resp = JSON.parse(xhr.responseText);
-                } catch (e) {}
-                if (xhr.status === 200 && resp && (resp.code === 0 || resp.message === 'success')) {
-                    msgBox.className = 'message success';
-                    msgBox.textContent = '上传成功！';
-                    if (resp.data && resp.data.title) {
-                        msgBox.textContent += ` 标题：${resp.data.title}`;
-                    }
-                    if (resp.data && resp.data.filePath) {
-                        msgBox.textContent += `\n文件路径：${resp.data.filePath}`;
-                    }
-                    // 可选：重置表单
-                    // uploadForm.reset();
-                } else {
-                    msgBox.className = 'message error';
-                    msgBox.textContent = '上传失败：' + (resp.message || xhr.statusText || '未知错误');
-                }
-                msgBox.style.display = 'block';
-            };
+            // 修改上传成功的回调函数
             xhr.onload = function() {
                 if (xhr.status === 200) {
                     try {
                         const res = JSON.parse(xhr.responseText);
                         if (res.code === 0) {
+                            // 显示绿色成功消息
                             msgBox.className = 'message success';
-                            msgBox.textContent = '上传成功！';
+                            msgBox.textContent = '上传成功！即将跳转到创作中心...';
                             msgBox.style.display = 'block';
-                            // 跳转到我的作品页面
+                            
+                            // 3秒后跳转
                             setTimeout(() => {
-                                window.location.href = 'my-works.html';
-                            }, 2000);
+                                // 简单直接的方法：检查是否在iframe中
+                                if (window.parent !== window) {
+                                    // 直接设置父窗口的iframe src
+                                    try {
+                                        window.parent.document.getElementById('page-frame').src = 'my-creator_center.html';
+                                    } catch (e) {
+                                        // 如果跨域或无法访问，尝试postMessage
+                                        window.parent.postMessage({
+                                            type: 'CHANGE_PAGE',
+                                            page: 'my-creator_center.html'
+                                        }, '*');
+                                    }
+                                } else {
+                                    // 如果直接访问，直接跳转
+                                    window.location.href = 'my-creator_center.html';
+                                }
+                            }, 3000);
                         } else {
+                            // 上传失败的处理
                             msgBox.className = 'message error';
                             msgBox.textContent = res.message || '上传失败';
                             msgBox.style.display = 'block';

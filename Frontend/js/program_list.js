@@ -3,7 +3,10 @@
  * 功能：1. 解析URL中的节目ID 2. 加载对应节目数据 3. 渲染页面内容
  */
 document.addEventListener('DOMContentLoaded', function() {
-    // -------------------------- 1. 核心数据（与category.js保持一致，实际项目建议通过接口获取） --------------------------
+    // -------------------------- 配置与回退数据 --------------------------
+    const API_BASE = (window.__API_BASE__ !== undefined && window.__API_BASE__) ? window.__API_BASE__ : 'http://localhost:8080';
+
+    // 回退示例数据（当无法请求后端时使用）
     const programData = [
         {
             id: 1,
@@ -157,21 +160,22 @@ document.addEventListener('DOMContentLoaded', function() {
         // 可添加更多节目数据...
     ];
 
-    // -------------------------- 2. 元素获取 --------------------------
-    // 节目基本信息
-    const programTitle = document.getElementById('programTitle');
-    const programCover = document.getElementById('programCover');
-    const programLevel = document.getElementById('programLevel');
-    const programEpisodes = document.getElementById('programEpisodes');
-    const programStatus = document.getElementById('programStatus');
-    const programPlayCount = document.getElementById('programPlayCount');
-    const programRating = document.getElementById('programRating');
-    const programLearnCount = document.getElementById('programLearnCount');
-    const programDesc = document.getElementById('programDesc');
-    const programGoals = document.getElementById('programGoals');
+    // -------------------------- 2. 元素获取（根据 program_list.html 的 ID） --------------------------
+    const programTitle = document.getElementById('courseTitle');
+    const programCover = document.getElementById('courseImage');
+    const programLevel = document.getElementById('courseLevel');
+    const programEpisodes = document.getElementById('courseEpisodes');
+    const programStatus = document.getElementById('courseStatus');
+    const programPlayCount = document.getElementById('playCount');
+    const programRating = document.getElementById('courseRating');
+    const programLearnCount = document.getElementById('studentCount');
+    const programDesc = document.getElementById('courseDescription');
+    const programGoals = document.getElementById('objectivesList');
+    const programTargetAudience = document.getElementById('targetAudience');
+    const programFeatures = document.getElementById('courseFeatures');
     // 章节相关
-    const programChapters = document.getElementById('programChapters');
-    const sidebarChapters = document.getElementById('sidebarChapters');
+    const programChapters = document.getElementById('courseSyllabus');
+    const sidebarChapters = document.getElementById('chapterList');
     // 标签切换
     const tabBtns = document.querySelectorAll('.tab-btn');
     const tabContents = document.querySelectorAll('.tab-content');
@@ -185,28 +189,106 @@ document.addEventListener('DOMContentLoaded', function() {
         return id && !isNaN(id) ? parseInt(id) : null;
     }
 
+    // -------------------------- 额外辅助：格式化秒为 mm:ss 或 hh:mm:ss --------------------------
+    function formatSeconds(seconds) {
+        if (!seconds && seconds !== 0) return '';
+        seconds = Number(seconds);
+        const h = Math.floor(seconds / 3600);
+        const m = Math.floor((seconds % 3600) / 60);
+        const s = seconds % 60;
+        const pad = n => String(n).padStart(2, '0');
+        if (h > 0) return `${pad(h)}:${pad(m)}:${pad(s)}`;
+        return `${m}:${pad(s)}`;
+    }
+
+    // 将后端 program 对象映射为页面 renderProgram 所需结构
+    function mapApiProgramToUi(p) {
+        const audios = (p.audios || []).map(a => ({
+            id: a.audioId || a.id || 0,
+            title: a.title || a.name || '未命名音频',
+            duration: a.duration ? formatSeconds(a.duration) : (a.durationStr || ''),
+            coverUrl: a.coverUrl || ''
+        }));
+
+        // 如果没有 audios，尝试用 tags 作为每一集
+        let chapters = [];
+        if (audios.length > 0) {
+            chapters = [{ unit: '课程目录', lessons: audios }];
+        } else if (p.tags && p.tags.length > 0) {
+            const lessonsFromTags = p.tags.map((t, idx) => ({ id: t.tagId || idx + 1, title: t.name || '未命名章节', duration: '' }));
+            chapters = [{ unit: '课程目录', lessons: lessonsFromTags }];
+        } else {
+            chapters = (p.chapters && p.chapters.length) ? p.chapters : [];
+        }
+
+        const episodesCount = chapters.reduce((sum, ch) => sum + (ch.lessons ? ch.lessons.length : 0), 0);
+
+        return {
+            id: p.programId || p.id || 0,
+            title: p.title || '未命名节目',
+            teacher: '作者' + (p.creatorId ? ' ' + p.creatorId : ''),
+            cover: p.coverUrl || (audios[0] && audios[0].coverUrl) || 'https://via.placeholder.com/300x200?text=封面',
+            level: p.level || '',
+            episodes: episodesCount,
+            status: p.status || '',
+            playCount: p.playCount || 0,
+            rating: p.rating || 0,
+            learnCount: p.learnCount || 0,
+            desc: p.introduction || p.description || '',
+            goals: p.goals && p.goals.length ? p.goals : null,
+            targetAudience: p.targetAudience || null,
+            features: p.features || null,
+            chapters: chapters
+        };
+    }
+
     // -------------------------- 4. 渲染页面核心函数 --------------------------
     function renderProgram(program) {
         // 1. 渲染基本信息
         programTitle.textContent = program.title;
         programCover.src = program.cover;
         programCover.alt = program.title;
-        programLevel.textContent = program.level;
-        programEpisodes.textContent = `${program.episodes}集`;
-        programStatus.textContent = program.status;
+
+        // 仅显示集数（若有），不要访问已删除的 level/status 元素
+        if (program.episodes && program.episodes > 0) {
+            programEpisodes.style.display = '';
+            programEpisodes.textContent = `${program.episodes}集`;
+        } else {
+            programEpisodes.style.display = 'none';
+        }
         // 格式化播放量/学习人数（万次/万人）
         programPlayCount.textContent = formatCount(program.playCount);
         programLearnCount.textContent = formatCount(program.learnCount);
         programRating.textContent = program.rating;
 
-        // 2. 渲染课程介绍和学习目标
+        // 2. 渲染课程介绍和学习目标（仅当后端提供目标时覆盖页面）
         programDesc.textContent = program.desc;
-        programGoals.innerHTML = ''; // 清空目标列表
-        program.goals.forEach(goal => {
-            const li = document.createElement('li');
-            li.textContent = goal;
-            programGoals.appendChild(li);
-        });
+        if (program.goals && program.goals.length) {
+            programGoals.innerHTML = ''; // 清空目标列表
+            program.goals.forEach(goal => {
+                const li = document.createElement('li');
+                li.textContent = goal;
+                programGoals.appendChild(li);
+            });
+        }
+
+        // 若后端提供 targetAudience 或 features，可选择性替换页面对应列表
+        if (program.targetAudience && program.targetAudience.length && programTargetAudience) {
+            programTargetAudience.innerHTML = '';
+            program.targetAudience.forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = item;
+                programTargetAudience.appendChild(li);
+            });
+        }
+        if (program.features && program.features.length && programFeatures) {
+            programFeatures.innerHTML = '';
+            program.features.forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = item;
+                programFeatures.appendChild(li);
+            });
+        }
 
         // 3. 渲染课程大纲（主内容区）
         programChapters.innerHTML = '';
@@ -296,22 +378,33 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        // 根据ID查找对应节目
-        const currentProgram = programData.find(program => program.id === programId);
-        if (!currentProgram) {
-            // 未找到节目时显示提示
-            document.querySelector('.program-content').innerHTML = `
-                <div style="text-align: center; padding: 50px 0; color: #666;">
-                    该节目不存在或已下架～
-                </div>
-            `;
-            return;
-        }
-
-        // 渲染节目内容
-        renderProgram(currentProgram);
-        // 绑定标签切换事件
-        bindTabSwitchEvent();
+        // 尝试从后端获取节目详情
+        fetch(`${API_BASE}/programs/${programId}`)
+            .then(res => {
+                if (!res.ok) throw new Error('network');
+                return res.json();
+            })
+            .then(payload => {
+                const p = payload && payload.data ? payload.data : null;
+                if (!p) throw new Error('no-data');
+                const uiProgram = mapApiProgramToUi(p);
+                renderProgram(uiProgram);
+                bindTabSwitchEvent();
+            })
+            .catch(err => {
+                console.warn('Fetch program failed, fall back to local data:', err);
+                const currentProgram = programData.find(program => program.id === programId);
+                if (!currentProgram) {
+                    document.querySelector('.program-content').innerHTML = `
+                        <div style="text-align: center; padding: 50px 0; color: #666;">
+                            该节目不存在或已下架～
+                        </div>
+                    `;
+                    return;
+                }
+                renderProgram(currentProgram);
+                bindTabSwitchEvent();
+            });
     }
 
     // -------------------------- 7. 启动初始化 --------------------------

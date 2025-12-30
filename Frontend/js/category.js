@@ -6,76 +6,129 @@ document.addEventListener('DOMContentLoaded', function() {
     // -------------------------- 1. 元素获取 --------------------------
     // 类型选项（音频/直播）
     const typeOptions = document.querySelectorAll('#typeOptions .filter-option');
-    // 种类容器（音频专属/直播专属）
-    const audioCategories = document.getElementById('audioCategories');
-    const liveCategories = document.getElementById('liveCategories');
+    // （已移除种类筛选）
     // 排序选项（时间/热度）
     const sortOptions = document.querySelectorAll('#sortOptions .filter-option');
     // 节目列表容器（用于排序后重新渲染）
     const channelsGrid = document.querySelector('.channels-grid');
-    // 原始节目数据（请根据实际项目接口返回数据替换，这里是示例数据）
-    const originalChannelData = [
+    // 原始节目数据：初始为空，从后端接口加载；保留少量回退示例以便本地调试
+    let originalChannelData = [];
+    const fallbackChannelData = [
         {
             id: 1,
             title: "商务英语会话技巧",
             teacher: "李老师",
             playCount: 25000,
             duration: "45:30",
-            publishTime: 1717248000000, // 2024-06-01 00:00:00（时间戳，毫秒）
-            type: "audio", // 类型：audio=音频，live=直播
-            category: "演讲" // 所属种类
-        },
-        {
-            id: 2,
-            title: "日常英语口语600句",
-            teacher: "王老师",
-            playCount: 50000,
-            duration: "30:15",
-            publishTime: 1718248000000, // 2024-06-12 00:00:00
+            publishTime: 1717248000000,
+            updatedAt: 1717248000000,
             type: "audio",
-            category: "有声书"
-        },
-        {
-            id: 3,
-            title: "英语听力进阶训练",
-            teacher: "张老师",
-            playCount: 14000,
-            duration: "52:20",
-            publishTime: 1719248000000, // 2024-06-23 00:00:00
-            type: "audio",
-            category: "音乐"
-        },
-        {
-            id: 4,
-            title: "职场英语答疑直播",
-            teacher: "刘老师",
-            playCount: 8000,
-            duration: "90:00",
-            publishTime: 1720248000000, // 2024-07-04 00:00:00
-            type: "live",
-            category: "答疑直播"
-        },
-        {
-            id: 5,
-            title: "英语文学专题讲座",
-            teacher: "陈老师",
-            playCount: 12000,
-            publishTime: 1721248000000, // 2024-07-15 00:00:00
-            type: "live",
-            category: "直播讲座"
+            category: "演讲"
         }
     ];
 
+    // 格式化时长（秒 -> mm:ss 或 hh:mm:ss）
+    function formatDuration(seconds) {
+        if (!seconds) return '';
+        seconds = Number(seconds);
+        const h = Math.floor(seconds / 3600);
+        const m = Math.floor((seconds % 3600) / 60);
+        const s = seconds % 60;
+        const pad = n => String(n).padStart(2, '0');
+        if (h > 0) return `${pad(h)}:${pad(m)}:${pad(s)}`;
+        return `${m}:${pad(s)}`;
+    }
+
+    // 从后端获取节目并映射为页面使用结构
+    function fetchPrograms() {
+        const url = 'http://localhost:8080/programs';
+        return fetch(url)
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.json();
+            })
+            .then(payload => {
+                const list = (payload && payload.data) || [];
+                // 映射后端 program -> 页面 channel 结构
+                originalChannelData = list.map(program => {
+                    const firstAudio = (program.audios && program.audios[0]) || {};
+                    const durationSeconds = firstAudio.duration || 0;
+                    return {
+                        id: program.programId || program.id || 0,
+                        title: program.title || firstAudio.title || '未命名节目',
+                        teacher: '作者' + (program.creatorId ? ' ' + program.creatorId : ''),
+                        playCount: program.playCount || firstAudio.playCount || 0,
+                        duration: formatDuration(durationSeconds),
+                        publishTime: program.createdAt ? new Date(program.createdAt).getTime() : (firstAudio.createdAt ? new Date(firstAudio.createdAt).getTime() : Date.now()),
+                        updatedAt: program.updatedAt ? new Date(program.updatedAt).getTime() : (firstAudio.updatedAt ? new Date(firstAudio.updatedAt).getTime() : null),
+                        type: 'audio',
+                        category: (program.tags && program.tags[0] && program.tags[0].name) || '未分类'
+                    };
+                });
+                // 如果没有返回数据，使用回退数据
+                if (originalChannelData.length === 0) originalChannelData = fallbackChannelData;
+                return originalChannelData;
+            })
+            .catch(err => {
+                console.error('Failed to fetch programs:', err);
+                originalChannelData = fallbackChannelData;
+                return originalChannelData;
+            });
+    }
+
     // -------------------------- 2. 初始化函数 --------------------------
     function init() {
-        // 初始化显示音频种类+时间排序
-        renderChannelList(originalChannelData);
-        // 绑定类型切换事件
-        bindTypeSwitchEvent();
-        // 绑定排序切换事件
-        bindSortEvent();
-        // 绑定种类选择事件（可选：如需单独筛选种类）
-        bindCategorySelectEvent();
+        // 先从后端加载节目，再渲染与绑定事件
+        fetchPrograms().then(() => {
+            renderChannelList(originalChannelData);
+            bindTypeSwitchEvent();
+            bindSortEvent();
+        });
+    }
+
+    // -------------------------- 分页控制 --------------------------
+    const pageSize = 6; // 每页节目数
+    let currentPage = 1;
+
+    function renderPagination(data) {
+        const pagination = document.querySelector('.pagination');
+        if (!pagination) return;
+        const total = data.length;
+        const totalPages = Math.max(1, Math.ceil(total / pageSize));
+
+        // 构建分页按钮 HTML
+        let html = '';
+        html += `<button class="page-btn prev-btn" ${currentPage===1?"disabled":""}>上一页</button>`;
+
+        for (let i = 1; i <= totalPages; i++) {
+            html += `<button class="page-btn ${i===currentPage? 'active':''}" data-page="${i}">${i}</button>`;
+        }
+
+        html += `<button class="page-btn next-btn" ${currentPage===totalPages?"disabled":""}>下一页</button>`;
+
+        pagination.innerHTML = html;
+
+        // 绑定事件
+        pagination.querySelectorAll('.page-btn').forEach(btn => {
+            if (btn.classList.contains('prev-btn')) {
+                btn.addEventListener('click', () => {
+                    if (currentPage > 1) { currentPage--; renderChannelList(data); }
+                });
+            } else if (btn.classList.contains('next-btn')) {
+                btn.addEventListener('click', () => {
+                    const totalPages = Math.max(1, Math.ceil(data.length / pageSize));
+                    if (currentPage < totalPages) { currentPage++; renderChannelList(data); }
+                });
+            } else {
+                const p = Number(btn.getAttribute('data-page'));
+                btn.addEventListener('click', () => {
+                    if (p !== currentPage) {
+                        currentPage = p;
+                        renderChannelList(data);
+                    }
+                });
+            }
+        });
     }
 
     // -------------------------- 3. 类型切换逻辑（音频/直播） --------------------------
@@ -89,19 +142,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 // 获取当前选中类型（audio/live）
                 const currentType = this.getAttribute('data-type');
 
-                // 切换种类容器显示/隐藏
-                if (currentType === 'audio') {
-                    audioCategories.style.display = 'flex';
-                    liveCategories.style.display = 'none';
-                } else if (currentType === 'live') {
-                    audioCategories.style.display = 'none';
-                    liveCategories.style.display = 'flex';
-                }
-
-                // 筛选对应类型的节目并渲染
-                const filteredData = originalChannelData.filter(channel =>
-                    channel.type === currentType
-                );
+                // 筛选对应类型的节目并渲染（不再有种类子筛选）
+                const filteredData = originalChannelData.filter(channel => channel.type === currentType);
+                currentPage = 1;
                 renderChannelList(filteredData);
             });
         });
@@ -116,22 +159,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.classList.add('active');
 
                 // 获取当前排序类型（time/popularity）
-                const sortType = this.getAttribute('data-sort');
+                const sortType = this.getAttribute('data-sort') || 'popularity';
                 // 获取当前选中的类型（音频/直播）
                 const currentType = document.querySelector('#typeOptions .filter-option.active').getAttribute('data-type');
                 // 筛选当前类型的节目
-                let filteredData = originalChannelData.filter(channel =>
-                    channel.type === currentType
-                );
+                let filteredData = originalChannelData.filter(channel => channel.type === currentType);
 
-                // 执行排序
+                // 执行排序：time -> 按 updatedAt（新在前）；popularity -> 按 playCount（高在前）
                 if (sortType === 'time') {
-                    // 按发布时间降序（最新在前）
-                    filteredData.sort((a, b) => b.publishTime - a.publishTime);
-                } else if (sortType === 'popularity') {
-                    // 按播放量降序（热度在前）
+                    filteredData.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+                } else {
                     filteredData.sort((a, b) => b.playCount - a.playCount);
                 }
+                currentPage = 1;
+                renderChannelList(filteredData);
 
                 // 重新渲染节目列表
                 renderChannelList(filteredData);
@@ -140,40 +181,19 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // -------------------------- 5. 种类筛选逻辑（可选） --------------------------
-    function bindCategorySelectEvent() {
-        // 音频种类筛选
-        const audioCategoryBtns = audioCategories.querySelectorAll('.filter-option');
-        audioCategoryBtns.forEach(btn => {
-            btn.addEventListener('click', function() {
-                audioCategoryBtns.forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                const selectedCategory = this.textContent;
-                const filteredData = originalChannelData.filter(channel =>
-                    channel.type === 'audio' && channel.category === selectedCategory
-                );
-                renderChannelList(filteredData);
-            });
-        });
-
-        // 直播种类筛选
-        const liveCategoryBtns = liveCategories.querySelectorAll('.filter-option');
-        liveCategoryBtns.forEach(btn => {
-            btn.addEventListener('click', function() {
-                liveCategoryBtns.forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                const selectedCategory = this.textContent;
-                const filteredData = originalChannelData.filter(channel =>
-                    channel.type === 'live' && channel.category === selectedCategory
-                );
-                renderChannelList(filteredData);
-            });
-        });
-    }
+    // 已移除种类筛选逻辑（后端数据无 category 字段）
 
     // -------------------------- 6. 节目列表渲染函数 --------------------------
     function renderChannelList(channelData) {
         // 清空现有列表
         channelsGrid.innerHTML = '';
+
+        // 计算分页并切片显示
+        const total = channelData.length;
+        const totalPages = Math.max(1, Math.ceil(total / pageSize));
+        if (currentPage > totalPages) currentPage = totalPages;
+        const startIndex = (currentPage - 1) * pageSize;
+        const pageItems = channelData.slice(startIndex, startIndex + pageSize);
 
         // 无数据时显示提示
         if (channelData.length === 0) {
@@ -185,18 +205,14 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        // 遍历数据渲染节目卡片
-        channelData.forEach(channel => {
+        // 遍历当前页数据渲染节目卡片
+        pageItems.forEach(channel => {
             // 格式化播放量（万次）
             const formatPlayCount = (count) => {
                 return count >= 10000 ? (count / 10000).toFixed(1) + '万' : count;
             };
 
-            // 格式化时间戳为日期（YYYY-MM-DD）
-            const formatDate = (timestamp) => {
-                const date = new Date(timestamp);
-                return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
-            };
+            // （已移除时间显示）
 
             // 创建节目卡片元素（匹配现有CSS样式）
             const channelCard = document.createElement('div');
@@ -220,7 +236,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     <h3 class="channel-title">${channel.title}</h3>
                     <div class="channel-meta">
                         <span class="views-count">${formatPlayCount(channel.playCount)}次${channel.type === 'audio' ? '学习' : '观看'}</span>
-                        <span class="rating">${formatDate(channel.publishTime)}</span>
                     </div>
                     <div class="teacher-info">
                         <div class="teacher-avatar">${channel.teacher.charAt(0)}</div>
@@ -246,6 +261,9 @@ document.addEventListener('DOMContentLoaded', function() {
             // 添加卡片到列表
             channelsGrid.appendChild(channelCard);
         });
+
+        // 渲染分页控件
+        renderPagination(channelData);
     }
 
     // -------------------------- 7. 启动初始化 --------------------------

@@ -243,13 +243,7 @@
     });
 
     // --- Follow / Recording section ---
-    const sentences = [
-      "The quick brown fox jumps over the lazy dog.",
-      "Practice makes perfect when learning a new language.",
-      "She sells seashells by the seashore on sunny Sundays.",
-      "How much wood would a woodchuck chuck if a woodchuck could chuck wood?",
-      "I scream, you scream, we all scream for ice cream."
-    ];
+    let dailySentences = []; // 存储从API获取的句子
     let curIdx = 0;
     const sentenceText = document.getElementById('sentenceText');
     const sentenceIdx = document.getElementById('sentenceIdx');
@@ -258,17 +252,113 @@
     const nextSentence = document.getElementById('nextSentence');
     const randomSentence = document.getElementById('randomSentence');
 
-    function renderSentence(){
-      sentenceText.textContent = sentences[curIdx];
-      sentenceIdx.textContent = (curIdx+1);
-      sentenceTotal.textContent = sentences.length;
-      prevSentence.disabled = curIdx===0;
-      nextSentence.disabled = curIdx===sentences.length-1;
+    // 从API获取每日一句
+    async function fetchDailySentences() {
+        try {
+            // 添加 mode: 'cors' 和 credentials: 'include' 以处理跨域
+            const response = await fetch('http://localhost:8080/daily-sentences', {
+                mode: 'cors',
+                credentials: 'include',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            console.log('Response status:', response.status);
+            console.log('Response headers:', response.headers);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const result = await response.json();
+            console.log('API Response:', result);
+            
+            if (result.code === 0 && result.data && Array.isArray(result.data)) {
+                dailySentences = result.data;
+                console.log('Loaded daily sentences:', dailySentences);
+                return dailySentences;
+            } else {
+                throw new Error('Invalid response format');
+            }
+        } catch (error) {
+            console.error('Error fetching daily sentences:', error);
+            showMessage('无法获取每日一句数据，使用示例句子');
+            // 如果API调用失败，使用备用数据
+            dailySentences = [
+                { id: 1, english: "The quick brown fox jumps over the lazy dog.", chinese: "敏捷的棕色狐狸跳过懒惰的狗。" },
+                { id: 2, english: "Practice makes perfect when learning a new language.", chinese: "熟能生巧，学习一门新语言也是如此。" },
+                { id: 3, english: "She sells seashells by the seashore on sunny Sundays.", chinese: "她在阳光明媚的星期天在海边卖贝壳。" },
+                { id: 4, english: "How much wood would a woodchuck chuck if a woodchuck could chuck wood?", chinese: "如果土拨鼠能砍木头，它能砍多少木头？" },
+                { id: 5, english: "I scream, you scream, we all scream for ice cream.", chinese: "我尖叫，你尖叫，我们都为冰淇淋尖叫。" }
+            ];
+            return dailySentences;
+        }
     }
-    prevSentence.addEventListener('click', ()=>{ if(curIdx>0){ curIdx--; renderSentence();}});
-    nextSentence.addEventListener('click', ()=>{ if(curIdx<sentences.length-1){ curIdx++; renderSentence();}});
-    randomSentence.addEventListener('click', ()=>{ curIdx = Math.floor(Math.random()*sentences.length); renderSentence(); });
 
+    // 修改 renderSentence 函数
+    function renderSentence() {
+        if (dailySentences.length === 0) {
+            sentenceText.textContent = "正在加载句子...";
+            return;
+        }
+        
+        const currentSentence = dailySentences[curIdx];
+        sentenceText.textContent = currentSentence.english || "No sentence available";
+        sentenceIdx.textContent = currentSentence.id || (curIdx + 1);
+        sentenceTotal.textContent = dailySentences.length;
+        
+        // 更新按钮状态
+        prevSentence.disabled = curIdx === 0;
+        nextSentence.disabled = curIdx === dailySentences.length - 1;
+    }
+
+    // 修改 initializeSentences 函数，确保在页面完全加载后再执行
+    async function initializeSentences() {
+        console.log('Initializing sentences...');
+        try {
+            await fetchDailySentences();
+            console.log('Sentences loaded:', dailySentences.length);
+            
+            if (dailySentences.length > 0) {
+                // 随机选择一个句子
+                curIdx = Math.floor(Math.random() * dailySentences.length);
+                console.log('Selected index:', curIdx, 'Sentence:', dailySentences[curIdx]);
+                renderSentence();
+            } else {
+                sentenceText.textContent = "暂无每日一句数据";
+            }
+        } catch (error) {
+            console.error('Failed to initialize sentences:', error);
+            renderSentence();
+        }
+    }
+
+
+    // 修改事件监听器
+    prevSentence.addEventListener('click', () => { 
+        if (curIdx > 0) { 
+            curIdx--; 
+            renderSentence();
+        }
+    });
+
+    nextSentence.addEventListener('click', () => { 
+        if (curIdx < dailySentences.length - 1) { 
+            curIdx++; 
+            renderSentence();
+        }
+    });
+
+    randomSentence.addEventListener('click', () => { 
+        if (dailySentences.length > 0) {
+            const randomIndex = Math.floor(Math.random() * dailySentences.length);
+            curIdx = randomIndex;
+            renderSentence();
+        }
+    });
+    
     // Recorder
     const startBtn = document.getElementById('startRec');
     const stopBtn = document.getElementById('stopRec');
@@ -425,42 +515,50 @@
       return buffer;
     }
 
-    async function saveRecording(){
-      if(!audioBlob) return;
+    // 修改保存录音函数中获取句子文本的部分（找到保存录音函数，大约在第200行左右）
+    async function saveRecording() {
+        if (!audioBlob) return;
 
-      // 如果不是 WAV，则在保存前异步转换
-      const mime = (audioBlob && audioBlob.type) ? audioBlob.type : '';
-      if (!mime.includes('wav')) {
-        try {
-          showMessage('正在转换为 WAV（保存前）...');
-          const { wavBlob, wavUrl } = await convertToWavFromBlob(audioBlob);
-          // 替换为 WAV
-          audioBlob = wavBlob;
-          audioUrl = wavUrl;
-        } catch (err) {
-          console.error('保存前 WAV 转换失败:', err);
-          showMessage('WAV 转换失败，将以原格式保存');
+        // 如果不是 WAV，则在保存前异步转换
+        const mime = (audioBlob && audioBlob.type) ? audioBlob.type : '';
+        if (!mime.includes('wav')) {
+            try {
+                showMessage('正在转换为 WAV（保存前）...');
+                const { wavBlob, wavUrl } = await convertToWavFromBlob(audioBlob);
+                // 替换为 WAV
+                audioBlob = wavBlob;
+                audioUrl = wavUrl;
+            } catch (err) {
+                console.error('保存前 WAV 转换失败:', err);
+                showMessage('WAV 转换失败，将以原格式保存');
+            }
         }
-      }
 
-      const ext = (audioBlob && audioBlob.type && audioBlob.type.includes('wav')) ? 'wav' : 'webm';
+        const ext = (audioBlob && audioBlob.type && audioBlob.type.includes('wav')) ? 'wav' : 'webm';
 
-      const rec = {
-        id: Date.now(),
-        name: `跟读-${(new Date()).toLocaleString()}`,
-        timestamp: (new Date()).toLocaleString(),
-        duration: 30 - countdown,
-        size: audioBlob.size,
-        format: ext,
-        sentence: sentences[curIdx],
-        evaluation: null,
-        blobUrl: audioUrl
-      };
-      const hist = readHistory();
-      hist.unshift(rec);
-      writeHistory(hist);
-      saveBtn.disabled = true;
-      showMessage('录音已保存');
+        // 获取当前句子文本
+        let sentenceText = "";
+        if (dailySentences.length > 0 && dailySentences[curIdx]) {
+            const currentSentence = dailySentences[curIdx];
+            sentenceText = currentSentence.english || "";
+        }
+
+        const rec = {
+            id: Date.now(),
+            name: `跟读-${(new Date()).toLocaleString()}`,
+            timestamp: (new Date()).toLocaleString(),
+            duration: 30 - countdown,
+            size: audioBlob.size,
+            format: ext,
+            sentence: sentenceText,
+            evaluation: null,
+            blobUrl: audioUrl
+        };
+        const hist = readHistory();
+        hist.unshift(rec);
+        writeHistory(hist);
+        saveBtn.disabled = true;
+        showMessage('录音已保存');
     }
 
     startBtn.addEventListener('click', startRecording);
@@ -496,21 +594,22 @@
       drawTrend(trend);
     }
 
-    function simulateEvaluation(rec){
-      const sentence = rec.sentence||'';
-      const words = sentence.split(/\s+/).length;
-      const base = 70 + Math.round(Math.random()*20);
-      const pron = Math.min(100, base + Math.round(Math.random()*10-5));
-      const flu = Math.min(100, base + Math.round(Math.random()*10-10));
-      const overall = Math.round(pron*0.4 + flu*0.4 + 10);
-      return {
-        overallScore: overall,
-        pronunciationAccuracy: pron,
-        fluency: flu,
-        intonation: Math.round(60 + Math.random()*30),
-        pace: Math.round(70 + Math.random()*20),
-        feedback: '系统建议：多练习重音和连读。'
-      };
+    // 修改模拟评测函数中获取句子文本的部分
+    function simulateEvaluation(rec) {
+        const sentence = rec.sentence || '';
+        const words = sentence.split(/\s+/).length;
+        const base = 70 + Math.round(Math.random() * 20);
+        const pron = Math.min(100, base + Math.round(Math.random() * 10 - 5));
+        const flu = Math.min(100, base + Math.round(Math.random() * 10 - 10));
+        const overall = Math.round(pron * 0.4 + flu * 0.4 + 10);
+        return {
+            overallScore: overall,
+            pronunciationAccuracy: pron,
+            fluency: flu,
+            intonation: Math.round(60 + Math.random() * 30),
+            pace: Math.round(70 + Math.random() * 20),
+            feedback: '系统建议：多练习重音和连读。'
+        };
     }
 
     function highlightProblematic(sentence, evalData){
@@ -640,12 +739,23 @@
       showMessage('已清空历史');
     });
 
+    // 修改页面加载初始化部分
+    // 找到文件末尾的初始化代码（大约在第520行左右）
+    // 修改这部分：
     // Run query init after DOM ready
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', () => { initFromQueryParams(); renderSentence(); renderHistory(); });
-    } else {
-      initFromQueryParams(); renderSentence(); renderHistory();
-    }
+    document.addEventListener('DOMContentLoaded', async function() {
+        console.log('DOM fully loaded');
+        
+        // 延迟一点时间确保所有元素都已加载
+        setTimeout(async () => {
+            await initializeSentences();
+            initFromQueryParams();
+            renderHistory();
+            
+            // 通知主框架
+            setTimeout(notifyParentPage, 100);
+        }, 100);
+    });
   })();
   </script>
 

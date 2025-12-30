@@ -448,6 +448,10 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    /* 添加以下样式确保长句子正确显示 */
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
 }
 
 .sentence-controls {

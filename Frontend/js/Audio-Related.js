@@ -26,42 +26,24 @@ let recordingHistory = JSON.parse(localStorage.getItem('audioRecorderHistory')) 
 const recorderVisualizer = document.getElementById('recorderVisualizer');
 const visualizerCtx = recorderVisualizer.getContext('2d');
 
-// 跟读句子库
-const followSentences = [
-    "The quick brown fox jumps over the lazy dog.",
-    "Practice makes perfect when learning a new language.",
-    "She sells seashells by the seashore on sunny Sundays.",
-    "How much wood would a woodchuck chuck if a woodchuck could chuck wood?",
-    "I scream, you scream, we all scream for ice cream.",
-    "Peter Piper picked a peck of pickled peppers.",
-    "A proper copper coffee pot is essential for good coffee.",
-    "The rain in Spain falls mainly on the plain.",
-    "Six slippery snails slid slowly seaward.",
-    "Red lorry, yellow lorry, red lorry, yellow lorry.",
-    "Unique New York, you know you need unique New York.",
-    "Eleven benevolent elephants were eating elegant eclairs.",
-    "Four fine fresh fish for you, sir.",
-    "Betty bought a bit of butter but the butter was bitter.",
-    "Fuzzy Wuzzy was a bear. Fuzzy Wuzzy had no hair.",
-    "I thought a thought, but the thought I thought wasn't the thought I thought I thought.",
-    "If two witches would watch two watches, which witch would watch which watch?",
-    "Lesser leather never weathered wetter weather better.",
-    "The thirty-three thieves thought that they thrilled the throne throughout Thursday.",
-    "Can you can a can as a canner can can a can?"
-];
+// 跟读句子库 - 改为从API获取
+let dailySentences = [];
 
 let currentSentenceIndex = 0;
 
 // ========== 页面初始化 ==========
 document.addEventListener('DOMContentLoaded', initialize);
 
-function initialize() {
+// 修改页面初始化函数
+async function initialize() {
+    console.log('Initializing audio recorder...');
+    
     // 设置可视化Canvas尺寸
     recorderVisualizer.width = recorderVisualizer.offsetWidth;
     recorderVisualizer.height = recorderVisualizer.offsetHeight;
     
-    // 初始化跟读句子
-    initializeFollowSentences();
+    // 初始化跟读句子（从API获取）
+    await initializeFollowSentences();
     
     // 加载录音历史
     loadRecordings();
@@ -80,29 +62,85 @@ function initialize() {
     });
 }
 
-// ========== 初始化跟读句子 ==========
-function initializeFollowSentences() {
+// 初始化跟读句子
+async function initializeFollowSentences() {
+    console.log('Initializing follow sentences...');
+    try {
+        // 从API获取每日一句
+        const response = await fetch('http://localhost:8080/daily-sentences', {
+            mode: 'cors',
+            credentials: 'include',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        console.log('Response status:', response.status);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        console.log('API Response:', result);
+        
+        if (result.code === 0 && result.data && Array.isArray(result.data)) {
+            dailySentences = result.data;
+            console.log('Loaded daily sentences:', dailySentences.length);
+        } else {
+            throw new Error('Invalid response format');
+        }
+    } catch (error) {
+        console.error('Error fetching daily sentences:', error);
+        showMessage('无法获取每日一句数据，使用示例句子');
+        // 如果API调用失败，使用备用数据
+        dailySentences = [
+            { id: 1, english: "The quick brown fox jumps over the lazy dog.", chinese: "敏捷的棕色狐狸跳过懒惰的狗。" },
+            { id: 2, english: "Practice makes perfect when learning a new language.", chinese: "熟能生巧，学习一门新语言也是如此。" },
+            { id: 3, english: "She sells seashells by the seashore on sunny Sundays.", chinese: "她在阳光明媚的星期天在海边卖贝壳。" },
+            { id: 4, english: "How much wood would a woodchuck chuck if a woodchuck could chuck wood?", chinese: "如果土拨鼠能砍木头，它能砍多少木头？" },
+            { id: 5, english: "I scream, you scream, we all scream for ice cream.", chinese: "我尖叫，你尖叫，我们都为冰淇淋尖叫。" }
+        ];
+    }
+    
     // 显示句子总数
-    document.getElementById('totalSentences').textContent = followSentences.length;
-    
+    document.getElementById('sentenceTotal').textContent = dailySentences.length;
     // 随机选择一个句子作为初始句子
-    currentSentenceIndex = Math.floor(Math.random() * followSentences.length);
-    updateSentenceDisplay();
-    
-    // 更新跟读模式状态
-    updateFollowModeStatus();
+    if (dailySentences.length > 0) {
+        currentSentenceIndex = Math.floor(Math.random() * dailySentences.length);
+        console.log('Selected sentence index:', currentSentenceIndex);
+        updateSentenceDisplay();
+    } else {
+        console.log('No sentences available');
+        updateSentenceDisplay();
+    }
 }
 
 function updateSentenceDisplay() {
-    document.getElementById('currentSentence').textContent = followSentences[currentSentenceIndex];
-    document.getElementById('sentenceIndex').textContent = currentSentenceIndex + 1;
-    
-    // 更新导航按钮状态
-    const prevBtn = document.getElementById('prevSentenceBtn');
-    const nextBtn = document.getElementById('nextSentenceBtn');
-    
+    // 兼容 html 结构
+    const sentenceText = document.getElementById('sentenceText');
+    const sentenceIdx = document.getElementById('sentenceIdx');
+    const sentenceTotal = document.getElementById('sentenceTotal');
+    const prevBtn = document.getElementById('prevSentence');
+    const nextBtn = document.getElementById('nextSentence');
+    const randomBtn = document.getElementById('randomSentence');
+    if (dailySentences.length === 0 || !dailySentences[currentSentenceIndex]) {
+        sentenceText.textContent = "正在加载句子...";
+        sentenceIdx.textContent = 0;
+        sentenceTotal.textContent = 0;
+        prevBtn.disabled = true;
+        nextBtn.disabled = true;
+        randomBtn.disabled = true;
+        return;
+    }
+    const currentSentence = dailySentences[currentSentenceIndex];
+    sentenceText.textContent = currentSentence.english || "No sentence available";
+    sentenceIdx.textContent = currentSentenceIndex + 1;
+    sentenceTotal.textContent = dailySentences.length;
     prevBtn.disabled = currentSentenceIndex === 0;
-    nextBtn.disabled = currentSentenceIndex === followSentences.length - 1;
+    nextBtn.disabled = currentSentenceIndex === dailySentences.length - 1;
+    randomBtn.disabled = false;
 }
 
 function updateFollowModeStatus() {
@@ -156,25 +194,26 @@ function setupEventListeners() {
         });
     });
     
-    // 跟读句子导航按钮
-    document.getElementById('prevSentenceBtn').addEventListener('click', () => {
-        if (currentSentenceIndex > 0) {
+    // 跟读句子导航按钮，id 与 html 匹配
+    document.getElementById('prevSentence').addEventListener('click', () => {
+        if (currentSentenceIndex > 0 && dailySentences.length > 0) {
             currentSentenceIndex--;
             updateSentenceDisplay();
         }
     });
-    
-    document.getElementById('nextSentenceBtn').addEventListener('click', () => {
-        if (currentSentenceIndex < followSentences.length - 1) {
+    document.getElementById('nextSentence').addEventListener('click', () => {
+        if (currentSentenceIndex < dailySentences.length - 1 && dailySentences.length > 0) {
             currentSentenceIndex++;
             updateSentenceDisplay();
         }
     });
-    
-    // 点击句子区域随机选择新句子
-    document.getElementById('currentSentence').addEventListener('click', () => {
-        if (!isRecording) {
-            const newIndex = Math.floor(Math.random() * followSentences.length);
+    document.getElementById('randomSentence').addEventListener('click', () => {
+        if (dailySentences.length > 0) {
+            let newIndex = Math.floor(Math.random() * dailySentences.length);
+            // 避免和当前一样
+            if (dailySentences.length > 1 && newIndex === currentSentenceIndex) {
+                newIndex = (newIndex + 1) % dailySentences.length;
+            }
             currentSentenceIndex = newIndex;
             updateSentenceDisplay();
             showMessage('已切换为新跟读句子');
@@ -632,6 +671,7 @@ function stopRecording() {
     }
 }
 
+// 修改录音保存函数中获取句子的部分（大约在第280行左右）
 function saveRecording() {
     if (!window.currentRecording) {
         showMessage('没有录音可保存');
@@ -664,6 +704,14 @@ function saveRecording() {
         // 继续保存流程
         recording = window.currentRecording;
 
+        // 获取当前句子文本
+        let sentenceText = "";
+        if (dailySentences.length > 0 && dailySentences[currentSentenceIndex]) {
+            const currentSentence = dailySentences[currentSentenceIndex];
+            sentenceText = currentSentence.english || "";
+        }
+        recording.sentence = sentenceText;
+
         // 添加到历史记录
         recordingHistory.unshift(recording);
 
@@ -691,7 +739,7 @@ function saveRecording() {
         showMessage(message);
 
         // 自动切换到下一个句子
-        if (recording.sentence && currentSentenceIndex < followSentences.length - 1) {
+        if (recording.sentence && currentSentenceIndex < dailySentences.length - 1) {
             currentSentenceIndex++;
             updateSentenceDisplay();
         }

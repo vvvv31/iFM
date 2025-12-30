@@ -30,3 +30,5 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.temp
+
+src/main/resources/application.yml

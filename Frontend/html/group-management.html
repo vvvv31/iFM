@@ -991,21 +991,64 @@
         background-color: #f5f5f5;
     }
 
-    /* 编辑模态框样式 */
+    /* ===== 头像编辑相关样式 ===== */
+
+    /* 头像包装器 */
+    .avatar-wrapper {
+        position: relative;
+        cursor: pointer;
+        width: 80px;
+        height: 80px;
+    }
+
+    .avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #FF8C00, #FFB366);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        color: white;
+        overflow: hidden;
+    }
+
+    .avatar-edit-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .avatar-wrapper:hover .avatar-edit-overlay {
+        opacity: 1;
+    }
+
+    /* 编辑模态框样式（与创作者中心一致） */
     .edit-modal-overlay {
         position: fixed;
         top: 0;
         left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
         display: flex;
-        justify-content: center;
         align-items: center;
-        z-index: 30000;
+        justify-content: center;
+        z-index: 1000000;
         opacity: 0;
         visibility: hidden;
-        transition: opacity 0.3s ease, visibility 0.3s ease;
+        transition: all 0.3s ease;
     }
 
     .edit-modal-overlay.show {
@@ -1014,29 +1057,279 @@
     }
 
     .edit-modal {
-        background-color: #fff;
-        border-radius: 8px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-        width: 100%;
-        max-width: 500px;
-        max-height: 90vh;
-        overflow-y: auto;
-        position: relative;
+        background: #fff;
+        border-radius: 16px;
+        width: 90%;
+        max-width: 420px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        transform: scale(0.9) translateY(20px);
+        transition: transform 0.3s ease;
+        overflow: hidden;
+    }
+
+    .edit-modal-overlay.show .edit-modal {
+        transform: scale(1) translateY(0);
     }
 
     .edit-modal-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
         padding: 20px 24px;
-        border-bottom: 1px solid #e0e0e0;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
     }
 
-    .edit-modal-header h2 {
-        margin: 0;
-        font-size: 20px;
+    .edit-modal-header h3 {
+        font-size: 18px;
         font-weight: 600;
         color: #333;
+        margin: 0;
+    }
+
+    .edit-modal-close {
+        background: none;
+        border: none;
+        font-size: 24px;
+        color: #999;
+        cursor: pointer;
+        padding: 0;
+        line-height: 1;
+        transition: color 0.2s;
+    }
+
+    .edit-modal-close:hover {
+        color: #333;
+    }
+
+    .edit-modal-body {
+        padding: 24px;
+    }
+
+    /* 头像编辑区域 */
+    .edit-avatar-section {
+        text-align: center;
+        margin-bottom: 24px;
+    }
+
+    .edit-avatar-preview {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #FF8C00, #FFB366);
+        margin: 0 auto 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 48px;
+        color: white;
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+
+    .edit-avatar-preview:hover {
+        transform: scale(1.05);
+    }
+
+    .edit-avatar-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+    }
+
+    .avatar-upload-hint {
+        font-size: 13px;
+        color: #999;
+    }
+
+    .avatar-upload-hint i {
+        margin-right: 4px;
+    }
+
+    /* 预设头像选项 */
+    .avatar-options {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 12px;
+        margin-top: 16px;
+        padding: 16px;
+        background: #f9f9f9;
+        border-radius: 12px;
+    }
+
+    .avatar-option {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        cursor: pointer;
+        border: 3px solid transparent;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+    }
+
+    .avatar-option:hover {
+        transform: scale(1.1);
+    }
+
+    .avatar-option.selected {
+        border-color: #FF8C00;
+        box-shadow: 0 0 0 3px rgba(255, 140, 0, 0.2);
+    }
+
+    /* 表单区域 */
+    .edit-form-group {
+        margin-bottom: 20px;
+    }
+
+    .edit-form-group label {
+        display: block;
+        font-size: 14px;
+        font-weight: 500;
+        color: #333;
+        margin-bottom: 8px;
+    }
+
+    .edit-form-group input {
+        width: 100%;
+        padding: 12px 16px;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 15px;
+        transition: all 0.2s;
+        box-sizing: border-box;
+    }
+
+    .edit-form-group input:focus {
+        outline: none;
+        border-color: #FF8C00;
+        box-shadow: 0 0 0 3px rgba(255, 140, 0, 0.1);
+    }
+
+    .edit-form-group .char-count {
+        text-align: right;
+        font-size: 12px;
+        color: #999;
+        margin-top: 6px;
+    }
+
+    .edit-form-group .char-count.warning {
+        color: #ff4444;
+    }
+
+    /* 模态框底部按钮 */
+    .edit-modal-footer {
+        padding: 16px 24px 24px;
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+    }
+
+    .edit-btn-cancel,
+    .edit-btn-save {
+        padding: 10px 24px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .edit-btn-cancel {
+        background: #f5f5f5;
+        border: 1px solid #e0e0e0;
+        color: #666;
+    }
+
+    .edit-btn-cancel:hover {
+        background: #eee;
+    }
+
+    .edit-btn-save {
+        background: linear-gradient(135deg, #FF8C00, #FFB366);
+        border: none;
+        color: #fff;
+    }
+
+    .edit-btn-save:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(255, 140, 0, 0.3);
+    }
+
+    /* Toast 提示 */
+    .toast-notification {
+        position: fixed;
+        bottom: 120px;
+        left: 50%;
+        transform: translateX(-50%) translateY(20px);
+        background: #333;
+        color: #fff;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 14px;
+        z-index: 1000001;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .toast-notification.show {
+        opacity: 1;
+        visibility: visible;
+        transform: translateX(-50%) translateY(0);
+    }
+
+    .toast-notification.success {
+        background: linear-gradient(135deg, #4CAF50, #66BB6A);
+    }
+
+    .toast-notification i {
+        margin-right: 8px;
+    }
+
+    /* 响应式调整 */
+    @media (max-width: 768px) {
+        .avatar-options {
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            padding: 12px;
+        }
+        
+        .avatar-option {
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+        }
+        
+        .edit-avatar-preview {
+            width: 100px;
+            height: 100px;
+            font-size: 40px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .avatar-options {
+            grid-template-columns: repeat(3, 1fr);
+        }
+        
+        .edit-modal {
+            width: 95%;
+            margin: 10px;
+        }
+        
+        .edit-modal-footer {
+            flex-direction: column;
+        }
+        
+        .edit-btn-cancel,
+        .edit-btn-save {
+            width: 100%;
+        }
     }
 
     .edit-modal-close {

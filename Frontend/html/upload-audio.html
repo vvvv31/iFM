@@ -1194,10 +1194,13 @@
                     
                     const data = await res.json();
                     console.log('创建课程返回:', data);
+                    console.log('HTTP状态码:', res.status, '响应data.code:', data?.code, 'data.code类型:', typeof data?.code);
+                    console.log('检查条件 - data存在:', !!data, 'code===0:', data?.code === 0, 'code===200:', data?.code === 200, 'code=="200":', data?.code == '200');
                     
-                    // 检查响应状态
-                    if (res.ok && data && data.code === 0) {
+                    // 检查响应状态 (成功判断：data.code 为 0 或 200，处理字符串或数字)
+                    if (data && (data.code === 0 || data.code === 200 || data.code == '200' || data.code == '0')) {
                         // 创建成功
+                        console.log('进入成功分支');
                         msgBox.textContent = '创建成功！';
                         msgBox.className = 'message success';
                         msgBox.style.display = 'block';

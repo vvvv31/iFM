@@ -1214,91 +1214,8 @@ loadTrack(currentIndex);
           });
         }
 
-        const samplePosts = [
-          { id:1, author:'小明', avatar:'M', text:'刚完成一节发音练习，收获颇丰！今天终于掌握了 th 的发音技巧，感觉自己又进步了一点点~ 🎉 #英语学习#', likes:24, time:'10分钟前', tags:['英语学习'],
-            comments:[
-              { id:101, author:'小红', avatar:'H', text:'加油！th的发音确实很难，我也练了很久', time:'8分钟前', likes:3 },
-              { id:102, author:'英语达人', avatar:'E', text:'可以试试把舌头放在牙齿之间，然后轻轻吹气，效果会更好', time:'6分钟前', likes:8, replies:[
-                { id:1021, author:'小明', avatar:'M', text:'谢谢大神指点！我试试看', time:'4分钟前', likes:2 },
-                { id:1022, author:'小红', avatar:'H', text:'这个技巧我也学到了！', time:'3分钟前', likes:1 }
-              ]},
-              { id:103, author:'发音教练', avatar:'F', text:'th有两种发音：清辅音/θ/和浊辅音/ð/，要注意区分哦', time:'2分钟前', likes:15 }
-            ]
-          },
-          { id:2, author:'小红', avatar:'H', text:'周末组织线上分享会，主题是《如何提升英语听力》，欢迎大家参加！时间：周六晚8点，腾讯会议。 #英语学习#', likes:42, time:'1小时前', tags:['英语学习'],
-            comments:[
-              { id:201, author:'学霸小姐', avatar:'X', text:'已报名！期待周六的分享', time:'50分钟前', likes:5 },
-              { id:202, author:'小华', avatar:'H', text:'会议号是多少？', time:'45分钟前', likes:2, replies:[
-                { id:2021, author:'小红', avatar:'H', text:'会议号：888-666-999，周六见~', time:'40分钟前', likes:3 }
-              ]},
-              { id:203, author:'早起鸟', avatar:'Z', text:'太棒了，正好需要提升听力！已加日历提醒', time:'30分钟前', likes:3 },
-              { id:204, author:'英语达人', avatar:'E', text:'听力提升最重要的是精听+泛听结合', time:'20分钟前', likes:12, replies:[
-                { id:2041, author:'小红', avatar:'H', text:'对！这次分享会也会讲到这个方法', time:'15分钟前', likes:2 }
-              ]},
-              { id:205, author:'托福战友', avatar:'T', text:'能录屏吗？周六可能有事', time:'10分钟前', likes:4 }
-            ]
-          },
-          { id:3, author:'英语达人', avatar:'E', text:'今日单词打卡 Day 45 ✅\n\ntranscend - 超越，胜过\nperseverance - 坚持不懈\nresilience - 韧性，恢复力\n\n每天积累，必有所成！加油加油 💪 #打卡挑战# #每日一句#', likes:89, time:'2小时前', tags:['打卡挑战','每日一句'],
-            comments:[
-              { id:301, author:'小明', avatar:'M', text:'跟着打卡！perseverance 这个词很棒，我要用到作文里', time:'1小时50分钟前', likes:12 },
-              { id:302, author:'商务精英', avatar:'S', text:'resilience 在商务场景里经常用到！比如 organizational resilience', time:'1小时40分钟前', likes:6, replies:[
-                { id:3021, author:'英语达人', avatar:'E', text:'没错！还有 financial resilience 也很常见', time:'1小时30分钟前', likes:4 }
-              ]},
-              { id:303, author:'单词狂人', avatar:'D', text:'Day 45！太厉害了，我才坚持到Day 7就放弃了😭', time:'1小时前', likes:8, replies:[
-                { id:3031, author:'英语达人', avatar:'E', text:'没关系，重新开始就好！关键是找到适合自己的节奏', time:'50分钟前', likes:15 },
-                { id:3032, author:'小红', avatar:'H', text:'可以加入我们的打卡群，互相监督', time:'40分钟前', likes:6 }
-              ]},
-              { id:304, author:'学霸小姐', avatar:'X', text:'这三个词都是托福高频词！收藏了', time:'30分钟前', likes:10 }
-            ]
-          },
-          { id:4, author:'小华', avatar:'H', text:'分享一个学习英语的小技巧：看美剧的时候先关字幕看一遍，然后开英文字幕再看一遍，最后开中文字幕核对。这样可以大大提升听力！ #英语学习#', likes:156, time:'3小时前', tags:['英语学习'],
-            comments:[
-              { id:401, author:'小红', avatar:'H', text:'这个方法太实用了！收藏了📌', time:'2小时50分钟前', likes:15 },
-              { id:402, author:'英语达人', avatar:'E', text:'推荐看《Friends》，对话简单又地道，而且很搞笑', time:'2小时40分钟前', likes:22, replies:[
-                { id:4021, author:'小华', avatar:'H', text:'正在看！确实很适合学英语，Ross太搞笑了', time:'2小时30分钟前', likes:3 },
-                { id:4022, author:'美剧迷', avatar:'M', text:'还推荐《Modern Family》，日常对话超多', time:'2小时前', likes:8 }
-              ]},
-              { id:403, author:'新手小白', avatar:'X', text:'请问一集要看三遍吗？感觉好花时间', time:'1小时前', likes:5, replies:[
-                { id:4031, author:'小华', avatar:'H', text:'不用每集都这样，选几集精看就好，其他泛听', time:'50分钟前', likes:12 }
-              ]},
-              { id:404, author:'听力弱鸡', avatar:'T', text:'关字幕完全听不懂怎么办😢', time:'30分钟前', likes:7, replies:[
-                { id:4041, author:'英语达人', avatar:'E', text:'可以先开英文字幕，慢慢过渡到关字幕', time:'20分钟前', likes:9 },
-                { id:4042, author:'小华', avatar:'H', text:'选简单的剧开始，比如动画片', time:'10分钟前', likes:4 }
-              ]}
-            ]
-          },
-          { id:5, author:'学霸小姐', avatar:'X', text:'托福备考第30天，今天做了两套听力真题，正确率终于突破25题了！🎉 感谢群里大家的鼓励，继续加油！ #打卡挑战# #英语学习#', likes:67, time:'5小时前', tags:['打卡挑战','英语学习'],
-            comments:[
-              { id:501, author:'小明', avatar:'M', text:'厉害！求分享学习方法', time:'4小时前', likes:8, replies:[
-                { id:5011, author:'学霸小姐', avatar:'X', text:'主要是每天坚持做TPO，错题反复听3遍以上', time:'3小时前', likes:12 }
-              ]},
-              { id:502, author:'英语达人', avatar:'E', text:'25题已经很棒了，继续保持！', time:'3小时前', likes:6 },
-              { id:503, author:'托福战友', avatar:'T', text:'我也在备考，互相鼓励！你用的什么资料？', time:'2小时前', likes:4, replies:[
-                { id:5031, author:'学霸小姐', avatar:'X', text:'TPO + 考满分的精听，效果不错', time:'1小时前', likes:7 }
-              ]}
-            ]
-          },
-          { id:6, author:'商务精英', avatar:'S', text:'今天的商务英语课程很棒！学习了怎么写专业的英文邮件，老师说的几个开头结尾的模板很实用！已经整理成笔记，需要的同学私信我~ #英语学习#', likes:45, time:'昨天 22:30', tags:['英语学习'],
-            comments:[
-              { id:601, author:'职场新人', avatar:'Z', text:'求笔记！私信你了', time:'昨天 22:45', likes:3 },
-              { id:602, author:'小红', avatar:'H', text:'我也想要！商务邮件真的很重要', time:'昨天 23:00', likes:5 },
-              { id:603, author:'外企员工', avatar:'W', text:'补充一个技巧：开头用 I hope this email finds you well 很加分', time:'今天 08:00', likes:18, replies:[
-                { id:6031, author:'商务精英', avatar:'S', text:'对对！老师也提到了这个', time:'今天 09:00', likes:2 },
-                { id:6032, author:'小明', avatar:'M', text:'学到了，马上用起来', time:'今天 10:00', likes:1 }
-              ]}
-            ]
-          },
-          { id:7, author:'早起鸟', avatar:'Z', text:'早安！☀️ 连续早起打卡第21天 ✅\n今日学习计划：\n✅ 背50个单词\n⬜ 听力练习1小时\n⬜ 口语跟读30分钟\n\n一起加油吧！ #打卡挑战#', likes:38, time:'今天 06:30', tags:['打卡挑战'],
-            comments:[
-              { id:701, author:'小明', avatar:'M', text:'早安！一起加油💪', time:'今天 06:35', likes:5 },
-              { id:702, author:'学霸小姐', avatar:'X', text:'超自律！向你学习', time:'今天 07:00', likes:4 },
-              { id:703, author:'夜猫子', avatar:'Y', text:'我刚睡下你就起来了😂佩服佩服', time:'今天 06:40', likes:15, replies:[
-                { id:7031, author:'早起鸟', avatar:'Z', text:'哈哈早睡早起身体好~', time:'今天 06:45', likes:3 }
-              ]},
-              { id:704, author:'英语达人', avatar:'E', text:'21天习惯养成！厉害👍', time:'今天 07:30', likes:8 }
-            ]
-          }
-        ];
+        // 存储从后端获取的帖子数据
+        let postsData = [];
 
         const groupsGrid = document.getElementById('groupsGrid');
         const postsList = document.getElementById('postsList');
@@ -1309,6 +1226,10 @@ loadTrack(currentIndex);
         const composerInput = document.getElementById('composerInput');
         
         const tabChips = document.querySelectorAll('.tab-chip');
+
+        // Track which comment we're replying to
+        let replyingToCommentId = null;
+        let replyingToPostId = null;
 
         function escapeHtml(str){
           return String(str).replace(/[&<>"']/g, function(m){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"})[m]; });
@@ -1485,57 +1406,46 @@ loadTrack(currentIndex);
             });
           });
           
-          // Track which comment we're replying to
-          let replyingToCommentId = null;
-          
           // Bind comment submit
           document.querySelectorAll('.comment-submit-btn').forEach(btn => {
-            btn.addEventListener('click', ()=>{
+            btn.addEventListener('click', async ()=>{
               const postId = btn.dataset.postId;
               const input = document.querySelector(`.comment-input[data-post-id="${postId}"]`);
               let text = input.value.trim();
               if(!text) return;
               
-              // Find the post
-              const post = samplePosts.find(p => p.id == postId);
-              if(!post) return;
-              if(!post.comments) post.comments = [];
-              
-              const newComment = {
-                id: Date.now(),
-                author: '我',
-                avatar: 'W',
-                text: text,
-                time: '刚刚',
-                likes: 0
-              };
-              
-              // Check if replying to someone (text starts with @username)
-              const replyMatch = text.match(/^@(\S+)\s*/);
-              if(replyMatch && replyingToCommentId){
-                // Find the parent comment and add as reply
-                const parentComment = post.comments.find(c => c.id == replyingToCommentId);
-                if(parentComment){
-                  if(!parentComment.replies) parentComment.replies = [];
-                  parentComment.replies.push(newComment);
+              try {
+                const token = localStorage.getItem('authToken') || '';
+                const username = localStorage.getItem('username') || '用户';
+                
+                const response = await fetch(`http://localhost:8080/api/posts/${postId}/comments`, {
+                  method: 'POST',
+                  headers: {
+                    'Authorization': 'Bearer ' + token,
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({
+                    author: username,
+                    text: text
+                  })
+                });
+                
+                if (response.ok) {
+                  input.value = '';
+                  replyingToCommentId = null;
+                  replyingToPostId = null;
+                  fetchPosts();
+                  setTimeout(()=>{
+                    const section = document.getElementById('comments-' + postId);
+                    if(section) section.style.display = 'block';
+                  }, 100);
                 } else {
-                  // Fallback: add as top-level comment
-                  post.comments.push(newComment);
+                  alert('评论提交失败');
                 }
-              } else {
-                // Add as top-level comment
-                post.comments.push(newComment);
+              } catch (error) {
+                console.error('评论提交错误:', error);
+                alert('评论提交失败');
               }
-              
-              // Reset reply state
-              replyingToCommentId = null;
-              
-              renderPosts(samplePosts);
-              // Re-open the comments section
-              setTimeout(()=>{
-                const section = document.getElementById('comments-' + postId);
-                if(section) section.style.display = 'block';
-              }, 0);
             });
           });
           
@@ -1550,28 +1460,50 @@ loadTrack(currentIndex);
                 input.value = `@${replyTo} `;
                 input.focus();
                 replyingToCommentId = parentId; // 记录主评论ID
+                replyingToPostId = postId; // 记录帖子ID
               }
             });
           });
           
           // Bind post like buttons
           document.querySelectorAll('.post-card .like-btn').forEach(btn => {
-            btn.addEventListener('click', (e)=>{
+            btn.addEventListener('click', async (e)=>{
               e.stopPropagation();
               const id = parseInt(btn.dataset.id);
-              const post = samplePosts.find(p => p.id === id);
-              if(!post) return;
               
-              // Toggle like state
-              if(btn.classList.contains('liked')){
-                post.likes = Math.max(0, (post.likes || 1) - 1);
-                btn.classList.remove('liked');
-              } else {
-                post.likes = (post.likes || 0) + 1;
-                btn.classList.add('liked');
+              try {
+                const token = localStorage.getItem('authToken') || '';
+                let response;
+                
+                if(btn.classList.contains('liked')){
+                  response = await fetch(`http://localhost:8080/api/posts/${id}/unlike`, {
+                    method: 'POST',
+                    headers: {
+                      'Authorization': 'Bearer ' + token,
+                      'Content-Type': 'application/json'
+                    }
+                  });
+                } else {
+                  response = await fetch(`http://localhost:8080/api/posts/${id}/like`, {
+                    method: 'POST',
+                    headers: {
+                      'Authorization': 'Bearer ' + token,
+                      'Content-Type': 'application/json'
+                    }
+                  });
+                }
+                
+                if (response.ok) {
+                  const result = await response.json();
+                  if (result && result.code === 200 && result.data) {
+                    const countEl = btn.querySelector('.like-count');
+                    if(countEl) countEl.textContent = result.data.likes;
+                    btn.classList.toggle('liked');
+                  }
+                }
+              } catch (error) {
+                console.error('点赞操作错误:', error);
               }
-              const countEl = btn.querySelector('.like-count');
-              if(countEl) countEl.textContent = post.likes;
             });
           });
           
@@ -1592,9 +1524,82 @@ loadTrack(currentIndex);
           });
         }
 
+        // 从后端API获取动态
+        async function fetchPosts() {
+            try {
+                const token = localStorage.getItem('authToken') || '';
+                const response = await fetch('http://localhost:8080/api/posts', {
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const result = await response.json();
+                if (result && result.code === 200 && Array.isArray(result.data)) {
+                    // 将后端数据转换为前端需要的格式
+                    const posts = result.data.map(post => ({
+                        id: post.id,
+                        author: post.author,
+                        avatar: post.author.slice(0, 1).toUpperCase(),
+                        text: post.text,
+                        images: post.images || [],
+                        likes: post.likes,
+                        comments: post.comments || [],
+                        time: new Date(post.createdAt).toLocaleString(),
+                        tags: post.tags || []
+                    }));
+                    // 如果后端有数据，使用后端数据；如果后端没有数据，使用本地样本数据
+                    renderPosts(posts.length > 0 ? posts : samplePosts);
+                } else {
+                    // 如果后端返回的数据格式不正确，使用本地样本数据
+                    renderPosts(samplePosts);
+                }
+            } catch (error) {
+                console.error('获取动态失败:', error);
+                // 如果API调用失败，使用本地样本数据
+                renderPosts(samplePosts);
+            }
+        }
+
+        // 发布新动态到后端API
+        async function publishPost(text, images) {
+            try {
+                const token = localStorage.getItem('authToken') || '';
+                const userId = localStorage.getItem('userId') || '1';
+                const username = localStorage.getItem('username') || '用户';
+                
+                const response = await fetch('http://localhost:8080/api/posts', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        text: text,
+                        images: images,
+                        userId: parseInt(userId),
+                        author: username,
+                        likes: 0,
+                        comments: [],
+                        tags: []
+                    })
+                });
+                const result = await response.json();
+                if (result && result.code === 200) {
+                    // 发布成功后刷新动态列表
+                    fetchPosts();
+                    return true;
+                }
+                return false;
+            } catch (error) {
+                console.error('发布动态失败:', error);
+                return false;
+            }
+        }
+
         // Initial render
         renderJoinedGroups();
-        renderPosts(samplePosts);
+        fetchPosts(); // 从后端API获取动态
 
         // Composer: image preview and post creation
         const postBtn = document.getElementById('postBtn');
@@ -1636,15 +1641,28 @@ loadTrack(currentIndex);
           // convert files to data URLs synchronously via FileReader (already previewed)
           const readers = files.map(f=> new Promise(resolve=>{ const r=new FileReader(); r.onload=ev=>resolve(ev.target.result); r.readAsDataURL(f);}));
           Promise.all(readers).then(dataUrls=>{
-            const newId = (samplePosts.length? Math.max(...samplePosts.map(p=>p.id))+1:1);
-            const now = new Date();
-            const post = { id:newId, author:'我', avatar:'W', text:text, images:dataUrls, likes:0, comments:[], time: now.toLocaleString(), tags:[] };
-            samplePosts.unshift(post);
-            composerInput.value = '';
-            composerFilesEl.value = '';
-            composerSelectedFiles = [];
-            previewAreaEl.innerHTML = '';
-            renderPosts(samplePosts);
+            // 使用后端API发布动态
+            publishPost(text, dataUrls).then(success => {
+              if (success) {
+                // 发布成功后清空表单
+                composerInput.value = '';
+                composerFilesEl.value = '';
+                composerSelectedFiles = [];
+                previewAreaEl.innerHTML = '';
+              } else {
+                // 发布失败时使用本地样本数据作为回退
+                const newId = (samplePosts.length? Math.max(...samplePosts.map(p=>p.id))+1:1);
+                const now = new Date();
+                const username = localStorage.getItem('username') || '用户';
+                const post = { id:newId, author:username, avatar:'W', text:text, images:dataUrls, likes:0, comments:[], time: now.toLocaleString(), tags:[] };
+                samplePosts.unshift(post);
+                composerInput.value = '';
+                composerFilesEl.value = '';
+                composerSelectedFiles = [];
+                previewAreaEl.innerHTML = '';
+                renderPosts(samplePosts);
+              }
+            });
           });
         });
 
@@ -1876,13 +1894,18 @@ loadTrack(currentIndex);
     // 检查用户是否已登录
     function checkLoginStatus() {
         const authToken = localStorage.getItem('authToken');
+        const userId = localStorage.getItem('userId');
+        const username = localStorage.getItem('username');
         const authSection = document.getElementById('auth-section');
+        
+        console.log('检查登录状态:', { authToken, userId, username });
         
         if (authToken) {
             // 用户已登录，显示用户菜单
+            const displayUsername = username || '未设置用户名';
             authSection.innerHTML = `
                 <div class="user-menu">
-                    <button class="submit-btn" onclick="showUserMenu()">个人中心</button>
+                    <button class="submit-btn" onclick="showUserMenu()">${displayUsername}</button>
                     <div class="dropdown-menu" id="user-dropdown" style="display: none;">
                         <a href="my-profile.html" class="dropdown-item">我的资料</a>
                         <a href="#" class="dropdown-item" onclick="logout()">退出登录</a>
@@ -1893,8 +1916,10 @@ loadTrack(currentIndex);
             // 更新用户信息区
             const usernameElement = document.querySelector('.username');
             if (usernameElement) {
-                usernameElement.textContent = '已登录用户';
+                usernameElement.textContent = displayUsername;
             }
+        } else {
+            console.log('用户未登录');
         }
     }
     
@@ -1907,6 +1932,8 @@ loadTrack(currentIndex);
     // 登出功能
     function logout() {
         localStorage.removeItem('authToken');
+        localStorage.removeItem('userId');
+        localStorage.removeItem('username');
         location.reload();
     }
     
@@ -1954,60 +1981,6 @@ loadTrack(currentIndex);
         background-color: #f5f5f5;
     }
 </style>
-
-
-<!-- 登录状态检查脚本 -->
-<script>
-    // 检查用户是否已登录
-    function checkLoginStatus() {
-        const authToken = localStorage.getItem('authToken');
-        const authSection = document.getElementById('auth-section');
-        
-        if (authToken) {
-            // 用户已登录，显示用户菜单
-            authSection.innerHTML = `
-                <div class="user-menu">
-                    <button class="submit-btn" onclick="showUserMenu()">个人中心</button>
-                    <div class="dropdown-menu" id="user-dropdown" style="display: none;">
-                        <a href="my-profile.html" class="dropdown-item">我的资料</a>
-                        <a href="#" class="dropdown-item" onclick="logout()">退出登录</a>
-                    </div>
-                </div>
-            `;
-            
-            // 更新用户信息区
-            const usernameElement = document.querySelector('.username');
-            if (usernameElement) {
-                usernameElement.textContent = '已登录用户';
-            }
-        }
-    }
-    
-    // 显示用户菜单
-    function showUserMenu() {
-        const dropdown = document.getElementById('user-dropdown');
-        dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
-    }
-    
-    // 登出功能
-    function logout() {
-        localStorage.removeItem('authToken');
-        location.reload();
-    }
-    
-    // 页面加载时检查登录状态
-    window.addEventListener('DOMContentLoaded', checkLoginStatus);
-    
-    // 点击其他区域关闭下拉菜单
-    document.addEventListener('click', function(event) {
-        const dropdown = document.getElementById('user-dropdown');
-        const userMenu = document.querySelector('.user-menu');
-        
-        if (dropdown && userMenu && !userMenu.contains(event.target)) {
-            dropdown.style.display = 'none';
-        }
-    });
-</script>
 
 <style>
     .user-menu {

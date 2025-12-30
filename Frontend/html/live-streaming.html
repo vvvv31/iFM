@@ -1412,7 +1412,8 @@
         sendMessageBtn.addEventListener('click', () => {
             const content = messageInputEl.value.trim();
             if (content) {
-                sendMessage('我', content);
+                const username = localStorage.getItem('username') || '用户';
+                sendMessage(username, content);
                 messageInputEl.value = '';
             }
         });

@@ -1,0 +1,2 @@
+2025-12-30 21:46:47 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLDataException: Data conversion error converting "我" [22018-214]

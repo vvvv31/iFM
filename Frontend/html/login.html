@@ -380,16 +380,24 @@
                     
                     const data = await response.json();
                     
+                    console.log('登录响应数据:', data);
+                    
                     if (response.ok) {
                                                 // 登录成功，存储令牌并广播
                                                 if (data && data.code === 200 && data.data && data.data.token) {
                                                     const token = data.data.token;
                                                     const userId = data.data.userId;
                                                     const userInfo = data.data.userInfo || {};
+                                                    const username = userInfo.username || '用户';
+                                                    
+                                                    console.log('存储用户信息:', { token, userId, username, userInfo });
+                                                    
                                                     try {
                                                         localStorage.setItem('authToken', token);
                                                         localStorage.setItem('userId', String(userId));
+                                                        localStorage.setItem('username', username);
                                                         sessionStorage.setItem('userProfile', JSON.stringify(userInfo));
+                                                        console.log('用户信息已存储到 localStorage');
                                                     } catch (e) {
                                                         console.warn('storage set failed', e);
                                                     }
@@ -455,6 +463,9 @@
                     if (response.ok) {
                         // 注册成功
                         alert(`注册成功！请登录`);
+                        
+                        // 保存用户名到localStorage
+                        localStorage.setItem('username', regUsername.value.trim());
                         
                         // 清空表单并切换到登录界面
                         regUsername.value = '';

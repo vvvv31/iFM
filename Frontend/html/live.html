@@ -307,12 +307,13 @@
             const message = chatInput.value.trim();
             if (message) {
                 const now = new Date();
+                const username = localStorage.getItem('username') || '用户';
                 const timeStr = `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, '0')}.${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
                 
                 const messageDiv = document.createElement('div');
                 messageDiv.className = 'message student';
                 messageDiv.innerHTML = `
-                    <div class="message-sender">我</div>
+                    <div class="message-sender">${username}</div>
                     <div class="message-content">${message}</div>
                     <div class="message-time">${timeStr}</div>
                 `;

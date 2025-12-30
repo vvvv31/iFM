@@ -1044,7 +1044,7 @@
                             <div class="message-avatar">ME</div>
                             <div class="message-content-wrapper">
                                 <div class="message-info">
-                                    <span class="message-sender">我</span>
+                                    <span class="message-sender" id="currentUsername">我</span>
                                     <span class="message-time">09:50</span>
                                 </div>
                                 <div class="message-bubble">
@@ -1170,7 +1170,8 @@
                 window.ws.send(JSON.stringify({ type:'comment', userId: uid, content: text, timestamp: Date.now() }));
             } else {
                 // fallback: append locally
-                const chat = document.getElementById('chatMessages'); if(chat){ const el = document.createElement('div'); el.className='message-item own-message'; el.innerHTML = `<div class="message-avatar">ME</div><div class="message-content-wrapper"><div class="message-info"><span class="message-sender">我</span><span class="message-time">${new Date().toLocaleTimeString()}</span></div><div class="message-bubble"><div class="message-text">${text}</div></div></div>`; chat.appendChild(el); chat.scrollTop = chat.scrollHeight; }
+                const username = localStorage.getItem('username') || '用户';
+                const chat = document.getElementById('chatMessages'); if(chat){ const el = document.createElement('div'); el.className='message-item own-message'; el.innerHTML = `<div class="message-avatar">ME</div><div class="message-content-wrapper"><div class="message-info"><span class="message-sender">${username}</span><span class="message-time">${new Date().toLocaleTimeString()}</span></div><div class="message-bubble"><div class="message-text">${text}</div></div></div>`; chat.appendChild(el); chat.scrollTop = chat.scrollHeight; }
             }
             messageInput.value = '';
         }
@@ -1200,7 +1201,7 @@
                     { sender: "系统", text: "Welcome to English Speaking Practice Group! 🌟", time: "09:30", isSystem: true },
                     { sender: "English Learner", avatar: "EN", text: "Good morning everyone! How was your weekend?", time: "09:45", isOwn: false, englishText: true, grammarNote: "过去式疑问句" },
                     { sender: "Teaching Assistant", avatar: "TE", text: "My weekend was great! I watched an English movie and practiced listening skills.", time: "09:48", isOwn: false, englishText: true, grammarNote: "过去简单式 + 并列句" },
-                    { sender: "我", avatar: "ME", text: "I had a productive weekend too! I learned some new vocabulary about travel.", time: "09:50", isOwn: true, englishText: true, vocabulary: ["vocabulary"] }
+                    { sender: "用户", avatar: "ME", text: "I had a productive weekend too! I learned some new vocabulary about travel.", time: "09:50", isOwn: true, englishText: true, vocabulary: ["vocabulary"] }
                 ],
                 onlineMembers: ["English Learner", "Teaching Assistant", "Fluency Master", "Grammar Guru", "IELTS Expert"],
                 allMembers: ["English Learner", "Teaching Assistant", "Fluency Master", "Grammar Guru", "IELTS Expert", "TOEFL Student", "Business English", "Conversation Partner"],
@@ -1215,7 +1216,7 @@
                 messages: [
                     { sender: "系统", text: "TOEFL备考小组 - 互相鼓励，共同进步！", time: "昨天 14:20", isSystem: true },
                     { sender: "TOEFL Master", avatar: "TM", text: "Has anyone taken the TOEFL reading section recently? Any tips?", time: "昨天 14:35", isOwn: false, englishText: true },
-                    { sender: "我", avatar: "ME", text: "I find that skimming the questions first really helps with time management.", time: "昨天 15:10", isOwn: true, englishText: true, vocabulary: ["skimming", "time management"] }
+                    { sender: "用户", avatar: "ME", text: "I find that skimming the questions first really helps with time management.", time: "昨天 15:10", isOwn: true, englishText: true, vocabulary: ["skimming", "time management"] }
                 ],
                 onlineMembers: ["TOEFL Master", "Reading Expert", "Listening Pro"],
                 allMembers: ["TOEFL Master", "Reading Expert", "Listening Pro", "Writing Coach", "Speaking Tutor"],
@@ -1229,7 +1230,7 @@
                 inviteCode: "BIZ12345",
                 messages: [
                     { sender: "Business Pro", avatar: "BP", text: "How to professionally decline a meeting invitation?", time: "周一 10:30", isOwn: false, englishText: true },
-                    { sender: "我", avatar: "ME", text: "You can say: 'Thank you for the invitation, but I have a scheduling conflict.'", time: "周一 11:15", isOwn: true, englishText: true, vocabulary: ["scheduling conflict"] }
+                    { sender: "用户", avatar: "ME", text: "You can say: 'Thank you for the invitation, but I have a scheduling conflict.'", time: "周一 11:15", isOwn: true, englishText: true, vocabulary: ["scheduling conflict"] }
                 ],
                 onlineMembers: ["Business Pro", "Corporate Trainer", "Negotiation Expert"],
                 allMembers: ["Business Pro", "Corporate Trainer", "Negotiation Expert", "Presentation Coach", "Email Specialist"],
@@ -1243,7 +1244,7 @@
                 inviteCode: "BOOK2024",
                 messages: [
                     { sender: "Bookworm", avatar: "BW", text: "Just finished 'The Great Gatsby'. The symbolism is fascinating!", time: "上周五 16:20", isOwn: false, englishText: true, vocabulary: ["symbolism"] },
-                    { sender: "我", avatar: "ME", text: "I'm currently reading '1984'. The political themes are very thought-provoking.", time: "上周五 16:45", isOwn: true, englishText: true, vocabulary: ["thought-provoking"] }
+                    { sender: "用户", avatar: "ME", text: "I'm currently reading '1984'. The political themes are very thought-provoking.", time: "上周五 16:45", isOwn: true, englishText: true, vocabulary: ["thought-provoking"] }
                 ],
                 onlineMembers: ["Bookworm", "Literature Lover", "Vocabulary Builder"],
                 allMembers: ["Bookworm", "Literature Lover", "Vocabulary Builder", "Classic Reader", "Modern Fiction Fan"],
@@ -1267,8 +1268,8 @@
                                 messages: [
                                     { sender: "系统", text: `欢迎来到「${g.name}」！🌟`, time: new Date().toLocaleTimeString('zh-CN', {hour: '2-digit', minute:'2-digit'}), isSystem: true }
                                 ],
-                                onlineMembers: ["我"],
-                                allMembers: ["我"],
+                                onlineMembers: ["用户"],
+                                allMembers: ["用户"],
                                 unreadCount: 0,
                                 todayTopic: "暂无话题"
                             };
@@ -1638,6 +1639,12 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             initializePage();
+            
+            const currentUsernameEl = document.getElementById('currentUsername');
+            if (currentUsernameEl) {
+                const username = localStorage.getItem('username') || '用户';
+                currentUsernameEl.textContent = username;
+            }
 
             const mobileToggle = document.getElementById('mobileToggle');
             const channelSidebar = document.querySelector('.channel-sidebar');
@@ -1679,8 +1686,9 @@
             function sendMessage() {
                 const text = messageInput.value.trim();
                 if (text) {
+                    const username = localStorage.getItem('username') || '用户';
                     const newMessage = {
-                        sender: "我",
+                        sender: username,
                         avatar: "ME",
                         text,
                         time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }),
@@ -1843,8 +1851,8 @@
                         isSystem: true 
                     }
                 ],
-                onlineMembers: ['我'],
-                allMembers: ['我'],
+                onlineMembers: ['用户'],
+                allMembers: ['用户'],
                 unreadCount: 0,
                 todayTopic: groupTopic || '暂无话题'
             };

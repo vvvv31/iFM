@@ -31,12 +31,29 @@ let dailySentences = [];
 
 let currentSentenceIndex = 0;
 
+// ========== 本地历史操作 ==========
+const STORAGE_KEY = 'audioRecorderHistory';
+
+function readHistory() {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+}
+
+function writeHistory(history) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+}
+
 // ========== 页面初始化 ==========
 document.addEventListener('DOMContentLoaded', initialize);
 
 // 修改页面初始化函数
 async function initialize() {
     console.log('Initializing audio recorder...');
+
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+        console.warn('用户未登录，录音将无法上传到服务器');
+        // 可以在这里提示用户登录
+    }
     
     // 设置可视化Canvas尺寸
     recorderVisualizer.width = recorderVisualizer.offsetWidth;
@@ -671,77 +688,126 @@ function stopRecording() {
     }
 }
 
-// 修改录音保存函数中获取句子的部分（大约在第280行左右）
+// ========== 录音保存函数（修改版） ==========
 function saveRecording() {
     if (!window.currentRecording) {
         showMessage('没有录音可保存');
         return;
     }
-
-    // 异步保存前确保为 WAV 格式
+    
     (async function() {
         let recording = window.currentRecording;
-
+        
+        // 确保是 WAV 格式
         const blob = recording.blob;
         const mime = blob && blob.type ? blob.type : '';
+        
+        // 如果不是 WAV 格式，先转换
         if (!mime.includes('wav')) {
             try {
-                showMessage('正在转换为 WAV（保存前）...');
+                showMessage('正在转换为 WAV（上传前）...');
                 const wavBlob = await convertBlobToWav(blob);
-                // 更新 recording 对象
                 recording.blob = wavBlob;
-                if (recording.blobUrl) URL.revokeObjectURL(recording.blobUrl);
+                
+                // 更新 URL
+                if (recording.blobUrl) {
+                    URL.revokeObjectURL(recording.blobUrl);
+                }
                 recording.blobUrl = URL.createObjectURL(wavBlob);
                 recording.format = 'wav';
                 recording.size = wavBlob.size;
                 window.currentRecording = recording;
             } catch (err) {
-                console.error('保存前 WAV 转换失败:', err);
-                showMessage('WAV 转换失败，将以原格式保存');
+                console.error('WAV 转换失败:', err);
+                showMessage('WAV 转换失败，将以原格式上传');
             }
         }
-
-        // 继续保存流程
+        
         recording = window.currentRecording;
-
-        // 获取当前句子文本
-        let sentenceText = "";
+        
+        // 获取当前句子 ID
+        let dailySentenceId = null;
         if (dailySentences.length > 0 && dailySentences[currentSentenceIndex]) {
-            const currentSentence = dailySentences[currentSentenceIndex];
-            sentenceText = currentSentence.english || "";
+            dailySentenceId = dailySentences[currentSentenceIndex].id;
         }
-        recording.sentence = sentenceText;
-
-        // 添加到历史记录
-        recordingHistory.unshift(recording);
-
-        // 限制历史记录数量（最多20条）
-        if (recordingHistory.length > 20) {
-            recordingHistory = recordingHistory.slice(0, 20);
+        
+        // 获取用户 ID（假设登录后存储在 localStorage.userId）
+        let userId = localStorage.getItem('userId');
+        
+        if (!userId) {
+            showMessage('未登录，无法上传到服务器');
+            // 可以在这里重定向到登录页面
+            return;
         }
-
-        // 保存到localStorage
-        localStorage.setItem('audioRecorderHistory', JSON.stringify(recordingHistory));
-
-        // 重新加载录音列表
-        loadRecordings();
-
-        // 更新统计信息
-        updateStats();
-
-        // 禁用保存按钮
-        document.getElementById('saveRecordBtn').disabled = true;
-
-        let message = '录音已保存: ' + recording.name + ' (' + recording.format.toUpperCase() + '格式)';
-        if (recording.sentence) {
-            message += ' - 跟读练习';
+        
+        if (!dailySentenceId) {
+            showMessage('未找到当前句子的ID');
+            return;
         }
-        showMessage(message);
-
-        // 自动切换到下一个句子
-        if (recording.sentence && currentSentenceIndex < dailySentences.length - 1) {
-            currentSentenceIndex++;
-            updateSentenceDisplay();
+        
+        // 构建 FormData
+        const formData = new FormData();
+        formData.append('audioFile', recording.blob, recording.name || 'audio.wav');
+        
+        // 构建请求 URL 包含查询参数
+        const apiUrl = `http://localhost:8080/daily-sentence-audios/upload?dailySentenceId=${dailySentenceId}&userId=${userId}`;
+        
+        // 显示上传进度
+        showMessage('正在上传录音到服务器...');
+        
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                body: formData
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const result = await response.json();
+            
+            if (result.code === 0 || result.code === 200) {
+                // 上传成功
+                showMessage('录音上传成功！服务器已保存您的录音。');
+                
+                // 将录音添加到本地历史记录
+                const hist = readHistory();
+                hist.unshift(recording);
+                writeHistory(hist);
+                
+                // 更新 UI
+                document.getElementById('saveRec').disabled = true;
+                
+                // 刷新历史记录显示
+                renderHistory();
+                
+                // 可选：自动切换到下一个句子
+                if (currentSentenceIndex < dailySentences.length - 1) {
+                    currentSentenceIndex++;
+                    updateSentenceDisplay();
+                    showMessage('已自动切换到下一句');
+                }
+                
+                // 如果评测页面是活动的，更新评测
+                if (document.querySelector('.top-tab.active').dataset.target === 'panel-eval') {
+                    renderEvaluation();
+                }
+                
+            } else {
+                showMessage('上传失败：' + (result.message || '服务器错误'));
+            }
+            
+        } catch (error) {
+            console.error('上传录音失败:', error);
+            showMessage('网络错误，上传失败，录音已保存到本地');
+            
+            // 网络失败时，仍保存到本地
+            const hist = readHistory();
+            hist.unshift(recording);
+            writeHistory(hist);
+            document.getElementById('saveRec').disabled = true;
+            renderHistory();
         }
     })();
 }

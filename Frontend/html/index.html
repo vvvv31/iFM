@@ -1227,8 +1227,8 @@
             </div>
             <div class="user-detail">
                 <div class="username-wrapper">
-                    <div class="username" id="displayUsername">已登录用户</div>
-                    <button class="edit-username-btn" onclick="openEditModal('username')" title="编辑资料">
+                    <div class="username" id="displayUsername">未登录用户</div>
+                    <button class="edit-username-btn" onclick="openEditModal('username')" title="编辑资料" style="display: none;">
                         <i class="fas fa-pen"></i>
                     </button>
                 </div>
@@ -1895,7 +1895,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // 编辑用户资料模态框相关脚本
 // 用户资料数据（使用 var 方便被内联 onclick 访问）
 var userProfile = {
-  username: "已登录用户",
+  username: "未登录用户",
   avatarType: "emoji",
   avatarColor: "#FF8C00",
   avatarEmoji: "😊",
@@ -1904,8 +1904,12 @@ var userProfile = {
 
 // 从 sessionStorage 加载用户资料
 function loadUserProfile() {
+  // 检查登录状态
+  const authToken = localStorage.getItem('authToken');
   const savedProfile = sessionStorage.getItem('userProfile');
-  if (savedProfile) {
+  
+  // 如果有 authToken 且有保存的用户资料，则加载
+  if (authToken && savedProfile) {
     try {
       const parsed = JSON.parse(savedProfile);
       if (parsed && typeof parsed === 'object') {
@@ -1915,20 +1919,33 @@ function loadUserProfile() {
       console.warn('解析 userProfile 失败:', e);
     }
   } else {
-    // 清除旧的 localStorage 数据
+    // 清除旧的 localStorage 数据和用户资料
     localStorage.removeItem('userProfile');
-  }
-  // 确保 userProfile 总是一个对象
-  if (!userProfile || typeof userProfile !== 'object') {
+    sessionStorage.removeItem('userProfile');
+    
+    // 使用默认未登录状态
     userProfile = {
-      username: "已登录用户",
+      username: "未登录用户",
       avatarType: "emoji",
       avatarColor: "#FF8C00",
       avatarEmoji: "😊",
       avatarUrl: ""
     };
   }
+  
+  // 确保 userProfile 总是一个对象
+  if (!userProfile || typeof userProfile !== 'object') {
+    userProfile = {
+      username: "未登录用户",
+      avatarType: "emoji",
+      avatarColor: "#FF8C00",
+      avatarEmoji: "😊",
+      avatarUrl: ""
+    };
+  }
+  
   updateDisplayedProfile();
+  updateLoginUIState();
 }
 
 // 更新页面上显示的用户资料
@@ -1985,6 +2002,26 @@ function updateDisplayedProfile() {
   }
 }
 // ...existing code...
+
+// 根据登录状态更新UI显示
+function updateLoginUIState() {
+  const authToken = localStorage.getItem('authToken');
+  const editBtn = document.querySelector('.edit-username-btn');
+  const identity = document.querySelector('.identity');
+  const stats = document.querySelector('.stats');
+  
+  if (authToken) {
+    // 已登录：显示编辑按钮、身份和统计信息
+    if (editBtn) editBtn.style.display = 'block';
+    if (identity) identity.style.display = 'block';
+    if (stats) stats.style.display = 'flex';
+  } else {
+    // 未登录：隐藏编辑按钮、身份和统计信息
+    if (editBtn) editBtn.style.display = 'none';
+    if (identity) identity.style.display = 'none';
+    if (stats) stats.style.display = 'none';
+  }
+}
 
 // 颜色变亮函数
 function lightenColor(color, percent) {

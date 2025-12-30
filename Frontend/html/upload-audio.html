@@ -431,7 +431,33 @@
         .rate-item:hover { background: #f7f7f7; }
         .rate-item.active { color: #ff8c00; font-weight: 700; background: #fff4e6; }
         @media (max-width: 900px) { .pv-left { min-width: 0; } .pv-right { min-width: 0; } .pv-inner { grid-template-columns: auto 1fr auto; column-gap: 10px; padding: 0 12px; } }
-    </style>
+        /* 添加上传成功通知动画 */
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(-10px); }
+            10% { opacity: 1; transform: translateY(0); }
+            90% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-10px); }
+        }
+
+        /* 添加上传成功通知样式 */
+        .upload-success-notification {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 100000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: fadeInOut 3.5s ease;
+            font-weight: 500;
+            max-width: 300px;
+        }
+   </style>
 </head>
 <body>
 <script>
@@ -575,10 +601,9 @@
                 <label for="audio-group">选择合集</label>
                 <div class="group-selector">
                     <select id="audio-group-main" style="margin-bottom: 10px;"></select>
-                    <select id="audio-group-sub" disabled></select>
                     <div style="margin-top: 10px;">
                         <button type="button" id="create-main-group-btn" class="btn btn-secondary" style="margin-right: 10px;">创建课程</button>
-                        <button type="button" id="create-sub-group-btn" class="btn btn-secondary" disabled>创建单元</button>
+                        <button type="button" id="refresh-courses-btn" class="btn btn-secondary" style="margin-right: 10px;">刷新课程</button>
                     </div>
                 </div>
             </div>
@@ -716,23 +741,154 @@
     async function loadMainGroups() {
         const audioGroupMain = document.getElementById('audio-group-main');
         if (!audioGroupMain) return;
-        audioGroupMain.innerHTML = '<option value="">请选择课程</option>';
+        audioGroupMain.innerHTML = '<option value="">请先选择课程（必选）</option>';
+        
         try {
-            // 获取所有节目（课程）
+            // 获取当前登录用户的creatorId
+            let creatorId = null;
+            
+            // 首先尝试直接获取用户信息
             const token = localStorage.getItem('access_token') || localStorage.getItem('authToken') || '';
-            const res = await fetch('http://localhost:8080/programs', {
-                headers: { 'Authorization': 'Bearer ' + token }
+            
+            if (token) {
+                try {
+                    // 尝试从 token 解码用户信息（如果你的 token 是 JWT）
+                    const payload = JSON.parse(atob(token.split('.')[1]));
+                    creatorId = payload.userId || payload.id || payload.sub;
+                    console.log('从 token 解码获取 creatorId:', creatorId);
+                } catch (e) {
+                    console.log('无法从 token 解码，尝试其他方式');
+                }
+            }
+            
+            // 如果 token 中没有，尝试 localStorage
+            if (!creatorId) {
+                creatorId = localStorage.getItem('userId') 
+                    || localStorage.getItem('id')
+                    || localStorage.getItem('creatorId')
+                    || (function(){
+                        try {
+                            const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+                            return userInfo && (userInfo.id || userInfo.userId || userInfo.creatorId);
+                        } catch(e) { 
+                            return null; 
+                        }
+                    })();
+                console.log('从 localStorage 获取 creatorId:', creatorId);
+            }
+            
+            if (!creatorId || isNaN(creatorId)) {
+                // 如果还是获取不到，尝试调用获取当前用户信息的接口
+                console.log('尝试调用获取当前用户信息的接口');
+                try {
+                    const userRes = await fetch('http://localhost:8080/user/current', {
+                        headers: { 
+                            'Authorization': 'Bearer ' + token,
+                            'Accept': 'application/json'
+                        }
+                    });
+                    if (userRes.ok) {
+                        const userData = await userRes.json();
+                        if (userData && userData.data) {
+                            creatorId = userData.data.id || userData.data.userId;
+                            console.log('从 /user/current 接口获取 creatorId:', creatorId);
+                        }
+                    }
+                } catch (err) {
+                    console.error('获取用户信息失败:', err);
+                }
+            }
+            
+            // 最终检查
+            if (!creatorId || isNaN(creatorId)) {
+                console.warn('无法获取当前登录用户的ID，请先登录');
+                showNoLoginMessage();
+                return;
+            }
+            
+            creatorId = parseInt(creatorId);
+            
+            // 根据创作者ID获取该创作者的所有节目
+            const res = await fetch(`http://localhost:8080/programs/creator/${creatorId}`, {
+                headers: { 
+                    'Authorization': 'Bearer ' + token,
+                    'Accept': 'application/json'
+                }
             });
+            
+            console.log('请求创作者课程接口，状态:', res.status);
+            
+            if (!res.ok) {
+                throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+            }
+            
             const data = await res.json();
-            const programs = Array.isArray(data.data) ? data.data : [];
-            programs.forEach(program => {
-                const option = document.createElement('option');
-                option.value = program.programId || program.id;
-                option.textContent = program.title;
-                audioGroupMain.appendChild(option);
-            });
+            console.log('创作者课程响应:', data);
+            
+            // 处理API响应
+            if (data && data.code === 200 && Array.isArray(data.data)) {
+                const programs = data.data;
+                console.log(`获取到 ${programs.length} 个课程`);
+                
+                programs.forEach(program => {
+                    const option = document.createElement('option');
+                    option.value = program.programId || program.id;
+                    option.textContent = program.title;
+                    audioGroupMain.appendChild(option);
+                });
+                
+                // 如果没有课程，显示提示
+                if (programs.length === 0) {
+                    const option = document.createElement('option');
+                    option.value = "";
+                    option.textContent = "您还没有创建任何课程，请先创建一个课程";
+                    option.disabled = true;
+                    audioGroupMain.appendChild(option);
+                }
+            } else {
+                throw new Error('API返回格式错误: ' + JSON.stringify(data));
+            }
         } catch (err) {
-            console.error('加载课程失败', err);
+            console.error('加载课程失败:', err);
+            showErrorMessage('加载课程失败: ' + err.message);
+            
+            // 不执行回退，直接显示错误信息
+            const option = document.createElement('option');
+            option.value = "";
+            option.textContent = "加载课程失败，请刷新重试";
+            option.disabled = true;
+            audioGroupMain.appendChild(option);
+        }
+    }
+    
+    // 显示未登录消息
+    function showNoLoginMessage() {
+        const audioGroupMain = document.getElementById('audio-group-main');
+        const option = document.createElement('option');
+        option.value = "";
+        option.textContent = "请先登录以查看您的课程";
+        option.disabled = true;
+        audioGroupMain.appendChild(option);
+        
+        // 禁用创建课程按钮
+        const createMainGroupBtn = document.getElementById('create-main-group-btn');
+        if (createMainGroupBtn) {
+            createMainGroupBtn.disabled = true;
+            createMainGroupBtn.textContent = "请先登录";
+        }
+    }
+    
+    // 显示错误消息
+    function showErrorMessage(message) {
+        const msgBox = document.getElementById('message');
+        if (msgBox) {
+            msgBox.className = 'message error';
+            msgBox.textContent = message;
+            msgBox.style.display = 'block';
+            
+            setTimeout(() => {
+                msgBox.style.display = 'none';
+            }, 5000);
         }
     }
 
@@ -846,114 +1002,319 @@
 
     // 初始化合集选择器
     function initGroupSelector() {
+        console.log('开始初始化合集选择器...');
+        
+        // 获取必要的DOM元素
+        const audioGroupMain = document.getElementById('audio-group-main');
+        const audioGroupSub = document.getElementById('audio-group-sub');
+        const createMainGroupBtn = document.getElementById('create-main-group-btn');
+        const createSubGroupBtn = document.getElementById('create-sub-group-btn');
+        const modalOverlay = document.getElementById('modal-overlay');
+        const cancelCreateGroupBtn = document.getElementById('cancel-create-group');
+        const submitCreateGroupBtn = document.getElementById('submit-create-group');
+        
+        // 检查必要的元素是否存在
+        if (!audioGroupMain) {
+            console.error('audio-group-main 元素未找到');
+            return;
+        }
+        
+        // 检查用户是否已登录
+        const token = localStorage.getItem('access_token') || localStorage.getItem('authToken');
+        if (!token) {
+            console.warn('用户未登录，无法加载课程列表');
+            
+            // 显示未登录提示
+            audioGroupMain.innerHTML = '<option value="">请先登录以查看课程</option>';
+            audioGroupMain.disabled = true;
+            
+            if (createMainGroupBtn) {
+                createMainGroupBtn.disabled = true;
+                createMainGroupBtn.textContent = "请先登录";
+            }
+            
+            return;
+        }
+        
+        // 用户已登录，加载课程
         loadMainGroups();
-        audioGroupMain.addEventListener('change', (e) => {
-            loadSubGroups(e.target.value);
-        });
-        // 变量获取（每次都重新获取，防止为null）
-        const getEl = id => document.getElementById(id);
-        const createMainGroupBtn = getEl('create-main-group-btn');
-        const cancelCreateGroupBtn = getEl('cancel-create-group');
-        const submitCreateGroupBtn = getEl('submit-create-group');
-        const modalOverlay = getEl('modal-overlay');
-        // 事件监听器：创建课程按钮
-        if (createMainGroupBtn && modalOverlay) createMainGroupBtn.onclick = () => { modalOverlay.classList.add('active'); };
-        // 事件监听器：取消按钮
-        if (cancelCreateGroupBtn && modalOverlay) cancelCreateGroupBtn.onclick = () => {
-            modalOverlay.classList.remove('active');
-            getEl('create-group-msg').style.display = 'none';
-        };
-        // 事件监听器：点击模态框外部关闭
-        if (modalOverlay) modalOverlay.onclick = (e) => {
-            if (e.target === modalOverlay) {
+        
+        // 主课程选择变化事件
+        if (audioGroupMain) {
+            audioGroupMain.addEventListener('change', (e) => {
+                const selectedValue = e.target.value;
+                console.log('选择了课程:', selectedValue);
+                loadSubGroups(selectedValue);
+            });
+        }
+        
+        // 创建课程按钮事件
+        if (createMainGroupBtn && modalOverlay) {
+            createMainGroupBtn.onclick = () => { 
+                console.log('点击创建课程按钮');
+                modalOverlay.classList.add('active'); 
+            };
+        }
+        
+        // 取消创建课程按钮事件
+        if (cancelCreateGroupBtn && modalOverlay) {
+            cancelCreateGroupBtn.onclick = () => {
+                console.log('点击取消创建课程');
                 modalOverlay.classList.remove('active');
-                getEl('create-group-msg').style.display = 'none';
-            }
-        };
-        // 事件监听器：提交创建课程
-        if (submitCreateGroupBtn && modalOverlay) submitCreateGroupBtn.onclick = async () => {
-            const title = getEl('new-program-title').value.trim();
-            const introduction = getEl('new-program-intro').value.trim() || '';
-            const faq = getEl('new-program-faq').value.trim();
-            const coverUrl = getEl('new-program-cover').value.trim();
-            const tagIds = getEl('new-program-tags').value.trim().split(',').filter(x=>x).map(x=>parseInt(x));
-            const msgBox = getEl('create-group-msg');
-            msgBox.style.display = 'none';
-            // 自动获取创建者ID
-            let creatorId = null;
-            try {
-                // 常见存储字段，按优先级依次尝试
-                creatorId = localStorage.getItem('userId')
-                    || localStorage.getItem('id')
-                    || (function(){
-                        try {
-                            const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-                            return userInfo && (userInfo.id || userInfo.userId);
-                        } catch(e) { return null; }
-                    })();
-                creatorId = parseInt(creatorId);
-            } catch(e) { creatorId = null; }
-            if (!title) {
-                msgBox.textContent = '标题为必填';
-                msgBox.className = 'message error';
-                msgBox.style.display = 'block';
-                return;
-            }
-            if (!creatorId || isNaN(creatorId)) {
-                msgBox.textContent = '未检测到有效的创建者ID，请重新登录';
-                msgBox.className = 'message error';
-                msgBox.style.display = 'block';
-                return;
-            }
-            const token = localStorage.getItem('access_token') || localStorage.getItem('authToken') || '';
-            try {
-                const res = await fetch('http://localhost:8080/programs', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + token
-                    },
-                    body: JSON.stringify({ title, introduction, faq, coverUrl, creatorId, tagIds })
-                });
-                const data = await res.json();
-                console.log('创建课程返回', data);
-                // 兼容多种后端返回结构
-                const isSuccess = (data && (
-                    data.code === 0 ||
-                    data.success === true ||
-                    data.message === 'success' ||
-                    (typeof data === 'object' && data.id) // 有id字段也算成功
-                ));
-                if (isSuccess) {
-                    msgBox.textContent = '创建成功！';
-                    msgBox.className = 'message success';
+                
+                // 清空表单
+                const titleInput = document.getElementById('new-program-title');
+                const introInput = document.getElementById('new-program-intro');
+                const faqInput = document.getElementById('new-program-faq');
+                const coverInput = document.getElementById('new-program-cover');
+                const tagsInput = document.getElementById('new-program-tags');
+                
+                if (titleInput) titleInput.value = '';
+                if (introInput) introInput.value = '';
+                if (faqInput) faqInput.value = '';
+                if (coverInput) coverInput.value = '';
+                if (tagsInput) tagsInput.value = '';
+                
+                // 隐藏消息
+                const msgBox = document.getElementById('create-group-msg');
+                if (msgBox) msgBox.style.display = 'none';
+            };
+        }
+        
+        // 点击模态框外部关闭
+        if (modalOverlay) {
+            modalOverlay.onclick = (e) => {
+                if (e.target === modalOverlay) {
+                    modalOverlay.classList.remove('active');
+                    
+                    // 隐藏消息
+                    const msgBox = document.getElementById('create-group-msg');
+                    if (msgBox) msgBox.style.display = 'none';
+                }
+            };
+        }
+        
+        // 提交创建课程事件
+        if (submitCreateGroupBtn && modalOverlay) {
+            submitCreateGroupBtn.onclick = async () => {
+                console.log('点击提交创建课程');
+                
+                // 获取表单元素
+                const titleInput = document.getElementById('new-program-title');
+                const introInput = document.getElementById('new-program-intro');
+                const faqInput = document.getElementById('new-program-faq');
+                const coverInput = document.getElementById('new-program-cover');
+                const tagsInput = document.getElementById('new-program-tags');
+                const msgBox = document.getElementById('create-group-msg');
+                
+                if (!titleInput || !msgBox) {
+                    console.error('创建课程表单元素未找到');
+                    return;
+                }
+                
+                // 获取表单值
+                const title = titleInput.value.trim();
+                const introduction = introInput ? introInput.value.trim() : '';
+                const faq = faqInput ? faqInput.value.trim() : '';
+                const coverUrl = coverInput ? coverInput.value.trim() : '';
+                const tagIds = tagsInput ? tagsInput.value.trim().split(',').filter(x=>x).map(x=>parseInt(x)) : [];
+                
+                // 隐藏之前的消息
+                msgBox.style.display = 'none';
+                
+                // 验证必填项
+                if (!title) {
+                    msgBox.textContent = '标题为必填';
+                    msgBox.className = 'message error';
                     msgBox.style.display = 'block';
-                    // 刷新课程下拉框并选中新建项（兼容不同结构）
-                    await loadMainGroups();
-                    const audioGroupMain2 = document.getElementById('audio-group-main');
-                    if (audioGroupMain2) {
-                        if (data.data && (data.data.programId || data.data.id)) {
-                            audioGroupMain2.value = data.data.programId || data.data.id;
-                        } else if (data.id) {
-                            audioGroupMain2.value = data.id;
-                        }
+                    return;
+                }
+                
+                // 自动获取创建者ID
+                let creatorId = null;
+                try {
+                    // 常见存储字段，按优先级依次尝试
+                    creatorId = localStorage.getItem('userId') ||
+                        localStorage.getItem('id') ||
+                        localStorage.getItem('creatorId') ||
+                        (function(){
+                            try {
+                                const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+                                return userInfo && (userInfo.id || userInfo.userId || userInfo.creatorId);
+                            } catch(e) { 
+                                console.error('解析userInfo失败:', e);
+                                return null; 
+                            }
+                        })();
+                    
+                    console.log('获取到的creatorId:', creatorId);
+                    
+                    if (creatorId) {
+                        creatorId = parseInt(creatorId);
                     }
-                    setTimeout(() => {
-                        modalOverlay.classList.remove('active');
-                        msgBox.style.display = 'none';
-                    }, 1200);
-                } else {
-                    msgBox.textContent = '创建失败：' + (data && (data.message || JSON.stringify(data)) || '未知错误');
+                } catch(e) { 
+                    console.error('获取creatorId失败:', e);
+                    creatorId = null; 
+                }
+                
+                if (!creatorId || isNaN(creatorId)) {
+                    msgBox.textContent = '未检测到有效的创建者ID，请重新登录';
+                    msgBox.className = 'message error';
+                    msgBox.style.display = 'block';
+                    return;
+                }
+                
+                // 获取token
+                const token = localStorage.getItem('access_token') || localStorage.getItem('authToken') || '';
+                
+                // 准备请求数据
+                const requestData = {
+                    title: title,
+                    introduction: introduction,
+                    creatorId: creatorId
+                };
+                
+                // 添加可选字段
+                if (faq) requestData.faq = faq;
+                if (coverUrl) requestData.coverUrl = coverUrl;
+                if (tagIds.length > 0) requestData.tagIds = tagIds;
+                
+                console.log('创建课程请求数据:', requestData);
+                
+                try {
+                    // 发送创建课程请求
+                    const res = await fetch('http://localhost:8080/programs', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ' + token
+                        },
+                        body: JSON.stringify(requestData)
+                    });
+                    
+                    const data = await res.json();
+                    console.log('创建课程返回:', data);
+                    
+                    // 检查响应状态
+                    if (res.ok && data && data.code === 0) {
+                        // 创建成功
+                        msgBox.textContent = '创建成功！';
+                        msgBox.className = 'message success';
+                        msgBox.style.display = 'block';
+                        
+                        // 刷新课程下拉框并选中新建项
+                        await loadMainGroups();
+                        
+                        // 尝试选中新创建的课程
+                        if (data.data && (data.data.programId || data.data.id)) {
+                            const newProgramId = data.data.programId || data.data.id;
+                            const audioGroupMain2 = document.getElementById('audio-group-main');
+                            if (audioGroupMain2) {
+                                audioGroupMain2.value = newProgramId;
+                                console.log('自动选中新建课程:', newProgramId);
+                                
+                                // 触发change事件以加载子合集
+                                const event = new Event('change');
+                                audioGroupMain2.dispatchEvent(event);
+                            }
+                        }
+                        
+                        // 延迟关闭模态框
+                        setTimeout(() => {
+                            modalOverlay.classList.remove('active');
+                            msgBox.style.display = 'none';
+                            
+                            // 清空表单
+                            if (titleInput) titleInput.value = '';
+                            if (introInput) introInput.value = '';
+                            if (faqInput) faqInput.value = '';
+                            if (coverInput) coverInput.value = '';
+                            if (tagsInput) tagsInput.value = '';
+                        }, 1200);
+                    } else {
+                        // 创建失败
+                        const errorMsg = data && data.message ? data.message : '创建失败';
+                        msgBox.textContent = `创建失败：${errorMsg}`;
+                        msgBox.className = 'message error';
+                        msgBox.style.display = 'block';
+                    }
+                } catch (err) {
+                    console.error('创建课程请求失败:', err);
+                    msgBox.textContent = '网络或服务器错误：' + (err.message || err);
                     msgBox.className = 'message error';
                     msgBox.style.display = 'block';
                 }
-            } catch (err) {
-                msgBox.textContent = '网络或服务器错误：' + (err.message || err);
-                msgBox.className = 'message error';
-                msgBox.style.display = 'block';
-            }
-        };
+            };
+        }
+        
+        // 创建单元按钮事件（暂时禁用）
+        if (createSubGroupBtn) {
+            createSubGroupBtn.onclick = () => {
+                alert('创建单元功能暂未开放');
+            };
+        }
+        
+        // 添加刷新课程按钮的事件监听（如果页面有刷新按钮）
+        const refreshBtn = document.getElementById('refresh-courses-btn');
+        if (refreshBtn) {
+            refreshBtn.onclick = () => {
+                console.log('刷新课程列表');
+                loadMainGroups();
+            };
+        }
+        
+        console.log('合集选择器初始化完成');
     }
+
+    // 加载子合集（单元）函数
+    function loadSubGroups(mainGroupId) {
+        console.log('加载子合集，主课程ID:', mainGroupId);
+        
+        const audioGroupSub = document.getElementById('audio-group-sub');
+        const createSubGroupBtn = document.getElementById('create-sub-group-btn');
+        
+        if (!audioGroupSub) return;
+        
+        // 清空子合集选择框
+        audioGroupSub.innerHTML = '<option value="">请选择单元</option>';
+        
+        if (!mainGroupId) {
+            audioGroupSub.disabled = true;
+            if (createSubGroupBtn) createSubGroupBtn.disabled = true;
+            return;
+        }
+        
+        // 这里可以根据需要实现加载子合集的逻辑
+        // 例如：调用后端接口获取该课程下的单元
+        
+        // 暂时简单处理
+        audioGroupSub.disabled = true;
+        if (createSubGroupBtn) {
+            createSubGroupBtn.disabled = true;
+            createSubGroupBtn.textContent = "创建单元";
+        }
+        
+        console.log('子合集加载完成（暂未实现）');
+    }
+    
+    // 页面加载完成后初始化
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM加载完成，开始初始化页面...');
+        
+        // 初始化页面
+        initPage();
+        
+        // 延迟初始化合集选择器
+        setTimeout(() => {
+            try {
+                initGroupSelector();
+            } catch(e) {
+                console.error('initGroupSelector 错误:', e);
+            }
+        }, 100);
+    });
+    
+    console.log('>>> initGroupSelector 函数已定义');
 
     // 格式化时间
     function formatTime(seconds) {
@@ -967,22 +1328,55 @@
     uploadForm.addEventListener('submit', (e) => {
         e.preventDefault();
         
+        // 新增：检查是否选择了课程
+        const programId = audioGroupMain.value;
+        if (!programId) {
+            msgBox.className = 'message error';
+            msgBox.textContent = '请选择课程！';
+            msgBox.style.display = 'block';
+            
+            // 滚动到课程选择区域
+            audioGroupMain.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            audioGroupMain.focus();
+            
+            setTimeout(() => {
+                msgBox.style.display = 'none';
+            }, 3000);
+            return;
+        }
+
+        // 3. 检查是否输入了标题
+        if (!audioTitle.value.trim()) {
+            msgBox.className = 'message error';
+            msgBox.textContent = '请输入音频标题！';
+            msgBox.style.display = 'block';
+            
+            audioTitle.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            audioTitle.focus();
+            
+            setTimeout(() => {
+                msgBox.style.display = 'none';
+            }, 3000);
+            return;
+        }
+        
+        // 4. 检查是否选择了文件（非草稿模式）
+        const file = fileInput.files[0];
+        if (!isDraftMode && !file) {
+            msgBox.className = 'message error';
+            msgBox.textContent = '请选择音频文件！';
+            msgBox.style.display = 'block';
+            
+            setTimeout(() => {
+                msgBox.style.display = 'none';
+            }, 3000);
+            return;
+        }
+
         if (isDraftMode) {
             // 如果是草稿模式，只保存草稿
             saveDraft();
         } else {
-            // 检查是否选择了分类
-            if (!audioCategory.value) {
-                msgBox.className = 'message warning';
-                msgBox.textContent = '请选择分类！';
-                msgBox.style.display = 'block';
-                
-                setTimeout(() => {
-                    msgBox.style.display = 'none';
-                }, 3000);
-                return;
-            }
-            
             // 正常上传流程
             // ====== 真正上传音频文件到后端 ======
             const file = fileInput.files[0];
@@ -992,13 +1386,13 @@
                 msgBox.style.display = 'block';
                 return;
             }
+            const lyricInput = document.getElementById('audio-lyric');
+            const lyricFile = lyricInput && lyricInput.files && lyricInput.files[0];
+            const title = encodeURIComponent(audioTitle.value);
+            const programId = audioGroupMain.value;
             const formData = new FormData();
-            formData.append('audio', file);
-            formData.append('title', audioTitle.value);
-            formData.append('description', audioDescription.value);
-            formData.append('category', audioCategory.value);
-            formData.append('mainGroup', audioGroupMain.value);
-            formData.append('subGroup', audioGroupSub.value);
+            formData.append('file', file);
+            if (lyricFile) formData.append('lyric', lyricFile);
 
             msgBox.className = 'message info';
             msgBox.textContent = '开始上传...';
@@ -1007,8 +1401,9 @@
             progressFill.style.width = '0%';
             progressText.textContent = '0%';
 
+            const url = `http://localhost:8080/audios/upload/course?title=${title}&programId=${programId}`;
             const xhr = new XMLHttpRequest();
-            xhr.open('POST', '/api/upload/audio', true);
+            xhr.open('POST', url, true);
             const token = localStorage.getItem('access_token') || localStorage.getItem('authToken');
             if (token) xhr.setRequestHeader('Authorization', 'Bearer ' + token);
             xhr.upload.onprogress = function(e) {
@@ -1018,19 +1413,39 @@
                     progressText.textContent = percent + '%';
                 }
             };
+
+            // 修改上传成功的回调函数
             xhr.onload = function() {
                 if (xhr.status === 200) {
                     try {
                         const res = JSON.parse(xhr.responseText);
                         if (res.code === 0) {
+                            // 显示绿色成功消息
                             msgBox.className = 'message success';
-                            msgBox.textContent = '上传成功！';
+                            msgBox.textContent = '上传成功！即将跳转到创作中心...';
                             msgBox.style.display = 'block';
-                            // 跳转到我的作品页面
+                            
+                            // 3秒后跳转
                             setTimeout(() => {
-                                window.location.href = 'my-works.html';
-                            }, 2000);
+                                // 简单直接的方法：检查是否在iframe中
+                                if (window.parent !== window) {
+                                    // 直接设置父窗口的iframe src
+                                    try {
+                                        window.parent.document.getElementById('page-frame').src = 'my-creator_center.html';
+                                    } catch (e) {
+                                        // 如果跨域或无法访问，尝试postMessage
+                                        window.parent.postMessage({
+                                            type: 'CHANGE_PAGE',
+                                            page: 'my-creator_center.html'
+                                        }, '*');
+                                    }
+                                } else {
+                                    // 如果直接访问，直接跳转
+                                    window.location.href = 'my-creator_center.html';
+                                }
+                            }, 3000);
                         } else {
+                            // 上传失败的处理
                             msgBox.className = 'message error';
                             msgBox.textContent = res.message || '上传失败';
                             msgBox.style.display = 'block';
@@ -1301,60 +1716,6 @@ loadTrack(currentIndex);
 </script>
 
 <script src="../js/upload-audio.js"></script>
-
-
-<!-- 登录状态检查脚本 -->
-<script>
-    // 检查用户是否已登录
-    function checkLoginStatus() {
-        const authToken = localStorage.getItem('authToken');
-        const authSection = document.getElementById('auth-section');
-        
-        if (authToken) {
-            // 用户已登录，显示用户菜单
-            authSection.innerHTML = `
-                <div class="user-menu">
-                    <button class="submit-btn" onclick="showUserMenu()">个人中心</button>
-                    <div class="dropdown-menu" id="user-dropdown" style="display: none;">
-                        <a href="my-profile.html" class="dropdown-item">我的资料</a>
-                        <a href="#" class="dropdown-item" onclick="logout()">退出登录</a>
-                    </div>
-                </div>
-            `;
-            
-            // 更新用户信息区
-            const usernameElement = document.querySelector('.username');
-            if (usernameElement) {
-                usernameElement.textContent = '已登录用户';
-            }
-        }
-    }
-    
-    // 显示用户菜单
-    function showUserMenu() {
-        const dropdown = document.getElementById('user-dropdown');
-        dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
-    }
-    
-    // 登出功能
-    function logout() {
-        localStorage.removeItem('authToken');
-        location.reload();
-    }
-    
-    // 页面加载时检查登录状态
-    window.addEventListener('DOMContentLoaded', checkLoginStatus);
-    
-    // 点击其他区域关闭下拉菜单
-    document.addEventListener('click', function(event) {
-        const dropdown = document.getElementById('user-dropdown');
-        const userMenu = document.querySelector('.user-menu');
-        
-        if (dropdown && userMenu && !userMenu.contains(event.target)) {
-            dropdown.style.display = 'none';
-        }
-    });
-</script>
 
 <style>
     .user-menu {

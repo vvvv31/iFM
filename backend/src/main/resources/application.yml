@@ -49,9 +49,10 @@ spring:
     name: ifm_service
 
   datasource:
-    url: jdbc:mysql://localhost:3306/ifm_service_v3_db?useSSL=false&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://localhost:3306/ifm_service?useSSL=false&serverTimezone=Asia/Shanghai
     username: root
-    password: "00000712"
+#    password: "00000712"
+    password: "xiesuyang888"
 
   jpa:
     hibernate:

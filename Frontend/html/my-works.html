@@ -1877,28 +1877,40 @@
             const usernameElement = document.querySelector('.user-name');
             const menuAvatar = document.querySelector('.user-menu-avatar');
 
-            if (profileAvatar) {
+            const updateAvatar = (avatarEl) => {
+                if (!avatarEl) return;
+                
                 if (userProfile.avatarType === 'custom' && userProfile.avatarUrl) {
-                    profileAvatar.innerHTML = `<img src="${userProfile.avatarUrl}" alt="头像" class="avatar-img">`;
-                } else if (userProfile.avatarType === 'emoji') {
-                    profileAvatar.innerHTML = `<span class="avatar-emoji">${userProfile.avatarEmoji}</span>`;
+                    avatarEl.style.background = `url('${userProfile.avatarUrl}') center/cover no-repeat`;
+                    avatarEl.textContent = '';
+                } else if (userProfile.avatarType === 'preset' || userProfile.avatarEmoji) {
+                    const color = userProfile.avatarColor || '#FF8C00';
+                    avatarEl.style.background = `linear-gradient(135deg, ${color}, ${lightenColor(color, 30)})`;
+                    avatarEl.textContent = userProfile.avatarEmoji || '⭐';
+                    avatarEl.style.display = 'flex';
+                    avatarEl.style.alignItems = 'center';
+                    avatarEl.style.justifyContent = 'center';
+                    avatarEl.style.fontSize = '28px';
+                } else if (userProfile.avatarType === 'color') {
+                    const color = userProfile.avatarColor || '#FF8C00';
+                    avatarEl.style.background = color;
+                    avatarEl.textContent = '';
                 } else {
-                    profileAvatar.innerHTML = `<div class="avatar-color" style="background-color: ${userProfile.avatarColor}"></div>`;
+                    const color = userProfile.avatarColor || '#FF8C00';
+                    avatarEl.style.background = `linear-gradient(135deg, ${color}, ${lightenColor(color, 30)})`;
+                    avatarEl.textContent = userProfile.avatarEmoji || '😊';
+                    avatarEl.style.display = 'flex';
+                    avatarEl.style.alignItems = 'center';
+                    avatarEl.style.justifyContent = 'center';
+                    avatarEl.style.fontSize = '28px';
                 }
-            }
+            };
+
+            updateAvatar(profileAvatar);
+            updateAvatar(menuAvatar);
 
             if (usernameElement) {
                 usernameElement.textContent = userProfile.username || '已登录用户';
-            }
-
-            if (menuAvatar) {
-                if (userProfile.avatarType === 'custom' && userProfile.avatarUrl) {
-                    menuAvatar.innerHTML = `<img src="${userProfile.avatarUrl}" alt="头像" class="avatar-img">`;
-                } else if (userProfile.avatarType === 'emoji') {
-                    menuAvatar.innerHTML = `<span class="avatar-emoji">${userProfile.avatarEmoji}</span>`;
-                } else {
-                    menuAvatar.innerHTML = `<div class="avatar-color" style="background-color: ${userProfile.avatarColor}"></div>`;
-                }
             }
         }
 

@@ -318,37 +318,55 @@ document.addEventListener('DOMContentLoaded', function() {
     // -------------------------- 按钮与收藏功能 --------------------------
     function updateCollectButton(collected) {
         if (!collectBtn) return;
+        console.log('更新收藏按钮状态:', collected);
         isCollected = !!collected;
-        // 设置按钮显示与 data 属性，供外部判断当前状态
+        
         if (isCollected) {
             collectBtn.textContent = '已收藏';
             collectBtn.classList.remove('btn-secondary');
             collectBtn.classList.add('btn-primary');
             collectBtn.setAttribute('data-collected', 'true');
+            console.log('按钮更新为：已收藏');
         } else {
             collectBtn.textContent = '加入收藏';
             collectBtn.classList.remove('btn-primary');
             collectBtn.classList.add('btn-secondary');
             collectBtn.setAttribute('data-collected', 'false');
+            console.log('按钮更新为：加入收藏');
         }
     }
 
     function checkCollectionStatus(programId) {
-        if (!programId) return Promise.resolve(false);
+        if (!programId) {
+            console.warn('checkCollectionStatus: no programId');
+            return Promise.resolve(false);
+        }
+        
         // 如果未登录，直接显示未收藏状态
-        const authToken = localStorage.getItem('authToken') || localStorage.getItem('userId');
+        const authToken = localStorage.getItem('authToken');
         if (!authToken) {
+            console.log('checkCollectionStatus: no authToken, setting uncollected');
             updateCollectButton(false);
             return Promise.resolve(false);
         }
 
         const url = `${API_BASE}/api/collection/check?targetId=${programId}&targetType=program`;
         console.log('checkCollectionStatus ->', url);
-        return fetch(url, { method: 'GET', credentials: 'include' })
-            .then(res => res.json())
+        const headers = { 'Content-Type': 'application/json' };
+        const authTokenVal = localStorage.getItem('authToken');
+        if (authTokenVal) headers['Authorization'] = 'Bearer ' + authTokenVal;
+        
+        return fetch(url, { method: 'GET', credentials: 'include', headers })
+            .then(res => {
+                if (!res.ok) {
+                    console.warn('checkCollectionStatus HTTP error:', res.status);
+                    return { data: false };
+                }
+                return res.json();
+            })
             .then(json => {
                 console.log('checkCollectionStatus response', json);
-                const collected = json && typeof json.data !== 'undefined' ? json.data : false;
+                const collected = json && json.success !== false && json.data === true;
                 updateCollectButton(collected);
                 return collected;
             })
@@ -363,16 +381,40 @@ document.addEventListener('DOMContentLoaded', function() {
         const url = `${API_BASE}/api/collection/add?targetId=${programId}&targetType=program`;
         console.log('collectProgram ->', url);
         if (!programId) return Promise.reject(new Error('no programId'));
-        return fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include' })
-            .then(res => res.json())
+        
+        const headers = { 'Content-Type': 'application/json' };
+        const authTokenVal = localStorage.getItem('authToken');
+        if (authTokenVal) headers['Authorization'] = 'Bearer ' + authTokenVal;
+        
+        return fetch(url, { 
+            method: 'POST', 
+            headers, 
+            credentials: 'include',
+            body: JSON.stringify({})
+        })
+            .then(res => {
+                if (!res.ok) {
+                    return res.text().then(text => {
+                        try {
+                            return JSON.parse(text);
+                        } catch {
+                            throw new Error(`HTTP ${res.status}: ${text}`);
+                        }
+                    });
+                }
+                return res.json();
+            })
             .then(json => {
                 console.log('collectProgram response', json);
-                if (json && json.code === 0) {
-                    // 操作成功后直接更新按钮状态，无需刷新页面
+                if (json && json.success !== false) {
                     updateCollectButton(true);
                     return true;
                 }
-                throw new Error(json.message || '收藏失败');
+                throw new Error(json?.message || '收藏失败');
+            })
+            .catch(err => {
+                console.error('collectProgram error:', err);
+                throw err;
             });
     }
 
@@ -380,16 +422,40 @@ document.addEventListener('DOMContentLoaded', function() {
         const url = `${API_BASE}/api/collection/remove?targetId=${programId}&targetType=program`;
         console.log('cancelCollectProgram ->', url);
         if (!programId) return Promise.reject(new Error('no programId'));
-        return fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include' })
-            .then(res => res.json())
+        
+        const headers = { 'Content-Type': 'application/json' };
+        const authTokenVal = localStorage.getItem('authToken');
+        if (authTokenVal) headers['Authorization'] = 'Bearer ' + authTokenVal;
+        
+        return fetch(url, { 
+            method: 'POST', 
+            headers, 
+            credentials: 'include',
+            body: JSON.stringify({})
+        })
+            .then(res => {
+                if (!res.ok) {
+                    return res.text().then(text => {
+                        try {
+                            return JSON.parse(text);
+                        } catch {
+                            throw new Error(`HTTP ${res.status}: ${text}`);
+                        }
+                    });
+                }
+                return res.json();
+            })
             .then(json => {
                 console.log('cancelCollectProgram response', json);
-                if (json && json.code === 0) {
-                    // 操作成功后直接更新按钮状态，无需刷新页面
+                if (json && json.success !== false) {
                     updateCollectButton(false);
                     return true;
                 }
-                throw new Error(json.message || '取消收藏失败');
+                throw new Error(json?.message || '取消收藏失败');
+            })
+            .catch(err => {
+                console.error('cancelCollectProgram error:', err);
+                throw err;
             });
     }
 
@@ -406,6 +472,42 @@ document.addEventListener('DOMContentLoaded', function() {
             document.body.removeChild(textArea);
             return false;
         }
+    }
+
+    // 显示操作提示（顶部浮动 toast）
+    function showToast(message) {
+        const toast = document.createElement('div');
+        toast.className = 'collection-toast';
+        toast.textContent = message;
+        toast.style.cssText = `
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #ff8c00;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            z-index: 10000;
+            opacity: 0;
+            animation: fadeInOut 3s ease forwards;
+        `;
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeInOut {
+                0% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+                20% { opacity: 1; transform: translateX(-50%) translateY(0); }
+                80% { opacity: 1; transform: translateX(-50%) translateY(0); }
+                100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+            }
+        `;
+        document.head.appendChild(style);
+        document.body.appendChild(toast);
+        setTimeout(() => {
+            if (toast.parentNode) toast.parentNode.removeChild(toast);
+            if (style.parentNode) style.parentNode.removeChild(style);
+        }, 3000);
     }
 
     function bindActionButtons() {
@@ -428,24 +530,61 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (collectBtn) {
             collectBtn.onclick = function() {
-                if (!currentProgramId) return;
-                const authToken = localStorage.getItem('authToken') || localStorage.getItem('userId');
-                if (!authToken) {
-                    alert('请先登录后再收藏');
-                    window.location.href = 'login.html';
+                if (!currentProgramId) {
+                    console.warn('collectBtn onclick: no currentProgramId');
                     return;
                 }
-                // 以按钮上的 data-collected 属性为准，避免异步状态不一致
-                const isCurrentlyCollected = collectBtn.getAttribute('data-collected') === 'true';
+                const authToken = localStorage.getItem('authToken');
+                if (!authToken) {
+                    showToast('请先登录后再收藏');
+                    window.location.href = 'login.html?redirect=' + encodeURIComponent(window.location.href);
+                    return;
+                }
+                
+                // 禁用按钮防止重复点击
                 collectBtn.disabled = true;
+                
+                // 以按钮上的 data-collected 属性为准
+                const isCurrentlyCollected = collectBtn.getAttribute('data-collected') === 'true';
+                
+                console.log('收藏按钮点击，当前状态:', isCurrentlyCollected, '节目ID:', currentProgramId);
+                
                 if (isCurrentlyCollected) {
+                    // 取消收藏
                     cancelCollectProgram(currentProgramId)
-                        .then(() => { alert('已取消收藏'); collectBtn.disabled = false; })
-                        .catch(err => { alert(err.message || '取消收藏失败'); collectBtn.disabled = false; console.warn(err); });
+                        .then(success => {
+                            if (success) {
+                                showToast('已取消收藏');
+                                console.log('取消收藏成功');
+                            }
+                        })
+                        .catch(err => {
+                            console.error('取消收藏失败:', err);
+                            alert('取消收藏失败: ' + (err.message || '请稍后重试'));
+                            // 重新检查状态
+                            checkCollectionStatus(currentProgramId);
+                        })
+                        .finally(() => {
+                            collectBtn.disabled = false;
+                        });
                 } else {
+                    // 添加收藏
                     collectProgram(currentProgramId)
-                        .then(() => { alert('收藏成功'); collectBtn.disabled = false; })
-                        .catch(err => { alert(err.message || '收藏失败'); collectBtn.disabled = false; console.warn(err); });
+                        .then(success => {
+                            if (success) {
+                                showToast('收藏成功');
+                                console.log('收藏成功');
+                            }
+                        })
+                        .catch(err => {
+                            console.error('收藏失败:', err);
+                            alert('收藏失败: ' + (err.message || '请稍后重试'));
+                            // 重新检查状态
+                            checkCollectionStatus(currentProgramId);
+                        })
+                        .finally(() => {
+                            collectBtn.disabled = false;
+                        });
                 }
             };
         }
@@ -482,6 +621,14 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
             return;
         }
+
+        // 先更新收藏按钮为初始状态（未收藏）
+        updateCollectButton(false);
+        
+        // 立即检查收藏状态（不用等数据加载完成）
+        checkCollectionStatus(programId).catch(err => {
+            console.warn('初始检查收藏状态失败:', err);
+        });
 
         // 尝试从后端获取节目详情
         const apiUrl = `${API_BASE}/programs/${programId}`;

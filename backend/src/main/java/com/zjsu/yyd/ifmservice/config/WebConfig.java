@@ -22,10 +22,10 @@ public class WebConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         // 配置静态资源访问路径，将/**映射到前端文件目录
         registry.addResourceHandler("/**")
-                .addResourceLocations("file:d:/02_Academic/iFM/Frontend/");
+                .addResourceLocations("file:d:/git/iFM/Frontend/");
         
         // 配置上传文件访问路径
         registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("file:d:/02_Academic/iFM/backend/uploads/");
+                .addResourceLocations("file:d:/git/iFM/backend/uploads/");
     }
 }

@@ -337,6 +337,14 @@ function updateUIForAuthState(isLoggedIn) {
 function handleAuthUpdate(payload) {
   if (!payload) return;
   try {
+    // 保存用户信息和 token（如果存在）以便其他页面读取
+    if (payload.userInfo) {
+      try { localStorage.setItem('userInfo', JSON.stringify(payload.userInfo)); } catch(e){}
+    }
+    if (payload.token) {
+      try { localStorage.setItem('authToken', payload.token); } catch(e){}
+    }
+
     // 1) 更新顶部为个人中心、移除test5
     showPersonalCenter(payload.userInfo || {});
     // 2) 立刻让 iframe 显示 index 页面

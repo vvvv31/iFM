@@ -8,7 +8,7 @@ import java.io.IOException;
 
 /**
  * 用户认证拦截器 - 支持游客模式
- * 
+ *
  * 功能：
  * 1. 解析 Authorization 头中的 token
  * 2. 支持游客模式（无 token 情况下允许访问部分接口）
@@ -19,25 +19,27 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String USER_ID_HEADER = "X-User-Id";
     private static final String IS_GUEST_HEADER = "X-Is-Guest";
-    
+
     // 游客模式允许访问的接口
     private static final String[] GUEST_ALLOWED_PATHS = {
         "/api/daily-sentence",
-        "/api/program", 
+        "/api/program",
         "/api/audio",
         "/api/tag",
         "/api/content",
         // 添加认证相关接口
         "/api/auth/register",
         "/api/auth/login",
-        "/api/auth/test-token"
+        "/api/auth/test-token",
+            "/api/chat/group",       // ✅ 群聊模块全部放行
+            "/api/chat/message"
     };
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws IOException {
         String path = request.getRequestURI();
         String method = request.getMethod();
-        
+
         // 允许 CORS 预检请求通过
         if ("OPTIONS".equalsIgnoreCase(method)) {
             response.setHeader("Access-Control-Allow-Origin", "*");
@@ -46,7 +48,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
             response.setStatus(HttpServletResponse.SC_OK);
             return true;
         }
-        
+
         // 检查是否为游客模式允许访问的接口
         if (isGuestAllowedPath(path)) {
             // 游客模式：设置标识但不要求登录
@@ -57,10 +59,10 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 
         // 获取 Authorization 头
         String authHeader = request.getHeader(AUTHORIZATION_HEADER);
-        
+
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
-            
+
             // 验证 token（当前使用简单验证，后续可扩展 JWT）
             if (isValidToken(token)) {
                 Long userId = extractUserIdFromToken(token);
@@ -74,7 +76,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
                 return false;
             }
         }
-        
+
         // 无 token 且不是游客允许的接口，返回 401
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.getWriter().write("{\"code\":401,\"message\":\"请先登录\"}");
@@ -102,7 +104,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         if (token == null || token.trim().isEmpty()) {
             return false;
         }
-        
+
         // 当前的 mock token 格式：mock_token_时间戳
         return token.startsWith("mock_token_");
     }

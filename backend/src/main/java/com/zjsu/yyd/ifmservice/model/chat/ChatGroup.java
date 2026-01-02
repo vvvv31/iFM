@@ -35,6 +35,11 @@ public class ChatGroup {
     @Schema(description = "群组邀请码", example = "ABC123")
     private String inviteCode;
 
+    // 新增：成员数量字段
+    @Column(nullable = false)
+    @Schema(description = "群组成员数", example = "1")
+    private Integer memberCount = 1;
+
     @CreationTimestamp
     @Schema(description = "群组创建时间")
     private LocalDateTime createdAt;

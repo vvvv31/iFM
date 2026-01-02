@@ -10,22 +10,30 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        // 配置CORS，允许所有来源访问API
         registry.addMapping("/**")
-                .allowedOriginPatterns("*")
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                // ❌ 不要使用 allowedOrigins("*")
+                // ✅ 使用 allowedOriginPatterns 支持通配符
+                .allowedOriginPatterns(
+                        "http://localhost:*",
+                        "http://127.0.0.1:*",
+                        "http://192.168.1.*",
+                        "file://*"
+                )
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD")
                 .allowedHeaders("*")
-                .allowCredentials(true);
+                .exposedHeaders("*")
+                .allowCredentials(true)  // 允许携带凭证
+                .maxAge(3600);
     }
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         // 配置静态资源访问路径，将/**映射到前端文件目录
         registry.addResourceHandler("/**")
-                .addResourceLocations("file:d:/git/iFM/Frontend/");
+                .addResourceLocations("file:d:/SE/github/iFM-backend/iFM/Frontend/");
         
         // 配置上传文件访问路径
         registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("file:d:/git/iFM/backend/uploads/");
+                .addResourceLocations("file:d:/SE/github/iFM-backend/iFM/backend/uploads/");
     }
 }

@@ -1,2013 +1,3668 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>频道 - 星之声</title>
-    <link rel="stylesheet" href="../css/style.css">
-    <link rel="stylesheet" href="../css/channel.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="../js/search.js"></script>
-    <script src="../js/script.js" defer></script>
-    <style>
-        /* 新增样式：确保内容不被底部播放栏遮挡 */
-        .main.channel-main {
-            padding-bottom: 90px;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>频道 - 星之声</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/channel.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="../js/search.js"></script>
+  <script src="../js/script.js" defer></script>
+  <script src="../js/group-api.js"></script>
+  <style>
+    /* 新增样式：确保内容不被底部播放栏遮挡 */
+    .main.channel-main {
+      padding-bottom: 90px;
+    }
 
-        /* 为固定播放栏预留空间 */
-        body { padding-bottom: 96px; }
+    /* 为固定播放栏预留空间 */
+    body {
+      padding-bottom: 96px;
+    }
 
-        /* PlayBar（来自 PlayBar.html）样式：仅替换播放栏相关样式，其余保持不变 */
-        .pv-player-bar {
-          position: fixed; left: 0; right: 0; bottom: 0;
-          width: 100%; height: 96px; background: #ffffff;
-          border-top: 1px solid #e0e0e0; box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
-          z-index: 29999; display: flex; align-items: center; user-select: none; pointer-events: auto;
-        }
-        .pv-inner {
-          width: 100%; max-width: 1200px; margin: 0 auto;
-          display: grid; grid-template-columns: auto 1fr auto; align-items: center;
-          column-gap: 16px; padding: 0 24px; height: 100%;
-        }
-        .pv-left { display: inline-flex; align-items: center; gap: 12px; min-width: 240px; }
-        .pv-cover { width: 52px; height: 52px; border-radius: 8px; background: #eee no-repeat center/cover; box-shadow: 0 2px 6px rgba(0,0,0,0.1); flex-shrink: 0; }
-        .pv-meta { display: flex; flex-direction: column; min-width: 0; }
-        .pv-title { font-size: 16px; font-weight: 700; color: #222; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .pv-artist { font-size: 12px; color: #666; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .pv-center { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-width: 0; }
-        .pv-controls { display: inline-flex; align-items: center; gap: 18px; }
-        .ctrl-btn, .mode-btn, .rate-btn { background: transparent; border: none; cursor: pointer; color: #444; font-size: 18px; padding: 6px; display: inline-flex; align-items: center; justify-content: center; transition: color 0.2s; }
-        .ctrl-btn:hover, .mode-btn:hover, .rate-btn:hover { color: #ff8c00; }
-        .play-btn { width: 44px; height: 44px; border-radius: 50%; background: #ff8c00; color: #fff; border: none; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 10px rgba(255,140,0,0.30); transition: transform 0.1s, background 0.2s; }
-        .play-btn:hover { background: #e67e00; transform: scale(1.05); }
-        .icon { width: 18px; height: 18px; fill: currentColor; }
-        .pv-progress-row { display: flex; align-items: center; gap: 12px; width: 100%; }
-        .time.small { font-size: 12px; color: #888; width: 48px; text-align: center; font-variant-numeric: tabular-nums; }
-        .pv-progress { position: relative; flex: 1; height: 6px; background: #eee; border-radius: 3px; cursor: pointer; touch-action: none; }
-        .pv-progress::before { content: ''; position: absolute; top: -10px; bottom: -10px; left: 0; right: 0; z-index: 1; }
-        .pv-progress-fill { position: absolute; left: 0; top: 0; bottom: 0; background: #ff8c00; border-radius: 3px; width: 0%; pointer-events: none; }
-        .pv-knob { position: absolute; top: 50%; right: -6px; transform: translateY(-50%); width: 12px; height: 12px; background: #fff; border: 2px solid #ff8c00; border-radius: 50%; box-shadow: 0 1px 4px rgba(0,0,0,0.2); opacity: 0; transition: opacity 0.2s; pointer-events: none; }
-        .pv-progress:hover .pv-knob, .pv-progress.dragging .pv-knob { opacity: 1; }
-        .pv-right { display: inline-flex; align-items: center; justify-content: flex-end; gap: 12px; min-width: 240px; }
-        .pv-volume { width: 140px; height: 20px; display: flex; align-items: center; cursor: pointer; position: relative; }
-        .pv-volume-bar { width: 100%; height: 4px; background: #eee; border-radius: 2px; position: relative; overflow: visible; pointer-events: none; }
-        .pv-volume-fill { height: 100%; background: #888; width: 50%; border-radius: 2px; position: relative; }
-        .pv-volume-fill::after { content: ''; position: absolute; right: -5px; top: 50%; transform: translateY(-50%); width: 10px; height: 10px; background: #fff; border: 1px solid #888; border-radius: 50%; opacity: 0; transition: opacity 0.2s; }
-        .pv-volume:hover .pv-volume-fill::after { opacity: 1; }
+    /* PlayBar（来自 PlayBar.html）样式：仅替换播放栏相关样式，其余保持不变 */
+    .pv-player-bar {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      height: 96px;
+      background: #ffffff;
+      border-top: 1px solid #e0e0e0;
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+      z-index: 29999;
+      display: flex;
+      align-items: center;
+      user-select: none;
+      pointer-events: auto;
+    }
 
-        /* 弹层样式来自 PlayBar.html */
-        .popover {
-          position: absolute; bottom: 100%;
-          left: 50%; transform: translateX(-50%);
-          background: #fff; border: 1px solid #ddd; border-radius: 8px;
-          box-shadow: 0 10px 24px rgba(0,0,0,0.12);
-          padding: 8px; z-index: 30000; display: none;
-        }
-        .popover.show { display: flex; }
-        .mode-popover { gap: 10px; align-items: center; }
-        .mode-item {
-          width: 40px; height: 40px; border-radius: 8px; border: 1px solid #eee;
-          display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: #444;
-        }
-        .mode-item:hover { color: #ff8c00; border-color: #ffeed6; background: #fff9f0; }
-        .mode-item.active { color: #fff; background: #ff8c00; border-color: #ff8c00; }
-        .rate-popover { flex-direction: column; min-width: 140px; }
-        .rate-item { padding: 8px 12px; font-size: 14px; color: #333; cursor: pointer; border-radius: 6px; }
-        .rate-item:hover { background: #f7f7f7; }
-        .rate-item.active { color: #ff8c00; font-weight: 700; background: #fff4e6; }
+    .pv-inner {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      column-gap: 16px;
+      padding: 0 24px;
+      height: 100%;
+    }
 
-        @media (max-width: 900px) { 
-  .pv-left{min-width:0;} 
-  .pv-right{min-width:0;} 
-  .pv-inner{grid-template-columns:auto 1fr auto; column-gap:10px; padding:0 12px;} 
-  
-  /* 频道页面布局调整 */
-  .channel-container {
-    grid-template-columns: 260px 1fr;
-    gap: 15px;
-  }
-  
-  .hot-sidebar {
-    display: none;
-  }
-}
+    .pv-left {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 240px;
+    }
 
-@media (max-width: 768px) {
-  /* 频道页面移动端布局 */
-  .channel-container {
-    grid-template-columns: 1fr;
-    gap: 15px;
-  }
-  
-  .channel-sidebar {
-    order: 2;
-  }
-  
-  .main-content {
-    order: 1;
-  }
-  
-  /* 帖子卡片调整 */
-  .post-card {
-    padding: 12px;
-  }
-  
-  .post-body {
-    font-size: 14px;
-  }
-  
-  .post-images {
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-    gap: 6px;
-  }
-  
-  /* 评论区调整 */
-  .comments-section {
-    padding: 10px 0;
-  }
-  
-  .comment-item {
-    gap: 8px;
-  }
-}
+    .pv-cover {
+      width: 52px;
+      height: 52px;
+      border-radius: 8px;
+      background: #eee no-repeat center/cover;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      flex-shrink: 0;
+    }
 
-@media (max-width: 480px) {
-  /* 移动端进一步调整 */
-  .main.channel-main {
-    padding-bottom: 120px;
-  }
-  
-  /* 帖子卡片调整 */
-  .post-card {
-    padding: 10px;
-  }
-  
-  .post-header .avatar {
-    width: 36px;
-    height: 36px;
-    font-size: 14px;
-  }
-  
-  .author-name {
-    font-size: 13px;
-  }
-  
-  .post-time {
-    font-size: 11px;
-  }
-  
-  .post-body {
-    font-size: 13px;
-  }
-  
-  .post-images {
-    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-  }
-  
-  /* 评论输入框调整 */
-  .comment-composer {
-    padding: 8px;
-  }
-  
-  .comment-input {
-    padding: 6px 12px;
-    font-size: 12px;
-  }
-  
-  .comment-submit-btn {
-    padding: 6px 14px;
-    font-size: 12px;
-  }
-}
+    .pv-meta {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
 
-        /* 以下为页面其他样式，原样保留 */
-        .playlist-panel { background:#fff; border:1px solid #eee; border-radius:8px; box-shadow:0 8px 30px rgba(0,0,0,0.12); overflow:auto; padding:8px; position:absolute; bottom:110px; right:24px; display:none; }
-        .playlist-item { padding:8px 12px; cursor:pointer; }
-        .playlist-item.active { background:#fff3e0; color:#ff8c00; font-weight:600; }
+    .pv-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #222;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
-        /* Feed post styles (improved) */
-        .post-card { background: #fff; border: 1px solid #f0f0f0; padding: 14px; border-radius: 12px; margin-bottom: 14px; box-shadow: 0 4px 14px rgba(16,24,40,0.04); }
-        .post-header { display:flex; align-items:center; gap:12px; margin-bottom:10px; }
-        .avatar { width:40px; height:40px; border-radius:50%; background:#ffe9d6; display:inline-flex; align-items:center; justify-content:center; color:#c24a00; font-weight:700; font-size:14px; flex-shrink:0; }
-        .post-author { display:flex; flex-direction:column; }
-        .author-name { font-weight:700; color:#222; font-size:14px; }
-        .post-time { color:#999; font-size:12px; }
-        .post-body { font-size:15px; color:#222; margin-bottom:10px; white-space:pre-wrap; line-height:1.5; }
-        .post-images { display:grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap:8px; margin-bottom:8px; }
-        .post-images img { width:100%; height:100%; object-fit:cover; border-radius:8px; display:block; }
-        .post-actions { display:flex; gap:12px; align-items:center; }
-        .like-btn { background:transparent; border:1px solid #ffe6d0; padding:6px 10px; border-radius:20px; color:#ff6b35; cursor:pointer; transition:transform .12s ease; }
-        .like-btn:active { transform:scale(.96); }
-        /* Composer improvements */
-        .composer { background:#fff; border:1px solid #eee; padding:12px; border-radius:10px; margin-bottom:14px; }
-        .composer textarea { width:100%; border:1px solid #f0f0f0; padding:10px; border-radius:8px; resize:vertical; min-height:72px; }
-        .composer-actions { display:flex; gap:10px; margin-top:10px; align-items:center; }
-        .attach-btn { background:#fff; border:1px solid #ffcc80; color:#ff8c00; padding:8px 14px; border-radius:20px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; font-size:14px; transition:all .2s; }
-        .attach-btn:hover { background:#fff3e0; border-color:#ff8c00; }
-        .btn-orange { background:linear-gradient(135deg,#ff9800,#ff5722); color:#fff; border:none; padding:8px 16px; border-radius:20px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; font-size:14px; box-shadow:0 2px 8px rgba(255,152,0,.25); transition:transform .15s,box-shadow .15s; }
-        .btn-orange:hover { transform:translateY(-2px); box-shadow:0 4px 12px rgba(255,152,0,.35); }
-        .preview-area { display:grid; grid-template-columns:repeat(auto-fill,minmax(100px,1fr)); gap:10px; margin-top:10px; }
-        .preview-area>div { position:relative; border-radius:10px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,.08); }
-        .preview-area img { width:100%; height:100px; object-fit:cover; display:block; border-radius:10px; }
-        .preview-area button { position:absolute; top:4px; right:4px; width:24px; height:24px; background:rgba(0,0,0,.55); color:#fff; border:none; border-radius:50%; cursor:pointer; font-size:14px; display:flex; align-items:center; justify-content:center; transition:background .2s; }
-        .preview-area button:hover { background:rgba(0,0,0,.75); }
+    .pv-artist {
+      font-size: 12px;
+      color: #666;
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
-        /* 动态卡片样式 */
-        .posts-list { display:flex; flex-direction:column; gap:12px; }
-        .post-card { background:#fff; border:1px solid #f0f0f0; border-radius:12px; padding:16px; transition:box-shadow .2s; }
-        .post-card:hover { box-shadow:0 4px 16px rgba(0,0,0,.08); }
-        .post-header { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
-        .post-header .avatar { width:44px; height:44px; border-radius:50%; background:linear-gradient(135deg,#ff9800,#ff5722); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:18px; flex-shrink:0; }
-        .post-author .author-name { font-weight:600; font-size:15px; color:#333; }
-        .post-author .post-time { font-size:12px; color:#999; margin-top:2px; }
-        .post-body { font-size:15px; line-height:1.7; color:#333; margin-bottom:12px; word-wrap:break-word; }
-        .post-body .hashtag { color:#ff8c00; font-weight:500; cursor:pointer; }
-        .post-body .hashtag:hover { text-decoration:underline; }
-        .post-images { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:12px; border-radius:8px; overflow:hidden; }
-        .post-images img { width:100%; aspect-ratio:1; object-fit:cover; cursor:pointer; transition:transform .2s; }
-        .post-images img:hover { transform:scale(1.02); }
-        .post-actions { display:flex; gap:24px; padding-top:12px; border-top:1px solid #f5f5f5; }
-        .action-btn { background:none; border:none; color:#666; font-size:14px; cursor:pointer; display:flex; align-items:center; gap:6px; padding:6px 12px; border-radius:20px; transition:all .2s; }
-        .action-btn:hover { background:#fff3e0; color:#ff8c00; }
-        .action-btn.liked { color:#ff5722; }
-        .action-btn.liked i { color:#ff5722; }
-        .action-btn i { font-size:16px; }
+    .pv-center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-width: 0;
+    }
 
-        /* 评论区样式 */
-        .comments-section { margin-top:12px; padding-top:12px; border-top:1px solid #f0f0f0; }
-        .comments-list { display:flex; flex-direction:column; gap:16px; margin-bottom:12px; }
-        .comment-item { display:flex; gap:10px; }
-        .comment-avatar { width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,#ffb74d,#ff9800); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:13px; flex-shrink:0; }
-        .comment-content { flex:1; min-width:0; }
-        .comment-header { display:flex; align-items:center; gap:8px; margin-bottom:4px; }
-        .comment-author { font-weight:600; font-size:13px; color:#333; }
-        .comment-time { font-size:12px; color:#999; }
-        .comment-text { font-size:14px; color:#333; line-height:1.5; margin-bottom:6px; word-wrap:break-word; }
-        .comment-text .mention { color:#ff8c00; font-weight:500; cursor:pointer; }
-        .comment-text .mention:hover { text-decoration:underline; }
-        .comment-actions { display:flex; gap:12px; }
-        .comment-actions button { background:none; border:none; color:#999; font-size:12px; cursor:pointer; display:flex; align-items:center; gap:4px; padding:2px 6px; border-radius:4px; transition:all .2s; }
-        .comment-actions button:hover { color:#ff8c00; background:#fff3e0; }
-        .comment-like-btn.liked { color:#ff5722 !important; }
-        .comment-like-btn i { font-size:12px; }
-        /* 回复嵌套区域 - B站/微博风格 */
-        .replies-wrapper { margin-top:10px; margin-left:42px; padding:12px; background:#f8f8f8; border-radius:8px; }
-        .replies-list { display:flex; flex-direction:column; gap:10px; }
-        .reply-item { display:flex; gap:8px; }
-        .reply-item .comment-avatar { width:24px; height:24px; font-size:11px; }
-        .reply-item .comment-author { font-size:12px; }
-        .reply-item .comment-text { font-size:13px; margin-bottom:4px; }
-        .reply-item .comment-time { font-size:11px; }
-        .reply-item .comment-actions button { font-size:11px; }
-        .view-more-replies { color:#ff8c00; font-size:12px; cursor:pointer; margin-top:8px; background:none; border:none; padding:0; }
-        .view-more-replies:hover { text-decoration:underline; }
-        .replies-list { margin-top:10px; display:flex; flex-direction:column; gap:8px; }
-        .comment-composer { display:flex; gap:10px; align-items:center; background:#f9f9f9; padding:10px; border-radius:8px; }
-        .comment-input { flex:1; border:1px solid #e0e0e0; border-radius:20px; padding:8px 14px; font-size:13px; outline:none; transition:border-color .2s; }
-        .comment-input:focus { border-color:#ff9800; }
-        .comment-submit-btn { background:linear-gradient(135deg,#ff9800,#ff5722); color:#fff; border:none; padding:8px 16px; border-radius:20px; font-size:13px; cursor:pointer; transition:transform .15s; }
-        .comment-submit-btn:hover { transform:scale(1.02); }
+    .pv-controls {
+      display: inline-flex;
+      align-items: center;
+      gap: 18px;
+    }
 
-        /* 热门推荐侧边栏等页面样式保持原样 */
-        .channel-container { display:grid; grid-template-columns:280px 1fr 260px; gap:20px; }
-        .hot-sidebar { display:flex; flex-direction:column; gap:16px; }
-        .hot-section { background:linear-gradient(135deg,#fff 0%,#fffbf7 100%); border:1px solid #ffe0b2; border-radius:12px; padding:16px; box-shadow:0 2px 8px rgba(255,152,0,.08); transition:all .3s; }
-        .hot-section:hover { box-shadow:0 4px 16px rgba(255,152,0,.12); }
-        .hot-title { font-size:15px; font-weight:700; color:#ff6d00; margin:0 0 12px 0; display:flex; align-items:center; gap:8px; }
-        .hot-title i { color:#ff9800; animation:pulse 2s infinite; }
-        .hot-list { display:flex; flex-direction:column; gap:8px; }
-        .hot-item { display:flex; align-items:center; gap:10px; padding:10px 8px; border-radius:8px; cursor:pointer; transition:all .3s cubic-bezier(.4,0,.2,1); position:relative; }
-        .hot-item:hover { background:#fff8f0; transform:translateX(4px); box-shadow:inset 0 0 0 1px #ffe0b2; }
-        .hot-rank { width:32px; height:32px; background:linear-gradient(135deg,#ff9800,#ff5722); color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; flex-shrink:0; box-shadow:0 2px 8px rgba(255,152,0,.3); transition:all .3s; }
-        .hot-item:hover .hot-rank { transform:scale(1.1); }
-        .hot-rank.gold { background:linear-gradient(135deg,#ffd700,#ffb300); box-shadow:0 2px 12px rgba(255,215,0,.4); }
-        .hot-rank.silver { background:linear-gradient(135deg,#e8e8e8,#b0b0b0); box-shadow:0 2px 12px rgba(192,192,192,.3); color:#666; }
-        .hot-rank.bronze { background:linear-gradient(135deg,#cd7f32,#a0511e); box-shadow:0 2px 12px rgba(205,127,50,.4); }
-        .hot-info { flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; }
-        .hot-name { font-size:14px; font-weight:700; color:#333; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-        .hot-desc { font-size:11px; color:#bbb; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-        .hot-members { font-size:13px; color:#ff6d00; font-weight:700; white-space:nowrap; text-align:right; min-width:50px; }
+    .ctrl-btn,
+    .mode-btn,
+    .rate-btn {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: #444;
+      font-size: 18px;
+      padding: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s;
+    }
 
-        /* 左侧栏：已加入群组 */
-        .channel-sidebar { background:#fff; border:1px solid #ffe0b2; border-radius:12px; padding:16px; height:fit-content; }
-        .sidebar-title { font-size:15px; font-weight:700; color:#ff6d00; margin:0 0 12px 0; display:flex; align-items:center; gap:8px; }
-        .sidebar-title i { color:#ff9800; }
-        .joined-groups-list { display:flex; flex-direction:column; gap:6px; max-height:300px; overflow-y:auto; margin-bottom:12px; }
-        .joined-group-item { display:flex; align-items:center; gap:10px; padding:10px; background:#fff; border:1px solid #f0f0f0; border-radius:10px; cursor:pointer; transition:all .2s; }
-        .joined-group-item:hover { background:#fff8f0; border-color:#ff9800; }
-        .joined-group-item.active { background:#fff3e0; border-color:#ff9800; }
-        .jg-avatar { width:36px; height:36px; border-radius:8px; background:linear-gradient(135deg,#ff9800,#ff6d00); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:14px; flex-shrink:0; }
-        .jg-info { flex:1; min-width:0; }
-        .jg-name { font-size:14px; font-weight:600; color:#333; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-        .jg-members { font-size:12px; color:#999; }
-        .jg-unread { background:#ff5722; color:#fff; font-size:11px; padding:2px 6px; border-radius:10px; }
+    .ctrl-btn:hover,
+    .mode-btn:hover,
+    .rate-btn:hover {
+      color: #ff8c00;
+    }
 
-        /* 加入群组区块 */
-        .join-group-section { margin-top:16px; padding-top:16px; border-top:1px solid #f0f0f0; }
-        .join-title { font-size:14px; font-weight:600; color:#ff6d00; margin:0 0 10px 0; display:flex; align-items:center; gap:6px; }
-        .join-title i { color:#ff9800; font-size:13px; }
-        .invite-code-form { display:flex; gap:8px; }
-        .invite-code-input { flex:1; padding:10px 12px; border:1px solid #e0e0e0; border-radius:8px; font-size:14px; text-transform:uppercase; letter-spacing:1px; outline:none; transition:border-color .2s; }
-        .invite-code-input:focus { border-color:#ff9800; }
-        .invite-code-input::placeholder { text-transform:none; letter-spacing:normal; color:#999; }
-        .join-code-btn { padding:8px 12px; background:linear-gradient(135deg,#ff9800,#ff5722); color:#fff; border:none; border-radius:8px; font-size:12px; font-weight:600; cursor:pointer; transition:transform .15s; white-space:nowrap; }
-        .join-code-btn:hover { transform:scale(1.02); }
+    .play-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #ff8c00;
+      color: #fff;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(255, 140, 0, 0.30);
+      transition: transform 0.1s, background 0.2s;
+    }
 
-        /* 中间区域：Tab 切换按钮 */
-        .tab-chips { display:flex; gap:8px; margin-left:12px; }
-        .tab-chip { padding:8px 20px; border:1px solid #ffe0b2; border-radius:8px; background:#fff; font-size:14px; font-weight:600; cursor:pointer; transition:all .2s; color:#666; }
-        .tab-chip:hover { border-color:#ff9800; background:#fff8f0; }
-        .tab-chip.active { background:#ff9800; color:#fff; border-color:#ff9800; }
+    .play-btn:hover {
+      background: #e67e00;
+      transform: scale(1.05);
+    }
 
-        /* 活动面板样式 */
-        .activity-section { padding:10px 0; }
-        .topics-title { font-size:16px; font-weight:700; color:#333; margin:0 0 16px 0; display:flex; align-items:center; gap:8px; }
-        .topics-title i { color:#ff9800; animation:pulse 2s infinite; }
-        @keyframes pulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.1);} }
-        @keyframes float { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-4px);} }
-        @keyframes shimmer { 0%{background-position:-200% 0;} 100%{background-position:200% 0;} }
-        @keyframes progressFill { from{width:0;} }
-        .topics-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:20px; }
-        .topic-card { background:linear-gradient(135deg,#fff 0%,#fff8f0 100%); border:1px solid #ffe0b2; border-radius:12px; padding:14px; display:flex; align-items:center; gap:10px; cursor:pointer; transition:all .3s cubic-bezier(.4,0,.2,1); position:relative; overflow:hidden; }
-        .topic-card::before { content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent); transition:left .5s; }
-        .topic-card:hover::before { left:100%; }
-        .topic-card:hover { border-color:#ff9800; transform:translateY(-4px) scale(1.02); box-shadow:0 8px 24px rgba(255,152,0,.2); }
-        .topic-icon { font-size:32px; animation:float 3s ease-in-out infinite; }
-        .topic-card:nth-child(2) .topic-icon { animation-delay:.5s; }
-        .topic-card:nth-child(3) .topic-icon { animation-delay:1s; }
-        .topic-info { flex:1; }
-        .topic-name { font-size:13px; font-weight:700; color:#ff6d00; margin-bottom:4px; }
-        .topic-count { font-size:11px; color:#999; display:flex; align-items:center; gap:3px; }
-        .topic-count::before { content:'\f0c0'; font-family:'Font Awesome 6 Free'; font-weight:900; font-size:10px; color:#ffb74d; }
-        .ongoing-activities { margin-top:20px; }
-        .activity-list { display:flex; flex-direction:column; gap:12px; }
-        .activity-card { background:#fff; border:1px solid #f0f0f0; border-radius:12px; padding:16px; transition:all .3s; position:relative; overflow:hidden; }
-        .activity-card::after { content:''; position:absolute; top:0; right:0; width:60px; height:60px; background:linear-gradient(135deg,transparent 50%,rgba(255,152,0,.03) 50%); border-radius:0 12px 0 0; }
-        .activity-card:hover { border-color:#ffcc80; box-shadow:0 4px 12px rgba(0,0,0,.06); }
-        .activity-badge { display:inline-flex; align-items:center; gap:4px; padding:3px 8px; border-radius:20px; font-size:10px; font-weight:600; background:#e8f5e9; color:#4caf50; margin-bottom:8px; }
-        .activity-badge::before { content:'\f111'; font-family:'Font Awesome 6 Free'; font-weight:900; font-size:6px; animation:blink 1.5s infinite; }
-        @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:.3;} }
-        .activity-badge.hot { background:linear-gradient(135deg,#fff3e0,#ffe0b2); color:#e65100; }
-        .activity-badge.hot::before { color:#ff5722; }
-        .activity-badge.new { background:linear-gradient(135deg,#e3f2fd,#bbdefb); color:#1565c0; }
-        .activity-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px; }
-        .activity-title { font-size:15px; font-weight:700; color:#333; margin-bottom:4px; display:flex; align-items:center; gap:6px; }
-        .activity-title-icon { font-size:18px; }
-        .activity-desc { font-size:12px; color:#999; margin-bottom:10px; line-height:1.5; }
-        .activity-progress { margin-bottom:10px; }
-        .progress-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; font-size:11px; }
-        .progress-label { color:#999; }
-        .progress-value { color:#ff8c00; font-weight:600; font-size:11px; }
-        .progress-bar { height:6px; background:#f0f0f0; border-radius:3px; overflow:hidden; }
-        .progress-fill { height:100%; background:linear-gradient(90deg,#ffb74d,#ff9800,#ff5722); border-radius:3px; animation:progressFill 1s ease-out; transition:width .3s; }
-        .activity-meta { display:flex; flex-wrap:wrap; gap:12px; font-size:11px; color:#bbb; margin-bottom:10px; }
-        .activity-meta span { display:flex; align-items:center; gap:4px; }
-        .activity-meta i { color:#ffb74d; font-size:12px; }
-        .activity-stats { display:flex; gap:16px; margin-bottom:10px; }
-        .stat-item { text-align:center; flex:1; }
-        .stat-value { font-size:16px; font-weight:700; color:#ff8c00; }
-        .stat-label { font-size:10px; color:#bbb; margin-top:2px; }
-        .activity-footer { display:flex; justify-content:space-between; align-items:center; gap:8px; }
-        .activity-avatars { display:flex; flex-shrink:0; }
-        .activity-avatars .avatar { width:24px; height:24px; border-radius:50%; background:linear-gradient(135deg,#ffb74d,#ff9800); color:#fff; display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:600; border:1.5px solid #fff; margin-left:-6px; flex-shrink:0; }
-        .activity-avatars .avatar:first-child { margin-left:0; }
-        .activity-avatars .avatar.more { background:#f5f5f5; color:#999; font-size:9px; }
-        .activity-join-btn { padding:6px 16px; background:linear-gradient(135deg,#ff9800,#ff5722); color:#fff; border:none; border-radius:20px; font-size:12px; font-weight:600; cursor:pointer; transition:all .3s; display:flex; align-items:center; gap:4px; box-shadow:0 2px 8px rgba(255,152,0,.2); white-space:nowrap; flex-shrink:0; }
-        .activity-join-btn:hover { box-shadow:0 4px 12px rgba(255,152,0,.3); }
-        .activity-join-btn i { font-size:11px; }
-        .activity-join-btn.joined { background:linear-gradient(135deg,#66bb6a,#43a047); box-shadow:0 2px 8px rgba(76,175,80,.2); }
-        .activity-join-btn.joined:hover { box-shadow:0 4px 12px rgba(76,175,80,.3); }
-        .checkin-btn { padding:6px 16px; background:linear-gradient(135deg,#ff5722,#e64a19); color:#fff; border:none; border-radius:20px; font-size:12px; font-weight:600; cursor:pointer; transition:all .3s; display:flex; align-items:center; gap:4px; box-shadow:0 2px 8px rgba(255,87,34,.2); animation:pulse 2s infinite; white-space:nowrap; flex-shrink:0; }
-        .checkin-btn:hover { animation:none; transform:scale(1.03); }
+    .icon {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+    }
 
-        @media (max-width:1100px) { .channel-container { grid-template-columns:240px 1fr; } .hot-sidebar { display:none; } .topics-grid { grid-template-columns:repeat(2,1fr); } }
-        @media (max-width:768px) { .channel-container { grid-template-columns:1fr; } .channel-sidebar { display:none; } .topics-grid { grid-template-columns:1fr; } }
+    .pv-progress-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+    }
 
-        /* 创建群组弹窗 */
-        .modal-overlay { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,.5); display:none; justify-content:center; align-items:center; z-index:1000; }
-        .modal-overlay.show { display:flex; }
-        .modal-box { background:#fff; border-radius:16px; width:90%; max-width:480px; padding:24px; box-shadow:0 20px 60px rgba(0,0,0,.3); animation:modalIn .25s ease; }
-        @keyframes modalIn { from { opacity:0; transform:scale(.9) translateY(-20px); } to { opacity:1; transform:scale(1) translateY(0); } }
-        .modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
-        .modal-title { font-size:20px; font-weight:700; color:#333; }
-        .modal-close { background:none; border:none; font-size:24px; color:#999; cursor:pointer; padding:4px 8px; }
-        .modal-close:hover { color:#333; }
-        .modal-body { display:flex; flex-direction:column; gap:16px; }
-        .form-group { display:flex; flex-direction:column; gap:6px; }
-        .form-label { font-size:14px; font-weight:600; color:#333; }
-        .form-input { padding:12px 14px; border:1px solid #ddd; border-radius:8px; font-size:14px; transition:border-color .2s; }
-        .form-input:focus { outline:none; border-color:#ff9800; }
-        .form-textarea { resize:vertical; min-height:80px; }
-        .form-select { padding:12px 14px; border:1px solid #ddd; border-radius:8px; font-size:14px; background:#fff; cursor:pointer; }
-        .form-hint { font-size:12px; color:#999; }
-        .invite-code-display { display:flex; align-items:center; gap:8px; padding:10px 14px; background:#fff8f0; border:1px dashed #ff9800; border-radius:8px; }
-        .invite-code-display code { font-size:16px; font-weight:700; color:#ff6d00; letter-spacing:1px; }
-        .copy-code-btn { padding:4px 10px; background:#ff9800; color:#fff; border:none; border-radius:4px; font-size:12px; cursor:pointer; }
-        .copy-code-btn:hover { background:#f57c00; }
-        .modal-footer { margin-top:24px; display:flex; justify-content:flex-end; gap:12px; }
-        .btn-cancel { padding:10px 24px; background:#f5f5f5; color:#666; border:none; border-radius:8px; font-size:14px; cursor:pointer; }
-        .btn-cancel:hover { background:#e0e0e0; }
-        .btn-submit { padding:10px 24px; background:linear-gradient(135deg,#ff9800,#ff5722); color:#fff; border:none; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; }
-        .btn-submit:hover { box-shadow:0 4px 12px rgba(255,152,0,.4); }
-        
-        /* 删除群组按钮 */
-        .joined-group-item { position:relative; }
-        .jg-delete-btn { position:absolute; right:8px; top:50%; transform:translateY(-50%); width:24px; height:24px; background:#fff; border:1px solid #ffcdd2; border-radius:50%; color:#e57373; font-size:14px; cursor:pointer; display:none; align-items:center; justify-content:center; transition:all .2s; }
-        .jg-delete-btn:hover { background:#ffebee; border-color:#ef5350; color:#d32f2f; }
-        .joined-group-item:hover .jg-delete-btn { display:flex; }
-        
-        /* 确认删除弹窗 */
-        .confirm-modal { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,.5); display:none; justify-content:center; align-items:center; z-index:1001; }
-        .confirm-modal.show { display:flex; }
-        .confirm-box { background:#fff; border-radius:12px; padding:24px; width:90%; max-width:360px; text-align:center; animation:modalIn .2s ease; }
-        .confirm-icon { font-size:48px; color:#ff9800; margin-bottom:16px; }
-        .confirm-title { font-size:18px; font-weight:700; color:#333; margin-bottom:8px; }
-        .confirm-msg { font-size:14px; color:#666; margin-bottom:24px; line-height:1.5; }
-        .confirm-btns { display:flex; gap:12px; justify-content:center; }
-        .btn-confirm-cancel { padding:10px 28px; background:#f5f5f5; color:#666; border:none; border-radius:8px; font-size:14px; cursor:pointer; }
-        .btn-confirm-cancel:hover { background:#e0e0e0; }
-        .btn-confirm-delete { padding:10px 28px; background:#f44336; color:#fff; border:none; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; }
-        .btn-confirm-delete:hover { background:#d32f2f; }
-    </style>
+    .time.small {
+      font-size: 12px;
+      color: #888;
+      width: 48px;
+      text-align: center;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .pv-progress {
+      position: relative;
+      flex: 1;
+      height: 6px;
+      background: #eee;
+      border-radius: 3px;
+      cursor: pointer;
+      touch-action: none;
+    }
+
+    .pv-progress::before {
+      content: '';
+      position: absolute;
+      top: -10px;
+      bottom: -10px;
+      left: 0;
+      right: 0;
+      z-index: 1;
+    }
+
+    .pv-progress-fill {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      background: #ff8c00;
+      border-radius: 3px;
+      width: 0%;
+      pointer-events: none;
+    }
+
+    .pv-knob {
+      position: absolute;
+      top: 50%;
+      right: -6px;
+      transform: translateY(-50%);
+      width: 12px;
+      height: 12px;
+      background: #fff;
+      border: 2px solid #ff8c00;
+      border-radius: 50%;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+      opacity: 0;
+      transition: opacity 0.2s;
+      pointer-events: none;
+    }
+
+    .pv-progress:hover .pv-knob,
+    .pv-progress.dragging .pv-knob {
+      opacity: 1;
+    }
+
+    .pv-right {
+      display: inline-flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 12px;
+      min-width: 240px;
+    }
+
+    .pv-volume {
+      width: 140px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .pv-volume-bar {
+      width: 100%;
+      height: 4px;
+      background: #eee;
+      border-radius: 2px;
+      position: relative;
+      overflow: visible;
+      pointer-events: none;
+    }
+
+    .pv-volume-fill {
+      height: 100%;
+      background: #888;
+      width: 50%;
+      border-radius: 2px;
+      position: relative;
+    }
+
+    .pv-volume-fill::after {
+      content: '';
+      position: absolute;
+      right: -5px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 10px;
+      height: 10px;
+      background: #fff;
+      border: 1px solid #888;
+      border-radius: 50%;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .pv-volume:hover .pv-volume-fill::after {
+      opacity: 1;
+    }
+
+    /* 弹层样式来自 PlayBar.html */
+    .popover {
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+      padding: 8px;
+      z-index: 30000;
+      display: none;
+    }
+
+    .popover.show {
+      display: flex;
+    }
+
+    .mode-popover {
+      gap: 10px;
+      align-items: center;
+    }
+
+    .mode-item {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      border: 1px solid #eee;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #444;
+    }
+
+    .mode-item:hover {
+      color: #ff8c00;
+      border-color: #ffeed6;
+      background: #fff9f0;
+    }
+
+    .mode-item.active {
+      color: #fff;
+      background: #ff8c00;
+      border-color: #ff8c00;
+    }
+
+    .rate-popover {
+      flex-direction: column;
+      min-width: 140px;
+    }
+
+    .rate-item {
+      padding: 8px 12px;
+      font-size: 14px;
+      color: #333;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+
+    .rate-item:hover {
+      background: #f7f7f7;
+    }
+
+    .rate-item.active {
+      color: #ff8c00;
+      font-weight: 700;
+      background: #fff4e6;
+    }
+
+    @media (max-width: 900px) {
+      .pv-left {
+        min-width: 0;
+      }
+
+      .pv-right {
+        min-width: 0;
+      }
+
+      .pv-inner {
+        grid-template-columns: auto 1fr auto;
+        column-gap: 10px;
+        padding: 0 12px;
+      }
+
+      /* 频道页面布局调整 */
+      .channel-container {
+        grid-template-columns: 260px 1fr;
+        gap: 15px;
+      }
+
+      .hot-sidebar {
+        display: none;
+      }
+    }
+
+    @media (max-width: 768px) {
+
+      /* 频道页面移动端布局 */
+      .channel-container {
+        grid-template-columns: 1fr;
+        gap: 15px;
+      }
+
+      .channel-sidebar {
+        order: 2;
+      }
+
+      .main-content {
+        order: 1;
+      }
+
+      /* 帖子卡片调整 */
+      .post-card {
+        padding: 12px;
+      }
+
+      .post-body {
+        font-size: 14px;
+      }
+
+      .post-images {
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        gap: 6px;
+      }
+
+      /* 评论区调整 */
+      .comments-section {
+        padding: 10px 0;
+      }
+
+      .comment-item {
+        gap: 8px;
+      }
+    }
+
+    @media (max-width: 480px) {
+
+      /* 移动端进一步调整 */
+      .main.channel-main {
+        padding-bottom: 120px;
+      }
+
+      /* 帖子卡片调整 */
+      .post-card {
+        padding: 10px;
+      }
+
+      .post-header .avatar {
+        width: 36px;
+        height: 36px;
+        font-size: 14px;
+      }
+
+      .author-name {
+        font-size: 13px;
+      }
+
+      .post-time {
+        font-size: 11px;
+      }
+
+      .post-body {
+        font-size: 13px;
+      }
+
+      .post-images {
+        grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+      }
+
+      /* 评论输入框调整 */
+      .comment-composer {
+        padding: 8px;
+      }
+
+      .comment-input {
+        padding: 6px 12px;
+        font-size: 12px;
+      }
+
+      .comment-submit-btn {
+        padding: 6px 14px;
+        font-size: 12px;
+      }
+    }
+
+    /* 以下为页面其他样式，原样保留 */
+    .playlist-panel {
+      background: #fff;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+      overflow: auto;
+      padding: 8px;
+      position: absolute;
+      bottom: 110px;
+      right: 24px;
+      display: none;
+    }
+
+    .playlist-item {
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+
+    .playlist-item.active {
+      background: #fff3e0;
+      color: #ff8c00;
+      font-weight: 600;
+    }
+
+    /* Feed post styles (improved) */
+    .post-card {
+      background: #fff;
+      border: 1px solid #f0f0f0;
+      padding: 14px;
+      border-radius: 12px;
+      margin-bottom: 14px;
+      box-shadow: 0 4px 14px rgba(16, 24, 40, 0.04);
+    }
+
+    .post-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #ffe9d6;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #c24a00;
+      font-weight: 700;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .post-author {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .author-name {
+      font-weight: 700;
+      color: #222;
+      font-size: 14px;
+    }
+
+    .post-time {
+      color: #999;
+      font-size: 12px;
+    }
+
+    .post-body {
+      font-size: 15px;
+      color: #222;
+      margin-bottom: 10px;
+      white-space: pre-wrap;
+      line-height: 1.5;
+    }
+
+    .post-images {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .post-images img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 8px;
+      display: block;
+    }
+
+    .post-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .like-btn {
+      background: transparent;
+      border: 1px solid #ffe6d0;
+      padding: 6px 10px;
+      border-radius: 20px;
+      color: #ff6b35;
+      cursor: pointer;
+      transition: transform .12s ease;
+    }
+
+    .like-btn:active {
+      transform: scale(.96);
+    }
+
+    /* Composer improvements */
+    .composer {
+      background: #fff;
+      border: 1px solid #eee;
+      padding: 12px;
+      border-radius: 10px;
+      margin-bottom: 14px;
+    }
+
+    .composer textarea {
+      width: 100%;
+      border: 1px solid #f0f0f0;
+      padding: 10px;
+      border-radius: 8px;
+      resize: vertical;
+      min-height: 72px;
+    }
+
+    .composer-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+      align-items: center;
+    }
+
+    .attach-btn {
+      background: #fff;
+      border: 1px solid #ffcc80;
+      color: #ff8c00;
+      padding: 8px 14px;
+      border-radius: 20px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      transition: all .2s;
+    }
+
+    .attach-btn:hover {
+      background: #fff3e0;
+      border-color: #ff8c00;
+    }
+
+    .btn-orange {
+      background: linear-gradient(135deg, #ff9800, #ff5722);
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      box-shadow: 0 2px 8px rgba(255, 152, 0, .25);
+      transition: transform .15s, box-shadow .15s;
+    }
+
+    .btn-orange:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(255, 152, 0, .35);
+    }
+
+    .preview-area {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .preview-area>div {
+      position: relative;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
+    }
+
+    .preview-area img {
+      width: 100%;
+      height: 100px;
+      object-fit: cover;
+      display: block;
+      border-radius: 10px;
+    }
+
+    .preview-area button {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 24px;
+      height: 24px;
+      background: rgba(0, 0, 0, .55);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background .2s;
+    }
+
+    .preview-area button:hover {
+      background: rgba(0, 0, 0, .75);
+    }
+
+    /* 动态卡片样式 */
+    .posts-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .post-card {
+      background: #fff;
+      border: 1px solid #f0f0f0;
+      border-radius: 12px;
+      padding: 16px;
+      transition: box-shadow .2s;
+    }
+
+    .post-card:hover {
+      box-shadow: 0 4px 16px rgba(0, 0, 0, .08);
+    }
+
+    .post-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .post-header .avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ff9800, #ff5722);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .post-author .author-name {
+      font-weight: 600;
+      font-size: 15px;
+      color: #333;
+    }
+
+    .post-author .post-time {
+      font-size: 12px;
+      color: #999;
+      margin-top: 2px;
+    }
+
+    .post-body {
+      font-size: 15px;
+      line-height: 1.7;
+      color: #333;
+      margin-bottom: 12px;
+      word-wrap: break-word;
+    }
+
+    .post-body .hashtag {
+      color: #ff8c00;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .post-body .hashtag:hover {
+      text-decoration: underline;
+    }
+
+    .post-images {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 12px;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .post-images img {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+      cursor: pointer;
+      transition: transform .2s;
+    }
+
+    .post-images img:hover {
+      transform: scale(1.02);
+    }
+
+    .post-actions {
+      display: flex;
+      gap: 24px;
+      padding-top: 12px;
+      border-top: 1px solid #f5f5f5;
+    }
+
+    .action-btn {
+      background: none;
+      border: none;
+      color: #666;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 20px;
+      transition: all .2s;
+    }
+
+    .action-btn:hover {
+      background: #fff3e0;
+      color: #ff8c00;
+    }
+
+    .action-btn.liked {
+      color: #ff5722;
+    }
+
+    .action-btn.liked i {
+      color: #ff5722;
+    }
+
+    .action-btn i {
+      font-size: 16px;
+    }
+
+    /* 评论区样式 */
+    .comments-section {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid #f0f0f0;
+    }
+
+    .comments-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 12px;
+    }
+
+    .comment-item {
+      display: flex;
+      gap: 10px;
+    }
+
+    .comment-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ffb74d, #ff9800);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+
+    .comment-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .comment-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .comment-author {
+      font-weight: 600;
+      font-size: 13px;
+      color: #333;
+    }
+
+    .comment-time {
+      font-size: 12px;
+      color: #999;
+    }
+
+    .comment-text {
+      font-size: 14px;
+      color: #333;
+      line-height: 1.5;
+      margin-bottom: 6px;
+      word-wrap: break-word;
+    }
+
+    .comment-text .mention {
+      color: #ff8c00;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .comment-text .mention:hover {
+      text-decoration: underline;
+    }
+
+    .comment-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .comment-actions button {
+      background: none;
+      border: none;
+      color: #999;
+      font-size: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      transition: all .2s;
+    }
+
+    .comment-actions button:hover {
+      color: #ff8c00;
+      background: #fff3e0;
+    }
+
+    .comment-like-btn.liked {
+      color: #ff5722 !important;
+    }
+
+    .comment-like-btn i {
+      font-size: 12px;
+    }
+
+    /* 回复嵌套区域 - B站/微博风格 */
+    .replies-wrapper {
+      margin-top: 10px;
+      margin-left: 42px;
+      padding: 12px;
+      background: #f8f8f8;
+      border-radius: 8px;
+    }
+
+    .replies-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .reply-item {
+      display: flex;
+      gap: 8px;
+    }
+
+    .reply-item .comment-avatar {
+      width: 24px;
+      height: 24px;
+      font-size: 11px;
+    }
+
+    .reply-item .comment-author {
+      font-size: 12px;
+    }
+
+    .reply-item .comment-text {
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+
+    .reply-item .comment-time {
+      font-size: 11px;
+    }
+
+    .reply-item .comment-actions button {
+      font-size: 11px;
+    }
+
+    .view-more-replies {
+      color: #ff8c00;
+      font-size: 12px;
+      cursor: pointer;
+      margin-top: 8px;
+      background: none;
+      border: none;
+      padding: 0;
+    }
+
+    .view-more-replies:hover {
+      text-decoration: underline;
+    }
+
+    .replies-list {
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .comment-composer {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      background: #f9f9f9;
+      padding: 10px;
+      border-radius: 8px;
+    }
+
+    .comment-input {
+      flex: 1;
+      border: 1px solid #e0e0e0;
+      border-radius: 20px;
+      padding: 8px 14px;
+      font-size: 13px;
+      outline: none;
+      transition: border-color .2s;
+    }
+
+    .comment-input:focus {
+      border-color: #ff9800;
+    }
+
+    .comment-submit-btn {
+      background: linear-gradient(135deg, #ff9800, #ff5722);
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: transform .15s;
+    }
+
+    .comment-submit-btn:hover {
+      transform: scale(1.02);
+    }
+
+    /* 热门推荐侧边栏等页面样式保持原样 */
+    .channel-container {
+      display: grid;
+      grid-template-columns: 280px 1fr 260px;
+      gap: 20px;
+    }
+
+    .hot-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .hot-section {
+      background: linear-gradient(135deg, #fff 0%, #fffbf7 100%);
+      border: 1px solid #ffe0b2;
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 2px 8px rgba(255, 152, 0, .08);
+      transition: all .3s;
+    }
+
+    .hot-section:hover {
+      box-shadow: 0 4px 16px rgba(255, 152, 0, .12);
+    }
+
+    .hot-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #ff6d00;
+      margin: 0 0 12px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .hot-title i {
+      color: #ff9800;
+      animation: pulse 2s infinite;
+    }
+
+    .hot-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .hot-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 8px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all .3s cubic-bezier(.4, 0, .2, 1);
+      position: relative;
+    }
+
+    .hot-item:hover {
+      background: #fff8f0;
+      transform: translateX(4px);
+      box-shadow: inset 0 0 0 1px #ffe0b2;
+    }
+
+    .hot-rank {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, #ff9800, #ff5722);
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(255, 152, 0, .3);
+      transition: all .3s;
+    }
+
+    .hot-item:hover .hot-rank {
+      transform: scale(1.1);
+    }
+
+    .hot-rank.gold {
+      background: linear-gradient(135deg, #ffd700, #ffb300);
+      box-shadow: 0 2px 12px rgba(255, 215, 0, .4);
+    }
+
+    .hot-rank.silver {
+      background: linear-gradient(135deg, #e8e8e8, #b0b0b0);
+      box-shadow: 0 2px 12px rgba(192, 192, 192, .3);
+      color: #666;
+    }
+
+    .hot-rank.bronze {
+      background: linear-gradient(135deg, #cd7f32, #a0511e);
+      box-shadow: 0 2px 12px rgba(205, 127, 50, .4);
+    }
+
+    .hot-info {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .hot-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: #333;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .hot-desc {
+      font-size: 11px;
+      color: #bbb;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .hot-members {
+      font-size: 13px;
+      color: #ff6d00;
+      font-weight: 700;
+      white-space: nowrap;
+      text-align: right;
+      min-width: 50px;
+    }
+
+    /* 左侧栏：已加入群组 */
+    .channel-sidebar {
+      background: #fff;
+      border: 1px solid #ffe0b2;
+      border-radius: 12px;
+      padding: 16px;
+      height: fit-content;
+    }
+
+    .sidebar-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #ff6d00;
+      margin: 0 0 12px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sidebar-title i {
+      color: #ff9800;
+    }
+
+    .joined-groups-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      max-height: 300px;
+      overflow-y: auto;
+      margin-bottom: 12px;
+    }
+
+    .joined-group-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      background: #fff;
+      border: 1px solid #f0f0f0;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all .2s;
+    }
+
+    .joined-group-item:hover {
+      background: #fff8f0;
+      border-color: #ff9800;
+    }
+
+    .joined-group-item.active {
+      background: #fff3e0;
+      border-color: #ff9800;
+    }
+
+    .jg-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #ff9800, #ff6d00);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 700;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .jg-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .jg-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .jg-members {
+      font-size: 12px;
+      color: #999;
+    }
+
+    .jg-unread {
+      background: #ff5722;
+      color: #fff;
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 10px;
+    }
+
+    /* 加入群组区块 */
+    .join-group-section {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid #f0f0f0;
+    }
+
+    .join-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #ff6d00;
+      margin: 0 0 10px 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .join-title i {
+      color: #ff9800;
+      font-size: 13px;
+    }
+
+    .invite-code-form {
+      display: flex;
+      gap: 8px;
+    }
+
+    .invite-code-input {
+      flex: 1;
+      padding: 10px 12px;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      outline: none;
+      transition: border-color .2s;
+    }
+
+    .invite-code-input:focus {
+      border-color: #ff9800;
+    }
+
+    .invite-code-input::placeholder {
+      text-transform: none;
+      letter-spacing: normal;
+      color: #999;
+    }
+
+    .join-code-btn {
+      padding: 8px 12px;
+      background: linear-gradient(135deg, #ff9800, #ff5722);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform .15s;
+      white-space: nowrap;
+    }
+
+    .join-code-btn:hover {
+      transform: scale(1.02);
+    }
+
+    /* 中间区域：Tab 切换按钮 */
+    .tab-chips {
+      display: flex;
+      gap: 8px;
+      margin-left: 12px;
+    }
+
+    .tab-chip {
+      padding: 8px 20px;
+      border: 1px solid #ffe0b2;
+      border-radius: 8px;
+      background: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
+      color: #666;
+    }
+
+    .tab-chip:hover {
+      border-color: #ff9800;
+      background: #fff8f0;
+    }
+
+    .tab-chip.active {
+      background: #ff9800;
+      color: #fff;
+      border-color: #ff9800;
+    }
+
+    /* 活动面板样式 */
+    .activity-section {
+      padding: 10px 0;
+    }
+
+    .topics-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #333;
+      margin: 0 0 16px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .topics-title i {
+      color: #ff9800;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.1);
+      }
+    }
+
+    @keyframes float {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-4px);
+      }
+    }
+
+    @keyframes shimmer {
+      0% {
+        background-position: -200% 0;
+      }
+
+      100% {
+        background-position: 200% 0;
+      }
+    }
+
+    @keyframes progressFill {
+      from {
+        width: 0;
+      }
+    }
+
+    .topics-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .topic-card {
+      background: linear-gradient(135deg, #fff 0%, #fff8f0 100%);
+      border: 1px solid #ffe0b2;
+      border-radius: 12px;
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: all .3s cubic-bezier(.4, 0, .2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .topic-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .4), transparent);
+      transition: left .5s;
+    }
+
+    .topic-card:hover::before {
+      left: 100%;
+    }
+
+    .topic-card:hover {
+      border-color: #ff9800;
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: 0 8px 24px rgba(255, 152, 0, .2);
+    }
+
+    .topic-icon {
+      font-size: 32px;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .topic-card:nth-child(2) .topic-icon {
+      animation-delay: .5s;
+    }
+
+    .topic-card:nth-child(3) .topic-icon {
+      animation-delay: 1s;
+    }
+
+    .topic-info {
+      flex: 1;
+    }
+
+    .topic-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: #ff6d00;
+      margin-bottom: 4px;
+    }
+
+    .topic-count {
+      font-size: 11px;
+      color: #999;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .topic-count::before {
+      content: '\f0c0';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+      font-size: 10px;
+      color: #ffb74d;
+    }
+
+    .ongoing-activities {
+      margin-top: 20px;
+    }
+
+    .activity-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .activity-card {
+      background: #fff;
+      border: 1px solid #f0f0f0;
+      border-radius: 12px;
+      padding: 16px;
+      transition: all .3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .activity-card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, transparent 50%, rgba(255, 152, 0, .03) 50%);
+      border-radius: 0 12px 0 0;
+    }
+
+    .activity-card:hover {
+      border-color: #ffcc80;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, .06);
+    }
+
+    .activity-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: 20px;
+      font-size: 10px;
+      font-weight: 600;
+      background: #e8f5e9;
+      color: #4caf50;
+      margin-bottom: 8px;
+    }
+
+    .activity-badge::before {
+      content: '\f111';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+      font-size: 6px;
+      animation: blink 1.5s infinite;
+    }
+
+    @keyframes blink {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: .3;
+      }
+    }
+
+    .activity-badge.hot {
+      background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+      color: #e65100;
+    }
+
+    .activity-badge.hot::before {
+      color: #ff5722;
+    }
+
+    .activity-badge.new {
+      background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+      color: #1565c0;
+    }
+
+    .activity-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 6px;
+    }
+
+    .activity-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .activity-title-icon {
+      font-size: 18px;
+    }
+
+    .activity-desc {
+      font-size: 12px;
+      color: #999;
+      margin-bottom: 10px;
+      line-height: 1.5;
+    }
+
+    .activity-progress {
+      margin-bottom: 10px;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+      font-size: 11px;
+    }
+
+    .progress-label {
+      color: #999;
+    }
+
+    .progress-value {
+      color: #ff8c00;
+      font-weight: 600;
+      font-size: 11px;
+    }
+
+    .progress-bar {
+      height: 6px;
+      background: #f0f0f0;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #ffb74d, #ff9800, #ff5722);
+      border-radius: 3px;
+      animation: progressFill 1s ease-out;
+      transition: width .3s;
+    }
+
+    .activity-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 11px;
+      color: #bbb;
+      margin-bottom: 10px;
+    }
+
+    .activity-meta span {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .activity-meta i {
+      color: #ffb74d;
+      font-size: 12px;
+    }
+
+    .activity-stats {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 10px;
+    }
+
+    .stat-item {
+      text-align: center;
+      flex: 1;
+    }
+
+    .stat-value {
+      font-size: 16px;
+      font-weight: 700;
+      color: #ff8c00;
+    }
+
+    .stat-label {
+      font-size: 10px;
+      color: #bbb;
+      margin-top: 2px;
+    }
+
+    .activity-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .activity-avatars {
+      display: flex;
+      flex-shrink: 0;
+    }
+
+    .activity-avatars .avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ffb74d, #ff9800);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      font-weight: 600;
+      border: 1.5px solid #fff;
+      margin-left: -6px;
+      flex-shrink: 0;
+    }
+
+    .activity-avatars .avatar:first-child {
+      margin-left: 0;
+    }
+
+    .activity-avatars .avatar.more {
+      background: #f5f5f5;
+      color: #999;
+      font-size: 9px;
+    }
+
+    .activity-join-btn {
+      padding: 6px 16px;
+      background: linear-gradient(135deg, #ff9800, #ff5722);
+      color: #fff;
+      border: none;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .3s;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      box-shadow: 0 2px 8px rgba(255, 152, 0, .2);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .activity-join-btn:hover {
+      box-shadow: 0 4px 12px rgba(255, 152, 0, .3);
+    }
+
+    .activity-join-btn i {
+      font-size: 11px;
+    }
+
+    .activity-join-btn.joined {
+      background: linear-gradient(135deg, #66bb6a, #43a047);
+      box-shadow: 0 2px 8px rgba(76, 175, 80, .2);
+    }
+
+    .activity-join-btn.joined:hover {
+      box-shadow: 0 4px 12px rgba(76, 175, 80, .3);
+    }
+
+    .checkin-btn {
+      padding: 6px 16px;
+      background: linear-gradient(135deg, #ff5722, #e64a19);
+      color: #fff;
+      border: none;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .3s;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      box-shadow: 0 2px 8px rgba(255, 87, 34, .2);
+      animation: pulse 2s infinite;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .checkin-btn:hover {
+      animation: none;
+      transform: scale(1.03);
+    }
+
+    @media (max-width:1100px) {
+      .channel-container {
+        grid-template-columns: 240px 1fr;
+      }
+
+      .hot-sidebar {
+        display: none;
+      }
+
+      .topics-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width:768px) {
+      .channel-container {
+        grid-template-columns: 1fr;
+      }
+
+      .channel-sidebar {
+        display: none;
+      }
+
+      .topics-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* 创建群组弹窗 */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, .5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-overlay.show {
+      display: flex;
+    }
+
+    .modal-box {
+      background: #fff;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 480px;
+      padding: 24px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .3);
+      animation: modalIn .25s ease;
+    }
+
+    @keyframes modalIn {
+      from {
+        opacity: 0;
+        transform: scale(.9) translateY(-20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .modal-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #333;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 24px;
+      color: #999;
+      cursor: pointer;
+      padding: 4px 8px;
+    }
+
+    .modal-close:hover {
+      color: #333;
+    }
+
+    .modal-body {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .form-input {
+      padding: 12px 14px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: border-color .2s;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #ff9800;
+    }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .form-select {
+      padding: 12px 14px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+      background: #fff;
+      cursor: pointer;
+    }
+
+    .form-hint {
+      font-size: 12px;
+      color: #999;
+    }
+
+    .invite-code-display {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      background: #fff8f0;
+      border: 1px dashed #ff9800;
+      border-radius: 8px;
+    }
+
+    .invite-code-display code {
+      font-size: 16px;
+      font-weight: 700;
+      color: #ff6d00;
+      letter-spacing: 1px;
+    }
+
+    .copy-code-btn {
+      padding: 4px 10px;
+      background: #ff9800;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .copy-code-btn:hover {
+      background: #f57c00;
+    }
+
+    .modal-footer {
+      margin-top: 24px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+
+    .btn-cancel {
+      padding: 10px 24px;
+      background: #f5f5f5;
+      color: #666;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .btn-cancel:hover {
+      background: #e0e0e0;
+    }
+
+    .btn-submit {
+      padding: 10px 24px;
+      background: linear-gradient(135deg, #ff9800, #ff5722);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-submit:hover {
+      box-shadow: 0 4px 12px rgba(255, 152, 0, .4);
+    }
+
+    /* 删除群组按钮 */
+    .joined-group-item {
+      position: relative;
+    }
+
+    .jg-delete-btn {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 24px;
+      height: 24px;
+      background: #fff;
+      border: 1px solid #ffcdd2;
+      border-radius: 50%;
+      color: #e57373;
+      font-size: 14px;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      transition: all .2s;
+    }
+
+    .jg-delete-btn:hover {
+      background: #ffebee;
+      border-color: #ef5350;
+      color: #d32f2f;
+    }
+
+    .joined-group-item:hover .jg-delete-btn {
+      display: flex;
+    }
+
+    /* 确认删除弹窗 */
+    .confirm-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, .5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1001;
+    }
+
+    .confirm-modal.show {
+      display: flex;
+    }
+
+    .confirm-box {
+      background: #fff;
+      border-radius: 12px;
+      padding: 24px;
+      width: 90%;
+      max-width: 360px;
+      text-align: center;
+      animation: modalIn .2s ease;
+    }
+
+    .confirm-icon {
+      font-size: 48px;
+      color: #ff9800;
+      margin-bottom: 16px;
+    }
+
+    .confirm-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 8px;
+    }
+
+    .confirm-msg {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    .confirm-btns {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    .btn-confirm-cancel {
+      padding: 10px 28px;
+      background: #f5f5f5;
+      color: #666;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .btn-confirm-cancel:hover {
+      background: #e0e0e0;
+    }
+
+    .btn-confirm-delete {
+      padding: 10px 28px;
+      background: #f44336;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-confirm-delete:hover {
+      background: #d32f2f;
+    }
+  </style>
 </head>
+
 <body>
-        <script>
-        // ============ 通知主框架当前页面状态 ============
-        // 第一种情况：显示且播放不暂停
-        function notifyParentPage() {
-          if (window.parent !== window) {
-            window.parent.postMessage({
-              type: 'PAGE_STATE',
-              data: {
-                pageName: 'channel',
-                state: 'visible-playing' // 频道页：显示播放栏且播放不暂停
-              }
-            }, '*');
-            // 控制台提示
-            console.log('已通知主框架：channel（显示播放栏，播放不中断）');
+  <script>
+    // ============ 通知主框架当前页面状态 ============
+    // 第一种情况：显示且播放不暂停
+    function notifyParentPage() {
+      if (window.parent !== window) {
+        window.parent.postMessage({
+          type: 'PAGE_STATE',
+          data: {
+            pageName: 'channel',
+            state: 'visible-playing' // 频道页：显示播放栏且播放不暂停
           }
-        }
+        }, '*');
+        // 控制台提示
+        console.log('已通知主框架：channel（显示播放栏，播放不中断）');
+      }
+    }
 
-        // 页面加载时通知主框架
-        window.addEventListener('load', function() {
-          setTimeout(notifyParentPage, 100); // 延迟确保主框架准备好
-        });
+    // 页面加载时通知主框架
+    window.addEventListener('load', function () {
+      setTimeout(notifyParentPage, 100); // 延迟确保主框架准备好
+    });
 
-        // 如果页面是通过iframe直接加载的，立即通知
-        if (window.parent !== window) {
-          notifyParentPage();
-        }
-        </script>
-    <!-- 音频元素 -->
-    <audio id="audioPlayer" controls style="display: none;">
-        <source src="" type="audio/mpeg">
-        您的浏览器不支持音频播放
-    </audio>
+    // 如果页面是通过iframe直接加载的，立即通知
+    if (window.parent !== window) {
+      notifyParentPage();
+    }
+  </script>
+  <!-- 音频元素 -->
+  <audio id="audioPlayer" controls style="display: none;">
+    <source src="" type="audio/mpeg">
+    您的浏览器不支持音频播放
+  </audio>
 
-    <!-- 顶部导航栏 -->
-    <header class="header">
-        <div class="logo">
-            <div class="logo-img"></div>
-            <span class="logo-text">星之声</span>
+  <!-- 顶部导航栏 -->
+  <header class="header">
+    <div class="logo">
+      <div class="logo-img"></div>
+      <span class="logo-text">星之声</span>
+    </div>
+    <nav class="main-nav">
+      <a href="index.html" class="nav-item">首页</a>
+      <a href="category.html" class="nav-item">分类</a>
+      <a href="channel.html" class="nav-item active">社区</a>
+    </nav>
+    <div class="search-box">
+      <input type="text" placeholder="搜索课程、频道..." class="search-input" id="homeSearchInput">
+      <button class="search-btn" id="homeSearchBtn"><i class="fas fa-search"></i></button>
+    </div>
+    <div class="user-functions">
+      <a href="my-recent.html" class="func-item">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+      </a>
+      <a href="my-message.html" class="func-item"><i class="fas fa-bell"></i> 消息</a>
+      <a href="my-collect.html" class="func-item"><i class="fas fa-star"></i> 收藏</a>
+      <a href="my-recent.html" class="func-item"><i class="fas fa-history"></i> 历史</a>
+      <a href="my-creator_center.html" class="func-item"><i class="fas fa-pen"></i> 创作中心</a>
+      <div id="auth-section">
+        <a href="login.html"><button class="submit-btn">登录/注册</button></a>
+      </div>
+  </header>
+
+  <!-- 主要内容区域：分类侧栏 + 群组列表 / 动态 Feed -->
+  <main class="main channel-main">
+    <div class="container channel-container">
+      <!-- 左侧：已加入的群组列表 -->
+      <aside class="channel-sidebar">
+        <h3 class="sidebar-title"><i class="fas fa-users"></i> 已加入的群组</h3>
+        <div class="joined-groups-list" id="joinedGroupsList">
+          <!-- 由 JS 渲染 -->
         </div>
-        <nav class="main-nav">
-            <a href="index.html" class="nav-item">首页</a>
-            <a href="category.html" class="nav-item">分类</a>
-            <a href="channel.html" class="nav-item active">社区</a>
-        </nav>
-        <div class="search-box">
-            <input type="text" placeholder="搜索课程、频道..." class="search-input" id="homeSearchInput">
-            <button class="search-btn" id="homeSearchBtn"><i class="fas fa-search"></i></button>
-        </div>
-        <div class="user-functions">
-            <a href="my-recent.html" class="func-item">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="12" cy="7" r="4"></circle>
-                </svg>
-            </a>
-            <a href="my-message.html" class="func-item"><i class="fas fa-bell"></i> 消息</a>
-            <a href="my-collect.html" class="func-item"><i class="fas fa-star"></i> 收藏</a>
-            <a href="my-recent.html" class="func-item"><i class="fas fa-history"></i> 历史</a>
-            <a href="my-creator_center.html" class="func-item"><i class="fas fa-pen"></i> 创作中心</a>
-            <div id="auth-section">
-            <a href="login.html"><button class="submit-btn">登录/注册</button></a>
-        </div>
-    </header>
+        <button class="create-group-btn" id="openCreateGroupBtn">+ 创建群组</button>
 
-    <!-- 主要内容区域：分类侧栏 + 群组列表 / 动态 Feed -->
-    <main class="main channel-main">
-      <div class="container channel-container">
-        <!-- 左侧：已加入的群组列表 -->
-        <aside class="channel-sidebar">
-          <h3 class="sidebar-title"><i class="fas fa-users"></i> 已加入的群组</h3>
-          <div class="joined-groups-list" id="joinedGroupsList">
-            <!-- 由 JS 渲染 -->
+        <!-- 加入群组 -->
+        <div class="join-group-section">
+          <h4 class="join-title"><i class="fas fa-sign-in-alt"></i> 加入群组</h4>
+          <div class="invite-code-form">
+            <input type="text" id="inviteCodeInput" class="invite-code-input" placeholder="输入邀请码" maxlength="8" />
+            <button id="joinByCodeBtn" class="join-code-btn">加入</button>
           </div>
-          <button class="create-group-btn" id="openCreateGroupBtn">+ 创建群组</button>
-          
-          <!-- 加入群组 -->
-          <div class="join-group-section">
-            <h4 class="join-title"><i class="fas fa-sign-in-alt"></i> 加入群组</h4>
-            <div class="invite-code-form">
-              <input type="text" id="inviteCodeInput" class="invite-code-input" placeholder="输入邀请码" maxlength="8" />
-              <button id="joinByCodeBtn" class="join-code-btn">加入</button>
+        </div>
+      </aside>
+
+      <!-- 创建群组弹窗 -->
+      <div class="modal-overlay" id="createGroupModal">
+        <div class="modal-box">
+          <div class="modal-header">
+            <h3 class="modal-title">创建新群组</h3>
+            <button class="modal-close" id="closeCreateGroupBtn">&times;</button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label class="form-label">群组名称 *</label>
+              <input type="text" class="form-input" id="newGroupName" placeholder="例如：雅思备考交流群" maxlength="20" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">群组简介</label>
+              <textarea class="form-input form-textarea" id="newGroupDesc" placeholder="简单介绍群组的主题和目的..."
+                maxlength="100"></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">群组分类</label>
+              <select class="form-select" id="newGroupCategory">
+                <option value="学习">学习</option>
+                <option value="考试">考试</option>
+                <option value="兴趣">兴趣</option>
+                <option value="其他">其他</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">群组邀请码</label>
+              <div class="invite-code-display">
+                <code id="generatedInviteCode">------</code>
+                <button class="copy-code-btn" id="copyNewCodeBtn">复制</button>
+              </div>
+              <span class="form-hint">邀请码将在创建后自动生成，可分享给朋友加入</span>
             </div>
           </div>
-        </aside>
-
-    <!-- 创建群组弹窗 -->
-    <div class="modal-overlay" id="createGroupModal">
-      <div class="modal-box">
-        <div class="modal-header">
-          <h3 class="modal-title">创建新群组</h3>
-          <button class="modal-close" id="closeCreateGroupBtn">&times;</button>
+          <div class="modal-footer">
+            <button class="btn-cancel" id="cancelCreateGroupBtn">取消</button>
+            <button class="btn-submit" id="submitCreateGroupBtn">创建群组</button>
+          </div>
         </div>
-        <div class="modal-body">
-          <div class="form-group">
-            <label class="form-label">群组名称 *</label>
-            <input type="text" class="form-input" id="newGroupName" placeholder="例如：雅思备考交流群" maxlength="20" />
+      </div>
+
+      <!-- 确认删除弹窗 -->
+      <div class="confirm-modal" id="deleteConfirmModal">
+        <div class="confirm-box">
+          <div class="confirm-icon"><i class="fas fa-exclamation-triangle"></i></div>
+          <div class="confirm-title">确认退出群组</div>
+          <div class="confirm-msg">你确定要退出「<span id="deleteGroupName"></span>」群组吗？</div>
+          <div class="confirm-btns">
+            <button class="btn-confirm-cancel" id="cancelDeleteBtn">取消</button>
+            <button class="btn-confirm-delete" id="confirmDeleteBtn">确认退出</button>
           </div>
-          <div class="form-group">
-            <label class="form-label">群组简介</label>
-            <textarea class="form-input form-textarea" id="newGroupDesc" placeholder="简单介绍群组的主题和目的..." maxlength="100"></textarea>
+        </div>
+      </div>
+
+      <!-- 中间主视图区（工具栏 + 列表或 Feed） -->
+      <section class="groups-section">
+        <div class="channel-controls">
+          <div class="left-controls">
+            <div class="tab-chips">
+              <button class="tab-chip active" data-tab="feed">动态</button>
+              <button class="tab-chip" data-tab="groups">群组</button>
+              <button class="tab-chip" data-tab="activity">活动</button>
+            </div>
           </div>
-          <div class="form-group">
-            <label class="form-label">群组分类</label>
-            <select class="form-select" id="newGroupCategory">
-              <option value="学习">学习</option>
-              <option value="考试">考试</option>
-              <option value="兴趣">兴趣</option>
-              <option value="其他">其他</option>
+          <div class="right-controls">
+            <span class="sort-label">排序：</span>
+            <!-- 动态排序 -->
+            <select id="feedSortSelect">
+              <option value="new">最新</option>
+              <option value="hot">最热</option>
+            </select>
+            <!-- 群组排序 -->
+            <select id="groupSortSelect" style="display:none;">
+              <option value="active">活跃度</option>
+              <option value="new">最新</option>
+              <option value="members">成员数</option>
             </select>
           </div>
-          <div class="form-group">
-            <label class="form-label">群组邀请码</label>
-            <div class="invite-code-display">
-              <code id="generatedInviteCode">------</code>
-              <button class="copy-code-btn" id="copyNewCodeBtn">复制</button>
+        </div>
+
+        <!-- 群组列表面板 -->
+        <div id="groupsPanel" class="panel">
+          <div id="groupsGrid" class="groups-grid"></div>
+        </div>
+
+        <!-- 活动面板 -->
+        <div id="activityPanel" class="panel" style="display:none;">
+          <div class="activity-section">
+            <div class="hot-topics">
+              <h4 class="topics-title"><i class="fas fa-fire"></i> 热门活动</h4>
+              <div class="topics-grid">
+                <div class="topic-card" data-topic="每日一句">
+                  <div class="topic-icon">💬</div>
+                  <div class="topic-info">
+                    <div class="topic-name">#每日一句#</div>
+                    <div class="topic-count">1.2万人参与</div>
+                  </div>
+                </div>
+                <div class="topic-card" data-topic="打卡挑战">
+                  <div class="topic-icon">✅</div>
+                  <div class="topic-info">
+                    <div class="topic-name">#打卡挑战#</div>
+                    <div class="topic-count">5.1千人参与</div>
+                  </div>
+                </div>
+                <div class="topic-card" data-topic="英语学习">
+                  <div class="topic-icon">📚</div>
+                  <div class="topic-info">
+                    <div class="topic-name">#英语学习#</div>
+                    <div class="topic-count">8.5千人参与</div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <span class="form-hint">邀请码将在创建后自动生成，可分享给朋友加入</span>
+            <div class="ongoing-activities">
+              <h4 class="topics-title"><i class="fas fa-calendar-alt"></i> 进行中的活动</h4>
+              <div class="activity-list">
+                <div class="activity-card">
+                  <div class="activity-badge">进行中</div>
+                  <div class="activity-title"><span class="activity-title-icon">🌅</span> 21天早起打卡挑战</div>
+                  <div class="activity-desc">连续21天早起7点前打卡，养成早起好习惯，赢取专属勋章！</div>
+                  <div class="activity-progress">
+                    <div class="progress-header">
+                      <span class="progress-label">活动进度</span>
+                      <span class="progress-value">6/21 天</span>
+                    </div>
+                    <div class="progress-bar">
+                      <div class="progress-fill" style="width:28%"></div>
+                    </div>
+                  </div>
+                  <div class="activity-meta">
+                    <span><i class="fas fa-users"></i> 108人参与</span>
+                    <span><i class="fas fa-clock"></i> 还剩15天结束</span>
+                    <span><i class="fas fa-trophy"></i> 已有18人完成</span>
+                  </div>
+                  <div class="activity-footer">
+                    <div class="activity-avatars">
+                      <div class="avatar">小</div>
+                      <div class="avatar">红</div>
+                      <div class="avatar">明</div>
+                      <div class="avatar more">+105</div>
+                    </div>
+                    <button class="checkin-btn"><i class="fas fa-check"></i> 立即打卡</button>
+                  </div>
+                </div>
+                <div class="activity-card">
+                  <div class="activity-badge hot">火爆</div>
+                  <div class="activity-title"><span class="activity-title-icon">💬</span> 每日一句英文</div>
+                  <div class="activity-desc">每天学一句地道英文表达，积少成多，坚持就是胜利！</div>
+                  <div class="activity-stats">
+                    <div class="stat-item">
+                      <div class="stat-value">1.5千</div>
+                      <div class="stat-label">参与人数</div>
+                    </div>
+                    <div class="stat-item">
+                      <div class="stat-value">365</div>
+                      <div class="stat-label">今日打卡</div>
+                    </div>
+                    <div class="stat-item">
+                      <div class="stat-value">28</div>
+                      <div class="stat-label">我的连续</div>
+                    </div>
+                  </div>
+                  <div class="activity-meta">
+                    <span><i class="fas fa-infinity"></i> 长期活动</span>
+                    <span><i class="fas fa-fire"></i> 今日热度 TOP1</span>
+                  </div>
+                  <div class="activity-footer">
+                    <div class="activity-avatars">
+                      <div class="avatar">英</div>
+                      <div class="avatar">学</div>
+                      <div class="avatar">霸</div>
+                      <div class="avatar more">+1.5千</div>
+                    </div>
+                    <button class="activity-join-btn joined"><i class="fas fa-check-circle"></i> 已参加</button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="modal-footer">
-          <button class="btn-cancel" id="cancelCreateGroupBtn">取消</button>
-          <button class="btn-submit" id="submitCreateGroupBtn">创建群组</button>
+
+        <!-- Feed 动态面板 -->
+        <div id="feedPanel" class="panel">
+          <section id="feedSection" class="feed-section">
+            <div class="composer">
+              <textarea id="composerInput" placeholder="说点什么..." rows="3"></textarea>
+              <div class="composer-actions">
+                <input type="file" id="composerFiles" accept="image/*" multiple style="display:none;">
+                <button id="attachBtn" class="attach-btn"><i class="fas fa-image"></i> 图片</button>
+                <button id="postBtn" class="btn-orange"><i class="fas fa-paper-plane"></i> 发布</button>
+              </div>
+              <div id="previewArea" class="preview-area"></div>
+            </div>
+
+            <div id="postsList" class="posts-list"></div>
+          </section>
         </div>
-      </div>
+      </section>
+
+      <!-- 热门推荐侧边栏 -->
+      <aside class="hot-sidebar">
+        <div class="hot-section">
+          <h3 class="hot-title"><i class="fas fa-fire"></i> 热门推荐</h3>
+          <div class="hot-list" id="hotGroupsList">
+            <div class="hot-item">
+              <div class="hot-rank">1</div>
+              <div class="hot-info">
+                <div class="hot-name">英语口语练习群</div>
+                <div class="hot-desc">口语练习与资源分享</div>
+              </div>
+              <div class="hot-members">128人</div>
+            </div>
+            <div class="hot-item">
+              <div class="hot-rank">2</div>
+              <div class="hot-info">
+                <div class="hot-name">托福备考群</div>
+                <div class="hot-desc">每天早起一起学习</div>
+              </div>
+              <div class="hot-members">64人</div>
+            </div>
+            <div class="hot-item">
+              <div class="hot-rank">3</div>
+              <div class="hot-info">
+                <div class="hot-name">商务英语交流</div>
+                <div class="hot-desc">长篇材料讨论</div>
+              </div>
+              <div class="hot-members">32人</div>
+            </div>
+          </div>
+        </div>
+        <div class="hot-section">
+          <h3 class="hot-title"><i class="fas fa-chart-line"></i> 活跃排行</h3>
+          <div class="hot-list">
+            <div class="hot-item">
+              <div class="hot-rank gold">1</div>
+              <div class="hot-info">
+                <div class="hot-name">小明</div>
+                <div class="hot-desc">发布了12条动态</div>
+              </div>
+            </div>
+            <div class="hot-item">
+              <div class="hot-rank silver">2</div>
+              <div class="hot-info">
+                <div class="hot-name">小红</div>
+                <div class="hot-desc">发布了8条动态</div>
+              </div>
+            </div>
+            <div class="hot-item">
+              <div class="hot-rank bronze">3</div>
+              <div class="hot-info">
+                <div class="hot-name">小华</div>
+                <div class="hot-desc">发布了5条动态</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
     </div>
+  </main>
 
-    <!-- 确认删除弹窗 -->
-    <div class="confirm-modal" id="deleteConfirmModal">
-      <div class="confirm-box">
-        <div class="confirm-icon"><i class="fas fa-exclamation-triangle"></i></div>
-        <div class="confirm-title">确认退出群组</div>
-        <div class="confirm-msg">你确定要退出「<span id="deleteGroupName"></span>」群组吗？</div>
-        <div class="confirm-btns">
-          <button class="btn-confirm-cancel" id="cancelDeleteBtn">取消</button>
-          <button class="btn-confirm-delete" id="confirmDeleteBtn">确认退出</button>
-        </div>
-      </div>
-    </div>
+  <!-- 创建群组模态框样式（原样保留） -->
+  <style>
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+    }
 
-        <!-- 中间主视图区（工具栏 + 列表或 Feed） -->
-        <section class="groups-section">
-          <div class="channel-controls">
-            <div class="left-controls">
-              <div class="tab-chips">
-                <button class="tab-chip active" data-tab="feed">动态</button>
-                <button class="tab-chip" data-tab="groups">群组</button>
-                <button class="tab-chip" data-tab="activity">活动</button>
-              </div>
-            </div>
-            <div class="right-controls">
-              <span class="sort-label">排序：</span>
-              <!-- 动态排序 -->
-              <select id="feedSortSelect">
-                <option value="new">最新</option>
-                <option value="hot">最热</option>
-              </select>
-              <!-- 群组排序 -->
-              <select id="groupSortSelect" style="display:none;">
-                <option value="active">活跃度</option>
-                <option value="new">最新</option>
-                <option value="members">成员数</option>
-              </select>
-            </div>
-          </div>
+    .modal {
+      background-color: white;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 500px;
+      overflow: hidden;
+    }
 
-          <!-- 群组列表面板 -->
-          <div id="groupsPanel" class="panel">
-            <div id="groupsGrid" class="groups-grid"></div>
-          </div>
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px;
+      background-color: #FFDAB9;
+      color: #333;
+    }
 
-          <!-- 活动面板 -->
-          <div id="activityPanel" class="panel" style="display:none;">
-            <div class="activity-section">
-              <div class="hot-topics">
-                <h4 class="topics-title"><i class="fas fa-fire"></i> 热门活动</h4>
-                <div class="topics-grid">
-                  <div class="topic-card" data-topic="每日一句">
-                    <div class="topic-icon">💬</div>
-                    <div class="topic-info">
-                      <div class="topic-name">#每日一句#</div>
-                      <div class="topic-count">1.2万人参与</div>
-                    </div>
-                  </div>
-                  <div class="topic-card" data-topic="打卡挑战">
-                    <div class="topic-icon">✅</div>
-                    <div class="topic-info">
-                      <div class="topic-name">#打卡挑战#</div>
-                      <div class="topic-count">5.1千人参与</div>
-                    </div>
-                  </div>
-                  <div class="topic-card" data-topic="英语学习">
-                    <div class="topic-icon">📚</div>
-                    <div class="topic-info">
-                      <div class="topic-name">#英语学习#</div>
-                      <div class="topic-count">8.5千人参与</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="ongoing-activities">
-                <h4 class="topics-title"><i class="fas fa-calendar-alt"></i> 进行中的活动</h4>
-                <div class="activity-list">
-                  <div class="activity-card">
-                    <div class="activity-badge">进行中</div>
-                    <div class="activity-title"><span class="activity-title-icon">🌅</span> 21天早起打卡挑战</div>
-                    <div class="activity-desc">连续21天早起7点前打卡，养成早起好习惯，赢取专属勋章！</div>
-                    <div class="activity-progress">
-                      <div class="progress-header">
-                        <span class="progress-label">活动进度</span>
-                        <span class="progress-value">6/21 天</span>
-                      </div>
-                      <div class="progress-bar">
-                        <div class="progress-fill" style="width:28%"></div>
-                      </div>
-                    </div>
-                    <div class="activity-meta">
-                      <span><i class="fas fa-users"></i> 108人参与</span>
-                      <span><i class="fas fa-clock"></i> 还剩15天结束</span>
-                      <span><i class="fas fa-trophy"></i> 已有18人完成</span>
-                    </div>
-                    <div class="activity-footer">
-                      <div class="activity-avatars">
-                        <div class="avatar">小</div>
-                        <div class="avatar">红</div>
-                        <div class="avatar">明</div>
-                        <div class="avatar more">+105</div>
-                      </div>
-                      <button class="checkin-btn"><i class="fas fa-check"></i> 立即打卡</button>
-                    </div>
-                  </div>
-                  <div class="activity-card">
-                    <div class="activity-badge hot">火爆</div>
-                    <div class="activity-title"><span class="activity-title-icon">💬</span> 每日一句英文</div>
-                    <div class="activity-desc">每天学一句地道英文表达，积少成多，坚持就是胜利！</div>
-                    <div class="activity-stats">
-                      <div class="stat-item">
-                        <div class="stat-value">1.5千</div>
-                        <div class="stat-label">参与人数</div>
-                      </div>
-                      <div class="stat-item">
-                        <div class="stat-value">365</div>
-                        <div class="stat-label">今日打卡</div>
-                      </div>
-                      <div class="stat-item">
-                        <div class="stat-value">28</div>
-                        <div class="stat-label">我的连续</div>
-                      </div>
-                    </div>
-                    <div class="activity-meta">
-                      <span><i class="fas fa-infinity"></i> 长期活动</span>
-                      <span><i class="fas fa-fire"></i> 今日热度 TOP1</span>
-                    </div>
-                    <div class="activity-footer">
-                      <div class="activity-avatars">
-                        <div class="avatar">英</div>
-                        <div class="avatar">学</div>
-                        <div class="avatar">霸</div>
-                        <div class="avatar more">+1.5千</div>
-                      </div>
-                      <button class="activity-join-btn joined"><i class="fas fa-check-circle"></i> 已参加</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+    .modal-title {
+      margin: 0;
+      font-size: 20px;
+    }
 
-          <!-- Feed 动态面板 -->
-          <div id="feedPanel" class="panel">
-            <section id="feedSection" class="feed-section">
-              <div class="composer">
-                <textarea id="composerInput" placeholder="说点什么..." rows="3"></textarea>
-                <div class="composer-actions">
-                  <input type="file" id="composerFiles" accept="image/*" multiple style="display:none;">
-                  <button id="attachBtn" class="attach-btn"><i class="fas fa-image"></i> 图片</button>
-                  <button id="postBtn" class="btn-orange"><i class="fas fa-paper-plane"></i> 发布</button>
-                </div>
-                <div id="previewArea" class="preview-area"></div>
-              </div>
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #333;
+    }
 
-              <div id="postsList" class="posts-list"></div>
-            </section>
-          </div>
-        </section>
+    .modal-content {
+      padding: 20px;
+    }
 
-        <!-- 热门推荐侧边栏 -->
-        <aside class="hot-sidebar">
-          <div class="hot-section">
-            <h3 class="hot-title"><i class="fas fa-fire"></i> 热门推荐</h3>
-            <div class="hot-list" id="hotGroupsList">
-              <div class="hot-item">
-                <div class="hot-rank">1</div>
-                <div class="hot-info">
-                  <div class="hot-name">英语口语练习群</div>
-                  <div class="hot-desc">口语练习与资源分享</div>
-                </div>
-                <div class="hot-members">128人</div>
-              </div>
-              <div class="hot-item">
-                <div class="hot-rank">2</div>
-                <div class="hot-info">
-                  <div class="hot-name">托福备考群</div>
-                  <div class="hot-desc">每天早起一起学习</div>
-                </div>
-                <div class="hot-members">64人</div>
-              </div>
-              <div class="hot-item">
-                <div class="hot-rank">3</div>
-                <div class="hot-info">
-                  <div class="hot-name">商务英语交流</div>
-                  <div class="hot-desc">长篇材料讨论</div>
-                </div>
-                <div class="hot-members">32人</div>
-              </div>
-            </div>
-          </div>
-          <div class="hot-section">
-            <h3 class="hot-title"><i class="fas fa-chart-line"></i> 活跃排行</h3>
-            <div class="hot-list">
-              <div class="hot-item">
-                <div class="hot-rank gold">1</div>
-                <div class="hot-info">
-                  <div class="hot-name">小明</div>
-                  <div class="hot-desc">发布了12条动态</div>
-                </div>
-              </div>
-              <div class="hot-item">
-                <div class="hot-rank silver">2</div>
-                <div class="hot-info">
-                  <div class="hot-name">小红</div>
-                  <div class="hot-desc">发布了8条动态</div>
-                </div>
-              </div>
-              <div class="hot-item">
-                <div class="hot-rank bronze">3</div>
-                <div class="hot-info">
-                  <div class="hot-name">小华</div>
-                  <div class="hot-desc">发布了5条动态</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </aside>
-      </div>
-    </main>
+    .form-group {
+      margin-bottom: 16px;
+    }
 
-    <!-- 创建群组模态框样式（原样保留） -->
-    <style>
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-        }
-        .modal {
-            background-color: white;
-            border-radius: 8px;
-            width: 90%;
-            max-width: 500px;
-            overflow: hidden;
-        }
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px;
-            background-color: #FFDAB9;
-            color: #333;
-        }
-        .modal-title {
-            margin: 0;
-            font-size: 20px;
-        }
-        .close-btn {
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: #333;
-        }
-        .modal-content {
-            padding: 20px;
-        }
-        .form-group {
-            margin-bottom: 16px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: #333;
-        }
-        .form-group input,
-        .form-group textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-        .form-group textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-        .modal-footer {
-            display: flex;
-            justify-content: flex-end;
-            gap: 12px;
-            padding: 16px;
-            background-color: #f5f5f5;
-        }
-        .btn-cancel,
-        .btn-create {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-        .btn-cancel {
-            background-color: #ccc;
-            color: #333;
-        }
-        .btn-create {
-            background-color: #FF6B35;
-            color: white;
-        }
-        .btn-create:hover {
-            background-color: #E55A2A;
-        }
-        .create-group-btn {
-            background-color: #FF6B35;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            padding: 10px 16px;
-            font-size: 14px;
-            cursor: pointer;
-            margin-bottom: 16px;
-        }
-        .create-group-btn:hover {
-            background-color: #E55A2A;
-        }
-    </style>
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #333;
+    }
 
-    <!-- PlayBar 交互脚本：替换为 PlayBar.html 完整版本，仅替换播放器相关脚本 -->
-    <script>
-;(function () {
-/* 两个样例音频 */
-const playlist = [
-  { title: "Kalimba (Test Audio)", artist: "Ninja Tuna", cover: "", src: "https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3" },
-  { title: "Sample MP3 (700KB)", artist: "Sample Source", cover: "", src: "https://sample.cat/downloads/file_example_MP3_700KB.mp3" }
-];
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+    }
 
-let currentIndex = 0;
-let isPlaying = false;
-let isDraggingProgress = false;
-let isDraggingVolume = false;
-let playMode = 'list'; /* single | list | shuffle */
+    .form-group textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
 
-const audio = document.getElementById('pv-audio');
-const playBtn = document.getElementById('pv-play');
-const playIcon = document.getElementById('play-icon');
-const prevBtn = document.getElementById('pv-prev');
-const nextBtn = document.getElementById('pv-next');
-const titleEl = document.getElementById('pv-title');
-const artistEl = document.getElementById('pv-artist');
-const coverEl = document.getElementById('pv-cover');
-const progressEl = document.getElementById('pv-progress');
-const progressFill = document.getElementById('pv-progress-fill');
-const knobEl = document.getElementById('pv-knob');
-const timeCurEl = document.getElementById('pv-time-cur');
-const timeTotalEl = document.getElementById('pv-time-total');
-const volEl = document.getElementById('pv-volume');
-const volFill = document.getElementById('pv-volume-fill');
-const listBtn = document.getElementById('pv-list-btn');
-const playlistPanel = document.getElementById('playlist-panel');
-const rateBtn = document.getElementById('pv-rate-btn');
-const rateText = document.getElementById('rate-text');
-const muteBtn = document.getElementById('pv-mute');
-const volIcon = document.getElementById('vol-icon');
-const modeBtn = document.getElementById('pv-mode-btn');
-const modePop = document.getElementById('mode-pop');
-const ratePop = document.getElementById('rate-pop');
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      padding: 16px;
+      background-color: #f5f5f5;
+    }
 
-function loadTrack(index) {
-  const track = playlist[index];
-  titleEl.innerText = track.title;
-  artistEl.innerText = track.artist;
-  coverEl.style.backgroundImage = track.cover ? `url('${track.cover}')` : '';
-  audio.src = track.src;
-  document.querySelectorAll('.playlist-item').forEach((item, i) => item.classList.toggle('active', i === index));
-}
-function playTrack() { audio.play().then(() => { isPlaying = true; updatePlayIcon(); }).catch(err => console.error("Play failed:", err)); }
-function pauseTrack() { audio.pause(); isPlaying = false; updatePlayIcon(); }
-function togglePlay() { isPlaying ? pauseTrack() : playTrack(); }
-function updatePlayIcon() {
-  if (isPlaying) { playIcon.setAttribute('viewBox','0 0 24 24'); playIcon.innerHTML = '<path d="M6 5h4v14H6V5zm8 0h4v14h-4V5z"/>'; }
-  else { playIcon.setAttribute('viewBox','0 0 24 24'); playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>'; }
-}
-function formatTime(s) { if (!s || isNaN(s)) return "00:00"; const m = Math.floor(s/60), ss = Math.floor(s%60); return `${m<10?'0':''}${m}:${ss<10?'0':''}${ss}`; }
-function stopWrap(handler) { return function(e){ e.stopPropagation(); handler(e); }; }
+    .btn-cancel,
+    .btn-create {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
 
-/* 控件事件（阻止冒泡） */
-playBtn.addEventListener('click', stopWrap(togglePlay));
-prevBtn.addEventListener('click', stopWrap(() => prevByMode()));
-nextBtn.addEventListener('click', stopWrap(() => nextByMode()));
-muteBtn.addEventListener('click', stopWrap(() => {
-  audio.muted = !audio.muted;
-  if (audio.muted || audio.volume === 0) { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 3l7 7-1.4 1.4L16 7.8V16h-2V8.6L9.4 4 11 2.4 14 3z"/>'; }
-  else if (audio.volume < 0.5) { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 9v6c1.7-0.7 3-2.4 3-4.5S15.7 9.7 14 9z"/>'; }
-  else { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 7v10c3-1 5-3.6 5-7s-2-6-5-7z"/>'; }
-}));
+    .btn-cancel {
+      background-color: #ccc;
+      color: #333;
+    }
 
-/* 模式弹层 */
-modeBtn.addEventListener('click', stopWrap(() => {
-  ratePop.classList.remove('show');
-  modePop.classList.toggle('show');
-}));
-modePop.addEventListener('click', stopWrap((e) => {
-  const item = e.target.closest('.mode-item');
-  if (!item) return;
-  playMode = item.getAttribute('data-mode');
-  document.querySelectorAll('#mode-pop .mode-item').forEach(el => el.classList.toggle('active', el === item));
-  modePop.classList.remove('show');
-}));
+    .btn-create {
+      background-color: #FF6B35;
+      color: white;
+    }
 
-/* 倍速弹层 */
-rateBtn.addEventListener('click', stopWrap(() => {
-  modePop.classList.remove('show');
-  ratePop.classList.toggle('show');
-}));
-ratePop.addEventListener('click', stopWrap((e) => {
-  const item = e.target.closest('.rate-item');
-  if (!item) return;
-  const r = parseFloat(item.getAttribute('data-rate'));
-  audio.playbackRate = r;
-  rateText.innerText = r.toFixed(1) + 'x';
-  document.querySelectorAll('#rate-pop .rate-item').forEach(el => el.classList.toggle('active', el === item));
-  ratePop.classList.remove('show');
-}));
+    .btn-create:hover {
+      background-color: #E55A2A;
+    }
 
-/* 点击其他区域关闭弹层 */
-document.addEventListener('click', (e) => {
-  if (!modeBtn.contains(e.target) && !modePop.contains(e.target)) modePop.classList.remove('show');
-  if (!rateBtn.contains(e.target) && !ratePop.contains(e.target)) ratePop.classList.remove('show');
-});
+    .create-group-btn {
+      background-color: #FF6B35;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 10px 16px;
+      font-size: 14px;
+      cursor: pointer;
+      margin-bottom: 16px;
+    }
 
-/* 音频事件与切歌模式 */
-audio.addEventListener('timeupdate', () => {
-  if (isDraggingProgress) return;
-  const percent = (audio.currentTime / audio.duration) * 100;
-  progressFill.style.width = `${percent}%`;
-  knobEl.style.left = `${percent}%`;
-  timeCurEl.innerText = formatTime(audio.currentTime);
-});
-audio.addEventListener('loadedmetadata', () => { timeTotalEl.innerText = formatTime(audio.duration); });
-audio.addEventListener('ended', () => {
-  if (playMode === 'single') { audio.currentTime = 0; playTrack(); }
-  else { nextByMode(); }
-});
-function prevByMode() {
-  if (playMode === 'shuffle') currentIndex = Math.floor(Math.random() * playlist.length);
-  else currentIndex = (currentIndex - 1 + playlist.length) % playlist.length;
-  loadTrack(currentIndex); playTrack();
-}
-function nextByMode() {
-  if (playMode === 'shuffle') currentIndex = Math.floor(Math.random() * playlist.length);
-  else currentIndex = (currentIndex + 1) % playlist.length;
-  loadTrack(currentIndex); playTrack();
-}
+    .create-group-btn:hover {
+      background-color: #E55A2A;
+    }
+  </style>
 
-/* 进度条拖拽（鼠标/触摸） */
-function handleProgressInput(clientX) {
-  const rect = progressEl.getBoundingClientRect();
-  let x = clientX - rect.left; x = Math.max(0, Math.min(x, rect.width));
-  const pct = (x / rect.width) * 100; progressFill.style.width = `${pct}%`; knobEl.style.left = `${pct}%`;
-  return (x / rect.width) * audio.duration;
-}
-progressEl.addEventListener('mousedown', stopWrap((e) => { isDraggingProgress = true; progressEl.classList.add('dragging'); const t = handleProgressInput(e.clientX); timeCurEl.innerText = formatTime(t); }));
-document.addEventListener('mousemove', (e) => { if (isDraggingProgress) { e.preventDefault(); const t = handleProgressInput(e.clientX); timeCurEl.innerText = formatTime(t); } });
-document.addEventListener('mouseup', (e) => { if (isDraggingProgress) { isDraggingProgress = false; progressEl.classList.remove('dragging'); const t = handleProgressInput(e.clientX); if (isFinite(t)) audio.currentTime = t; } });
+  <!-- PlayBar 交互脚本：替换为 PlayBar.html 完整版本，仅替换播放器相关脚本 -->
 
-function getTouchX(e){ return (e.touches&&e.touches[0]) ? e.touches[0].clientX : (e.changedTouches&&e.changedTouches[0] ? e.changedTouches[0].clientX : 0); }
-progressEl.addEventListener('touchstart', (e) => { e.stopPropagation(); e.preventDefault(); isDraggingProgress = true; const t = handleProgressInput(getTouchX(e)); timeCurEl.innerText = formatTime(t); }, { passive:false });
-document.addEventListener('touchmove', (e) => { if (isDraggingProgress) { e.preventDefault(); const t = handleProgressInput(getTouchX(e)); timeCurEl.innerText = formatTime(t); } }, { passive:false });
-document.addEventListener('touchend', (e) => { if (isDraggingProgress) { isDraggingProgress = false; const t = handleProgressInput(getTouchX(e)); if (isFinite(t)) audio.currentTime = t; } }, { passive:false });
+  <script>
+    (function () {
+      // API 基础地址
+      const API_BASE = 'http://localhost:8080/api/chat/group';
 
-/* 音量拖拽（鼠标/触摸） */
-function handleVolumeInput(clientX) {
-  const rect = volEl.getBoundingClientRect();
-  let x = clientX - rect.left; x = Math.max(0, Math.min(x, rect.width));
-  const p = x / rect.width; volFill.style.width = `${p * 100}%`; audio.volume = p;
-  if (p === 0 || audio.muted) { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 3l7 7-1.4 1.4L16 7.8V16h-2V8.6L9.4 4 11 2.4 14 3z"/>'; }
-  else if (p < 0.5) { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 9v6c1.7-0.7 3-2.4 3-4.5S15.7 9.7 14 9z"/>'; }
-  else { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 7v10c3-1 5-3.6 5-7s-2-6-5-7z"/>'; }
-}
-volEl.addEventListener('mousedown', stopWrap((e) => { isDraggingVolume = true; handleVolumeInput(e.clientX); }));
-document.addEventListener('mousemove', (e) => { if (isDraggingVolume) { e.preventDefault(); handleVolumeInput(e.clientX); } });
-document.addEventListener('mouseup', () => { isDraggingVolume = false; });
-volEl.addEventListener('touchstart', (e) => { e.stopPropagation(); e.preventDefault(); isDraggingVolume = true; handleVolumeInput(getTouchX(e)); }, { passive:false });
-document.addEventListener('touchmove', (e) => { if (isDraggingVolume) { e.preventDefault(); handleVolumeInput(getTouchX(e)); } }, { passive:false });
-document.addEventListener('touchend', () => { isDraggingVolume = false; }, { passive:false });
+      // 简单 mock 数据（仅用于演示，实际会从后端加载）
+      const defaultGroups = [];
 
-/* 简易播放列表开关（示例） */
-listBtn.addEventListener('click', stopWrap(() => {
-  playlistPanel.style.display = playlistPanel.style.display === 'block' ? 'none' : 'block';
-}));
+      // 从后端加载的群组列表
+      let sampleGroups = [];
 
-/* 提供给 HTML 的播放列表切换 */
-window.playIndex = function(index){ currentIndex = index; loadTrack(currentIndex); playTrack(); }
+      // 已加入的群组ID集合
+      const myJoinedGroupIds = new Set();
 
-/* 新增：封面/标题点击跳转 player.html，携带数据 */
-function openPlayerPageWithData(openInNewTab = false) {
-  try {
-    const params = new URLSearchParams();
-    params.set('course', titleEl.innerText || '');
-    params.set('chapterIndex', String(currentIndex || 0));
-    const safePlaylist = playlist.map((p, i) => ({
-      id: p.id || ('p' + i),
-      title: p.title || (`Track ${i+1}`),
-      src: p.src || '',
-      duration: p.durationText || p.duration || ''
-    }));
-    params.set('chapters', encodeURIComponent(JSON.stringify(safePlaylist)));
-    const url = 'player.html?' + params.toString();
-    if (openInNewTab) window.open(url, '_blank');
-    else window.location.href = url;
-  } catch (err) {
-    try {
-      const params = new URLSearchParams();
-      params.set('course', titleEl.innerText || '');
-      params.set('chapterIndex', String(currentIndex || 0));
-      const url = 'player.html?' + params.toString();
-      if (openInNewTab) window.open(url, '_blank');
-      else window.location.href = url;
-    } catch (_) { /* ignore */ }
-  }
-}
+      // 当前用户ID（从 localStorage 获取）
+      function getCurrentUserId() {
+        return parseInt(localStorage.getItem('userId') || '1');
+      }
 
-/* 封面与标题绑定点击/键盘事件 */
-if (coverEl) {
-  coverEl.addEventListener('click', stopWrap(() => openPlayerPageWithData(false)));
-  coverEl.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openPlayerPageWithData(false); } });
-}
-if (titleEl) {
-  titleEl.addEventListener('click', stopWrap(() => openPlayerPageWithData(false)));
-  titleEl.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openPlayerPageWithData(false); } });
-}
+      // 获取 Token
+      function getAuthToken() {
+        return localStorage.getItem('authToken') || '';
+      }
 
-/* 初始化第一首 */
-loadTrack(currentIndex);
-})();
-    </script>
+      // 从后端加载所有群组
+      // 在 loadAllGroups 函数中修改数据转换部分
 
-      <!-- 社区页交互脚本（Feed、视图切换、筛选） -->
-      <script>
-      (function(){
-        // 简单 mock 数据，可替换为后端 API 请求
-        const defaultGroups = [
-          { id:1, name:'英语口语练习群', desc:'口语练习与资源分享', members:128, category:'学习', inviteCode:'ORAL2024' },
-          { id:2, name:'托福备考群', desc:'每天早起一起学习', members:64, category:'其他', inviteCode:'TOEFL888' },
-          { id:3, name:'商务英语交流', desc:'长篇材料讨论', members:32, category:'groups', inviteCode:'BIZ12345' },
-          { id:4, name:'英文原版阅读', desc:'一起读英文原版书籍', members:56, category:'学习', inviteCode:'BOOK2024' }
-        ];
-        
-        // 从 sessionStorage 加载共享群组数据
-        let sharedGroups = [];
+      async function loadAllGroups() {
         try {
-            const saved = sessionStorage.getItem('sharedGroups');
-            if (saved) {
-                sharedGroups = JSON.parse(saved);
+          const token = getAuthToken();
+          console.log('=== 加载所有群组 ===');
+
+          const response = await fetch(`${API_BASE}/all`, {
+            method: 'GET',
+            headers: {
+              'Authorization': 'Bearer ' + token,
+              'Content-Type': 'application/json'
             }
-        } catch(e) { console.log('Failed to load shared groups'); }
-        
-        // 合并默认群组和共享群组
-        const sampleGroups = [...defaultGroups, ...sharedGroups];
-        
-        // expose for other scripts/pages
-        window.sampleGroups = sampleGroups;
-        
-        // 保存共享群组到 sessionStorage
-        function saveSharedGroups() {
-            const newGroups = sampleGroups.filter(g => g.id > 4); // 只保存新创建的
-            sessionStorage.setItem('sharedGroups', JSON.stringify(newGroups));
-        }
+          });
 
-        // 已加入的群组ID（每次刷新恢复初始状态）
-        const myJoinedGroupIds = new Set([1, 2, 3]);
-        // 加载共享群组的已加入状态
-        sharedGroups.forEach(g => myJoinedGroupIds.add(g.id));
-        
-        // Save joined groups (当前会话有效)
-        function saveJoinedGroups(){
-          // 不再保存到localStorage，刷新即恢复初始状态
-        }
+          console.log('获取群组响应状态:', response.status);
 
-        // ========== 删除群组确认弹窗 ==========
-        const deleteConfirmModal = document.getElementById('deleteConfirmModal');
-        const deleteGroupNameEl = document.getElementById('deleteGroupName');
-        const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
-        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
-        let pendingDeleteGroupId = null;
-        
-        function showDeleteConfirm(groupId, groupName){
-          pendingDeleteGroupId = groupId;
-          deleteGroupNameEl.textContent = groupName;
-          // 如果是自己创建的群（id > 4），显示"解散群组"，否则显示"退出群组"
-          const isMyGroup = groupId > 4;
-          document.querySelector('.confirm-title').textContent = isMyGroup ? '确认解散群组' : '确认退出群组';
-          document.getElementById('confirmDeleteBtn').textContent = isMyGroup ? '确认解散' : '确认退出';
-          deleteConfirmModal.classList.add('show');
+          if (!response.ok) {
+            console.warn('获取群组列表失败，状态码:', response.status);
+            sampleGroups = defaultGroups;
+            return;
+          }
+
+          const result = await response.json();
+
+          console.log('群组列表响应:', result);
+
+          if (result && result.code === 200 && Array.isArray(result.data)) {
+            // 转换后端数据格式到前端格式
+            sampleGroups = result.data.map(g => ({
+              id: g.groupId,
+              name: g.groupName,
+              desc: g.description || '暂无简介',
+              members: g.memberCount || 0, // 使用后端返回的成员数
+              category: '学习',
+              inviteCode: g.inviteCode,
+              ownerId: g.ownerId
+            }));
+
+            console.log('加载的群组列表:', sampleGroups);
+          } else {
+            console.warn('返回数据格式不正确:', result);
+            sampleGroups = defaultGroups;
+          }
+        } catch (error) {
+          console.error('加载群组失败:', error);
+          sampleGroups = defaultGroups;
         }
-        
-        function hideDeleteConfirm(){
-          deleteConfirmModal.classList.remove('show');
-          pendingDeleteGroupId = null;
+      }
+
+      // 从后端加载用户已加入的群组
+      async function loadMyJoinedGroups() {
+        try {
+          const userId = getCurrentUserId();
+          const token = getAuthToken();
+
+          console.log('=== 加载用户已加入的群组 ===');
+          console.log('userId:', userId);
+
+          const response = await fetch(`${API_BASE}/user/${userId}/joined`, {
+            method: 'GET',
+            headers: {
+              'Authorization': 'Bearer ' + token,
+              'Content-Type': 'application/json'
+            }
+          });
+
+          console.log('加入的群组响应状态:', response.status);
+
+          if (response.ok) {
+            const result = await response.json();
+
+            console.log('已加入群组响应:', result);
+
+            if (result && result.code === 200 && Array.isArray(result.data)) {
+              myJoinedGroupIds.clear();
+              result.data.forEach(g => {
+                console.log('添加到已加入集合:', g.groupId);
+                myJoinedGroupIds.add(g.groupId);
+              });
+              console.log('已加入的群组ID列表:', Array.from(myJoinedGroupIds));
+            }
+          } else {
+            console.warn('加载已加入群组失败，状态码:', response.status);
+          }
+        } catch (error) {
+          console.error('加载已加入群组失败:', error);
         }
-        
-        cancelDeleteBtn.addEventListener('click', hideDeleteConfirm);
-        deleteConfirmModal.addEventListener('click', (e)=>{
-          if(e.target === deleteConfirmModal) hideDeleteConfirm();
-        });
-        
-        confirmDeleteBtn.addEventListener('click', ()=>{
-          if(pendingDeleteGroupId !== null){
+      }
+
+      // ========== 删除/退出群组确认弹窗 ==========
+      const deleteConfirmModal = document.getElementById('deleteConfirmModal');
+      const deleteGroupNameEl = document.getElementById('deleteGroupName');
+      const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+      const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+      let pendingDeleteGroupId = null;
+
+      function showDeleteConfirm(groupId, groupName, isOwner) {
+        pendingDeleteGroupId = groupId;
+        deleteGroupNameEl.textContent = groupName;
+        document.querySelector('.confirm-title').textContent = isOwner ? '确认解散群组' : '确认退出群组';
+        document.querySelector('.confirm-msg').textContent = isOwner
+          ? `你确定要解散「${groupName}」群组吗？此操作不可撤销。`
+          : `你确定要退出「${groupName}」群组吗？`;
+        document.getElementById('confirmDeleteBtn').textContent = isOwner ? '确认解散' : '确认退出';
+        deleteConfirmModal.classList.add('show');
+      }
+
+      function hideDeleteConfirm() {
+        deleteConfirmModal.classList.remove('show');
+        pendingDeleteGroupId = null;
+      }
+
+      cancelDeleteBtn.addEventListener('click', hideDeleteConfirm);
+      deleteConfirmModal.addEventListener('click', (e) => {
+        if (e.target === deleteConfirmModal) hideDeleteConfirm();
+      });
+
+      confirmDeleteBtn.addEventListener('click', async () => {
+        if (pendingDeleteGroupId === null) return;
+
+        try {
+          const userId = getCurrentUserId();
+          const group = sampleGroups.find(g => g.id === pendingDeleteGroupId);
+          const isOwner = group && group.ownerId === userId;
+
+          let response;
+          if (isOwner) {
+            // 群主解散群组：DELETE /api/chat/group/{groupId}?userId={userId}
+            response = await fetch(`${API_BASE}/${pendingDeleteGroupId}?userId=${userId}`, {
+              method: 'DELETE',
+              headers: {
+                'Authorization': 'Bearer ' + getAuthToken(),
+                'Content-Type': 'application/json'
+              }
+            });
+          } else {
+            // 普通成员退出群组（需要后端添加此接口）
+            // 假设接口：POST /api/chat/group/{groupId}/leave
+            response = await fetch(`${API_BASE}/${pendingDeleteGroupId}/leave`, {
+              method: 'POST',
+              headers: {
+                'Authorization': 'Bearer ' + getAuthToken(),
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ userId: userId })
+            });
+          }
+
+          const result = await response.json();
+          if (result && result.code === 200) {
             // 从已加入列表移除
             myJoinedGroupIds.delete(pendingDeleteGroupId);
-            
-            // 如果是自己创建的群（id > 4），从群组列表中也删除
-            if(pendingDeleteGroupId > 4){
+
+            // 如果是群主解散，从群组列表中也删除
+            if (isOwner) {
               const idx = sampleGroups.findIndex(g => g.id === pendingDeleteGroupId);
-              if(idx !== -1){
+              if (idx !== -1) {
                 sampleGroups.splice(idx, 1);
               }
             }
-            
-            saveJoinedGroups();
+
             renderJoinedGroups();
             hideDeleteConfirm();
-          }
-        });
-
-        // Render joined groups in left sidebar
-        function renderJoinedGroups(){
-          const container = document.getElementById('joinedGroupsList');
-          if(!container) return;
-          const joined = sampleGroups.filter(g => myJoinedGroupIds.has(g.id));
-          container.innerHTML = joined.map(g => `
-            <div class="joined-group-item" data-id="${g.id}">
-              <div class="jg-avatar">${escapeHtml((g.name||'').slice(0,1))}</div>
-              <div class="jg-info">
-                <div class="jg-name">${escapeHtml(g.name)}</div>
-                <div class="jg-members">${g.members}人</div>
-              </div>
-              <button class="jg-delete-btn" data-id="${g.id}" data-name="${escapeHtml(g.name)}" title="退出群组"><i class="fas fa-times"></i></button>
-            </div>
-          `).join('');
-          // click to navigate
-          container.querySelectorAll('.joined-group-item').forEach(el => {
-            el.addEventListener('click', (e)=>{
-              if(e.target.closest('.jg-delete-btn')) return; // 不触发导航
-              window.location.href = `channel2.html?groupId=${el.dataset.id}`;
-            });
-          });
-          // delete button handler
-          container.querySelectorAll('.jg-delete-btn').forEach(btn => {
-            btn.addEventListener('click', (e)=>{
-              e.stopPropagation();
-              const id = parseInt(btn.dataset.id);
-              const name = btn.dataset.name;
-              showDeleteConfirm(id, name);
-            });
-          });
-        }
-
-        // 存储从后端获取的帖子数据
-        let postsData = [];
-
-        const groupsGrid = document.getElementById('groupsGrid');
-        const postsList = document.getElementById('postsList');
-        const feedPanel = document.getElementById('feedPanel');
-        const groupsPanel = document.getElementById('groupsPanel');
-        const viewBtns = document.querySelectorAll('.view-btn');
-        const filterChips = document.querySelectorAll('.chip');
-        const composerInput = document.getElementById('composerInput');
-        
-        const tabChips = document.querySelectorAll('.tab-chip');
-
-        // Track which comment we're replying to
-        let replyingToCommentId = null;
-        let replyingToPostId = null;
-
-        function escapeHtml(str){
-          return String(str).replace(/[&<>"']/g, function(m){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"})[m]; });
-        }
-
-        function renderGroups(list){
-          groupsGrid.innerHTML = '';
-          list.forEach(g=>{
-            const isJoined = myJoinedGroupIds.has(g.id);
-            const el = document.createElement('div'); el.className='group-item';
-            el.setAttribute('data-group-id', g.id);
-            el.innerHTML = `<div class="group-info"><h3>${escapeHtml(g.name)}</h3><p>${escapeHtml(g.desc)}</p></div><div class="group-buttons"><span class="members-count">已加入${g.members}人</span><button class="join-btn" data-id="${g.id}">${isJoined ? '已加入' : '加入'}</button><span class="invite-code" title="点击复制" style="cursor:pointer;">邀请码：${g.inviteCode || 'N/A'}</span></div>`;
-            // clicking the group navigates to the chat/detail page for that group
-            el.querySelector('.group-info').addEventListener('click', ()=>{
-              window.location.href = `channel2.html?groupId=${encodeURIComponent(g.id)}`;
-            });
-            // click invite code to copy
-            el.querySelector('.invite-code').addEventListener('click', (e)=>{
-              e.stopPropagation();
-              if(g.inviteCode){
-                navigator.clipboard.writeText(g.inviteCode).then(()=>{
-                  alert(`邀请码 ${g.inviteCode} 已复制到剪贴板！`);
-                });
-              }
-            });
-            groupsGrid.appendChild(el);
-          });
-        }
-
-        // Tab switching: Feed vs Groups vs Activity
-        const feedSortSelect = document.getElementById('feedSortSelect');
-        const groupSortSelect = document.getElementById('groupSortSelect');
-        const activityPanel = document.getElementById('activityPanel');
-        const sortLabel = document.querySelector('.sort-label');
-        
-        tabChips.forEach(chip => {
-          chip.addEventListener('click', ()=>{
-            tabChips.forEach(c => c.classList.remove('active'));
-            chip.classList.add('active');
-            const tab = chip.dataset.tab;
-            if(tab === 'feed') {
-              feedPanel.style.display = 'block';
-              groupsPanel.style.display = 'none';
-              activityPanel.style.display = 'none';
-              feedSortSelect.style.display = 'inline-block';
-              groupSortSelect.style.display = 'none';
-              sortLabel.style.display = 'inline';
-            } else if(tab === 'groups') {
-              feedPanel.style.display = 'none';
-              groupsPanel.style.display = 'block';
-              activityPanel.style.display = 'none';
-              feedSortSelect.style.display = 'none';
-              groupSortSelect.style.display = 'inline-block';
-              sortLabel.style.display = 'inline';
-              renderGroups(sampleGroups);
-            } else if(tab === 'activity') {
-              feedPanel.style.display = 'none';
-              groupsPanel.style.display = 'none';
-              activityPanel.style.display = 'block';
-              feedSortSelect.style.display = 'none';
-              groupSortSelect.style.display = 'none';
-              sortLabel.style.display = 'none';
-            }
-          });
-        });
-
-        // initial render
-        renderJoinedGroups();
-
-        // Helper to render hashtags
-        function renderTextWithTags(text){
-          return escapeHtml(text).replace(/#([^#\s]+)#/g, '<span class="hashtag">#$1#</span>').replace(/\n/g, '<br>');
-        }
-
-        // Helper to render comment text with @mentions highlighted
-        function renderCommentText(text){
-          return escapeHtml(text).replace(/@(\S+)/g, '<span class="mention">@$1</span>');
-        }
-
-        // Render a reply item (smaller style)
-        function renderReplyItem(r, postId, parentCommentId){
-          return `
-            <div class="reply-item" data-comment-id="${r.id}">
-              <div class="comment-avatar">${escapeHtml(r.avatar || r.author.slice(0,1))}</div>
-              <div class="comment-content">
-                <div class="comment-header">
-                  <span class="comment-author">${escapeHtml(r.author)}</span>
-                  <span class="comment-time">${escapeHtml(r.time)}</span>
-                </div>
-                <div class="comment-text">${renderCommentText(r.text)}</div>
-                <div class="comment-actions">
-                  <button class="comment-like-btn" data-id="${r.id}"><i class="far fa-heart"></i> ${r.likes || 0}</button>
-                  <button class="reply-btn" data-post-id="${postId}" data-parent-id="${parentCommentId}" data-reply-to="${r.author}">回复</button>
-                </div>
-              </div>
-            </div>
-          `;
-        }
-
-        // Render main comment with nested replies (B站/微博 style)
-        function renderComment(c, postId){
-          const replies = c.replies || [];
-          const hasReplies = replies.length > 0;
-          
-          return `
-            <div class="comment-item" data-comment-id="${c.id}">
-              <div class="comment-avatar">${escapeHtml(c.avatar || c.author.slice(0,1))}</div>
-              <div class="comment-content">
-                <div class="comment-header">
-                  <span class="comment-author">${escapeHtml(c.author)}</span>
-                  <span class="comment-time">${escapeHtml(c.time)}</span>
-                </div>
-                <div class="comment-text">${renderCommentText(c.text)}</div>
-                <div class="comment-actions">
-                  <button class="comment-like-btn" data-id="${c.id}"><i class="far fa-heart"></i> ${c.likes || 0}</button>
-                  <button class="reply-btn" data-post-id="${postId}" data-parent-id="${c.id}" data-reply-to="${c.author}">回复</button>
-                </div>
-                ${hasReplies ? `
-                  <div class="replies-wrapper">
-                    <div class="replies-list">
-                      ${replies.map(r => renderReplyItem(r, postId, c.id)).join('')}
-                    </div>
-                  </div>
-                ` : ''}
-              </div>
-            </div>
-          `;
-        }
-
-        function renderPosts(list){
-          postsList.innerHTML = '';
-          list.forEach(p=>{
-            const node = document.createElement('div'); node.className='post-card'; node.dataset.postId = p.id;
-            const avatarLetter = escapeHtml(p.avatar || (p.author||'').slice(0,1));
-            const commentsArr = p.comments || [];
-            const commentCount = commentsArr.length + commentsArr.reduce((sum, c) => sum + (c.replies?.length || 0), 0);
-            
-            node.innerHTML = `
-              <div class="post-header">
-                <div class="avatar">${avatarLetter}</div>
-                <div class="post-author">
-                  <div class="author-name">${escapeHtml(p.author)}</div>
-                  <div class="post-time">${escapeHtml(p.time)}</div>
-                </div>
-              </div>
-              <div class="post-body">${renderTextWithTags(p.text)}</div>
-              ${p.images&&p.images.length?`<div class="post-images">${p.images.map(src=>`<img src="${src}" alt="image">`).join('')}</div>`:''}
-              <div class="post-actions">
-                <button class="action-btn like-btn" data-id="${p.id}"><i class="far fa-heart"></i> <span class="like-count">${p.likes}</span></button>
-                <button class="action-btn comment-toggle-btn" data-id="${p.id}"><i class="far fa-comment"></i> <span class="comment-count">${commentCount}</span></button>
-                <button class="action-btn share-btn"><i class="far fa-share-square"></i> 转发</button>
-              </div>
-              <div class="comments-section" id="comments-${p.id}" style="display:none;">
-                <div class="comments-list">
-                  ${commentsArr.map(c => renderComment(c, p.id)).join('')}
-                </div>
-                <div class="comment-composer">
-                  <input type="text" class="comment-input" placeholder="写评论..." data-post-id="${p.id}" />
-                  <button class="comment-submit-btn" data-post-id="${p.id}">发送</button>
-                </div>
-              </div>
-            `;
-            postsList.appendChild(node);
-          });
-          
-          // Bind comment toggle
-          document.querySelectorAll('.comment-toggle-btn').forEach(btn => {
-            btn.addEventListener('click', ()=>{
-              const postId = btn.dataset.id;
-              const section = document.getElementById('comments-' + postId);
-              if(section){
-                section.style.display = section.style.display === 'none' ? 'block' : 'none';
-              }
-            });
-          });
-          
-          // Bind comment submit
-          document.querySelectorAll('.comment-submit-btn').forEach(btn => {
-            btn.addEventListener('click', async ()=>{
-              const postId = btn.dataset.postId;
-              const input = document.querySelector(`.comment-input[data-post-id="${postId}"]`);
-              let text = input.value.trim();
-              if(!text) return;
-              
-              try {
-                const token = localStorage.getItem('authToken') || '';
-                const userId = localStorage.getItem('userId') || '1';
-                
-                const response = await fetch(`http://localhost:8080/api/posts/${postId}/comments`, {
-                  method: 'POST',
-                  headers: {
-                    'Authorization': 'Bearer ' + token,
-                    'Content-Type': 'application/json'
-                  },
-                  body: JSON.stringify({
-                    author: parseInt(userId),
-                    text: text
-                  })
-                });
-                
-                if (response.ok) {
-                  input.value = '';
-                  replyingToCommentId = null;
-                  replyingToPostId = null;
-                  fetchPosts();
-                  setTimeout(()=>{
-                    const section = document.getElementById('comments-' + postId);
-                    if(section) section.style.display = 'block';
-                  }, 100);
-                } else {
-                  alert('评论提交失败');
-                }
-              } catch (error) {
-                console.error('评论提交错误:', error);
-                alert('评论提交失败');
-              }
-            });
-          });
-          
-          // Bind reply buttons
-          document.querySelectorAll('.reply-btn').forEach(btn => {
-            btn.addEventListener('click', ()=>{
-              const postId = btn.dataset.postId;
-              const replyTo = btn.dataset.replyTo;
-              const parentId = btn.dataset.parentId; // 主评论的ID
-              const input = document.querySelector(`.comment-input[data-post-id="${postId}"]`);
-              if(input){
-                input.value = `@${replyTo} `;
-                input.focus();
-                replyingToCommentId = parentId; // 记录主评论ID
-                replyingToPostId = postId; // 记录帖子ID
-              }
-            });
-          });
-          
-          // Bind post like buttons
-          document.querySelectorAll('.post-card .like-btn').forEach(btn => {
-            btn.addEventListener('click', async (e)=>{
-              e.stopPropagation();
-              const id = parseInt(btn.dataset.id);
-              
-              try {
-                const token = localStorage.getItem('authToken') || '';
-                let response;
-                
-                if(btn.classList.contains('liked')){
-                  response = await fetch(`http://localhost:8080/api/posts/${id}/unlike`, {
-                    method: 'POST',
-                    headers: {
-                      'Authorization': 'Bearer ' + token,
-                      'Content-Type': 'application/json'
-                    }
-                  });
-                } else {
-                  response = await fetch(`http://localhost:8080/api/posts/${id}/like`, {
-                    method: 'POST',
-                    headers: {
-                      'Authorization': 'Bearer ' + token,
-                      'Content-Type': 'application/json'
-                    }
-                  });
-                }
-                
-                if (response.ok) {
-                  const result = await response.json();
-                  if (result && result.code === 200 && result.data) {
-                    const countEl = btn.querySelector('.like-count');
-                    if(countEl) countEl.textContent = result.data.likes;
-                    btn.classList.toggle('liked');
-                  }
-                }
-              } catch (error) {
-                console.error('点赞操作错误:', error);
-              }
-            });
-          });
-          
-          // Bind comment like buttons
-          document.querySelectorAll('.comment-like-btn').forEach(btn => {
-            btn.addEventListener('click', (e)=>{
-              e.stopPropagation();
-              btn.classList.toggle('liked');
-              // Simple visual toggle for demo
-              const currentText = btn.textContent.trim();
-              const num = parseInt(currentText.match(/\d+/)?.[0] || '0');
-              if(btn.classList.contains('liked')){
-                btn.innerHTML = `<i class="fas fa-heart"></i> ${num + 1}`;
-              } else {
-                btn.innerHTML = `<i class="far fa-heart"></i> ${Math.max(0, num - 1)}`;
-              }
-            });
-          });
-        }
-
-        let currentPosts = [];
-
-        // 从后端API获取动态
-        async function fetchPosts() {
-            try {
-                const token = localStorage.getItem('authToken') || '';
-                const response = await fetch('http://localhost:8080/api/posts', {
-                    headers: {
-                        'Authorization': 'Bearer ' + token,
-                        'Content-Type': 'application/json'
-                    }
-                });
-                const result = await response.json();
-                if (result && result.code === 200 && Array.isArray(result.data)) {
-                    // 将后端数据转换为前端需要的格式
-                    const posts = result.data.map(post => ({
-                        id: post.id,
-                        author: post.author,
-                        avatar: post.author.toString().slice(0, 1).toUpperCase(),
-                        text: post.text,
-                        images: post.images || [],
-                        likes: post.likes,
-                        comments: post.comments || [],
-                        time: new Date(post.createdAt).toLocaleString(),
-                        tags: post.tags || []
-                    }));
-                    currentPosts = posts;
-                    renderPosts(posts);
-                } else {
-                    currentPosts = [];
-                    renderPosts([]);
-                }
-            } catch (error) {
-                console.error('获取动态失败:', error);
-                currentPosts = [];
-                renderPosts([]);
-            }
-        }
-
-        // 发布新动态到后端API
-        async function publishPost(text, images) {
-            try {
-                const token = localStorage.getItem('authToken') || '';
-                const userId = localStorage.getItem('userId') || '1';
-                const username = localStorage.getItem('username') || '用户';
-                
-                const response = await fetch('http://localhost:8080/api/posts', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': 'Bearer ' + token,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        text: text,
-                        images: images,
-                        userId: parseInt(userId),
-                        author: parseInt(userId),
-                        likes: 0,
-                        comments: [],
-                        tags: []
-                    })
-                });
-                const result = await response.json();
-                if (result && result.code === 200) {
-                    // 发布成功后刷新动态列表
-                    fetchPosts();
-                    return true;
-                }
-                return false;
-            } catch (error) {
-                console.error('发布动态失败:', error);
-                return false;
-            }
-        }
-
-        // Initial render
-        renderJoinedGroups();
-        fetchPosts(); // 从后端API获取动态
-
-        // Composer: image preview and post creation
-        const postBtn = document.getElementById('postBtn');
-        const attachBtnEl = document.getElementById('attachBtn');
-        const composerFilesEl = document.getElementById('composerFiles');
-        const previewAreaEl = document.getElementById('previewArea');
-
-        attachBtnEl.addEventListener('click', ()=> composerFilesEl.click());
-        // manage selected files manually so we can remove thumbnails
-        let composerSelectedFiles = [];
-        composerFilesEl.addEventListener('change', (e)=>{
-          const files = Array.from(e.target.files || []);
-          // append new files to the selection
-          composerSelectedFiles = composerSelectedFiles.concat(files);
-          renderComposerPreviews();
-        });
-
-        function renderComposerPreviews(){
-          previewAreaEl.innerHTML = '';
-          composerSelectedFiles.forEach((f, idx)=>{
-            const reader = new FileReader();
-            const wrap = document.createElement('div'); wrap.style.display='inline-block'; wrap.style.position='relative';
-            reader.onload = ev=>{
-              const img = document.createElement('img'); img.src = ev.target.result; img.style.maxWidth='120px'; img.style.margin='6px'; img.style.borderRadius='6px';
-              wrap.appendChild(img);
-              const removeBtn = document.createElement('button'); removeBtn.textContent='×'; removeBtn.style.position='absolute'; removeBtn.style.right='4px'; removeBtn.style.top='4px'; removeBtn.style.background='rgba(0,0,0,0.5)'; removeBtn.style.color='#fff'; removeBtn.style.border='none'; removeBtn.style.borderRadius='50%'; removeBtn.style.width='22px'; removeBtn.style.height='22px'; removeBtn.style.cursor='pointer';
-              removeBtn.addEventListener('click',(ev)=>{ ev.stopPropagation(); composerSelectedFiles.splice(idx,1); renderComposerPreviews(); });
-              wrap.appendChild(removeBtn);
-            };
-            reader.readAsDataURL(f);
-            previewAreaEl.appendChild(wrap);
-          });
-        }
-
-        postBtn.addEventListener('click', ()=>{
-          const text = composerInput.value.trim();
-          const images = [];
-          const files = composerSelectedFiles.slice();
-          // convert files to data URLs synchronously via FileReader (already previewed)
-          const readers = files.map(f=> new Promise(resolve=>{ const r=new FileReader(); r.onload=ev=>resolve(ev.target.result); r.readAsDataURL(f);}));
-          Promise.all(readers).then(dataUrls=>{
-            // 使用后端API发布动态
-            publishPost(text, dataUrls).then(success => {
-              if (success) {
-                // 发布成功后清空表单
-                composerInput.value = '';
-                composerFilesEl.value = '';
-                composerSelectedFiles = [];
-                previewAreaEl.innerHTML = '';
-              } else {
-                alert('发布失败，请稍后重试');
-              }
-            });
-          });
-        });
-
-        // Search box filters groups (already bound above via applyGroupFilters)
-
-        // View mode
-        function setViewMode(mode){
-          document.body.classList.remove('view-card','view-list','view-compact');
-          document.body.classList.add('view-'+mode);
-          viewBtns.forEach(b=>b.classList.toggle('active', b.getAttribute('data-mode')===mode));
-          localStorage.setItem('channelViewMode', mode);
-        }
-        viewBtns.forEach(b=> b.addEventListener('click', ()=> setViewMode(b.getAttribute('data-mode'))));
-        const saved = localStorage.getItem('channelViewMode') || 'card'; setViewMode(saved);
-
-        // Sort - Feed (动态排序：最新/最热)
-        feedSortSelect.addEventListener('change', ()=>{
-          const val = feedSortSelect.value;
-          let sorted = [...currentPosts];
-          if(val === 'new') {
-            // 按时间排序（id越大越新）
-            sorted.sort((a, b) => b.id - a.id);
-          } else if(val === 'hot') {
-            // 按热度排序（点赞+评论数）
-            sorted.sort((a, b) => {
-              const aHot = (a.likes || 0) + (a.comments?.length || 0);
-              const bHot = (b.likes || 0) + (b.comments?.length || 0);
-              return bHot - aHot;
-            });
-          }
-          renderPosts(sorted);
-        });
-
-        // Sort - Groups (群组排序：活跃度/最新/成员数)
-        groupSortSelect.addEventListener('change', ()=>{
-          const val = groupSortSelect.value;
-          let sorted = [...sampleGroups];
-          if(val === 'new') sorted.sort((a, b) => b.id - a.id);
-          else if(val === 'members') sorted.sort((a, b) => b.members - a.members);
-          else if(val === 'active') sorted.sort((a, b) => b.members - a.members);
-          renderGroups(sorted);
-        });
-
-        // Filter chips (tags) affect groups display
-        filterChips.forEach(ch=> ch.addEventListener('click', ()=>{
-          ch.classList.toggle('active');
-          const active = Array.from(filterChips).filter(c=>c.classList.contains('active')).map(c=>c.getAttribute('data-filter'));
-          if(active.length===0) renderGroups(sampleGroups);
-          else renderGroups(sampleGroups.filter(g=> active.includes(g.category)));
-        }));
-
-        // Join button handler (delegated)
-        groupsGrid.addEventListener('click', (e)=>{
-          const btn = e.target.closest('.join-btn'); if(!btn) return;
-          e.stopPropagation(); // prevent parent group click from firing navigation
-          const id = parseInt(btn.getAttribute('data-id'));
-          
-          if(!myJoinedGroupIds.has(id)){
-            // 未加入状态：加入群组
-            myJoinedGroupIds.add(id);
-            saveJoinedGroups(); // persist to localStorage
-            renderJoinedGroups(); // refresh left sidebar
-            btn.textContent = '已加入';
+            alert(isOwner ? '群组已解散' : '已退出群组');
           } else {
-            // 已加入状态：进入群组页面
-            window.location.href = `channel2.html?groupId=${encodeURIComponent(id)}`;
+            alert('操作失败: ' + (result.message || '未知错误'));
           }
+        } catch (error) {
+          console.error('删除/退出群组错误:', error);
+          alert('操作失败，请检查网络连接');
+        }
+      });
+
+      // 渲染已加入的群组列表
+      function renderJoinedGroups() {
+        const container = document.getElementById('joinedGroupsList');
+        if (!container) return;
+        const joined = sampleGroups.filter(g => myJoinedGroupIds.has(g.id));
+        container.innerHTML = joined.map(g => {
+          const userId = getCurrentUserId();
+          const isOwner = g.ownerId === userId;
+          return `
+        <div class="joined-group-item" data-id="${g.id}">
+          <div class="jg-avatar">${escapeHtml((g.name || '').slice(0, 1))}</div>
+          <div class="jg-info">
+            <div class="jg-name">${escapeHtml(g.name)}</div>
+            <div class="jg-members">${g.members}人</div>
+          </div>
+          <button class="jg-delete-btn" data-id="${g.id}" data-name="${escapeHtml(g.name)}" data-owner="${isOwner}" title="${isOwner ? '解散群组' : '退出群组'}">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      `;
+        }).join('');
+
+        // 点击群组项跳转到聊天页面
+        container.querySelectorAll('.joined-group-item').forEach(el => {
+          el.addEventListener('click', (e) => {
+            if (e.target.closest('.jg-delete-btn')) return;
+            window.location.href = `channel2.html?groupId=${el.dataset.id}`;
+          });
         });
 
-        // Join by invite code handler
-        const inviteCodeInput = document.getElementById('inviteCodeInput');
-        const joinByCodeBtn = document.getElementById('joinByCodeBtn');
-        
-        joinByCodeBtn.addEventListener('click', ()=>{
-          const code = inviteCodeInput.value.trim().toUpperCase();
-          if(!code){
-            alert('请输入邀请码');
-            return;
-          }
-          if(code.length < 4){
-            alert('邀请码格式不正确');
-            return;
-          }
-          // Find group by invite code
-          const group = sampleGroups.find(g => g.inviteCode && g.inviteCode.toUpperCase() === code);
-          if(group){
-            if(myJoinedGroupIds.has(group.id)){
-              alert(`您已经加入了「${group.name}」群组`);
-            } else {
-              myJoinedGroupIds.add(group.id);
-              saveJoinedGroups(); // persist to localStorage
-              alert(`成功加入「${group.name}」群组！`);
-              renderJoinedGroups(); // refresh left sidebar
+        // 删除/退出按钮处理
+        container.querySelectorAll('.jg-delete-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const id = parseInt(btn.dataset.id);
+            const name = btn.dataset.name;
+            const isOwner = btn.dataset.owner === 'true';
+            showDeleteConfirm(id, name, isOwner);
+          });
+        });
+      }
+
+      // 存储从后端获取的帖子数据
+      let postsData = [];
+
+      const groupsGrid = document.getElementById('groupsGrid');
+      const postsList = document.getElementById('postsList');
+      const feedPanel = document.getElementById('feedPanel');
+      const groupsPanel = document.getElementById('groupsPanel');
+      const composerInput = document.getElementById('composerInput');
+
+      const tabChips = document.querySelectorAll('.tab-chip');
+
+      // Track which comment we're replying to
+      let replyingToCommentId = null;
+      let replyingToPostId = null;
+
+      function escapeHtml(str) {
+        return String(str).replace(/[&<>"']/g, function (m) {
+          return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": "&#39;" })[m];
+        });
+      }
+
+      function renderGroups(list) {
+        groupsGrid.innerHTML = '';
+        list.forEach(g => {
+          const isJoined = myJoinedGroupIds.has(g.id);
+          const el = document.createElement('div');
+          el.className = 'group-item';
+          el.setAttribute('data-group-id', g.id);
+          el.innerHTML = `
+        <div class="group-info">
+          <h3>${escapeHtml(g.name)}</h3>
+          <p>${escapeHtml(g.desc)}</p>
+        </div>
+        <div class="group-buttons">
+          <span class="members-count">已加入${g.members}人</span>
+          <button class="join-btn" data-id="${g.id}">${isJoined ? '已加入' : '加入'}</button>
+          <span class="invite-code" title="点击复制" style="cursor:pointer;">
+            邀请码：${g.inviteCode || 'N/A'}
+          </span>
+        </div>
+      `;
+
+          // 点击群组信息跳转到聊天页面
+          el.querySelector('.group-info').addEventListener('click', () => {
+            window.location.href = `channel2.html?groupId=${encodeURIComponent(g.id)}`;
+          });
+
+          // 点击邀请码复制
+          el.querySelector('.invite-code').addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (g.inviteCode) {
+              navigator.clipboard.writeText(g.inviteCode).then(() => {
+                alert(`邀请码 ${g.inviteCode} 已复制到剪贴板！`);
+              });
             }
-          } else {
-            alert('邀请码无效，请检查后重试');
-          }
-          inviteCodeInput.value = '';
-        });
-        
-        // Allow Enter key to submit
-        inviteCodeInput.addEventListener('keypress', (e)=>{
-          if(e.key === 'Enter'){
-            joinByCodeBtn.click();
-          }
-        });
+          });
 
-        // Topic card click handler - filter Feed by hashtag
-        document.querySelectorAll('.topic-card').forEach(card => {
-          card.addEventListener('click', ()=>{
-            const tag = card.dataset.topic;
-            if(!tag) return;
-            // Switch to Feed tab
-            tabChips.forEach(c => c.classList.remove('active'));
-            document.querySelector('.tab-chip[data-tab="feed"]').classList.add('active');
+          groupsGrid.appendChild(el);
+        });
+      }
+
+      // Tab 切换逻辑
+      const feedSortSelect = document.getElementById('feedSortSelect');
+      const groupSortSelect = document.getElementById('groupSortSelect');
+      const activityPanel = document.getElementById('activityPanel');
+      const sortLabel = document.querySelector('.sort-label');
+
+      tabChips.forEach(chip => {
+        chip.addEventListener('click', () => {
+          tabChips.forEach(c => c.classList.remove('active'));
+          chip.classList.add('active');
+          const tab = chip.dataset.tab;
+          if (tab === 'feed') {
             feedPanel.style.display = 'block';
             groupsPanel.style.display = 'none';
             activityPanel.style.display = 'none';
             feedSortSelect.style.display = 'inline-block';
             groupSortSelect.style.display = 'none';
-            // Filter posts by tag
-            const filtered = currentPosts.filter(p => p.tags && p.tags.includes(tag));
-            if(filtered.length > 0){
-              renderPosts(filtered);
-            } else {
-              postsList.innerHTML = `<div style="text-align:center;padding:40px;color:#999;"><i class="fas fa-search" style="font-size:48px;margin-bottom:16px;display:block;color:#ddd;"></i>暂无 #${escapeHtml(tag)}# 相关动态</div>`;
+            sortLabel.style.display = 'inline';
+          } else if (tab === 'groups') {
+            feedPanel.style.display = 'none';
+            groupsPanel.style.display = 'block';
+            activityPanel.style.display = 'none';
+            feedSortSelect.style.display = 'none';
+            groupSortSelect.style.display = 'inline-block';
+            sortLabel.style.display = 'inline';
+            renderGroups(sampleGroups);
+          } else if (tab === 'activity') {
+            feedPanel.style.display = 'none';
+            groupsPanel.style.display = 'none';
+            activityPanel.style.display = 'block';
+            feedSortSelect.style.display = 'none';
+            groupSortSelect.style.display = 'none';
+            sortLabel.style.display = 'none';
+          }
+        });
+      });
+
+      // Helper functions for rendering posts (保持原有逻辑)
+      function renderTextWithTags(text) {
+        return escapeHtml(text).replace(/#([^#\s]+)#/g, '<span class="hashtag">#$1#</span>').replace(/\n/g, '<br>');
+      }
+
+      function renderCommentText(text) {
+        return escapeHtml(text).replace(/@(\S+)/g, '<span class="mention">@$1</span>');
+      }
+
+      function renderReplyItem(r, postId, parentCommentId) {
+        return `
+      <div class="reply-item" data-comment-id="${r.id}">
+        <div class="comment-avatar">${escapeHtml(r.avatar || r.author.slice(0, 1))}</div>
+        <div class="comment-content">
+          <div class="comment-header">
+            <span class="comment-author">${escapeHtml(r.author)}</span>
+            <span class="comment-time">${escapeHtml(r.time)}</span>
+          </div>
+          <div class="comment-text">${renderCommentText(r.text)}</div>
+          <div class="comment-actions">
+            <button class="comment-like-btn" data-id="${r.id}">
+              <i class="far fa-heart"></i> ${r.likes || 0}
+            </button>
+            <button class="reply-btn" data-post-id="${postId}" data-parent-id="${parentCommentId}" data-reply-to="${r.author}">回复</button>
+          </div>
+        </div>
+      </div>
+    `;
+      }
+
+      function renderComment(c, postId) {
+        const replies = c.replies || [];
+        const hasReplies = replies.length > 0;
+
+        return `
+      <div class="comment-item" data-comment-id="${c.id}">
+        <div class="comment-avatar">${escapeHtml(c.avatar || c.author.slice(0, 1))}</div>
+        <div class="comment-content">
+          <div class="comment-header">
+            <span class="comment-author">${escapeHtml(c.author)}</span>
+            <span class="comment-time">${escapeHtml(c.time)}</span>
+          </div>
+          <div class="comment-text">${renderCommentText(c.text)}</div>
+          <div class="comment-actions">
+            <button class="comment-like-btn" data-id="${c.id}">
+              <i class="far fa-heart"></i> ${c.likes || 0}
+            </button>
+            <button class="reply-btn" data-post-id="${postId}" data-parent-id="${c.id}" data-reply-to="${c.author}">回复</button>
+          </div>
+          ${hasReplies ? `
+            <div class="replies-wrapper">
+              <div class="replies-list">
+                ${replies.map(r => renderReplyItem(r, postId, c.id)).join('')}
+              </div>
+            </div>
+          ` : ''}
+        </div>
+      </div>
+    `;
+      }
+
+      function renderPosts(list) {
+        postsList.innerHTML = '';
+        list.forEach(p => {
+          const node = document.createElement('div');
+          node.className = 'post-card';
+          node.dataset.postId = p.id;
+          const avatarLetter = escapeHtml(p.avatar || (p.author || '').slice(0, 1));
+          const commentsArr = p.comments || [];
+          const commentCount = commentsArr.length + commentsArr.reduce((sum, c) => sum + (c.replies?.length || 0), 0);
+
+          node.innerHTML = `
+        <div class="post-header">
+          <div class="avatar">${avatarLetter}</div>
+          <div class="post-author">
+            <div class="author-name">${escapeHtml(p.author)}</div>
+            <div class="post-time">${escapeHtml(p.time)}</div>
+          </div>
+        </div>
+        <div class="post-body">${renderTextWithTags(p.text)}</div>
+        ${p.images && p.images.length ? `
+          <div class="post-images">
+            ${p.images.map(src => `<img src="${src}" alt="image">`).join('')}
+          </div>
+        `: ''}
+        <div class="post-actions">
+          <button class="action-btn like-btn" data-id="${p.id}">
+            <i class="far fa-heart"></i> 
+            <span class="like-count">${p.likes}</span>
+          </button>
+          <button class="action-btn comment-toggle-btn" data-id="${p.id}">
+            <i class="far fa-comment"></i> 
+            <span class="comment-count">${commentCount}</span>
+          </button>
+          <button class="action-btn share-btn">
+            <i class="far fa-share-square"></i> 转发
+          </button>
+        </div>
+        <div class="comments-section" id="comments-${p.id}" style="display:none;">
+          <div class="comments-list">
+            ${commentsArr.map(c => renderComment(c, p.id)).join('')}
+          </div>
+          <div class="comment-composer">
+            <input type="text" class="comment-input" placeholder="写评论..." data-post-id="${p.id}" />
+            <button class="comment-submit-btn" data-post-id="${p.id}">发送</button>
+          </div>
+        </div>
+      `;
+          postsList.appendChild(node);
+        });
+
+        // 绑定评论展开/收起
+        document.querySelectorAll('.comment-toggle-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const postId = btn.dataset.id;
+            const section = document.getElementById('comments-' + postId);
+            if (section) {
+              section.style.display = section.style.display === 'none' ? 'block' : 'none';
             }
           });
         });
 
-        // Composer and like handling implemented earlier (avoid duplicate handlers)
+        // 绑定评论提交
+        document.querySelectorAll('.comment-submit-btn').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            const postId = btn.dataset.postId;
+            const input = document.querySelector(`.comment-input[data-post-id="${postId}"]`);
+            let text = input.value.trim();
+            if (!text) return;
 
-        // Show Feed panel by default, hide Groups panel
-        (function initPanels(){
-          feedPanel.style.display='block';
-          groupsPanel.style.display='none';
-          activityPanel.style.display='none';
-        })();
+            try {
+              const token = getAuthToken();
+              const userId = getCurrentUserId();
 
-        // ========== 创建群组功能 ==========
-        const createGroupModal = document.getElementById('createGroupModal');
-        const openCreateGroupBtn = document.getElementById('openCreateGroupBtn');
-        const closeCreateGroupBtn = document.getElementById('closeCreateGroupBtn');
-        const cancelCreateGroupBtn = document.getElementById('cancelCreateGroupBtn');
-        const submitCreateGroupBtn = document.getElementById('submitCreateGroupBtn');
-        const generatedInviteCode = document.getElementById('generatedInviteCode');
-        const copyNewCodeBtn = document.getElementById('copyNewCodeBtn');
-        
-        // 生成随机邀请码
-        function generateInviteCode(){
-          const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-          let code = '';
-          for(let i=0; i<6; i++) code += chars[Math.floor(Math.random()*chars.length)];
-          return code;
-        }
-        
-        // 打开弹窗
-        openCreateGroupBtn.addEventListener('click', ()=>{
-          generatedInviteCode.textContent = generateInviteCode();
-          document.getElementById('newGroupName').value = '';
-          document.getElementById('newGroupDesc').value = '';
-          document.getElementById('newGroupCategory').value = '学习';
-          createGroupModal.classList.add('show');
-        });
-        
-        // 关闭弹窗
-        function closeModal(){
-          createGroupModal.classList.remove('show');
-        }
-        closeCreateGroupBtn.addEventListener('click', closeModal);
-        cancelCreateGroupBtn.addEventListener('click', closeModal);
-        createGroupModal.addEventListener('click', (e)=>{
-          if(e.target === createGroupModal) closeModal();
-        });
-        
-        // 复制邀请码
-        copyNewCodeBtn.addEventListener('click', ()=>{
-          const code = generatedInviteCode.text内容;
-          navigator.clipboard.writeText(code).then(()=>{
-            copyNewCodeBtn.textContent = '已复制';
-            setTimeout(()=>{ copyNewCodeBtn.textContent = '复制'; }, 1500);
+              const response = await fetch(`http://localhost:8080/api/posts/${postId}/comments`, {
+                method: 'POST',
+                headers: {
+                  'Authorization': 'Bearer ' + token,
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  author: userId,
+                  text: text
+                })
+              });
+
+              if (response.ok) {
+                input.value = '';
+                replyingToCommentId = null;
+                replyingToPostId = null;
+                fetchPosts();
+                setTimeout(() => {
+                  const section = document.getElementById('comments-' + postId);
+                  if (section) section.style.display = 'block';
+                }, 100);
+              } else {
+                alert('评论提交失败');
+              }
+            } catch (error) {
+              console.error('评论提交错误:', error);
+              alert('评论提交失败');
+            }
           });
         });
-        
-        // 提交创建群组
-        submitCreateGroupBtn.addEventListener('click', ()=>{
-          const name = document.getElementById('newGroupName').value.trim();
-          const desc = document.getElementById('newGroupDesc').value.trim();
-          const category = document.getElementById('newGroupCategory').value;
-          const inviteCode = generatedInviteCode.textContent;
-          
-          if(!name){
-            alert('请输入群组名称');
-            return;
+
+        // 绑定回复按钮
+        document.querySelectorAll('.reply-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const postId = btn.dataset.postId;
+            const replyTo = btn.dataset.replyTo;
+            const parentId = btn.dataset.parentId;
+            const input = document.querySelector(`.comment-input[data-post-id="${postId}"]`);
+            if (input) {
+              input.value = `@${replyTo} `;
+              input.focus();
+              replyingToCommentId = parentId;
+              replyingToPostId = postId;
+            }
+          });
+        });
+
+        // 绑定帖子点赞
+        document.querySelectorAll('.post-card .like-btn').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            const id = parseInt(btn.dataset.id);
+
+            try {
+              const token = getAuthToken();
+              let response;
+
+              if (btn.classList.contains('liked')) {
+                response = await fetch(`http://localhost:8080/api/posts/${id}/unlike`, {
+                  method: 'POST',
+                  headers: {
+                    'Authorization': 'Bearer ' + token,
+                    'Content-Type': 'application/json'
+                  }
+                });
+              } else {
+                response = await fetch(`http://localhost:8080/api/posts/${id}/like`, {
+                  method: 'POST',
+                  headers: {
+                    'Authorization': 'Bearer ' + token,
+                    'Content-Type': 'application/json'
+                  }
+                });
+              }
+
+              if (response.ok) {
+                const result = await response.json();
+                if (result && result.code === 200 && result.data) {
+                  const countEl = btn.querySelector('.like-count');
+                  if (countEl) countEl.textContent = result.data.likes;
+                  btn.classList.toggle('liked');
+                }
+              }
+            } catch (error) {
+              console.error('点赞操作错误:', error);
+            }
+          });
+        });
+
+        // 绑定评论点赞
+        document.querySelectorAll('.comment-like-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            btn.classList.toggle('liked');
+            const currentText = btn.textContent.trim();
+            const num = parseInt(currentText.match(/\d+/)?.[0] || '0');
+            if (btn.classList.contains('liked')) {
+              btn.innerHTML = `<i class="fas fa-heart"></i> ${num + 1}`;
+            } else {
+              btn.innerHTML = `<i class="far fa-heart"></i> ${Math.max(0, num - 1)}`;
+            }
+          });
+        });
+      }
+
+      let currentPosts = [];
+
+      // 从后端API获取动态
+      async function fetchPosts() {
+        try {
+          const token = getAuthToken();
+          const response = await fetch('http://localhost:8080/api/posts', {
+            headers: {
+              'Authorization': 'Bearer ' + token,
+              'Content-Type': 'application/json'
+            }
+          });
+          const result = await response.json();
+          if (result && result.code === 200 && Array.isArray(result.data)) {
+            const posts = result.data.map(post => ({
+              id: post.id,
+              author: post.author,
+              avatar: post.author.toString().slice(0, 1).toUpperCase(),
+              text: post.text,
+              images: post.images || [],
+              likes: post.likes,
+              comments: post.comments || [],
+              time: new Date(post.createdAt).toLocaleString(),
+              tags: post.tags || []
+            }));
+            currentPosts = posts;
+            renderPosts(posts);
+          } else {
+            currentPosts = [];
+            renderPosts([]);
           }
-          if(name.length < 2){
-            alert('群组名称至少2个字符');
-            return;
+        } catch (error) {
+          console.error('获取动态失败:', error);
+          currentPosts = [];
+          renderPosts([]);
+        }
+      }
+
+      // 发布新动态到后端API
+      async function publishPost(text, images) {
+        try {
+          const token = getAuthToken();
+          const userId = getCurrentUserId();
+
+          const response = await fetch('http://localhost:8080/api/posts', {
+            method: 'POST',
+            headers: {
+              'Authorization': 'Bearer ' + token,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              text: text,
+              images: images,
+              userId: userId,
+              author: userId,
+              likes: 0,
+              comments: [],
+              tags: []
+            })
+          });
+          const result = await response.json();
+          if (result && result.code === 200) {
+            fetchPosts();
+            return true;
           }
-          
-          // 创建新群组
-          const newId = Math.max(...sampleGroups.map(g=>g.id)) + 1;
-          const newGroup = {
-            id: newId,
-            name: name,
-            desc: desc || '暂无简介',
-            members: 1,
-            category: category,
+          return false;
+        } catch (error) {
+          console.error('发布动态失败:', error);
+          return false;
+        }
+      }
+
+      // 初始化加载
+      // 改进的初始化函数
+      async function init() {
+        try {
+          console.log('===== 页面初始化开始 =====');
+
+          // 第1步：加载所有群组
+          console.log('第1步：加载所有群组...');
+          await loadAllGroups();
+
+          // 第2步：加载用户已加入的群组
+          console.log('第2步：加载用户已加入的群组...');
+          await loadMyJoinedGroups();
+
+          // 第3步：渲染UI
+          console.log('第3步：渲染已加入群组列表...');
+          renderJoinedGroups();
+
+          // 第4步：获取动态
+          console.log('第4步：加载动态...');
+          fetchPosts();
+
+          console.log('===== 页面初始化完成 =====');
+        } catch (error) {
+          console.error('初始化过程出错:', error);
+        }
+      }
+
+      // Composer: 图片预览和发布
+      const postBtn = document.getElementById('postBtn');
+      const attachBtnEl = document.getElementById('attachBtn');
+      const composerFilesEl = document.getElementById('composerFiles');
+      const previewAreaEl = document.getElementById('previewArea');
+
+      attachBtnEl.addEventListener('click', () => composerFilesEl.click());
+
+      let composerSelectedFiles = [];
+      composerFilesEl.addEventListener('change', (e) => {
+        const files = Array.from(e.target.files || []);
+        composerSelectedFiles = composerSelectedFiles.concat(files);
+        renderComposerPreviews();
+      });
+
+      function renderComposerPreviews() {
+        previewAreaEl.innerHTML = '';
+        composerSelectedFiles.forEach((f, idx) => {
+          const reader = new FileReader();
+          const wrap = document.createElement('div');
+          wrap.style.display = 'inline-block';
+          wrap.style.position = 'relative';
+          reader.onload = ev => {
+            const img = document.createElement('img');
+            img.src = ev.target.result;
+            img.style.maxWidth = '120px';
+            img.style.margin = '6px';
+            img.style.borderRadius = '6px';
+            wrap.appendChild(img);
+            const removeBtn = document.createElement('button');
+            removeBtn.textContent = '×';
+            removeBtn.style.position = 'absolute';
+            removeBtn.style.right = '4px';
+            removeBtn.style.top = '4px';
+            removeBtn.style.background = 'rgba(0,0,0,0.5)';
+            removeBtn.style.color = '#fff';
+            removeBtn.style.border = 'none';
+            removeBtn.style.borderRadius = '50%';
+            removeBtn.style.width = '22px';
+            removeBtn.style.height = '22px';
+            removeBtn.style.cursor = 'pointer';
+            removeBtn.addEventListener('click', (ev) => {
+              ev.stopPropagation();
+              composerSelectedFiles.splice(idx, 1);
+              renderComposerPreviews();
+            });
+            wrap.appendChild(removeBtn);
+          };
+          reader.readAsDataURL(f);
+          previewAreaEl.appendChild(wrap);
+        });
+      }
+
+      postBtn.addEventListener('click', () => {
+        const text = composerInput.value.trim();
+        const files = composerSelectedFiles.slice();
+        const readers = files.map(f => new Promise(resolve => {
+          const r = new FileReader();
+          r.onload = ev => resolve(ev.target.result);
+          r.readAsDataURL(f);
+        }));
+        Promise.all(readers).then(dataUrls => {
+          publishPost(text, dataUrls).then(success => {
+            if (success) {
+              composerInput.value = '';
+              composerFilesEl.value = '';
+              composerSelectedFiles = [];
+              previewAreaEl.innerHTML = '';
+            } else {
+              alert('发布失败，请稍后重试');
+            }
+          });
+        });
+      });
+
+      // 排序功能
+      feedSortSelect.addEventListener('change', () => {
+        const val = feedSortSelect.value;
+        let sorted = [...currentPosts];
+        if (val === 'new') {
+          sorted.sort((a, b) => b.id - a.id);
+        } else if (val === 'hot') {
+          sorted.sort((a, b) => {
+            const aHot = (a.likes || 0) + (a.comments?.length || 0);
+            const bHot = (b.likes || 0) + (b.comments?.length || 0);
+            return bHot - aHot;
+          });
+        }
+        renderPosts(sorted);
+      });
+
+      groupSortSelect.addEventListener('change', () => {
+        const val = groupSortSelect.value;
+        let sorted = [...sampleGroups];
+        if (val === 'new') sorted.sort((a, b) => b.id - a.id);
+        else if (val === 'members') sorted.sort((a, b) => b.members - a.members);
+        else if (val === 'active') sorted.sort((a, b) => b.members - a.members);
+        renderGroups(sorted);
+      });
+
+      // 加入群组按钮处理
+      groupsGrid.addEventListener('click', async (e) => {
+        const btn = e.target.closest('.join-btn');
+        if (!btn) return;
+        e.stopPropagation();
+        const id = parseInt(btn.getAttribute('data-id'));
+
+        if (!myJoinedGroupIds.has(id)) {
+          // 未加入：调用后端加入群组接口
+          try {
+            const group = sampleGroups.find(g => g.id === id);
+            if (!group) return;
+
+            const response = await fetch(`${API_BASE}/join`, {
+              method: 'POST',
+              headers: {
+                'Authorization': 'Bearer ' + getAuthToken(),
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                inviteCode: group.inviteCode,
+                userId: getCurrentUserId()
+              })
+            });
+
+            const result = await response.json();
+            if (result && result.code === 200) {
+              myJoinedGroupIds.add(id);
+              renderJoinedGroups();
+              btn.textContent = '已加入';
+              alert(`成功加入「${group.name}」群组！`);
+            } else {
+              alert('加入失败: ' + (result.message || '未知错误'));
+            }
+          } catch (error) {
+            console.error('加入群组错误:', error);
+            alert('加入群组失败，请检查网络连接');
+          }
+        } else {
+          // 已加入：进入群组页面
+          window.location.href = `channel2.html?groupId=${encodeURIComponent(id)}`;
+        }
+      });
+
+      // 通过邀请码加入群组
+      const inviteCodeInput = document.getElementById('inviteCodeInput');
+      const joinByCodeBtn = document.getElementById('joinByCodeBtn');
+
+      joinByCodeBtn.addEventListener('click', async () => {
+        const code = inviteCodeInput.value.trim().toUpperCase();
+        if (!code) {
+          alert('请输入邀请码');
+          return;
+        }
+        if (code.length < 4) {
+          alert('邀请码格式不正确');
+          return;
+        }
+
+        try {
+          const response = await fetch(`${API_BASE}/join`, {
+            method: 'POST',
+            headers: {
+              'Authorization': 'Bearer ' + getAuthToken(),
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              inviteCode: code,
+              userId: getCurrentUserId()
+            })
+          });
+
+          const result = await response.json();
+          if (result && result.code === 200) {
+            // 加入成功，重新加载群组列表和已加入列表
+            await loadAllGroups();
+            await loadMyJoinedGroups();
+            renderJoinedGroups();
+            alert('成功加入群组！');
+            inviteCodeInput.value = '';
+          } else {
+            alert('邀请码无效或加入失败: ' + (result.message || '未知错误'));
+          }
+        } catch (error) {
+          console.error('加入群组错误:', error);
+          alert('加入群组失败，请检查网络连接');
+        }
+      });
+
+      inviteCodeInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          joinByCodeBtn.click();
+        }
+      });
+
+      // ========== 创建群组功能 ==========
+      const createGroupModal = document.getElementById('createGroupModal');
+      const openCreateGroupBtn = document.getElementById('openCreateGroupBtn');
+      const closeCreateGroupBtn = document.getElementById('closeCreateGroupBtn');
+      const cancelCreateGroupBtn = document.getElementById('cancelCreateGroupBtn');
+      const submitCreateGroupBtn = document.getElementById('submitCreateGroupBtn');
+      const generatedInviteCode = document.getElementById('generatedInviteCode');
+      const copyNewCodeBtn = document.getElementById('copyNewCodeBtn');
+
+      // 生成随机邀请码
+      function generateInviteCode() {
+        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+        let code = '';
+        for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+        return code;
+      }
+
+      // 打开弹窗
+      openCreateGroupBtn.addEventListener('click', () => {
+        generatedInviteCode.textContent = generateInviteCode();
+        document.getElementById('newGroupName').value = '';
+        document.getElementById('newGroupDesc').value = '';
+        document.getElementById('newGroupCategory').value = '学习';
+        createGroupModal.classList.add('show');
+      });
+
+      // 关闭弹窗
+      function closeModal() {
+        createGroupModal.classList.remove('show');
+      }
+      closeCreateGroupBtn.addEventListener('click', closeModal);
+      cancelCreateGroupBtn.addEventListener('click', closeModal);
+      createGroupModal.addEventListener('click', (e) => {
+        if (e.target === createGroupModal) closeModal();
+      });
+
+      // 复制邀请码
+      copyNewCodeBtn.addEventListener('click', () => {
+        const code = generatedInviteCode.textContent;
+        navigator.clipboard.writeText(code).then(() => {
+          copyNewCodeBtn.textContent = '已复制';
+          setTimeout(() => { copyNewCodeBtn.textContent = '复制'; }, 1500);
+        });
+      });
+
+      // 提交创建群组（调用后端API）
+      // 替换 submitCreateGroupBtn 的事件监听器部分
+
+      submitCreateGroupBtn.addEventListener('click', async () => {
+        const name = document.getElementById('newGroupName').value.trim();
+        const desc = document.getElementById('newGroupDesc').value.trim();
+        const category = document.getElementById('newGroupCategory').value;
+        const inviteCode = generatedInviteCode.textContent;
+
+        if (!name) {
+          alert('请输入群组名称');
+          return;
+        }
+        if (name.length < 2) {
+          alert('群组名称至少2个字符');
+          return;
+        }
+
+        try {
+          const userId = getCurrentUserId();
+          const token = getAuthToken();
+
+          console.log('=== 创建群组请求 ===');
+          console.log('groupName:', name);
+          console.log('description:', desc);
+          console.log('ownerId:', userId);
+          console.log('inviteCode:', inviteCode);
+          console.log('token:', token);
+
+          const requestBody = {
+            groupName: name,
+            description: desc || '暂无简介',
+            ownerId: userId,
             inviteCode: inviteCode
           };
-          
-          // 添加到群组列表
-          sampleGroups.push(newGroup);
-          
-          // 保存到 sessionStorage 以便 channel2.html 同步
-          saveSharedGroups();
-          
-          // 自动加入自己创建的群组
-          myJoinedGroupIds.add(newId);
-          
-          // 刷新界面
-          renderJoinedGroups();
-          
-          alert(`群组「${name}」创建成功！\n邀请码：${inviteCode}`);
-          closeModal();
-        });
 
+          console.log('请求体:', JSON.stringify(requestBody));
+
+          const response = await fetch(`${API_BASE}/create`, {
+            method: 'POST',
+            headers: {
+              'Authorization': 'Bearer ' + token,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestBody)
+          });
+
+          console.log('响应状态码:', response.status);
+          console.log('响应头:', response.headers);
+
+          const result = await response.json();
+
+          console.log('响应数据:', result);
+
+          if (result && result.code === 200 && result.data) {
+            const newGroup = result.data;
+
+            console.log('新群组数据:', newGroup);
+
+            // 转换格式并添加到群组列表
+            const groupToAdd = {
+              id: newGroup.groupId,
+              name: newGroup.groupName,
+              desc: newGroup.description,
+              members: 1,
+              category: category,
+              inviteCode: newGroup.inviteCode,
+              ownerId: newGroup.ownerId
+            };
+
+            console.log('添加到列表的数据:', groupToAdd);
+
+            sampleGroups.push(groupToAdd);
+
+            // 自动加入自己创建的群组
+            myJoinedGroupIds.add(newGroup.groupId);
+
+            // 刷新界面
+            renderJoinedGroups();
+
+            alert(`群组「${name}」创建成功！\n邀请码：${newGroup.inviteCode}`);
+            closeModal();
+          } else {
+            console.error('创建失败 - 返回码不是200:', result);
+            alert('创建失败: ' + (result.message || '未知错误'));
+          }
+        } catch (error) {
+          console.error('创建群组错误:', error);
+          alert('创建群组失败，请检查网络连接');
+        }
+      });
+
+      // 初始化面板显示
+      (function initPanels() {
+        feedPanel.style.display = 'block';
+        groupsPanel.style.display = 'none';
+        activityPanel.style.display = 'none';
       })();
-      </script>
 
+      // 页面加载时初始化
+      init();
 
-<!-- 登录状态检查脚本 -->
-<script>
-    // 检查用户是否已登录
-    function checkLoginStatus() {
-        const authToken = localStorage.getItem('authToken');
-        const userId = localStorage.getItem('userId');
-        const username = localStorage.getItem('username');
-        const authSection = document.getElementById('auth-section');
-        
-        console.log('检查登录状态:', { authToken, userId, username });
-        
-        if (authToken) {
-            // 用户已登录，显示用户菜单
-            const displayUsername = username || '未设置用户名';
-            authSection.innerHTML = `
-                <div class="user-menu">
-                    <button class="submit-btn" onclick="showUserMenu()">${displayUsername}</button>
-                    <div class="dropdown-menu" id="user-dropdown" style="display: none;">
-                        <a href="my-profile.html" class="dropdown-item">我的资料</a>
-                        <a href="#" class="dropdown-item" onclick="logout()">退出登录</a>
-                    </div>
-                </div>
-            `;
-            
-            // 更新用户信息区
-            const usernameElement = document.querySelector('.username');
-            if (usernameElement) {
-                usernameElement.textContent = displayUsername;
-            }
-        } else {
-            console.log('用户未登录');
-        }
-    }
-    
-    // 显示用户菜单
-    function showUserMenu() {
-        const dropdown = document.getElementById('user-dropdown');
-        dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
-    }
-    
-    // 登出功能
-    function logout() {
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('userId');
-        localStorage.removeItem('username');
-        location.reload();
-    }
-    
-    // 页面加载时检查登录状态
-    window.addEventListener('DOMContentLoaded', checkLoginStatus);
-    
-    // 点击其他区域关闭下拉菜单
-    document.addEventListener('click', function(event) {
-        const dropdown = document.getElementById('user-dropdown');
-        const userMenu = document.querySelector('.user-menu');
-        
-        if (dropdown && userMenu && !userMenu.contains(event.target)) {
-            dropdown.style.display = 'none';
-        }
-    });
-</script>
+    })();
+  </script>
 
-<style>
+  <style>
     .user-menu {
-        position: relative;
-        display: inline-block;
+      position: relative;
+      display: inline-block;
     }
-    
-    .dropdown-menu {
-        position: absolute;
-        top: 100%;
-        right: 0;
-        background-color: white;
-        min-width: 150px;
-        box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-        border-radius: 4px;
-        z-index: 1000;
-        margin-top: 5px;
-    }
-    
-    .dropdown-item {
-        display: block;
-        padding: 10px 15px;
-        color: #333;
-        text-decoration: none;
-        font-size: 14px;
-    }
-    
-    .dropdown-item:hover {
-        background-color: #f5f5f5;
-    }
-</style>
 
-<style>
-    .user-menu {
-        position: relative;
-        display: inline-block;
-    }
-    
     .dropdown-menu {
-        position: absolute;
-        top: 100%;
-        right: 0;
-        background-color: white;
-        min-width: 150px;
-        box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-        border-radius: 4px;
-        z-index: 1000;
-        margin-top: 5px;
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background-color: white;
+      min-width: 150px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+      border-radius: 4px;
+      z-index: 1000;
+      margin-top: 5px;
     }
-    
+
     .dropdown-item {
-        display: block;
-        padding: 10px 15px;
-        color: #333;
-        text-decoration: none;
-        font-size: 14px;
+      display: block;
+      padding: 10px 15px;
+      color: #333;
+      text-decoration: none;
+      font-size: 14px;
     }
-    
+
     .dropdown-item:hover {
-        background-color: #f5f5f5;
+      background-color: #f5f5f5;
     }
-</style>
+  </style>
+
+  <style>
+    .user-menu {
+      position: relative;
+      display: inline-block;
+    }
+
+    .dropdown-menu {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background-color: white;
+      min-width: 150px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+      border-radius: 4px;
+      z-index: 1000;
+      margin-top: 5px;
+    }
+
+    .dropdown-item {
+      display: block;
+      padding: 10px 15px;
+      color: #333;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .dropdown-item:hover {
+      background-color: #f5f5f5;
+    }
+  </style>
 </body>
+
 </html>

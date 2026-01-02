@@ -61,4 +61,36 @@ public class FileUploadService {
         }
         return filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
     }
+
+    /**
+     * 上传帖子图片
+     */
+    public String uploadPostImage(MultipartFile file) throws IOException {
+        if (file.isEmpty()) {
+            throw new IOException("文件为空");
+        }
+
+        // 验证文件类型
+        String contentType = file.getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
+            throw new IOException("只允许上传图片文件");
+        }
+
+        // 生成唯一文件名
+        String filename = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+        String uploadDir = "uploads/posts/";
+
+        // 创建目录
+        File dir = new File(uploadDir);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
+        // 保存文件
+        String filepath = uploadDir + filename;
+        file.transferTo(new File(filepath));
+
+        // 返回访问路径
+        return "/" + filepath;
+    }
 }

@@ -6,11 +6,15 @@ import com.zjsu.yyd.ifmservice.model.chat.ChatGroupResource;
 import com.zjsu.yyd.ifmservice.repository.ChatGroupMemberRepository;
 import com.zjsu.yyd.ifmservice.repository.ChatGroupRepository;
 import com.zjsu.yyd.ifmservice.repository.ChatGroupResourceRepository;
+import com.zjsu.yyd.ifmservice.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class ChatGroupService {
@@ -18,13 +22,16 @@ public class ChatGroupService {
     private final ChatGroupRepository groupRepo;
     private final ChatGroupMemberRepository memberRepo;
     private final ChatGroupResourceRepository resourceRepo;
+    private final UserRepository userRepository;
 
     public ChatGroupService(ChatGroupRepository groupRepo,
                             ChatGroupMemberRepository memberRepo,
-                            ChatGroupResourceRepository resourceRepo) {
+                            ChatGroupResourceRepository resourceRepo,
+                            UserRepository userRepository) {
         this.groupRepo = groupRepo;
         this.memberRepo = memberRepo;
         this.resourceRepo = resourceRepo;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -36,7 +43,7 @@ public class ChatGroupService {
         g.setGroupName(name);
         g.setDescription(desc);
         g.setOwnerId(ownerId);
-        g.setMemberCount(1); // 初始化成员数为1（创建者）
+        g.setMemberCount(1);
 
         if (inviteCode == null || inviteCode.trim().isEmpty()) {
             g.setInviteCode(generateUniqueInviteCode());
@@ -49,19 +56,15 @@ public class ChatGroupService {
 
         ChatGroup saved = groupRepo.save(g);
 
-        // 群主默认加入群
         ChatGroupMember owner = new ChatGroupMember();
         owner.setGroupId(saved.getGroupId());
         owner.setUserId(ownerId);
-        owner.setRole(2); // 群主
+        owner.setRole(2);
         memberRepo.save(owner);
 
         return saved;
     }
 
-    /**
-     * 生成唯一邀请码
-     */
     private String generateUniqueInviteCode() {
         String code;
         do {
@@ -85,9 +88,7 @@ public class ChatGroupService {
         if (!g.getOwnerId().equals(userId)) {
             throw new RuntimeException("只有群主可以删除群");
         }
-        // 删除所有成员
         memberRepo.deleteByGroupId(groupId);
-        // 删除群组
         groupRepo.deleteById(groupId);
     }
 
@@ -97,23 +98,37 @@ public class ChatGroupService {
                 .orElseThrow(() -> new RuntimeException("邀请码无效"));
 
         if (memberRepo.existsByGroupIdAndUserId(g.getGroupId(), userId)) {
-            return; // 已是成员
+            return;
         }
 
         ChatGroupMember m = new ChatGroupMember();
         m.setGroupId(g.getGroupId());
         m.setUserId(userId);
-        m.setRole(0); // 普通成员
+        m.setRole(0);
         memberRepo.save(m);
 
-        // 更新成员数
         g.setMemberCount(g.getMemberCount() + 1);
         groupRepo.save(g);
     }
 
-    public List<ChatGroupMember> getMembersByGroupId(Long groupId) {
+    // 修改返回类型为 List<Map<String, Object>>，包含用户名
+    public List<Map<String, Object>> getMembersByGroupId(Long groupId) {
         getGroup(groupId);
-        return memberRepo.findByGroupId(groupId);
+        List<ChatGroupMember> members = memberRepo.findByGroupId(groupId);
+
+        return members.stream().map(member -> {
+            Map<String, Object> memberMap = new HashMap<>();
+            memberMap.put("userId", member.getUserId());
+            memberMap.put("role", member.getRole());
+            memberMap.put("joinedAt", member.getJoinTime()); // 修改：使用 joinTime 而不是 joinedAt
+
+            // 从 User 表查询用户名
+            userRepository.findById(member.getUserId()).ifPresent(user -> {
+                memberMap.put("username", user.getUsername());
+            });
+
+            return memberMap;
+        }).collect(Collectors.toList());
     }
 
     @Transactional
@@ -145,7 +160,6 @@ public class ChatGroupService {
     public List<ChatGroup> getAllGroups() {
         List<ChatGroup> groups = groupRepo.findAll();
 
-        // 同步每个群组的实际成员数
         groups.forEach(group -> {
             long actualCount = memberRepo.countByGroupId(group.getGroupId());
             if (group.getMemberCount() != actualCount) {
@@ -161,7 +175,6 @@ public class ChatGroupService {
         List<Long> groupIds = memberRepo.findGroupIdsByUserId(userId);
         List<ChatGroup> groups = groupRepo.findAllById(groupIds);
 
-        // 同步每个群组的实际成员数
         groups.forEach(group -> {
             long actualCount = memberRepo.countByGroupId(group.getGroupId());
             if (group.getMemberCount() != actualCount) {
@@ -182,10 +195,8 @@ public class ChatGroupService {
             throw new RuntimeException("群主不能退出群组，只能解散群组");
         }
 
-        // 删除成员关系
         memberRepo.deleteByGroupIdAndUserId(groupId, userId);
 
-        // 更新成员数（确保不小于1，因为至少有群主）
         group.setMemberCount(Math.max(1, group.getMemberCount() - 1));
         groupRepo.save(group);
     }

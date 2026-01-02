@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/posts")
@@ -19,14 +20,49 @@ public class PostController {
 
     @Operation(summary = "创建新动态")
     @PostMapping
-    public Result<Post> create(@RequestBody Post post) {
-        return Result.success(postService.create(post));
+    public Result<Post> create(@RequestBody Map<String, Object> requestBody) {
+        System.out.println("=== 接收到创建帖子请求 ===");
+        System.out.println("请求体: " + requestBody);
+
+        Post post = new Post();
+        post.setUserId(((Number) requestBody.get("userId")).longValue());
+        post.setText((String) requestBody.get("text"));
+
+        // 处理图片数组
+        Object imagesObj = requestBody.get("images");
+        System.out.println("images 对象类型: " + (imagesObj != null ? imagesObj.getClass().getName() : "null"));
+        System.out.println("images 值: " + imagesObj);
+
+        if (imagesObj instanceof List) {
+            @SuppressWarnings("unchecked")
+            List<String> imageList = (List<String>) imagesObj;
+            System.out.println("图片URL列表: " + imageList);
+            System.out.println("图片数量: " + imageList.size());
+
+            post.setImagesList(imageList); // 使用辅助方法
+        } else {
+            System.out.println("images 不是 List 类型");
+        }
+
+        post.setLikes((Integer) requestBody.getOrDefault("likes", 0));
+
+        Post savedPost = postService.create(post);
+        System.out.println("保存后的图片字段: " + savedPost.getImages());
+
+        return Result.success(savedPost);
     }
 
     @Operation(summary = "获取所有动态")
     @GetMapping
     public Result<List<Post>> list() {
-        return Result.success(postService.list());
+        List<Post> posts = postService.list();
+        // 确保返回的每个 post 都有 images 列表
+        posts.forEach(post -> {
+            if (post.getImagesList() == null) {
+                post.setImagesList(new java.util.ArrayList<>());
+            }
+        });
+        return Result.success(posts);
     }
 
     @Operation(summary = "根据ID获取动态")

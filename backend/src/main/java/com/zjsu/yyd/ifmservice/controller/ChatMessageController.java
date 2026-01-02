@@ -26,9 +26,7 @@ public class ChatMessageController {
             description = "根据群ID获取该群内的聊天消息记录，按时间顺序返回"
     )
     @GetMapping("/list")
-    public Result<List<ChatMessage>> list(
-            @RequestParam Long groupId
-    ) {
+    public Result<List<Map<String, Object>>> list(@RequestParam Long groupId) {
         return Result.success(service.list(groupId));
     }
 

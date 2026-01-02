@@ -3160,6 +3160,8 @@
       let currentPosts = [];
 
       // 从后端API获取动态
+      // 在 fetchPosts 函数中修改数据映射
+
       async function fetchPosts() {
         try {
           const token = getAuthToken();
@@ -3173,8 +3175,8 @@
           if (result && result.code === 200 && Array.isArray(result.data)) {
             const posts = result.data.map(post => ({
               id: post.id,
-              author: post.author,
-              avatar: post.author.toString().slice(0, 1).toUpperCase(),
+              author: post.author || post.authorName || ('用户' + post.userId),  // 优先使用 author，其次 authorName
+              avatar: (post.author || post.authorName || '用户').toString().slice(0, 1).toUpperCase(),
               text: post.text,
               images: post.images || [],
               likes: post.likes,
@@ -3196,6 +3198,10 @@
       }
 
       // 发布新动态到后端API
+      // 在 publishPost 函数中修改
+
+      // 在 publishPost 函数中修改
+
       async function publishPost(text, images) {
         try {
           const token = getAuthToken();
@@ -3211,7 +3217,7 @@
               text: text,
               images: images,
               userId: userId,
-              author: userId,
+              // 不要设置 author，让后端从 User 表查询
               likes: 0,
               comments: [],
               tags: []
@@ -3310,42 +3316,169 @@
         });
       }
 
-      postBtn.addEventListener('click', () => {
+      // 修改 postBtn 的点击事件处理
+
+      postBtn.addEventListener('click', async () => {
         const text = composerInput.value.trim();
-        const files = composerSelectedFiles.slice();
-        const readers = files.map(f => new Promise(resolve => {
-          const r = new FileReader();
-          r.onload = ev => resolve(ev.target.result);
-          r.readAsDataURL(f);
-        }));
-        Promise.all(readers).then(dataUrls => {
-          publishPost(text, dataUrls).then(success => {
-            if (success) {
-              composerInput.value = '';
-              composerFilesEl.value = '';
-              composerSelectedFiles = [];
-              previewAreaEl.innerHTML = '';
-            } else {
-              alert('发布失败，请稍后重试');
+
+        if (!text && composerSelectedFiles.length === 0) {
+          alert('请输入内容或选择图片');
+          return;
+        }
+
+        try {
+          // 上传图片到服务器
+          const imageUrls = [];
+          // 修改上传部分
+          for (const file of composerSelectedFiles) {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const uploadResponse = await fetch('http://localhost:8080/api/upload/post-image', {
+              method: 'POST',
+              headers: {
+                'Authorization': 'Bearer ' + getAuthToken()
+              },
+              body: formData
+            });
+
+            if (uploadResponse.ok) {
+              const uploadResult = await uploadResponse.json();
+              if (uploadResult && uploadResult.code === 200) {
+                imageUrls.push(uploadResult.data);
+              }
             }
+          }
+
+          // 发布帖子，使用上传后的图片URL
+          const token = getAuthToken();
+          const userId = getCurrentUserId();
+
+          const response = await fetch('http://localhost:8080/api/posts', {
+            method: 'POST',
+            headers: {
+              'Authorization': 'Bearer ' + token,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              text: text,
+              images: imageUrls,  // 使用服务器URL而不是Base64
+              userId: userId,
+              likes: 0,
+              comments: [],
+              tags: []
+            })
           });
-        });
+
+          const result = await response.json();
+          if (result && result.code === 200) {
+            composerInput.value = '';
+            composerFilesEl.value = '';
+            composerSelectedFiles = [];
+            previewAreaEl.innerHTML = '';
+            fetchPosts();
+          } else {
+            alert('发布失败: ' + (result.message || '请稍后重试'));
+          }
+        } catch (error) {
+          console.error('发布动态失败:', error);
+          alert('发布失败，请检查网络连接');
+        }
       });
 
       // 排序功能
-      feedSortSelect.addEventListener('change', () => {
-        const val = feedSortSelect.value;
-        let sorted = [...currentPosts];
-        if (val === 'new') {
-          sorted.sort((a, b) => b.id - a.id);
-        } else if (val === 'hot') {
-          sorted.sort((a, b) => {
-            const aHot = (a.likes || 0) + (a.comments?.length || 0);
-            const bHot = (b.likes || 0) + (b.comments?.length || 0);
-            return bHot - aHot;
-          });
+      // 在 postBtn 点击事件中添加日志
+
+      postBtn.addEventListener('click', async () => {
+        const text = composerInput.value.trim();
+
+        if (!text && composerSelectedFiles.length === 0) {
+          alert('请输入内容或选择图片');
+          return;
         }
-        renderPosts(sorted);
+
+        try {
+          console.log('=== 开始上传图片 ===');
+          console.log('选中的文件数量:', composerSelectedFiles.length);
+
+          // 上传图片到服务器
+          const imageUrls = [];
+          for (const file of composerSelectedFiles) {
+            console.log('上传文件:', file.name);
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const uploadResponse = await fetch('http://localhost:8080/api/upload/post-image', {
+              method: 'POST',
+              headers: {
+                'Authorization': 'Bearer ' + getAuthToken()
+              },
+              body: formData
+            });
+
+            console.log('上传响应状态:', uploadResponse.status);
+
+            if (uploadResponse.ok) {
+              const uploadResult = await uploadResponse.json();
+              console.log('上传结果:', uploadResult);
+
+              if (uploadResult && uploadResult.code === 200) {
+                console.log('图片URL:', uploadResult.data);
+                imageUrls.push(uploadResult.data);
+              }
+            } else {
+              console.error('上传失败:', uploadResponse.statusText);
+            }
+          }
+
+          console.log('=== 所有图片上传完成 ===');
+          console.log('图片URL数组:', imageUrls);
+
+          // 发布帖子
+          const token = getAuthToken();
+          const userId = getCurrentUserId();
+
+          const postData = {
+            text: text,
+            images: imageUrls,
+            userId: userId,
+            likes: 0,
+            comments: [],
+            tags: []
+          };
+
+          console.log('=== 发送帖子数据 ===');
+          console.log(JSON.stringify(postData, null, 2));
+
+          const response = await fetch('http://localhost:8080/api/posts', {
+            method: 'POST',
+            headers: {
+              'Authorization': 'Bearer ' + token,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(postData)
+          });
+
+          console.log('发布响应状态:', response.status);
+
+          const result = await response.json();
+          console.log('发布结果:', result);
+
+          if (result && result.code === 200) {
+            composerInput.value = '';
+            composerFilesEl.value = '';
+            composerSelectedFiles = [];
+            previewAreaEl.innerHTML = '';
+            fetchPosts();
+            alert('发布成功！');
+          } else {
+            alert('发布失败: ' + (result.message || '请稍后重试'));
+          }
+        } catch (error) {
+          console.error('发布动态失败:', error);
+          alert('发布失败，请检查网络连接');
+        }
       });
 
       groupSortSelect.addEventListener('change', () => {

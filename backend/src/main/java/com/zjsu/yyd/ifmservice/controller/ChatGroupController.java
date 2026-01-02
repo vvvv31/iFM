@@ -121,17 +121,17 @@ public class ChatGroupController {
 
     @Operation(
             summary = "获取群组成员列表",
-            description = "根据群组ID获取该群的所有成员信息,包括用户ID和角色",
+            description = "根据群组ID获取该群的所有成员信息,包括用户ID、用户名和角色",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "查询成功", content = @Content(schema = @Schema(implementation = ChatGroupMember.class))),
+                    @ApiResponse(responseCode = "200", description = "查询成功"),
                     @ApiResponse(responseCode = "404", description = "群组不存在", content = @Content)
             }
     )
     @GetMapping("/{groupId}/members")
-    public Result<List<ChatGroupMember>> members(
+    public Result<List<Map<String, Object>>> members(
             @Parameter(description = "群组ID", example = "1") @PathVariable Long groupId) {
         try {
-            List<ChatGroupMember> members = service.getMembersByGroupId(groupId);
+            List<Map<String, Object>> members = service.getMembersByGroupId(groupId);
             return Result.success(members);
         } catch (Exception e) {
             return Result.error("查询成员失败: " + e.getMessage());

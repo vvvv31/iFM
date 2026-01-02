@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,20 +22,20 @@
             --text-secondary: #666666;
             --text-light: #999999;
         }
-        
+
         /* 主内容区样式 */
         .main.channel-main {
             padding: 20px 0;
             background: #f9f9f9;
             min-height: calc(100vh - 120px);
         }
-        
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 20px;
         }
-        
+
         /* 群聊布局样式 */
         .channel-layout {
             display: flex;
@@ -45,7 +46,7 @@
             overflow: hidden;
             min-height: 600px;
         }
-        
+
         /* 左侧群组列表 */
         .channel-sidebar {
             width: 280px;
@@ -53,12 +54,12 @@
             padding: 20px 0;
             border-right: 1px solid var(--gray-border);
         }
-        
+
         .channel-search {
             padding: 0 20px 20px 20px;
             border-bottom: 1px solid var(--gray-border);
         }
-        
+
         .search-wrapper {
             display: flex;
             align-items: center;
@@ -66,12 +67,12 @@
             border-radius: 8px;
             padding: 8px 12px;
         }
-        
+
         .search-wrapper i {
             color: var(--text-light);
             margin-right: 8px;
         }
-        
+
         .channel-search-input {
             flex: 1;
             border: none;
@@ -79,11 +80,11 @@
             font-size: 14px;
             color: var(--text-primary);
         }
-        
+
         .channel-search-input::placeholder {
             color: var(--text-light);
         }
-        
+
         .create-group-btn {
             margin: 20px;
             width: calc(100% - 40px);
@@ -97,12 +98,12 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
-        
+
         .create-group-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
         }
-        
+
         /* 群组列表项 - 可点击样式 */
         .group-item {
             display: flex;
@@ -115,20 +116,20 @@
             text-decoration: none;
             color: inherit;
         }
-        
+
         .group-item:last-child {
             border-bottom: none;
         }
-        
+
         .group-item:hover {
             background: var(--gray-light);
             transform: translateX(5px);
         }
-        
+
         .group-item.active {
             background: linear-gradient(135deg, #ff6b35 0%, #ff9d6f 100%);
         }
-        
+
         .group-item.active::before {
             content: '';
             position: absolute;
@@ -138,7 +139,7 @@
             width: 3px;
             background: white;
         }
-        
+
         .group-item img {
             width: 44px;
             height: 44px;
@@ -147,17 +148,17 @@
             margin-right: 12px;
             border: 2px solid white;
         }
-        
+
         .group-item.active img {
             border-color: white;
             box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
         }
-        
+
         .group-info {
             flex: 1;
             min-width: 0;
         }
-        
+
         .group-info h4 {
             margin: 0 0 4px 0;
             font-size: 14px;
@@ -167,12 +168,12 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        
+
         .group-item.active .group-info h4 {
             color: white;
             font-weight: 700;
         }
-        
+
         .group-info p {
             margin: 0;
             font-size: 12px;
@@ -181,11 +182,11 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        
+
         .group-item.active .group-info p {
             color: rgba(255, 255, 255, 0.9);
         }
-        
+
         .message-count {
             background: linear-gradient(135deg, #ff6b35 0%, #ff9d6f 100%);
             color: white;
@@ -199,26 +200,26 @@
             justify-content: center;
             padding: 0 5px;
         }
-        
+
         .group-item.active .message-count {
             background: white;
             color: #ff6b35;
         }
-        
+
         .message-time {
             font-size: 11px;
             color: var(--text-light);
             margin-left: 5px;
         }
-        
+
         .group-item.active .message-time {
             color: rgba(255, 255, 255, 0.8);
         }
-        
+
         .group-list-mobile {
             display: none;
         }
-        
+
         /* 中间聊天区域 */
         .group-list {
             flex: 1;
@@ -226,14 +227,14 @@
             flex-direction: column;
             background: white;
         }
-        
+
         .group-header {
             padding: 20px;
             border-bottom: 1px solid var(--gray-border);
             background: white;
             position: relative;
         }
-        
+
         .group-header h2 {
             margin: 0;
             font-size: 18px;
@@ -243,21 +244,21 @@
             align-items: center;
             gap: 8px;
         }
-        
+
         .group-header h2::before {
             content: '\f0c0';
             font-family: 'Font Awesome 5 Free';
             font-weight: 900;
             color: var(--orange-primary);
         }
-        
+
         .group-stats {
             margin-top: 8px;
             display: flex;
             align-items: center;
             gap: 15px;
         }
-        
+
         .member-count {
             font-size: 13px;
             color: var(--text-secondary);
@@ -265,7 +266,7 @@
             padding: 4px 10px;
             border-radius: 12px;
         }
-        
+
         /* 聊天消息区域 - 模仿图片格式 */
         .chat-messages {
             flex: 1;
@@ -276,21 +277,21 @@
             flex-direction: column;
             gap: 16px;
         }
-        
+
         /* 消息项基本样式 */
         .message-item {
             display: flex;
             position: relative;
         }
-        
+
         .message-item.other-message {
             flex-direction: row;
         }
-        
+
         .message-item.own-message {
             flex-direction: row-reverse;
         }
-        
+
         .message-avatar {
             width: 40px;
             height: 40px;
@@ -304,34 +305,47 @@
             flex-shrink: 0;
             margin: 0 10px;
         }
-        
+
         .other-message .message-avatar {
             background: linear-gradient(135deg, #ff6b35 0%, #ff9d6f 100%);
         }
-        
+
         .own-message .message-avatar {
             background: linear-gradient(135deg, #4285F4 0%, #8AB4F8 100%);
         }
-        
+
         .message-content-wrapper {
             max-width: 65%;
             display: flex;
             flex-direction: column;
         }
-        
-        .other-message .message-content-wrapper { align-items: flex-start; }
-        .own-message .message-content-wrapper { align-items: flex-end; }
-        
+
+        .other-message .message-content-wrapper {
+            align-items: flex-start;
+        }
+
+        .own-message .message-content-wrapper {
+            align-items: flex-end;
+        }
+
         .message-info {
             display: flex;
             align-items: center;
             margin-bottom: 5px;
             gap: 8px;
         }
-        
-        .message-sender { font-size: 13px; font-weight: 600; color: var(--text-primary); }
-        .message-time { font-size: 11px; color: var(--text-light); }
-        
+
+        .message-sender {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .message-time {
+            font-size: 11px;
+            color: var(--text-light);
+        }
+
         .message-bubble {
             padding: 12px 16px;
             border-radius: 18px;
@@ -341,275 +355,780 @@
             line-height: 1.5;
             min-width: 60px;
         }
-        
+
         .other-message .message-bubble {
             background: linear-gradient(135deg, #ff6b35 0%, #ff9d6f 100%);
             color: white;
             border-top-left-radius: 4px;
         }
+
         .own-message .message-bubble {
             background: white;
             color: #333;
             border: 1px solid #ff6b35;
             border-top-right-radius: 4px;
         }
+
         .other-message .message-bubble::before {
             content: '';
             position: absolute;
-            left: -8px; top: 14px;
+            left: -8px;
+            top: 14px;
             border-top: 6px solid transparent;
             border-right: 8px solid #ff6b35;
             border-bottom: 6px solid transparent;
         }
+
         .own-message .message-bubble::before {
             content: '';
             position: absolute;
-            right: -8px; top: 14px;
+            right: -8px;
+            top: 14px;
             border-top: 6px solid transparent;
             border-left: 8px solid #ff6b35;
             border-bottom: 6px solid transparent;
         }
-        
-        .message-text { font-size: 15px; line-height: 1.6; }
-        .english-text { letter-spacing: 0.3px; }
-        .bilingual-text { line-height: 1.6; }
-        
-        .system-message { display: flex; justify-content: center; margin: 8px 0; }
-        .system-message .message-bubble {
-            background: #f0f0f0; color: var(--text-secondary);
-            font-size: 12px; padding: 6px 12px; border-radius: 12px; max-width: 80%; text-align: center;
+
+        .message-text {
+            font-size: 15px;
+            line-height: 1.6;
         }
-        .system-message .message-bubble::before { display: none; }
-        
+
+        .english-text {
+            letter-spacing: 0.3px;
+        }
+
+        .bilingual-text {
+            line-height: 1.6;
+        }
+
+        .system-message {
+            display: flex;
+            justify-content: center;
+            margin: 8px 0;
+        }
+
+        .system-message .message-bubble {
+            background: #f0f0f0;
+            color: var(--text-secondary);
+            font-size: 12px;
+            padding: 6px 12px;
+            border-radius: 12px;
+            max-width: 80%;
+            text-align: center;
+        }
+
+        .system-message .message-bubble::before {
+            display: none;
+        }
+
         /* 词汇高亮 - 简化样式，不使用背景色 */
         .vocabulary-highlight {
-            color: #fff; 
+            color: #fff;
             font-weight: 700;
             text-decoration: underline;
-            text-decoration-color: rgba(255,255,255,0.5);
+            text-decoration-color: rgba(255, 255, 255, 0.5);
             text-underline-offset: 2px;
         }
+
         .own-message .vocabulary-highlight {
             color: #ff6b35;
-            text-decoration-color: rgba(255,107,53,0.5);
+            text-decoration-color: rgba(255, 107, 53, 0.5);
         }
-        
+
         /* 语法注释 - 移到气泡外部 */
         .grammar-note {
-            font-style: normal; 
-            color: #ff6b35; 
-            font-size: 12px; 
+            font-style: normal;
+            color: #ff6b35;
+            font-size: 12px;
             margin-top: 6px;
             padding-left: 0;
             border-left: none;
         }
+
         .own-message .grammar-note {
             text-align: right;
             color: #666;
         }
-        
+
         .group-switch-indicator {
-            position: absolute; top: 20px; right: 20px;
-            background: rgba(255, 255, 255, 0.95); color: #ff6b35;
-            padding: 8px 15px; border-radius: 20px; font-size: 12px; font-weight: 600;
-            display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            z-index: 10; animation: fadeInOut 2s ease;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #ff6b35;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+            animation: fadeInOut 2s ease;
         }
+
         @keyframes fadeInOut {
-            0% { opacity: 0; transform: translateY(-10px); }
-            20% { opacity: 1; transform: translateY(0); }
-            80% { opacity: 1; transform: translateY(0); }
-            100% { opacity: 0; transform: translateY(-10px); }
+            0% {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            20% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            80% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
         }
-        .group-switch-indicator i { animation: spin 1s linear infinite; }
-        @keyframes spin { from { transform: rotate(0deg);} to { transform: rotate(360deg);} }
-        
+
+        .group-switch-indicator i {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
         .message-input-area {
-            padding: 20px; border-top: 1px solid var(--gray-border);
-            background: white; display: flex; align-items: flex-end; gap: 10px;
+            padding: 20px;
+            border-top: 1px solid var(--gray-border);
+            background: white;
+            display: flex;
+            align-items: flex-end;
+            gap: 10px;
         }
-        .message-input-controls { display: flex; gap: 8px; }
-        .voice-btn, .emoji-btn {
-            width: 36px; height: 36px; border-radius: 50%;
-            border: 1px solid var(--gray-border); background: white; color: var(--orange-primary);
-            cursor: pointer; display: flex; align-items: center; justify-content: center;
+
+        .message-input-controls {
+            display: flex;
+            gap: 8px;
         }
-        .voice-btn:hover, .emoji-btn:hover { background: var(--gray-light); }
+
+        .voice-btn,
+        .emoji-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1px solid var(--gray-border);
+            background: white;
+            color: var(--orange-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .voice-btn:hover,
+        .emoji-btn:hover {
+            background: var(--gray-light);
+        }
+
         .message-input {
-            flex: 1; min-height: 40px; max-height: 120px; padding: 10px 15px;
-            border: 1px solid var(--gray-border); border-radius: 20px; font-size: 14px; resize: none; font-family: inherit;
+            flex: 1;
+            min-height: 40px;
+            max-height: 120px;
+            padding: 10px 15px;
+            border: 1px solid var(--gray-border);
+            border-radius: 20px;
+            font-size: 14px;
+            resize: none;
+            font-family: inherit;
         }
-        .message-input:focus { outline: none; border-color: var(--orange-primary); }
+
+        .message-input:focus {
+            outline: none;
+            border-color: var(--orange-primary);
+        }
+
         .send-btn {
-            background: linear-gradient(135deg, #ff6b35 0%, #ff9d6f 100%); color: white; border: none;
-            border-radius: 20px; padding: 10px 25px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;
+            background: linear-gradient(135deg, #ff6b35 0%, #ff9d6f 100%);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 10px 25px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
-        .send-btn:hover { background: linear-gradient(135deg, #ff9d6f 0%, #ffbc9a 100%); }
-        
-        .group-info-sidebar { width: 260px; background: white; border-left: 1px solid var(--gray-border); display: flex; flex-direction: column; }
-        .group-info-header { padding: 20px; border-bottom: 1px solid var(--gray-border); display: flex; gap: 10px; }
-        .group-search-btn, .group-files-btn {
-            flex: 1; background: white; border: 1px solid var(--gray-border); border-radius: 6px; padding: 8px 12px;
-            color: var(--orange-primary); font-size: 13px; cursor: pointer; transition: all 0.3s ease;
+
+        .send-btn:hover {
+            background: linear-gradient(135deg, #ff9d6f 0%, #ffbc9a 100%);
         }
-        .group-search-btn:hover, .group-files-btn:hover { background: var(--gray-light); }
-        .group-info-content { flex: 1; padding: 20px; overflow-y: auto; }
-        .info-section { margin-bottom: 25px; }
+
+        .group-info-sidebar {
+            width: 260px;
+            background: white;
+            border-left: 1px solid var(--gray-border);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .group-info-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--gray-border);
+            display: flex;
+            gap: 10px;
+        }
+
+        .group-search-btn,
+        .group-files-btn {
+            flex: 1;
+            background: white;
+            border: 1px solid var(--gray-border);
+            border-radius: 6px;
+            padding: 8px 12px;
+            color: var(--orange-primary);
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .group-search-btn:hover,
+        .group-files-btn:hover {
+            background: var(--gray-light);
+        }
+
+        .group-info-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .info-section {
+            margin-bottom: 25px;
+        }
+
         .info-section h3 {
-            font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 15px; padding-bottom: 8px; border-bottom: 1px solid var(--gray-border);
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--gray-border);
         }
-        .info-item { margin-bottom: 15px; }
-        .info-item h4 { font-size: 12px; color: var(--text-light); margin-bottom: 5px; }
-        .info-item p { font-size: 14px; color: var(--text-primary); line-height: 1.5; }
-        .member-list { display: flex; flex-direction: column; gap: 10px; }
-        .member-item { display: flex; align-items: center; gap: 10px; }
+
+        .info-item {
+            margin-bottom: 15px;
+        }
+
+        .info-item h4 {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-bottom: 5px;
+        }
+
+        .info-item p {
+            font-size: 14px;
+            color: var(--text-primary);
+            line-height: 1.5;
+        }
+
+        .member-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .member-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
         .member-avatar {
-            width: 32px; height: 32px; border-radius: 50%;
-            background: linear-gradient(135deg, #ff6b35 0%, #ff9d6f 100%); position: relative;
-            display: flex; align-items: center; justify-content: center; color: white; font-size: 11px; font-weight: 600;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff6b35 0%, #ff9d6f 100%);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 11px;
+            font-weight: 600;
         }
+
         .member-avatar.online::after {
-            content: ''; position: absolute; bottom: 0; right: 0; width: 8px; height: 8px; background: var(--orange-primary);
-            border-radius: 50%; border: 2px solid white;
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 8px;
+            height: 8px;
+            background: var(--orange-primary);
+            border-radius: 50%;
+            border: 2px solid white;
         }
-        .member-name { font-size: 13px; color: var(--text-primary); }
-        .invite-code-section { margin-top: 30px; }
+
+        .member-name {
+            font-size: 13px;
+            color: var(--text-primary);
+        }
+
+        .invite-code-section {
+            margin-top: 30px;
+        }
+
         .invite-code {
-            background: linear-gradient(135deg, #ff6b35 0%, #ff9d6f 100%); color: white; text-align: center; padding: 12px;
-            border-radius: 8px; font-weight: 600; letter-spacing: 1px; cursor: pointer; transition: all 0.3s ease; font-size: 14px;
+            background: linear-gradient(135deg, #ff6b35 0%, #ff9d6f 100%);
+            color: white;
+            text-align: center;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
         }
-        .invite-code:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3); }
+
+        .invite-code:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+        }
+
         .delete-group-btn {
-            margin-top: 10px; padding: 8px 16px; background-color: #ff4d4f; color: white; border: none; border-radius: 4px;
-            font-size: 14px; cursor: pointer; transition: background-color 0.3s; width: 100%;
+            margin-top: 10px;
+            padding: 8px 16px;
+            background-color: #ff4d4f;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 100%;
         }
-        .delete-group-btn:hover { background-color: #ff7875; }
-        
+
+        .delete-group-btn:hover {
+            background-color: #ff7875;
+        }
+
         /* 移动端适配 */
         @media (max-width: 768px) {
-            .container { padding: 10px; }
-            .channel-layout { flex-direction: column; }
-            .channel-sidebar { width: 100%; padding: 15px 0; }
-            .group-info-sidebar { width: 100%; }
-            .group-items { display: none; }
-            .group-list-mobile { display: block; }
-            .message-content-wrapper { max-width: 75%; }
-            .message-input-area { padding: 15px; }
+            .container {
+                padding: 10px;
+            }
+
+            .channel-layout {
+                flex-direction: column;
+            }
+
+            .channel-sidebar {
+                width: 100%;
+                padding: 15px 0;
+            }
+
+            .group-info-sidebar {
+                width: 100%;
+            }
+
+            .group-items {
+                display: none;
+            }
+
+            .group-list-mobile {
+                display: block;
+            }
+
+            .message-content-wrapper {
+                max-width: 75%;
+            }
+
+            .message-input-area {
+                padding: 15px;
+            }
         }
-        
+
         /* 移动端切换按钮 */
         .mobile-toggle {
-            display: none; position: fixed; bottom: 80px; right: 20px; width: 56px; height: 56px; border-radius: 50%;
-            background: linear-gradient(135deg, #ff6b35 0%, #ff9d6f 100%); color: white; border: none; cursor: pointer; z-index: 1000;
+            display: none;
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff6b35 0%, #ff9d6f 100%);
+            color: white;
+            border: none;
+            cursor: pointer;
+            z-index: 1000;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
         }
-        @media (max-width: 768px) { .mobile-toggle { display: block; } .channel-sidebar, .group-info-sidebar { display: none; } }
+
+        @media (max-width: 768px) {
+            .mobile-toggle {
+                display: block;
+            }
+
+            .channel-sidebar,
+            .group-info-sidebar {
+                display: none;
+            }
+        }
 
         /* 为固定播放栏预留空间 */
-        body { padding-bottom: 96px; }
+        body {
+            padding-bottom: 96px;
+        }
 
         /* PlayBar（来自 PlayBar.html）样式：完整保留，仅用于播放栏 */
         .pv-player-bar {
-          position: fixed; left: 0; right: 0; bottom: 0;
-          width: 100%; height: 96px; background: #ffffff;
-          border-top: 1px solid #e0e0e0; box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
-          z-index: 29999; display: flex; align-items: center; user-select: none; pointer-events: auto;
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            height: 96px;
+            background: #ffffff;
+            border-top: 1px solid #e0e0e0;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+            z-index: 29999;
+            display: flex;
+            align-items: center;
+            user-select: none;
+            pointer-events: auto;
         }
-        .pv-inner {
-          width: 100%; max-width: 1200px; margin: 0 auto;
-          display: grid;
-          grid-template-columns: auto 1fr auto; /* 左侧自适应，中间占满，右侧自适应 */
-          align-items: center;
-          column-gap: 16px;
-          padding: 0 24px;
-          height: 100%;
-        }
-        .pv-left {
-          display: inline-flex;
-          align-items: center;
-          gap: 12px;
-          min-width: 240px;
-        }
-        .pv-cover {
-          width: 52px; height: 52px; border-radius: 8px;
-          background: #eee no-repeat center/cover;
-          box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-          flex-shrink: 0;
-        }
-        .pv-meta {
-          display: flex; flex-direction: column; min-width: 0;
-        }
-        .pv-title {
-          font-size: 16px; font-weight: 700; color: #222;
-          white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        }
-        .pv-artist {
-          font-size: 12px; color: #666; margin-top: 2px;
-          white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        }
-        .pv-center {
-          display: flex; flex-direction: column; align-items: center; justify-content: center;
-          gap: 8px; min-width: 0;
-        }
-        .pv-controls {
-          display: inline-flex; align-items: center; gap: 18px;
-        }
-        .ctrl-btn, .mode-btn, .rate-btn {
-          background: transparent; border: none; cursor: pointer; color: #444;
-          font-size: 18px; padding: 6px; display: inline-flex; align-items: center; justify-content: center; transition: color 0.2s;
-        }
-        .ctrl-btn:hover, .mode-btn:hover, .rate-btn:hover { color: #ff8c00; }
-        .play-btn {
-          width: 44px; height: 44px; border-radius: 50%; background: #ff8c00; color: #fff; border: none;
-          display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
-          box-shadow: 0 4px 10px rgba(255,140,0,0.30); transition: transform 0.1s, background 0.2s;
-        }
-        .play-btn:hover { background: #e67e00; transform: scale(1.05); }
-        .icon { width: 18px; height: 18px; fill: currentColor; }
 
-        .pv-progress-row { display: flex; align-items: center; gap: 12px; width: 100%; }
-        .time.small { font-size: 12px; color: #888; width: 48px; text-align: center; font-variant-numeric: tabular-nums; }
-        .pv-progress { position: relative; flex: 1; height: 6px; background: #eee; border-radius: 3px; cursor: pointer; touch-action: none; }
-        .pv-progress::before { content: ''; position: absolute; top: -10px; bottom: -10px; left: 0; right: 0; z-index: 1; }
-        .pv-progress-fill { position: absolute; left: 0; top: 0; bottom: 0; background: #ff8c00; border-radius: 3px; width: 0%; pointer-events: none; }
-        .pv-knob { position: absolute; top: 50%; right: -6px; transform: translateY(-50%); width: 12px; height: 12px; background: #fff; border: 2px solid #ff8c00; border-radius: 50%; box-shadow: 0 1px 4px rgba(0,0,0,0.2); opacity: 0; transition: opacity 0.2s; pointer-events: none; }
-        .pv-progress:hover .pv-knob, .pv-progress.dragging .pv-knob { opacity: 1; }
+        .pv-inner {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            /* 左侧自适应，中间占满，右侧自适应 */
+            align-items: center;
+            column-gap: 16px;
+            padding: 0 24px;
+            height: 100%;
+        }
+
+        .pv-left {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 240px;
+        }
+
+        .pv-cover {
+            width: 52px;
+            height: 52px;
+            border-radius: 8px;
+            background: #eee no-repeat center/cover;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            flex-shrink: 0;
+        }
+
+        .pv-meta {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .pv-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #222;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .pv-artist {
+            font-size: 12px;
+            color: #666;
+            margin-top: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .pv-center {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-width: 0;
+        }
+
+        .pv-controls {
+            display: inline-flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .ctrl-btn,
+        .mode-btn,
+        .rate-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            color: #444;
+            font-size: 18px;
+            padding: 6px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.2s;
+        }
+
+        .ctrl-btn:hover,
+        .mode-btn:hover,
+        .rate-btn:hover {
+            color: #ff8c00;
+        }
+
+        .play-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #ff8c00;
+            color: #fff;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(255, 140, 0, 0.30);
+            transition: transform 0.1s, background 0.2s;
+        }
+
+        .play-btn:hover {
+            background: #e67e00;
+            transform: scale(1.05);
+        }
+
+        .icon {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
+
+        .pv-progress-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .time.small {
+            font-size: 12px;
+            color: #888;
+            width: 48px;
+            text-align: center;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .pv-progress {
+            position: relative;
+            flex: 1;
+            height: 6px;
+            background: #eee;
+            border-radius: 3px;
+            cursor: pointer;
+            touch-action: none;
+        }
+
+        .pv-progress::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            bottom: -10px;
+            left: 0;
+            right: 0;
+            z-index: 1;
+        }
+
+        .pv-progress-fill {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            background: #ff8c00;
+            border-radius: 3px;
+            width: 0%;
+            pointer-events: none;
+        }
+
+        .pv-knob {
+            position: absolute;
+            top: 50%;
+            right: -6px;
+            transform: translateY(-50%);
+            width: 12px;
+            height: 12px;
+            background: #fff;
+            border: 2px solid #ff8c00;
+            border-radius: 50%;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transition: opacity 0.2s;
+            pointer-events: none;
+        }
+
+        .pv-progress:hover .pv-knob,
+        .pv-progress.dragging .pv-knob {
+            opacity: 1;
+        }
 
         .pv-right {
-          display: inline-flex; align-items: center; justify-content: flex-end;
-          gap: 12px; min-width: 240px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 12px;
+            min-width: 240px;
         }
-        .pv-volume { width: 140px; height: 20px; display: flex; align-items: center; cursor: pointer; position: relative; }
-        .pv-volume-bar { width: 100%; height: 4px; background: #eee; border-radius: 2px; position: relative; overflow: visible; pointer-events: none; }
-        .pv-volume-fill { height: 100%; background: #888; width: 50%; border-radius: 2px; position: relative; }
-        .pv-volume-fill::after { content: ''; position: absolute; right: -5px; top: 50%; transform: translateY(-50%); width: 10px; height: 10px; background: #fff; border: 1px solid #888; border-radius: 50%; opacity: 0; transition: opacity 0.2s; }
-        .pv-volume:hover .pv-volume-fill::after { opacity: 1; }
+
+        .pv-volume {
+            width: 140px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .pv-volume-bar {
+            width: 100%;
+            height: 4px;
+            background: #eee;
+            border-radius: 2px;
+            position: relative;
+            overflow: visible;
+            pointer-events: none;
+        }
+
+        .pv-volume-fill {
+            height: 100%;
+            background: #888;
+            width: 50%;
+            border-radius: 2px;
+            position: relative;
+        }
+
+        .pv-volume-fill::after {
+            content: '';
+            position: absolute;
+            right: -5px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 10px;
+            height: 10px;
+            background: #fff;
+            border: 1px solid #888;
+            border-radius: 50%;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .pv-volume:hover .pv-volume-fill::after {
+            opacity: 1;
+        }
 
         /* 弹层：循环模式与倍速菜单 */
         .popover {
-          position: absolute; bottom: 100%;
-          left: 50%; transform: translateX(-50%);
-          background: #fff; border: 1px solid #ddd; border-radius: 8px;
-          box-shadow: 0 10px 24px rgba(0,0,0,0.12);
-          padding: 8px; z-index: 30000; display: none;
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+            padding: 8px;
+            z-index: 30000;
+            display: none;
         }
-        .popover.show { display: flex; }
-        .mode-popover { gap: 10px; align-items: center; }
+
+        .popover.show {
+            display: flex;
+        }
+
+        .mode-popover {
+            gap: 10px;
+            align-items: center;
+        }
+
         .mode-item {
-          width: 40px; height: 40px; border-radius: 8px; border: 1px solid #eee;
-          display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: #444;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            border: 1px solid #eee;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #444;
         }
-        .mode-item:hover { color: #ff8c00; border-color: #ffeed6; background: #fff9f0; }
-        .mode-item.active { color: #fff; background: #ff8c00; border-color: #ff8c00; }
-        .rate-popover { flex-direction: column; min-width: 140px; }
-        .rate-item { padding: 8px 12px; font-size: 14px; color: #333; cursor: pointer; border-radius: 6px; }
-        .rate-item:hover { background: #f7f7f7; }
-        .rate-item.active { color: #ff8c00; font-weight: 700; background: #fff4e6; }
+
+        .mode-item:hover {
+            color: #ff8c00;
+            border-color: #ffeed6;
+            background: #fff9f0;
+        }
+
+        .mode-item.active {
+            color: #fff;
+            background: #ff8c00;
+            border-color: #ff8c00;
+        }
+
+        .rate-popover {
+            flex-direction: column;
+            min-width: 140px;
+        }
+
+        .rate-item {
+            padding: 8px 12px;
+            font-size: 14px;
+            color: #333;
+            cursor: pointer;
+            border-radius: 6px;
+        }
+
+        .rate-item:hover {
+            background: #f7f7f7;
+        }
+
+        .rate-item.active {
+            color: #ff8c00;
+            font-weight: 700;
+            background: #fff4e6;
+        }
 
         @media (max-width: 900px) {
-          .pv-left { min-width: 0; }
-          .pv-right { min-width: 0; }
-          .pv-inner { grid-template-columns: auto 1fr auto; column-gap: 10px; padding: 0 12px; }
+            .pv-left {
+                min-width: 0;
+            }
+
+            .pv-right {
+                min-width: 0;
+            }
+
+            .pv-inner {
+                grid-template-columns: auto 1fr auto;
+                column-gap: 10px;
+                padding: 0 12px;
+            }
         }
 
         /* 创建群组模态框样式 */
@@ -844,35 +1363,437 @@
             margin-right: 8px;
         }
     </style>
-</head>
-<body>
-            <script>
-            // ============ 通知主框架当前页面状态 ============
-            // 第一种情况：显示且播放不暂停
-            function notifyParentPage() {
-                if (window.parent !== window) {
-                    window.parent.postMessage({
-                        type: 'PAGE_STATE',
-                        data: {
-                            pageName: 'channel2',
-                            state: 'visible-playing' // 群组页：显示播放栏且播放不暂停
+
+    <!-- 在 </head> 之前添加以下脚本 -->
+
+    <!-- 1. 修复 <head> 中的 script 标签 -->
+
+    <head>
+        <!-- ...其他 head 内容... -->
+
+        <!-- 后端集成代码 -->
+        <script>
+            // ========== 后端 API 集成配置 ==========
+            const API_BASE = 'http://localhost:8080/api/chat/group';
+
+            function getCurrentUserId() {
+                return parseInt(localStorage.getItem('userId') || '1');
+            }
+
+            function getAuthToken() {
+                return localStorage.getItem('authToken') || '';
+            }
+
+            function escapeHtml(str) {
+                return String(str).replace(/[&<>"']/g, function (m) {
+                    return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": "&#39;" })[m];
+                });
+            }
+
+            // ========== 从后端加载用户已加入的群组 ==========
+            // 在 <head> 中的 <script> 部分,找到 loadUserGroups 函数,修改为:
+
+            async function loadUserGroups() {
+                try {
+                    const userId = getCurrentUserId();
+                    const token = getAuthToken();
+
+                    console.log('=== 加载用户群组 ===');
+                    console.log('userId:', userId);
+                    console.log('token:', token);
+
+                    const response = await fetch(`${API_BASE}/user/${userId}/joined`, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': 'Bearer ' + token,
+                            'Content-Type': 'application/json'
                         }
-                    }, '*');
-                    // 控制台提示
-                    console.log('已通知主框架：channel2（显示播放栏，播放不中断）');
+                    });
+
+                    console.log('响应状态码:', response.status);
+
+                    if (!response.ok) {
+                        console.warn('加载群组失败，状态码:', response.status);
+                        return [];
+                    }
+
+                    const result = await response.json();
+                    console.log('群组响应:', result);
+
+                    if (result && result.code === 200 && Array.isArray(result.data)) {
+                        return result.data.map(g => ({
+                            id: g.groupId,
+                            name: g.groupName,
+                            desc: g.description || '暂无简介',
+                            members: g.memberCount || 0,
+                            category: '学习',
+                            inviteCode: g.inviteCode || 'N/A',
+                            ownerId: g.ownerId
+                        }));
+                    }
+
+                    return [];
+                } catch (error) {
+                    console.error('加载群组失败:', error);
+                    return [];
                 }
             }
 
-            // 页面加载时通知主框架
-            window.addEventListener('load', function() {
-                setTimeout(notifyParentPage, 100); // 延迟确保主框架准备好
+            // ========== 渲染群组到侧边栏 ==========
+            function renderGroupsToSidebar(groups) {
+                const desktopGroupItems = document.querySelector('.group-items');
+                const mobileGroupList = document.querySelector('.group-list-mobile');
+
+                if (!desktopGroupItems || !mobileGroupList) {
+                    console.warn('未找到群组列表容器');
+                    return;
+                }
+
+                // 清空现有内容
+                desktopGroupItems.innerHTML = '';
+                mobileGroupList.innerHTML = '';
+
+                if (groups.length === 0) {
+                    const emptyMsg = '<div style="padding: 20px; text-align: center; color: #999; font-size: 14px;">还没有加入任何群组，<a href="channel.html" style="color: #ff6b35;">去创建或加入</a></div>';
+                    desktopGroupItems.innerHTML = emptyMsg;
+                    mobileGroupList.innerHTML = emptyMsg;
+                    return;
+                }
+
+                const avatarColors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD'];
+                const typeEmojis = ['🎤', '📚', '🎓', '⭐', '💬'];
+
+                groups.forEach((group, index) => {
+                    const randomColor = avatarColors[index % avatarColors.length];
+                    const randomEmoji = typeEmojis[index % typeEmojis.length];
+
+                    const groupItemHTML = `
+                    <div class="group-avatar-placeholder" style="width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, ${randomColor}, ${randomColor}99); display: flex; align-items: center; justify-content: center; font-size: 20px; margin-right: 12px; flex-shrink: 0;">${randomEmoji}</div>
+                    <div class="group-info">
+                        <h4>${escapeHtml(group.name)}</h4>
+                        <p>成员: ${group.members}人</p>
+                    </div>
+                    <span class="message-time">${group.members}人</span>
+                `;
+
+                    // 桌面端
+                    const desktopItem = document.createElement('div');
+                    desktopItem.className = index === 0 ? 'group-item active' : 'group-item';
+                    desktopItem.setAttribute('data-group-id', group.id);
+                    desktopItem.innerHTML = groupItemHTML;
+                    desktopItem.addEventListener('click', () => switchToGroup(group.id));
+                    desktopGroupItems.appendChild(desktopItem);
+
+                    // 移动端
+                    const mobileItem = document.createElement('div');
+                    mobileItem.className = index === 0 ? 'group-item active' : 'group-item';
+                    mobileItem.setAttribute('data-group-id', group.id);
+                    mobileItem.innerHTML = groupItemHTML;
+                    mobileItem.addEventListener('click', () => switchToGroup(group.id));
+                    mobileGroupList.appendChild(mobileItem);
+                });
+
+                console.log('群组列表已渲染:', groups.length, '个群组');
+            }
+
+            // ========== 切换到指定群组 ==========
+            function switchToGroup(groupId) {
+                console.log('切换到群组:', groupId);
+
+                // 1. 从 window.userGroups 中查找群组
+                const group = window.userGroups ? window.userGroups.find(g => g.id === groupId) : null;
+
+                if (!group) {
+                    console.error('群组不存在:', groupId);
+                    return;
+                }
+
+                // 2. 更新active状态
+                document.querySelectorAll('.group-item').forEach(el => {
+                    const itemGroupId = el.getAttribute('data-group-id');
+                    el.classList.toggle('active', itemGroupId == groupId);
+                });
+
+                // 3. 显示切换提示
+                const indicator = document.getElementById('switchIndicator');
+                if (indicator) {
+                    indicator.style.display = 'flex';
+                    setTimeout(() => { indicator.style.display = 'none'; }, 2000);
+                }
+
+                // 4. 更新URL
+                window.history.pushState({ groupId: groupId }, '', `?groupId=${groupId}`);
+
+                // 5. 从后端加载群组详细数据
+                loadGroupDataFromBackend(groupId);
+            }
+
+            // ========== 从后端加载群组的详细数据 ==========
+            async function loadGroupDataFromBackend(groupId) {
+                try {
+                    const token = getAuthToken();
+
+                    // 获取群组详细信息
+                    const groupResponse = await fetch(`${API_BASE}/${groupId}`, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': 'Bearer ' + token,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (!groupResponse.ok) {
+                        console.error('获取群组信息失败');
+                        return;
+                    }
+
+                    const groupResult = await groupResponse.json();
+                    if (groupResult && groupResult.code === 200 && groupResult.data) {
+                        const group = groupResult.data;
+
+                        // 更新页面显示
+                        const currentGroupName = document.getElementById('currentGroupName');
+                        const currentMemberCount = document.getElementById('currentMemberCount');
+                        const groupName = document.getElementById('groupName');
+                        const groupDescription = document.getElementById('groupDescription');
+
+                        if (currentGroupName) currentGroupName.textContent = group.groupName;
+                        if (currentMemberCount) currentMemberCount.textContent = `成员: ${group.memberCount}`;
+                        if (groupName) groupName.textContent = group.groupName;
+                        if (groupDescription) groupDescription.textContent = group.description || '暂无描述';
+
+                        // 加载聊天记录
+                        console.log('正在加载群组聊天记录...');
+                        const messagesResponse = await fetch(`http://localhost:8080/api/chat/message/list?groupId=${groupId}`, {
+                            method: 'GET',
+                            headers: {
+                                'Authorization': 'Bearer ' + token,
+                                'Content-Type': 'application/json'
+                            }
+                        });
+
+                        if (messagesResponse.ok) {
+                            const messagesResult = await messagesResponse.json();
+                            console.log('聊天记录响应:', messagesResult);
+
+                            if (messagesResult && messagesResult.code === 200 && Array.isArray(messagesResult.data)) {
+                                renderChatMessages(messagesResult.data);
+                            } else {
+                                showWelcomeMessage(group.groupName);
+                            }
+                        } else {
+                            console.error('获取聊天记录失败');
+                            showWelcomeMessage(group.groupName);
+                        }
+
+                        // 获取群组成员列表
+                        const membersResponse = await fetch(`${API_BASE}/${groupId}/members`, {
+                            method: 'GET',
+                            headers: {
+                                'Authorization': 'Bearer ' + token,
+                                'Content-Type': 'application/json'
+                            }
+                        });
+
+                        if (membersResponse.ok) {
+                            const membersResult = await membersResponse.json();
+                            if (membersResult && membersResult.code === 200 && Array.isArray(membersResult.data)) {
+                                renderOnlineMembers(membersResult.data);
+                            }
+                        }
+
+                        // 更新邀请码
+                        const inviteCodeEl = document.querySelector('.invite-code');
+                        if (inviteCodeEl) {
+                            inviteCodeEl.textContent = group.inviteCode || 'N/A';
+                        }
+                    }
+                } catch (error) {
+                    console.error('加载群组数据失败:', error);
+                }
+            }
+
+            // 渲染聊天消息
+            function renderChatMessages(messages) {
+                const chatMessages = document.getElementById('chatMessages');
+                const currentUserId = getCurrentUserId();
+
+                if (!chatMessages) return;
+
+                chatMessages.innerHTML = '';
+
+                messages.forEach(msg => {
+                    const isOwnMessage = msg.senderId === currentUserId;
+                    const messageEl = document.createElement('div');
+                    messageEl.className = `message-item ${isOwnMessage ? 'own-message' : 'other-message'}`;
+
+                    const time = new Date(msg.createdAt).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+                    const senderName = msg.senderName || `用户${msg.senderId}`;
+
+                    messageEl.innerHTML = `
+            <div class="message-avatar">${isOwnMessage ? 'ME' : senderName.substring(0, 2).toUpperCase()}</div>
+            <div class="message-content-wrapper">
+                <div class="message-info">
+                    <span class="message-sender">${escapeHtml(senderName)}</span>
+                    <span class="message-time">${time}</span>
+                </div>
+                <div class="message-bubble">
+                    <div class="message-text">${escapeHtml(msg.content)}</div>
+                </div>
+                ${msg.grammarNote ? `<div class="grammar-note">${escapeHtml(msg.grammarNote)}</div>` : ''}
+            </div>
+        `;
+
+                    chatMessages.appendChild(messageEl);
+                });
+
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+
+            // 显示欢迎消息
+            function showWelcomeMessage(groupName) {
+                const chatMessages = document.getElementById('chatMessages');
+                if (chatMessages) {
+                    chatMessages.innerHTML = `
+            <div class="system-message">
+                <div class="message-bubble">
+                    <div class="message-text">欢迎来到「${escapeHtml(groupName)}」！🌟</div>
+                </div>
+            </div>
+        `;
+                }
+            }
+
+            // ========== 渲染在线成员列表 ==========
+            function renderOnlineMembers(members) {
+                const onlineMembers = document.getElementById('onlineMembers');
+                if (!onlineMembers) return;
+
+                onlineMembers.innerHTML = '';
+
+                const onlineCountEl = document.getElementById('onlineCount');
+                if (onlineCountEl) {
+                    onlineCountEl.textContent = `(${members.length})`;
+                }
+
+                members.forEach(member => {
+                    const memberItem = document.createElement('div');
+                    memberItem.className = 'member-item';
+
+                    const avatarColors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD'];
+                    const randomColor = avatarColors[Math.floor(Math.random() * avatarColors.length)];
+
+                    const roleText = member.role === 2 ? '👑 群主' : member.role === 1 ? '⭐ 管理员' : '👤 成员';
+
+                    memberItem.innerHTML = `
+                    <div class="member-avatar online" style="background: ${randomColor};">
+                        ${String(member.userId).substring(0, 1).toUpperCase()}
+                    </div>
+                    <span class="member-name">${roleText} - User${member.userId}</span>
+                `;
+
+                    onlineMembers.appendChild(memberItem);
+                });
+            }
+
+            // ========== 页面初始化 ==========
+            // 页面初始化
+            window.addEventListener('DOMContentLoaded', async function () {
+                console.log('===== channel2.html 页面初始化 =====');
+
+                try {
+                    // 1. 加载用户群组
+                    const groups = await loadUserGroups();
+                    window.userGroups = groups;
+
+                    console.log('加载到的群组数量:', groups.length);
+                    console.log('群组列表:', groups);
+
+                    // 2. 渲染到侧边栏
+                    renderGroupsToSidebar(groups);
+
+                    // 3. 加载默认群组
+                    if (groups.length > 0) {
+                        // 检查URL参数
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const groupIdFromUrl = urlParams.get('groupId');
+
+                        if (groupIdFromUrl) {
+                            const groupId = parseInt(groupIdFromUrl);
+                            const groupExists = groups.find(g => g.id === groupId);
+
+                            if (groupExists) {
+                                switchToGroup(groupId);
+                            } else {
+                                console.warn('URL中的群组不存在，加载第一个群组');
+                                switchToGroup(groups[0].id);
+                            }
+                        } else {
+                            // 没有URL参数，加载第一个群组
+                            switchToGroup(groups[0].id);
+                        }
+                    } else {
+                        // 没有群组时显示提示
+                        console.log('用户尚未加入任何群组');
+                        const chatMessages = document.getElementById('chatMessages');
+                        if (chatMessages) {
+                            chatMessages.innerHTML = `
+                    <div class="system-message">
+                        <div class="message-bubble">
+                            <div class="message-text">
+                                您还没有加入任何群组<br>
+                                <a href="channel.html" style="color: #ff6b35; text-decoration: underline;">点击此处去创建或加入群组</a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                        }
+                    }
+
+                    console.log('===== 初始化完成 =====');
+                } catch (error) {
+                    console.error('初始化失败:', error);
+                    alert('加载群组失败，请刷新页面重试');
+                }
             });
 
-            // 如果页面是通过iframe直接加载的，立即通知
+            // ========== 监听浏览器后退/前进 ==========
+            window.addEventListener('popstate', function (event) {
+                if (event.state && event.state.groupId) {
+                    switchToGroup(event.state.groupId);
+                }
+            });
+        </script>
+    </head>
+
+<body>
+    <script>
+        // ============ 通知主框架当前页面状态 ============
+        // 第一种情况：显示且播放不暂停
+        function notifyParentPage() {
             if (window.parent !== window) {
-                notifyParentPage();
+                window.parent.postMessage({
+                    type: 'PAGE_STATE',
+                    data: {
+                        pageName: 'channel2',
+                        state: 'visible-playing' // 群组页：显示播放栏且播放不暂停
+                    }
+                }, '*');
+                // 控制台提示
+                console.log('已通知主框架：channel2（显示播放栏，播放不中断）');
             }
-            </script>
+        }
+
+        // 页面加载时通知主框架
+        window.addEventListener('load', function () {
+            setTimeout(notifyParentPage, 100); // 延迟确保主框架准备好
+        });
+
+        // 如果页面是通过iframe直接加载的，立即通知
+        if (window.parent !== window) {
+            notifyParentPage();
+        }
+    </script>
     <!-- 音频元素（页面其他逻辑用） -->
     <audio id="audioPlayer" controls style="display: none;">
         <source src="" type="audio/mpeg">
@@ -896,7 +1817,8 @@
         </div>
         <div class="user-functions">
             <a href="my-recent.html" class="func-item">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                     <circle cx="12" cy="7" r="4"></circle>
                 </svg>
@@ -906,8 +1828,8 @@
             <a href="my-recent.html" class="func-item"><i class="fas fa-history"></i> 历史</a>
             <a href="my-creator_center.html" class="func-item"><i class="fas fa-pen"></i> 创作中心</a>
             <div id="auth-section">
-            <a href="login.html"><button class="submit-btn">登录/注册</button></a>
-        </div>
+                <a href="login.html"><button class="submit-btn">登录/注册</button></a>
+            </div>
     </header>
 
     <!-- 主要内容区域 -->
@@ -927,7 +1849,7 @@
                     </button>
 
                     <!-- 移动端群组列表 -->
-                    <div class="group-list-mobile">
+                    <!-- <div class="group-list-mobile">
                         <div class="group-item active" data-group-id="1" onclick="switchGroup(1)">
                             <img src="images/english-group1.png" alt="群组头像">
                             <div class="group-info">
@@ -945,9 +1867,14 @@
                             </div>
                             <span class="message-time">昨天</span>
                         </div>
+                    </div> -->
+
+                    <!-- 移动端群组列表 -->
+                    <div class="group-list-mobile">
+                        <!-- 由 JavaScript 动态渲染 -->
                     </div>
 
-                    <!-- 桌面端群组列表 -->
+                    <!-- 桌面端群组列表
                     <div class="group-items">
                         <div class="group-item active" data-group-id="1" onclick="switchGroup(1)">
                             <img src="images/english-group1.png" alt="群组头像">
@@ -982,6 +1909,10 @@
                             </div>
                             <span class="message-time">上周</span>
                         </div>
+                    </div> -->
+                    <!-- 桌面端群组列表 -->
+                    <div class="group-items">
+                        <!-- 由 JavaScript 动态渲染 -->
                     </div>
                 </aside>
 
@@ -995,7 +1926,8 @@
                         <h2 id="currentGroupName">英语口语练习</h2>
                         <div class="group-stats">
                             <span class="member-count" id="currentMemberCount">成员: 36</span>
-                            <button class="member-count" onclick="showGroupMembers()" style="cursor: pointer; background: var(--orange-gradient); color: white;">
+                            <button class="member-count" onclick="showGroupMembers()"
+                                style="cursor: pointer; background: var(--orange-gradient); color: white;">
                                 <i class="fas fa-users"></i> 查看成员
                             </button>
                         </div>
@@ -1018,7 +1950,8 @@
                                     <span class="message-time">09:45</span>
                                 </div>
                                 <div class="message-bubble">
-                                    <div class="message-text english-text">Good morning everyone! How was your weekend?</div>
+                                    <div class="message-text english-text">Good morning everyone! How was your weekend?
+                                    </div>
                                 </div>
                                 <div class="grammar-note">过去式疑问句</div>
                             </div>
@@ -1033,7 +1966,8 @@
                                     <span class="message-time">09:48</span>
                                 </div>
                                 <div class="message-bubble">
-                                    <div class="message-text english-text">My weekend was great! I watched an English movie and practiced listening skills.</div>
+                                    <div class="message-text english-text">My weekend was great! I watched an English
+                                        movie and practiced listening skills.</div>
                                 </div>
                                 <div class="grammar-note">过去简单式 + 并列句</div>
                             </div>
@@ -1048,10 +1982,26 @@
                                     <span class="message-time">09:50</span>
                                 </div>
                                 <div class="message-bubble">
-                                    <div class="message-text english-text">I had a productive weekend too! I learned some new <span class="vocabulary-highlight">vocabulary</span> about travel.</div>
+                                    <div class="message-text english-text">I had a productive weekend too! I learned
+                                        some new <span class="vocabulary-highlight">vocabulary</span> about travel.
+                                    </div>
                                 </div>
                                 <div class="grammar-note">学习了一些关于旅行的新词汇</div>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- 在消息输入区域前添加表情选择器 -->
+                    <div class="emoji-picker" id="emojiPicker">
+                        <div class="emoji-picker-header">
+                            <div class="emoji-category active" data-category="smile">😀</div>
+                            <div class="emoji-category" data-category="people">👋</div>
+                            <div class="emoji-category" data-category="nature">🌸</div>
+                            <div class="emoji-category" data-category="food">🍕</div>
+                            <div class="emoji-category" data-category="activity">⚽</div>
+                        </div>
+                        <div class="emoji-grid" id="emojiGrid">
+                            <!-- 表情将通过 JavaScript 动态生成 -->
                         </div>
                     </div>
 
@@ -1061,10 +2011,12 @@
                                 <i class="fas fa-microphone"></i>
                             </button>
                             <button class="emoji-btn" title="表情符号">
+                                <!-- 修改图标类名，使用常见的笑脸图标 -->
                                 <i class="fas fa-smile"></i>
                             </button>
                         </div>
-                        <textarea class="message-input" placeholder="Try to write in English... (尝试用英语输入)" id="messageInput"></textarea>
+                        <textarea class="message-input" placeholder="Try to write in English... (尝试用英语输入)"
+                            id="messageInput"></textarea>
                         <button class="send-btn" id="sendBtn">发送</button>
                     </div>
                 </section>
@@ -1105,15 +2057,18 @@
                             <h3>学习资源</h3>
                             <div class="member-list">
                                 <div class="member-item" onclick="openResource('speaking')">
-                                    <div class="member-avatar" style="background: #4CAF50; cursor: pointer;"><i class="fas fa-book"></i></div>
+                                    <div class="member-avatar" style="background: #4CAF50; cursor: pointer;"><i
+                                            class="fas fa-book"></i></div>
                                     <span class="member-name" style="cursor: pointer;">口语练习素材</span>
                                 </div>
                                 <div class="member-item" onclick="openResource('listening')">
-                                    <div class="member-avatar" style="background: #2196F3; cursor: pointer;"><i class="fas fa-headphones"></i></div>
+                                    <div class="member-avatar" style="background: #2196F3; cursor: pointer;"><i
+                                            class="fas fa-headphones"></i></div>
                                     <span class="member-name" style="cursor: pointer;">听力资源库</span>
                                 </div>
                                 <div class="member-item" onclick="openResource('video')">
-                                    <div class="member-avatar" style="background: #FF9800; cursor: pointer;"><i class="fas fa-video"></i></div>
+                                    <div class="member-avatar" style="background: #FF9800; cursor: pointer;"><i
+                                            class="fas fa-video"></i></div>
                                     <span class="member-name" style="cursor: pointer;">视频教程</span>
                                 </div>
                             </div>
@@ -1133,126 +2088,162 @@
         <i class="fas fa-bars"></i>
     </button>
 
-      <!-- 播放列表弹窗（示例） -->
-      <div id="playlist-panel" class="playlist-panel" style="display:none;">
+    <!-- 播放列表弹窗（示例） -->
+    <div id="playlist-panel" class="playlist-panel" style="display:none;">
         <div class="playlist-item active" onclick="playIndex(0)">1. Kalimba (Test)</div>
         <div class="playlist-item" onclick="playIndex(1)">2. Sample MP3 (Test)</div>
-      </div>
+    </div>
 
-      <audio id="pv-audio" preload="metadata"></audio>
+    <audio id="pv-audio" preload="metadata"></audio>
     </aside>
-    
+
     <!-- 群组聊天脚本绑定（启用切换群组与发送消息） -->
+    <!-- 在 channel2.html 的 <script> 部分，找到 switchGroup 函数，修改为 -->
     <script>
-    (function(){
-        // Ensure global ws from script.js exists and is connected via initWebSocket on DOMContentLoaded
-        window.switchGroup = function(groupId){
-            // UI switch: mark active list item
-            document.querySelectorAll('.group-item').forEach(el=>el.classList.toggle('active', el.getAttribute('data-group-id')==groupId));
-            // show loading indicator briefly
-            const ind = document.getElementById('switchIndicator'); if(ind){ ind.style.display='flex'; setTimeout(()=>ind.style.display='none',500); }
-            // fetch group info (placeholder)
-            const nameEl = document.getElementById('currentGroupName'); if(nameEl) nameEl.textContent = document.querySelector(`.group-item[data-group-id="${groupId}"] .group-info h4`).textContent || '群组';
-            // update members count mock
-            const memberCountEl = document.getElementById('currentMemberCount'); if(memberCountEl) memberCountEl.textContent = '成员: ' + (30 + Number(groupId));
-            // clear chat and load placeholder messages (in real app, fetch from /api/group/:id/messages)
-            const chat = document.getElementById('chatMessages'); if(chat){ chat.innerHTML = ''; chat.appendChild((function(){ const sys = document.createElement('div'); sys.className='system-message'; sys.innerHTML = '<div class="message-bubble"><div class="message-text">已切换到群组 '+groupId+'</div></div>'; return sys; })()); }
-        };
+        (function () {
+            // 现有的 switchGroup 重命名为 switchGroupLegacy，避免冲突
+            window.switchGroupLegacy = function (groupId) {
+                document.querySelectorAll('.group-item').forEach(el => el.classList.toggle('active', el.getAttribute('data-group-id') == groupId));
+                const ind = document.getElementById('switchIndicator');
+                if (ind) { ind.style.display = 'flex'; setTimeout(() => ind.style.display = 'none', 500); }
+            };
 
-        const sendBtn = document.getElementById('sendBtn');
-        const messageInput = document.getElementById('messageInput');
+            const sendBtn = document.getElementById('sendBtn');
+            const messageInput = document.getElementById('messageInput');
 
-        function sendMessage(){
-            const text = (messageInput.value||'').trim(); if(!text) return;
-            // prefer existing global ws if available
-            if(window.ws && window.ws.readyState === WebSocket.OPEN){
-                const uid = (window.currentUser && window.currentUser.id) ? window.currentUser.id : (typeof currentUser !== 'undefined' && currentUser.id ? currentUser.id : ('anon_' + Math.random().toString(36).slice(2,8)));
-                window.ws.send(JSON.stringify({ type:'comment', userId: uid, content: text, timestamp: Date.now() }));
-            } else {
-                // fallback: append locally
-                const username = localStorage.getItem('username') || '用户';
-                const chat = document.getElementById('chatMessages'); if(chat){ const el = document.createElement('div'); el.className='message-item own-message'; el.innerHTML = `<div class="message-avatar">ME</div><div class="message-content-wrapper"><div class="message-info"><span class="message-sender">${username}</span><span class="message-time">${new Date().toLocaleTimeString()}</span></div><div class="message-bubble"><div class="message-text">${text}</div></div></div>`; chat.appendChild(el); chat.scrollTop = chat.scrollHeight; }
+            if (sendBtn) {
+                sendBtn.addEventListener('click', sendMessage);
             }
-            messageInput.value = '';
-        }
 
-        if(sendBtn){ sendBtn.addEventListener('click', sendMessage); }
-        if(messageInput){ messageInput.addEventListener('keypress', (e)=>{ if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); sendMessage(); } }); }
+            if (messageInput) {
+                messageInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        sendMessage();
+                    }
+                });
+            }
 
-        // copy invite code
-        window.copyInviteCode = function(){ const codeEl = document.querySelector('.invite-code'); if(!codeEl) return; const text = codeEl.textContent || codeEl.innerText; navigator.clipboard && navigator.clipboard.writeText(text).then(()=>{ showNotification('邀请码已复制'); }).catch(()=>{ alert('复制失败：'+text); }); };
+            // 在 channel2.html 中，找到并替换整个 sendMessage 函数
 
-        window.showGroupMembers = function(){ const listEl = document.getElementById('onlineMembers'); if(!listEl) return; listEl.innerHTML = ''; for(let i=1;i<=5;i++){ const item = document.createElement('div'); item.className='member-item'; item.innerHTML = `<div class="member-avatar online">U${i}</div><span class="member-name">成员${i}</span>`; listEl.appendChild(item); } };
+            async function sendMessage() {
+                const text = messageInput.value.trim();
+                if (!text) return;
 
-        // basic delete stub
-        window.deleteCurrentGroup = function(){ if(confirm('确认删除当前群组？此操作不可撤销')){ showNotification('群组已删除（模拟）'); } };
-    })();
+                try {
+                    const userId = getCurrentUserId();
+                    const token = getAuthToken();
+
+                    // 获取当前群组 ID
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const groupId = urlParams.get('groupId') || (window.userGroups && window.userGroups[0] ? window.userGroups[0].id : null);
+
+                    if (!groupId) {
+                        alert('未找到当前群组');
+                        return;
+                    }
+
+                    console.log('发送消息到群组:', groupId, '内容:', text);
+
+                    // 调用后端 API 保存消息
+                    const response = await fetch('http://localhost:8080/api/chat/message/send', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': 'Bearer ' + token,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            groupId: groupId,
+                            senderId: userId,
+                            content: text,
+                            grammarNote: null  // 可选的语法备注
+                        })
+                    });
+
+                    const result = await response.json();
+                    console.log('发送消息响应:', result);
+
+                    if (result && result.code === 200) {
+                        // 消息保存成功，显示在界面上
+                        const username = localStorage.getItem('username') || '我';
+                        const chatMessages = document.getElementById('chatMessages');
+
+                        if (chatMessages) {
+                            const messageEl = document.createElement('div');
+                            messageEl.className = 'message-item own-message';
+                            messageEl.innerHTML = `
+                    <div class="message-avatar">ME</div>
+                    <div class="message-content-wrapper">
+                        <div class="message-info">
+                            <span class="message-sender">${escapeHtml(username)}</span>
+                            <span class="message-time">${new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}</span>
+                        </div>
+                        <div class="message-bubble">
+                            <div class="message-text">${escapeHtml(text)}</div>
+                        </div>
+                    </div>
+                `;
+                            chatMessages.appendChild(messageEl);
+                            chatMessages.scrollTop = chatMessages.scrollHeight;
+                        }
+
+                        messageInput.value = '';
+                    } else {
+                        alert('发送消息失败: ' + (result.message || '未知错误'));
+                    }
+                } catch (error) {
+                    console.error('发送消息失败:', error);
+                    alert('发送消息失败，请检查网络连接');
+                }
+            }
+
+            // 确保绑定发送按钮和回车键
+            document.addEventListener('DOMContentLoaded', function () {
+                const sendBtn = document.getElementById('sendBtn');
+                const messageInput = document.getElementById('messageInput');
+
+                // if (sendBtn) {
+                //     sendBtn.addEventListener('click', sendMessage);
+                // }
+
+                // if (messageInput) {
+                //     messageInput.addEventListener('keypress', (e) => {
+                //         if (e.key === 'Enter' && !e.shiftKey) {
+                //             e.preventDefault();
+                //             sendMessage();
+                //         }
+                //     });
+                // }
+            });
+
+            window.copyInviteCode = function () {
+                const codeEl = document.querySelector('.invite-code');
+                if (!codeEl) return;
+                const text = codeEl.textContent || codeEl.innerText;
+                navigator.clipboard && navigator.clipboard.writeText(text).then(() => {
+                    showNotification('邀请码已复制');
+                }).catch(() => {
+                    alert('复制失败：' + text);
+                });
+            };
+
+            window.showGroupMembers = function () {
+                const listEl = document.getElementById('onlineMembers');
+                if (!listEl) return;
+                // 成员列表已由后端加载，无需额外处理
+            };
+
+            window.deleteCurrentGroup = function () {
+                if (confirm('确认删除当前群组？此操作不可撤销')) {
+                    showNotification('群组已删除（模拟）');
+                }
+            };
+        })();
     </script>
 
     <script>
-        // 英语学习群组数据（原功能保留）
-        const groupData = {
-            1: {
-                name: "英语口语练习",
-                description: "每日英语口语练习，提升沟通能力，欢迎所有英语学习者加入！",
-                memberCount: 36,
-                inviteCode: "ORAL2024",
-                messages: [
-                    { sender: "系统", text: "Welcome to English Speaking Practice Group! 🌟", time: "09:30", isSystem: true },
-                    { sender: "English Learner", avatar: "EN", text: "Good morning everyone! How was your weekend?", time: "09:45", isOwn: false, englishText: true, grammarNote: "过去式疑问句" },
-                    { sender: "Teaching Assistant", avatar: "TE", text: "My weekend was great! I watched an English movie and practiced listening skills.", time: "09:48", isOwn: false, englishText: true, grammarNote: "过去简单式 + 并列句" },
-                    { sender: "用户", avatar: "ME", text: "I had a productive weekend too! I learned some new vocabulary about travel.", time: "09:50", isOwn: true, englishText: true, vocabulary: ["vocabulary"] }
-                ],
-                onlineMembers: ["English Learner", "Teaching Assistant", "Fluency Master", "Grammar Guru", "IELTS Expert"],
-                allMembers: ["English Learner", "Teaching Assistant", "Fluency Master", "Grammar Guru", "IELTS Expert", "TOEFL Student", "Business English", "Conversation Partner"],
-                unreadCount: 8,
-                todayTopic: "Travel and Transportation (旅行与交通)"
-            },
-            2: {
-                name: "托福备考群",
-                description: "托福考试备考交流，分享学习经验和备考技巧",
-                memberCount: 28,
-                inviteCode: "TOEFL888",
-                messages: [
-                    { sender: "系统", text: "TOEFL备考小组 - 互相鼓励，共同进步！", time: "昨天 14:20", isSystem: true },
-                    { sender: "TOEFL Master", avatar: "TM", text: "Has anyone taken the TOEFL reading section recently? Any tips?", time: "昨天 14:35", isOwn: false, englishText: true },
-                    { sender: "用户", avatar: "ME", text: "I find that skimming the questions first really helps with time management.", time: "昨天 15:10", isOwn: true, englishText: true, vocabulary: ["skimming", "time management"] }
-                ],
-                onlineMembers: ["TOEFL Master", "Reading Expert", "Listening Pro"],
-                allMembers: ["TOEFL Master", "Reading Expert", "Listening Pro", "Writing Coach", "Speaking Tutor"],
-                unreadCount: 3,
-                todayTopic: "Reading Comprehension Strategies"
-            },
-            3: {
-                name: "商务英语交流",
-                description: "商务英语学习与实践，提升职场英语能力",
-                memberCount: 22,
-                inviteCode: "BIZ12345",
-                messages: [
-                    { sender: "Business Pro", avatar: "BP", text: "How to professionally decline a meeting invitation?", time: "周一 10:30", isOwn: false, englishText: true },
-                    { sender: "用户", avatar: "ME", text: "You can say: 'Thank you for the invitation, but I have a scheduling conflict.'", time: "周一 11:15", isOwn: true, englishText: true, vocabulary: ["scheduling conflict"] }
-                ],
-                onlineMembers: ["Business Pro", "Corporate Trainer", "Negotiation Expert"],
-                allMembers: ["Business Pro", "Corporate Trainer", "Negotiation Expert", "Presentation Coach", "Email Specialist"],
-                unreadCount: 1,
-                todayTopic: "Business Meeting Expressions"
-            },
-            4: {
-                name: "英文原版阅读",
-                description: "英文原著阅读分享，提高阅读理解和词汇量",
-                memberCount: 45,
-                inviteCode: "BOOK2024",
-                messages: [
-                    { sender: "Bookworm", avatar: "BW", text: "Just finished 'The Great Gatsby'. The symbolism is fascinating!", time: "上周五 16:20", isOwn: false, englishText: true, vocabulary: ["symbolism"] },
-                    { sender: "用户", avatar: "ME", text: "I'm currently reading '1984'. The political themes are very thought-provoking.", time: "上周五 16:45", isOwn: true, englishText: true, vocabulary: ["thought-provoking"] }
-                ],
-                onlineMembers: ["Bookworm", "Literature Lover", "Vocabulary Builder"],
-                allMembers: ["Bookworm", "Literature Lover", "Vocabulary Builder", "Classic Reader", "Modern Fiction Fan"],
-                unreadCount: 0,
-                todayTopic: "Literary Analysis Techniques"
-            }
-        };
-        
+
+
         // 从 sessionStorage 加载共享群组数据（从 channel.html 创建的）
         function loadSharedGroups() {
             try {
@@ -1266,7 +2257,7 @@
                                 description: g.desc || '欢迎加入！',
                                 memberCount: g.members || 1,
                                 messages: [
-                                    { sender: "系统", text: `欢迎来到「${g.name}」！🌟`, time: new Date().toLocaleTimeString('zh-CN', {hour: '2-digit', minute:'2-digit'}), isSystem: true }
+                                    { sender: "系统", text: `欢迎来到「${g.name}」！🌟`, time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }), isSystem: true }
                                 ],
                                 onlineMembers: ["用户"],
                                 allMembers: ["用户"],
@@ -1278,7 +2269,7 @@
                         }
                     });
                 }
-                
+
                 // 加载 channel2 创建的群组
                 const channel2Groups = sessionStorage.getItem('channel2Groups');
                 if (channel2Groups) {
@@ -1290,16 +2281,16 @@
                         }
                     });
                 }
-            } catch(e) { console.log('Failed to load shared groups:', e); }
+            } catch (e) { console.log('Failed to load shared groups:', e); }
         }
-        
+
         // 添加群组到侧边栏
         function addGroupToSidebar(groupId, groupName, groupDesc) {
             const typeEmojis = ['🎤', '📚', '🎓', '⭐', '💬'];
             const randomEmoji = typeEmojis[Math.floor(Math.random() * typeEmojis.length)];
             const avatarColors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD'];
             const randomColor = avatarColors[Math.floor(Math.random() * avatarColors.length)];
-            
+
             const groupItemHTML = `
                 <div class="group-avatar-placeholder" style="width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, ${randomColor}, ${randomColor}99); display: flex; align-items: center; justify-content: center; font-size: 20px; margin-right: 12px; flex-shrink: 0;">${randomEmoji}</div>
                 <div class="group-info">
@@ -1308,7 +2299,7 @@
                 </div>
                 <span class="message-time">新</span>
             `;
-            
+
             const desktopGroupItems = document.querySelector('.group-items');
             if (desktopGroupItems && !desktopGroupItems.querySelector(`[data-group-id="${groupId}"]`)) {
                 const newItem = document.createElement('div');
@@ -1318,7 +2309,7 @@
                 newItem.innerHTML = groupItemHTML;
                 desktopGroupItems.appendChild(newItem);
             }
-            
+
             const mobileGroupList = document.querySelector('.group-list-mobile');
             if (mobileGroupList && !mobileGroupList.querySelector(`[data-group-id="${groupId}"]`)) {
                 const newItem = document.createElement('div');
@@ -1329,7 +2320,7 @@
                 mobileGroupList.appendChild(newItem);
             }
         }
-        
+
         // 保存 channel2 创建的群组到 sessionStorage
         function saveChannel2Groups() {
             const channel2Groups = [];
@@ -1340,68 +2331,12 @@
             });
             sessionStorage.setItem('channel2Groups', JSON.stringify(channel2Groups));
         }
-        
+
         // 页面加载时加载共享群组
         loadSharedGroups();
 
         let currentGroupId = 1;
 
-        function initializePage() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const groupIdFromUrl = urlParams.get('groupId') || urlParams.get('group');
-            if (groupIdFromUrl) {
-                if (groupData[groupIdFromUrl]) {
-                    currentGroupId = isNaN(groupIdFromUrl) ? groupIdFromUrl : parseInt(groupIdFromUrl);
-                    loadGroupData(currentGroupId);
-                    setupEventListeners();
-                    return;
-                }
-                fetch('/api/group/' + encodeURIComponent(groupIdFromUrl)).then(res => {
-                    if (res.ok) return res.json();
-                    throw new Error('no-data');
-                }).then(json => {
-                    const id = groupIdFromUrl;
-                    groupData[id] = {
-                        name: json.name || ('群组 ' + id),
-                        description: json.desc || json.description || '',
-                        memberCount: json.members || json.memberCount || 1,
-                        messages: json.messages || [{ sender: '系统', text: '已进入群组', time: new Date().toLocaleTimeString(), isSystem: true }],
-                        onlineMembers: json.onlineMembers || [],
-                        allMembers: json.allMembers || [],
-                        unreadCount: json.unreadCount || 0,
-                        todayTopic: json.todayTopic || ''
-                    };
-                    currentGroupId = id;
-                    loadGroupData(currentGroupId);
-                    setupEventListeners();
-                }).catch(() => {
-                    if (window.sampleGroups && Array.isArray(window.sampleGroups)) {
-                        const found = window.sampleGroups.find(g => String(g.id) === String(groupIdFromUrl));
-                        if (found) {
-                            groupData[groupIdFromUrl] = {
-                                name: found.name,
-                                description: found.desc || '',
-                                memberCount: found.members || 1,
-                                messages: [{ sender: '系统', text: '占位群组（来自本地）', time: new Date().toLocaleTimeString(), isSystem: true }],
-                                onlineMembers: [], allMembers: [], unreadCount: 0, todayTopic: ''
-                            };
-                            currentGroupId = groupIdFromUrl;
-                            loadGroupData(currentGroupId);
-                            setupEventListeners();
-                            return;
-                        }
-                    }
-                    const id = groupIdFromUrl;
-                    groupData[id] = { name: '群组 ' + id, description: '暂无描述', memberCount: 1, messages: [{ sender: '系统', text: '占位群组', time: new Date().toLocaleTimeString(), isSystem: true }], onlineMembers: [], allMembers: [], unreadCount: 0, todayTopic: '' };
-                    currentGroupId = id;
-                    loadGroupData(currentGroupId);
-                    setupEventListeners();
-                });
-                return;
-            }
-            loadGroupData(currentGroupId);
-            setupEventListeners();
-        }
 
         function showSwitchIndicator() {
             const indicator = document.getElementById('switchIndicator');
@@ -1409,14 +2344,6 @@
             setTimeout(() => { indicator.style.display = 'none'; }, 2000);
         }
 
-        function switchGroup(groupId) {
-            if (groupId !== currentGroupId) {
-                currentGroupId = groupId;
-                loadGroupData(groupId);
-                const newUrl = window.location.pathname + '?groupId=' + encodeURIComponent(groupId);
-                window.history.pushState({ groupId: groupId }, '', newUrl);
-            }
-        }
 
         function highlightVocabulary(text, vocabulary) {
             if (!vocabulary || vocabulary.length === 0) return text;
@@ -1428,85 +2355,13 @@
             return highlightedText;
         }
 
-        function loadGroupData(groupId) {
-            const group = groupData[groupId];
-            if (!group) return;
 
-            showSwitchIndicator();
-
-            document.getElementById('currentGroupName').textContent = group.name;
-            document.getElementById('currentMemberCount').textContent = `成员: ${group.memberCount}`;
-            document.getElementById('groupName').textContent = group.name;
-            document.getElementById('groupDescription').textContent = group.description;
-            document.getElementById('todayTopic').textContent = group.todayTopic;
-
-            const chatMessages = document.getElementById('chatMessages');
-            chatMessages.innerHTML = '';
-
-            group.messages.forEach(message => {
-                let messageElement;
-                if (message.isSystem) {
-                    messageElement = document.createElement('div');
-                    messageElement.className = 'system-message';
-                    messageElement.innerHTML = `
-                        <div class="message-bubble">
-                            <div class="message-text">${message.text}</div>
-                        </div>
-                    `;
-                } else {
-                    messageElement = document.createElement('div');
-                    messageElement.className = `message-item ${message.isOwn ? 'own-message' : 'other-message'}`;
-                    const shortName = message.avatar || message.sender.substring(0, 2);
-                    const englishClass = message.englishText ? 'english-text' : '';
-                    const bilingualClass = message.bilingual ? 'bilingual-text' : '';
-                    const textClass = `${englishClass} ${bilingualClass}`.trim();
-                    let processedText = message.text;
-                    if (message.vocabulary) processedText = highlightVocabulary(message.text, message.vocabulary);
-                    let grammarNoteHTML = message.grammarNote ? `<div class="grammar-note">${message.grammarNote}</div>` : '';
-                    messageElement.innerHTML = `
-                        <div class="message-avatar">${shortName}</div>
-                        <div class="message-content-wrapper">
-                            <div class="message-info">
-                                <span class="message-sender">${message.sender}</span>
-                                <span class="message-time">${message.time}</span>
-                            </div>
-                            <div class="message-bubble">
-                                <div class="message-text ${textClass}">${processedText}</div>
-                                ${grammarNoteHTML}
-                            </div>
-                        </div>
-                    `;
-                }
-                chatMessages.appendChild(messageElement);
-            });
-
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-
-            const onlineMembers = document.getElementById('onlineMembers');
-            onlineMembers.innerHTML = '';
-            document.getElementById('onlineCount').textContent = `(${group.onlineMembers.length})`;
-            group.onlineMembers.forEach(member => {
-                const shortName = member.substring(0, 2);
-                const memberElement = document.createElement('div');
-                memberElement.className = 'member-item';
-                memberElement.innerHTML = `
-                    <div class="member-avatar online">${shortName}</div>
-                    <span class="member-name">${member}</span>
-                `;
-                memberElement.addEventListener('click', () => {
-                    window.location.href = `user-profile.html?username=${encodeURIComponent(member)}`;
-                });
-                onlineMembers.appendChild(memberElement);
-            });
-
-            updateGroupListActiveState(groupId);
-        }
 
         function addAvatarClickEvents() {
             const messageAvatars = document.querySelectorAll('.message-avatar');
             messageAvatars.forEach(avatar => {
                 avatar.style.cursor = 'pointer';
-                avatar.addEventListener('click', function() {
+                avatar.addEventListener('click', function () {
                     window.location.href = 'user-profile.html';
                 });
             });
@@ -1514,7 +2369,7 @@
             const memberAvatars = document.querySelectorAll('.member-avatar');
             memberAvatars.forEach(avatar => {
                 avatar.style.cursor = 'pointer';
-                avatar.addEventListener('click', function() {
+                avatar.addEventListener('click', function () {
                     window.location.href = 'user-profile.html';
                 });
             });
@@ -1579,7 +2434,7 @@
 
         function setupEventListeners() {
             const groupSearch = document.getElementById('groupSearch');
-            groupSearch.addEventListener('input', function(e) {
+            groupSearch.addEventListener('input', function (e) {
                 const searchTerm = e.target.value.toLowerCase();
                 const groupItems = document.querySelectorAll('.group-item');
                 groupItems.forEach(item => {
@@ -1589,24 +2444,24 @@
                 });
             });
 
-            window.showGroupMembers = function() {
+            window.showGroupMembers = function () {
                 const group = groupData[currentGroupId];
                 alert(`群组 ${group.name} 的所有成员：\n${group.allMembers.join(', ')}`);
             };
 
-            window.openResource = function(resourceType) {
+            window.openResource = function (resourceType) {
                 const resourceNames = { 'speaking': '口语练习素材', 'listening': '听力资源库', 'video': '视频教程' };
                 alert(`正在打开 ${resourceNames[resourceType]}...`);
             };
 
-            window.searchInGroup = function() {
+            window.searchInGroup = function () {
                 const searchTerm = prompt('在群聊中搜索：');
                 if (searchTerm) alert(`正在搜索："${searchTerm}"\n功能开发中...`);
             };
 
-            window.showGroupFiles = function() { alert('群文件功能开发中...'); };
+            window.showGroupFiles = function () { alert('群文件功能开发中...'); };
 
-            window.deleteCurrentGroup = function() {
+            window.deleteCurrentGroup = function () {
                 if (confirm('确定要删除当前群组吗？此操作不可恢复！')) {
                     delete groupData[currentGroupId];
                     document.querySelectorAll('.group-items .group-item').forEach(item => {
@@ -1621,7 +2476,7 @@
                     if (remainingGroupIds.length > 0) switchGroup(remainingGroupIds[0]);
                     else alert('所有群组已删除！');
                 }
-                
+
                 // 添加头像点击事件
                 addAvatarClickEvents();
             }
@@ -1637,140 +2492,83 @@
             });
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
-            initializePage();
-            
-            const currentUsernameEl = document.getElementById('currentUsername');
-            if (currentUsernameEl) {
-                const username = localStorage.getItem('username') || '用户';
-                currentUsernameEl.textContent = username;
-            }
+        // 找到发送消息的代码部分，修改为：
+        <!-- 4. 保留发送消息功能，但移除对 groupData 的依赖 -->
 
-            const mobileToggle = document.getElementById('mobileToggle');
-            const channelSidebar = document.querySelector('.channel-sidebar');
-            const groupInfoSidebar = document.querySelector('.group-info-sidebar');
-            const groupList = document.querySelector('.group-list');
-            let toggleState = 0;
-
-            mobileToggle.addEventListener('click', function() {
-                toggleState = (toggleState + 1) % 3;
-                if (toggleState === 0) {
-                    channelSidebar.style.display = 'none';
-                    groupInfoSidebar.style.display = 'none';
-                    groupList.style.display = 'block';
-                    mobileToggle.innerHTML = '<i class="fas fa-bars"></i>';
-                } else if (toggleState === 1) {
-                    channelSidebar.style.display = 'block';
-                    groupInfoSidebar.style.display = 'none';
-                    groupList.style.display = 'none';
-                    mobileToggle.innerHTML = '<i class="fas fa-comments"></i>';
-                } else {
-                    channelSidebar.style.display = 'none';
-                    groupInfoSidebar.style.display = 'block';
-                    groupList.style.display = 'none';
-                    mobileToggle.innerHTML = '<i class="fas fa-user-friends"></i>';
-                }
-            });
-
-            // 发送消息
-            const messageInput = document.getElementById('messageInput');
-            const sendBtn = document.getElementById('sendBtn');
-            sendBtn.addEventListener('click', sendMessage);
-            messageInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    sendMessage();
-                }
-            });
-
-            function sendMessage() {
-                const text = messageInput.value.trim();
-                if (text) {
-                    const username = localStorage.getItem('username') || '用户';
-                    const newMessage = {
-                        sender: username,
-                        avatar: "ME",
-                        text,
-                        time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }),
-                        isOwn: true,
-                        englishText: /[a-zA-Z]/.test(text),
-                        bilingual: /[\u4e00-\u9fa5]/.test(text) && /[a-zA-Z]/.test(text)
-                    };
-                    if (groupData[currentGroupId]) {
-                        groupData[currentGroupId].messages.push(newMessage);
-                        loadGroupData(currentGroupId);
-                        messageInput.value = '';
-                        setTimeout(() => {
-                            const autoReplies = [
-                                { sender: "AI Tutor", avatar: "AI", text: "Great effort! Remember to use complete sentences.", englishText: true },
-                                { sender: "Language Partner", avatar: "LP", text: "Good job! I understood your message clearly.", englishText: true },
-                                { sender: "Grammar Checker", avatar: "GC", text: "Nice try! Pay attention to verb tenses.", englishText: true }
-                            ];
-                            const randomReply = autoReplies[Math.floor(Math.random() * autoReplies.length)];
-                            randomReply.time = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
-                            randomReply.isOwn = false;
-                            groupData[currentGroupId].messages.push(randomReply);
-                            loadGroupData(currentGroupId);
-                        }, 1000);
-                    }
-                }
-            }
-
-            window.addEventListener('popstate', function(event) {
-                if (event.state && event.state.groupId) {
-                    currentGroupId = event.state.groupId;
-                    loadGroupData(currentGroupId);
-                }
-            });
-        });
+        // function sendMessage() {
+        //     const text = messageInput.value.trim();
+        //     if (text) {
+        //         const username = localStorage.getItem('username') || '用户';
+        //         const chatMessages = document.getElementById('chatMessages');
+        //         if (chatMessages) {
+        //             const messageEl = document.createElement('div');
+        //             messageEl.className = 'message-item own-message';
+        //             messageEl.innerHTML = `
+        // <div class="message-avatar">ME</div>
+        // <div class="message-content-wrapper">
+        //     <div class="message-info">
+        //         <span class="message-sender">${username}</span>
+        //         <span class="message-time">${new Date().toLocaleTimeString()}</span>
+        //     </div>
+        //     <div class="message-bubble">
+        //         <div class="message-text">${escapeHtml(text)}</div>
+        //     </div>
+        // </div>
+        //     `;
+        //             chatMessages.appendChild(messageEl);
+        //             chatMessages.scrollTop = chatMessages.scrollHeight;
+        //         }
+        //         messageInput.value = '';
+        //     }
+        // }
 
         // 创建群组模态框
         const createGroupModal = document.createElement('div');
         createGroupModal.className = 'modal-overlay';
         createGroupModal.style.display = 'none';
         createGroupModal.innerHTML = `
-            <div class="modal">
-                <div class="modal-header">
-                    <h2 class="modal-title"><i class="fas fa-users"></i> 创建学习群组</h2>
-                    <button class="close-btn">&times;</button>
-                </div>
-                <div class="modal-content">
-                    <div class="form-group">
-                        <label for="groupName"><i class="fas fa-edit"></i> 群组名称 <span style="color: #ff6b35;">*</span></label>
-                        <input type="text" id="groupName" placeholder="例如：英语口语练习群" maxlength="20" required>
+    <div class="modal">
+        <div class="modal-header">
+            <h2 class="modal-title"><i class="fas fa-users"></i> 创建学习群组</h2>
+            <button class="close-btn">&times;</button>
+        </div>
+        <div class="modal-content">
+            <div class="form-group">
+                <label for="groupName"><i class="fas fa-edit"></i> 群组名称 <span style="color: #ff6b35;">*</span></label>
+                <input type="text" id="groupName" placeholder="例如：英语口语练习群" maxlength="20" required>
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-th-large"></i> 群组类型</label>
+                <div class="group-type-options">
+                    <div class="group-type-option selected" data-type="speaking">
+                        <i class="fas fa-microphone"></i>
+                        <span>口语练习</span>
                     </div>
-                    <div class="form-group">
-                        <label><i class="fas fa-th-large"></i> 群组类型</label>
-                        <div class="group-type-options">
-                            <div class="group-type-option selected" data-type="speaking">
-                                <i class="fas fa-microphone"></i>
-                                <span>口语练习</span>
-                            </div>
-                            <div class="group-type-option" data-type="reading">
-                                <i class="fas fa-book-open"></i>
-                                <span>阅读交流</span>
-                            </div>
-                            <div class="group-type-option" data-type="exam">
-                                <i class="fas fa-graduation-cap"></i>
-                                <span>考试备战</span>
-                            </div>
-                        </div>
+                    <div class="group-type-option" data-type="reading">
+                        <i class="fas fa-book-open"></i>
+                        <span>阅读交流</span>
                     </div>
-                    <div class="form-group">
-                        <label for="groupDescription"><i class="fas fa-align-left"></i> 群组简介</label>
-                        <textarea id="groupDescription" placeholder="介绍一下这个群组的目标和规则..."></textarea>
+                    <div class="group-type-option" data-type="exam">
+                        <i class="fas fa-graduation-cap"></i>
+                        <span>考试备战</span>
                     </div>
-                    <div class="form-group">
-                        <label for="groupTopic"><i class="fas fa-comments"></i> 今日话题（可选）</label>
-                        <input type="text" id="groupTopic" placeholder="例如：Travel and Transportation">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn-cancel">取消</button>
-                    <button class="btn-create"><i class="fas fa-plus"></i> 创建群组</button>
                 </div>
             </div>
-        `;
+            <div class="form-group">
+                <label for="groupDescription"><i class="fas fa-align-left"></i> 群组简介</label>
+                <textarea id="groupDescription" placeholder="介绍一下这个群组的目标和规则..."></textarea>
+            </div>
+            <div class="form-group">
+                <label for="groupTopic"><i class="fas fa-comments"></i> 今日话题（可选）</label>
+                <input type="text" id="groupTopic" placeholder="例如：Travel and Transportation">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel">取消</button>
+            <button class="btn-create"><i class="fas fa-plus"></i> 创建群组</button>
+        </div>
+    </div>
+    `;
         document.body.appendChild(createGroupModal);
 
         // 创建成功提示
@@ -1782,14 +2580,14 @@
         // 群组类型选择
         let selectedGroupType = 'speaking';
         createGroupModal.querySelectorAll('.group-type-option').forEach(option => {
-            option.addEventListener('click', function() {
+            option.addEventListener('click', function () {
                 createGroupModal.querySelectorAll('.group-type-option').forEach(o => o.classList.remove('selected'));
                 this.classList.add('selected');
                 selectedGroupType = this.getAttribute('data-type');
             });
         });
 
-        document.getElementById('createGroupBtn').addEventListener('click', function() {
+        document.getElementById('createGroupBtn').addEventListener('click', function () {
             // 重置表单
             createGroupModal.querySelector('#groupName').value = '';
             createGroupModal.querySelector('#groupDescription').value = '';
@@ -1800,359 +2598,305 @@
             createGroupModal.style.display = 'flex';
         });
 
-        createGroupModal.querySelector('.close-btn').addEventListener('click', function() {
+        createGroupModal.querySelector('.close-btn').addEventListener('click', function () {
             createGroupModal.style.display = 'none';
         });
 
-        createGroupModal.querySelector('.btn-cancel').addEventListener('click', function() {
+        createGroupModal.querySelector('.btn-cancel').addEventListener('click', function () {
             createGroupModal.style.display = 'none';
         });
 
-        createGroupModal.addEventListener('click', function(e) {
+        createGroupModal.addEventListener('click', function (e) {
             if (e.target === createGroupModal) {
                 createGroupModal.style.display = 'none';
             }
         });
 
         // ESC 键关闭
-        document.addEventListener('keydown', function(e) {
+        document.addEventListener('keydown', function (e) {
             if (e.key === 'Escape' && createGroupModal.style.display === 'flex') {
                 createGroupModal.style.display = 'none';
             }
         });
 
-        createGroupModal.querySelector('.btn-create').addEventListener('click', function() {
+        // 在创建群组成功后，重新加载群组列表
+        createGroupModal.querySelector('.btn-create').addEventListener('click', async function () {
             const groupName = createGroupModal.querySelector('#groupName').value.trim();
             const groupDescription = createGroupModal.querySelector('#groupDescription').value.trim();
-            const groupTopic = createGroupModal.querySelector('#groupTopic').value.trim();
 
             if (!groupName) {
-                createGroupModal.querySelector('#groupName').style.borderColor = '#ff6b35';
-                createGroupModal.querySelector('#groupName').focus();
+                alert('请输入群组名称');
                 return;
             }
 
-            const newGroupId = 'group_' + Date.now();
-            const typeEmojis = {
-                'speaking': '🎤',
-                'reading': '📚',
-                'exam': '🎓'
-            };
-
-            groupData[newGroupId] = {
-                name: groupName,
-                description: groupDescription || '欢迎加入，一起学习进步！',
-                memberCount: 1,
-                messages: [
-                    { 
-                        sender: "系统", 
-                        text: `${typeEmojis[selectedGroupType]} 欢迎来到「${groupName}」！这是一个${selectedGroupType === 'speaking' ? '口语练习' : selectedGroupType === 'reading' ? '阅读交流' : '考试备战'}群组。`, 
-                        time: new Date().toLocaleTimeString('zh-CN', {hour: '2-digit', minute:'2-digit'}), 
-                        isSystem: true 
-                    }
-                ],
-                onlineMembers: ['用户'],
-                allMembers: ['用户'],
-                unreadCount: 0,
-                todayTopic: groupTopic || '暂无话题'
-            };
-
-            // 添加到群组列表
-            const avatarColors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD'];
-            const randomColor = avatarColors[Math.floor(Math.random() * avatarColors.length)];
-            const groupEmoji = typeEmojis[selectedGroupType];
-
-            const groupItemHTML = `
-                <div class="group-avatar-placeholder" style="width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, ${randomColor}, ${randomColor}99); display: flex; align-items: center; justify-content: center; font-size: 20px; margin-right: 12px; flex-shrink: 0;">${groupEmoji}</div>
-                <div class="group-info">
-                    <h4>${groupName}</h4>
-                    <p>最新：${groupDescription ? groupDescription.substring(0, 20) + '...' : '欢迎加入！'}</p>
-                </div>
-                <span class="message-time">刚刚</span>
-            `;
-
-            // 添加到桌面端列表
-            const desktopGroupItems = document.querySelector('.group-items');
-            if (desktopGroupItems) {
-                const newDesktopGroupItem = document.createElement('div');
-                newDesktopGroupItem.className = 'group-item';
-                newDesktopGroupItem.setAttribute('data-group-id', newGroupId);
-                newDesktopGroupItem.setAttribute('onclick', `switchGroup('${newGroupId}')`);
-                newDesktopGroupItem.innerHTML = groupItemHTML;
-                // 插入到列表顶部
-                desktopGroupItems.insertBefore(newDesktopGroupItem, desktopGroupItems.firstChild);
-            }
-
-            // 添加到移动端列表
-            const mobileGroupList = document.querySelector('.group-list-mobile');
-            if (mobileGroupList) {
-                const newMobileGroupItem = document.createElement('div');
-                newMobileGroupItem.className = 'group-item';
-                newMobileGroupItem.setAttribute('data-group-id', newGroupId);
-                newMobileGroupItem.setAttribute('onclick', `switchGroup('${newGroupId}')`);
-                newMobileGroupItem.innerHTML = groupItemHTML;
-                mobileGroupList.insertBefore(newMobileGroupItem, mobileGroupList.firstChild);
-            }
-
-            // 关闭模态框
-            createGroupModal.style.display = 'none';
-            
-            // 保存到 sessionStorage 以便同步到 channel.html
-            saveChannel2Groups();
-            
-            // 同时保存到 sharedGroups 格式，让 channel.html 能识别
             try {
-                let sharedGroups = [];
-                const saved = sessionStorage.getItem('sharedGroups');
-                if (saved) sharedGroups = JSON.parse(saved);
-                
-                // 添加新群组到 sharedGroups（使用 channel.html 的格式）
-                const newSharedGroup = {
-                    id: newGroupId,
-                    name: groupName,
-                    desc: groupDescription || '欢迎加入，一起学习进步！',
-                    members: 1,
-                    category: selectedGroupType === 'speaking' ? '口语' : selectedGroupType === 'reading' ? '阅读' : '考试',
-                    inviteCode: 'NEW' + Math.random().toString(36).substring(2, 6).toUpperCase()
-                };
-                sharedGroups.push(newSharedGroup);
-                sessionStorage.setItem('sharedGroups', JSON.stringify(sharedGroups));
-            } catch(e) { console.log('Failed to save shared group:', e); }
+                const userId = getCurrentUserId();
+                const token = getAuthToken();
 
-            // 显示成功提示
-            successToast.classList.add('show');
-            setTimeout(() => {
-                successToast.classList.remove('show');
-            }, 2500);
+                // 调用后端创建群组API
+                const response = await fetch(`${API_BASE}/create`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        groupName: groupName,
+                        description: groupDescription,
+                        ownerId: userId
+                    })
+                });
 
-            // 自动切换到新群组
-            setTimeout(() => {
-                switchGroup(newGroupId);
-            }, 500);
+                const result = await response.json();
+
+                if (result && result.code === 200) {
+                    // 关闭模态框
+                    createGroupModal.style.display = 'none';
+
+                    // 显示成功提示
+                    successToast.classList.add('show');
+                    setTimeout(() => successToast.classList.remove('show'), 2500);
+
+                    // 重新加载群组列表
+                    const groups = await loadUserGroups();
+                    window.userGroups = groups;
+                    renderGroupsToSidebar(groups);
+
+                    // 切换到新创建的群组
+                    if (result.data && result.data.groupId) {
+                        setTimeout(() => switchToGroup(result.data.groupId), 500);
+                    }
+                } else {
+                    alert('创建群组失败: ' + (result.message || '未知错误'));
+                }
+            } catch (error) {
+                console.error('创建群组失败:', error);
+                alert('创建群组失败，请重试');
+            }
         });
     </script>
 
     <!-- PlayBar 交互脚本：替换为 PlayBar.html 完整版本，仅替换播放器相关脚本 -->
     <script>
-;(function () {
-/* 两个样例音频 */
-const playlist = [
-  { title: "Kalimba (Test Audio)", artist: "Ninja Tuna", cover: "", src: "https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3" },
-  { title: "Sample MP3 (700KB)", artist: "Sample Source", cover: "", src: "https://sample.cat/downloads/file_example_MP3_700KB.mp3" }
-];
+        ; (function () {
+            /* 两个样例音频 */
+            const playlist = [
+                { title: "Kalimba (Test Audio)", artist: "Ninja Tuna", cover: "", src: "https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3" },
+                { title: "Sample MP3 (700KB)", artist: "Sample Source", cover: "", src: "https://sample.cat/downloads/file_example_MP3_700KB.mp3" }
+            ];
 
-let currentIndex = 0;
-let isPlaying = false;
-let isDraggingProgress = false;
-let isDraggingVolume = false;
-let playMode = 'list'; /* single | list | shuffle */
+            let currentIndex = 0;
+            let isPlaying = false;
+            let isDraggingProgress = false;
+            let isDraggingVolume = false;
+            let playMode = 'list'; /* single | list | shuffle */
 
-const audio = document.getElementById('pv-audio');
-const playBtn = document.getElementById('pv-play');
-const playIcon = document.getElementById('play-icon');
-const prevBtn = document.getElementById('pv-prev');
-const nextBtn = document.getElementById('pv-next');
-const titleEl = document.getElementById('pv-title');
-const artistEl = document.getElementById('pv-artist');
-const coverEl = document.getElementById('pv-cover');
-const progressEl = document.getElementById('pv-progress');
-const progressFill = document.getElementById('pv-progress-fill');
-const knobEl = document.getElementById('pv-knob');
-const timeCurEl = document.getElementById('pv-time-cur');
-const timeTotalEl = document.getElementById('pv-time-total');
-const volEl = document.getElementById('pv-volume');
-const volFill = document.getElementById('pv-volume-fill');
-const listBtn = document.getElementById('pv-list-btn');
-const playlistPanel = document.getElementById('playlist-panel');
-const rateBtn = document.getElementById('pv-rate-btn');
-const rateText = document.getElementById('rate-text');
-const muteBtn = document.getElementById('pv-mute');
-const volIcon = document.getElementById('vol-icon');
-const modeBtn = document.getElementById('pv-mode-btn');
-const modePop = document.getElementById('mode-pop');
-const ratePop = document.getElementById('rate-pop');
+            const audio = document.getElementById('pv-audio');
+            const playBtn = document.getElementById('pv-play');
+            const playIcon = document.getElementById('play-icon');
+            const prevBtn = document.getElementById('pv-prev');
+            const nextBtn = document.getElementById('pv-next');
+            const titleEl = document.getElementById('pv-title');
+            const artistEl = document.getElementById('pv-artist');
+            const coverEl = document.getElementById('pv-cover');
+            const progressEl = document.getElementById('pv-progress');
+            const progressFill = document.getElementById('pv-progress-fill');
+            const knobEl = document.getElementById('pv-knob');
+            const timeCurEl = document.getElementById('pv-time-cur');
+            const timeTotalEl = document.getElementById('pv-time-total');
+            const volEl = document.getElementById('pv-volume');
+            const volFill = document.getElementById('pv-volume-fill');
+            const listBtn = document.getElementById('pv-list-btn');
+            const playlistPanel = document.getElementById('playlist-panel');
+            const rateBtn = document.getElementById('pv-rate-btn');
+            const rateText = document.getElementById('rate-text');
+            const muteBtn = document.getElementById('pv-mute');
+            const volIcon = document.getElementById('vol-icon');
+            const modeBtn = document.getElementById('pv-mode-btn');
+            const modePop = document.getElementById('mode-pop');
+            const ratePop = document.getElementById('rate-pop');
 
-function loadTrack(index) {
-  const track = playlist[index];
-  titleEl.innerText = track.title;
-  artistEl.innerText = track.artist;
-  coverEl.style.backgroundImage = track.cover ? `url('${track.cover}')` : '';
-  audio.src = track.src;
-  document.querySelectorAll('.playlist-item').forEach((item, i) => item.classList.toggle('active', i === index));
-}
-function playTrack() { audio.play().then(() => { isPlaying = true; updatePlayIcon(); }).catch(err => console.error("Play failed:", err)); }
-function pauseTrack() { audio.pause(); isPlaying = false; updatePlayIcon(); }
-function togglePlay() { isPlaying ? pauseTrack() : playTrack(); }
-function updatePlayIcon() {
-  if (isPlaying) { playIcon.setAttribute('viewBox','0 0 24 24'); playIcon.innerHTML = '<path d="M6 5h4v14H6V5zm8 0h4v14h-4V5z"/>'; }
-  else { playIcon.setAttribute('viewBox','0 0 24 24'); playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>'; }
-}
-function formatTime(s) { if (!s || isNaN(s)) return "00:00"; const m = Math.floor(s/60), ss = Math.floor(s%60); return `${m<10?'0':''}${m}:${ss<10?'0':''}${ss}`; }
-function stopWrap(handler) { return function(e){ e.stopPropagation(); handler(e); }; }
+            function loadTrack(index) {
+                const track = playlist[index];
+                titleEl.innerText = track.title;
+                artistEl.innerText = track.artist;
+                coverEl.style.backgroundImage = track.cover ? `url('${track.cover}')` : '';
+                audio.src = track.src;
+                document.querySelectorAll('.playlist-item').forEach((item, i) => item.classList.toggle('active', i === index));
+            }
+            function playTrack() { audio.play().then(() => { isPlaying = true; updatePlayIcon(); }).catch(err => console.error("Play failed:", err)); }
+            function pauseTrack() { audio.pause(); isPlaying = false; updatePlayIcon(); }
+            function togglePlay() { isPlaying ? pauseTrack() : playTrack(); }
+            function updatePlayIcon() {
+                if (isPlaying) { playIcon.setAttribute('viewBox', '0 0 24 24'); playIcon.innerHTML = '<path d="M6 5h4v14H6V5zm8 0h4v14h-4V5z" />'; }
+                else { playIcon.setAttribute('viewBox', '0 0 24 24'); playIcon.innerHTML = '<path d="M8 5v14l11-7z" />'; }
+            }
+            function formatTime(s) { if (!s || isNaN(s)) return "00:00"; const m = Math.floor(s / 60), ss = Math.floor(s % 60); return `${m < 10 ? '0' : ''}${m}:${ss < 10 ? '0' : ''}${ss}`; }
+            function stopWrap(handler) { return function (e) { e.stopPropagation(); handler(e); }; }
 
-/* 控件事件（阻止冒泡） */
-playBtn.addEventListener('click', stopWrap(togglePlay));
-prevBtn.addEventListener('click', stopWrap(() => prevByMode()));
-nextBtn.addEventListener('click', stopWrap(() => nextByMode()));
-muteBtn.addEventListener('click', stopWrap(() => {
-  audio.muted = !audio.muted;
-  if (audio.muted || audio.volume === 0) { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 3l7 7-1.4 1.4L16 7.8V16h-2V8.6L9.4 4 11 2.4 14 3z"/>'; }
-  else if (audio.volume < 0.5) { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 9v6c1.7-0.7 3-2.4 3-4.5S15.7 9.7 14 9z"/>'; }
-  else { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 7v10c3-1 5-3.6 5-7s-2-6-5-7z"/>'; }
-}));
+            /* 控件事件（阻止冒泡） */
+            playBtn.addEventListener('click', stopWrap(togglePlay));
+            prevBtn.addEventListener('click', stopWrap(() => prevByMode()));
+            nextBtn.addEventListener('click', stopWrap(() => nextByMode()));
+            muteBtn.addEventListener('click', stopWrap(() => {
+                audio.muted = !audio.muted;
+                if (audio.muted || audio.volume === 0) { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 3l7 7-1.4 1.4L16 7.8V16h-2V8.6L9.4 4 11 2.4 14 3z"/>'; }
+                else if (audio.volume < 0.5) { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 9v6c1.7-0.7 3-2.4 3-4.5S15.7 9.7 14 9z"/>'; }
+                else { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 7v10c3-1 5-3.6 5-7s-2-6-5-7z"/>'; }
+            }));
 
-/* 模式弹层 */
-modeBtn.addEventListener('click', stopWrap(() => {
-  ratePop.classList.remove('show');
-  modePop.classList.toggle('show');
-}));
-modePop.addEventListener('click', stopWrap((e) => {
-  const item = e.target.closest('.mode-item');
-  if (!item) return;
-  playMode = item.getAttribute('data-mode');
-  document.querySelectorAll('#mode-pop .mode-item').forEach(el => el.classList.toggle('active', el === item));
-  modePop.classList.remove('show');
-}));
+            /* 模式弹层 */
+            modeBtn.addEventListener('click', stopWrap(() => {
+                ratePop.classList.remove('show');
+                modePop.classList.toggle('show');
+            }));
+            modePop.addEventListener('click', stopWrap((e) => {
+                const item = e.target.closest('.mode-item');
+                if (!item) return;
+                playMode = item.getAttribute('data-mode');
+                document.querySelectorAll('#mode-pop .mode-item').forEach(el => el.classList.toggle('active', el === item));
+                modePop.classList.remove('show');
+            }));
 
-/* 倍速弹层 */
-rateBtn.addEventListener('click', stopWrap(() => {
-  modePop.classList.remove('show');
-  ratePop.classList.toggle('show');
-}));
-ratePop.addEventListener('click', stopWrap((e) => {
-  const item = e.target.closest('.rate-item');
-  if (!item) return;
-  const r = parseFloat(item.getAttribute('data-rate'));
-  audio.playbackRate = r;
-  rateText.innerText = r.toFixed(1) + 'x';
-  document.querySelectorAll('#rate-pop .rate-item').forEach(el => el.classList.toggle('active', el === item));
-  ratePop.classList.remove('show');
-}));
+            /* 倍速弹层 */
+            rateBtn.addEventListener('click', stopWrap(() => {
+                modePop.classList.remove('show');
+                ratePop.classList.toggle('show');
+            }));
+            ratePop.addEventListener('click', stopWrap((e) => {
+                const item = e.target.closest('.rate-item');
+                if (!item) return;
+                const r = parseFloat(item.getAttribute('data-rate'));
+                audio.playbackRate = r;
+                rateText.innerText = r.toFixed(1) + 'x';
+                document.querySelectorAll('#rate-pop .rate-item').forEach(el => el.classList.toggle('active', el === item));
+                ratePop.classList.remove('show');
+            }));
 
-/* 点击其他区域关闭弹层 */
-document.addEventListener('click', (e) => {
-  if (!modeBtn.contains(e.target) && !modePop.contains(e.target)) modePop.classList.remove('show');
-  if (!rateBtn.contains(e.target) && !ratePop.contains(e.target)) ratePop.classList.remove('show');
-});
+            /* 点击其他区域关闭弹层 */
+            document.addEventListener('click', (e) => {
+                if (!modeBtn.contains(e.target) && !modePop.contains(e.target)) modePop.classList.remove('show');
+                if (!rateBtn.contains(e.target) && !ratePop.contains(e.target)) ratePop.classList.remove('show');
+            });
 
-/* 音频事件与切歌模式 */
-audio.addEventListener('timeupdate', () => {
-  if (isDraggingProgress) return;
-  const percent = (audio.currentTime / audio.duration) * 100;
-  progressFill.style.width = `${percent}%`;
-  knobEl.style.left = `${percent}%`;
-  timeCurEl.innerText = formatTime(audio.currentTime);
-});
-audio.addEventListener('loadedmetadata', () => { timeTotalEl.innerText = formatTime(audio.duration); });
-audio.addEventListener('ended', () => {
-  if (playMode === 'single') { audio.currentTime = 0; playTrack(); }
-  else { nextByMode(); }
-});
-function prevByMode() {
-  if (playMode === 'shuffle') currentIndex = Math.floor(Math.random() * playlist.length);
-  else currentIndex = (currentIndex - 1 + playlist.length) % playlist.length;
-  loadTrack(currentIndex); playTrack();
-}
-function nextByMode() {
-  if (playMode === 'shuffle') currentIndex = Math.floor(Math.random() * playlist.length);
-  else currentIndex = (currentIndex + 1) % playlist.length;
-  loadTrack(currentIndex); playTrack();
-}
+            /* 音频事件与切歌模式 */
+            audio.addEventListener('timeupdate', () => {
+                if (isDraggingProgress) return;
+                const percent = (audio.currentTime / audio.duration) * 100;
+                progressFill.style.width = `${percent}%`;
+                knobEl.style.left = `${percent}%`;
+                timeCurEl.innerText = formatTime(audio.currentTime);
+            });
+            audio.addEventListener('loadedmetadata', () => { timeTotalEl.innerText = formatTime(audio.duration); });
+            audio.addEventListener('ended', () => {
+                if (playMode === 'single') { audio.currentTime = 0; playTrack(); }
+                else { nextByMode(); }
+            });
+            function prevByMode() {
+                if (playMode === 'shuffle') currentIndex = Math.floor(Math.random() * playlist.length);
+                else currentIndex = (currentIndex - 1 + playlist.length) % playlist.length;
+                loadTrack(currentIndex); playTrack();
+            }
+            function nextByMode() {
+                if (playMode === 'shuffle') currentIndex = Math.floor(Math.random() * playlist.length);
+                else currentIndex = (currentIndex + 1) % playlist.length;
+                loadTrack(currentIndex); playTrack();
+            }
 
-/* 进度条拖拽（鼠标/触摸） */
-function handleProgressInput(clientX) {
-  const rect = progressEl.getBoundingClientRect();
-  let x = clientX - rect.left; x = Math.max(0, Math.min(x, rect.width));
-  const pct = (x / rect.width) * 100; progressFill.style.width = `${pct}%`; knobEl.style.left = `${pct}%`;
-  return (x / rect.width) * audio.duration;
-}
-progressEl.addEventListener('mousedown', stopWrap((e) => { isDraggingProgress = true; progressEl.classList.add('dragging'); const t = handleProgressInput(e.clientX); timeCurEl.innerText = formatTime(t); }));
-document.addEventListener('mousemove', (e) => { if (isDraggingProgress) { e.preventDefault(); const t = handleProgressInput(e.clientX); timeCurEl.innerText = formatTime(t); } });
-document.addEventListener('mouseup', (e) => { if (isDraggingProgress) { isDraggingProgress = false; progressEl.classList.remove('dragging'); const t = handleProgressInput(e.clientX); if (isFinite(t)) audio.currentTime = t; } });
+            /* 进度条拖拽（鼠标/触摸） */
+            function handleProgressInput(clientX) {
+                const rect = progressEl.getBoundingClientRect();
+                let x = clientX - rect.left; x = Math.max(0, Math.min(x, rect.width));
+                const pct = (x / rect.width) * 100; progressFill.style.width = `${pct}%`; knobEl.style.left = `${pct}%`;
+                return (x / rect.width) * audio.duration;
+            }
+            progressEl.addEventListener('mousedown', stopWrap((e) => { isDraggingProgress = true; progressEl.classList.add('dragging'); const t = handleProgressInput(e.clientX); timeCurEl.innerText = formatTime(t); }));
+            document.addEventListener('mousemove', (e) => { if (isDraggingProgress) { e.preventDefault(); const t = handleProgressInput(e.clientX); timeCurEl.innerText = formatTime(t); } });
+            document.addEventListener('mouseup', (e) => { if (isDraggingProgress) { isDraggingProgress = false; progressEl.classList.remove('dragging'); const t = handleProgressInput(e.clientX); if (isFinite(t)) audio.currentTime = t; } });
 
-function getTouchX(e){ return (e.touches&&e.touches[0]) ? e.touches[0].clientX : (e.changedTouches&&e.changedTouches[0] ? e.changedTouches[0].clientX : 0); }
-progressEl.addEventListener('touchstart', (e) => { e.stopPropagation(); e.preventDefault(); isDraggingProgress = true; const t = handleProgressInput(getTouchX(e)); timeCurEl.innerText = formatTime(t); }, { passive:false });
-document.addEventListener('touchmove', (e) => { if (isDraggingProgress) { e.preventDefault(); const t = handleProgressInput(getTouchX(e)); timeCurEl.innerText = formatTime(t); } }, { passive:false });
-document.addEventListener('touchend', (e) => { if (isDraggingProgress) { isDraggingProgress = false; const t = handleProgressInput(getTouchX(e)); if (isFinite(t)) audio.currentTime = t; } }, { passive:false });
+            function getTouchX(e) { return (e.touches && e.touches[0]) ? e.touches[0].clientX : (e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].clientX : 0); }
+            progressEl.addEventListener('touchstart', (e) => { e.stopPropagation(); e.preventDefault(); isDraggingProgress = true; const t = handleProgressInput(getTouchX(e)); timeCurEl.innerText = formatTime(t); }, { passive: false });
+            document.addEventListener('touchmove', (e) => { if (isDraggingProgress) { e.preventDefault(); const t = handleProgressInput(getTouchX(e)); timeCurEl.innerText = formatTime(t); } }, { passive: false });
+            document.addEventListener('touchend', (e) => { if (isDraggingProgress) { isDraggingProgress = false; const t = handleProgressInput(getTouchX(e)); if (isFinite(t)) audio.currentTime = t; } }, { passive: false });
 
-/* 音量拖拽（鼠标/触摸） */
-function handleVolumeInput(clientX) {
-  const rect = volEl.getBoundingClientRect();
-  let x = clientX - rect.left; x = Math.max(0, Math.min(x, rect.width));
-  const p = x / rect.width; volFill.style.width = `${p * 100}%`; audio.volume = p;
-  if (p === 0 || audio.muted) { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 3l7 7-1.4 1.4L16 7.8V16h-2V8.6L9.4 4 11 2.4 14 3z"/>'; }
-  else if (p < 0.5) { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 9v6c1.7-0.7 3-2.4 3-4.5S15.7 9.7 14 9z"/>'; }
-  else { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 7v10c3-1 5-3.6 5-7s-2-6-5-7z"/>'; }
-}
-volEl.addEventListener('mousedown', stopWrap((e) => { isDraggingVolume = true; handleVolumeInput(e.clientX); }));
-document.addEventListener('mousemove', (e) => { if (isDraggingVolume) { e.preventDefault(); handleVolumeInput(e.clientX); } });
-document.addEventListener('mouseup', () => { isDraggingVolume = false; });
-volEl.addEventListener('touchstart', (e) => { e.stopPropagation(); e.preventDefault(); isDraggingVolume = true; handleVolumeInput(getTouchX(e)); }, { passive:false });
-document.addEventListener('touchmove', (e) => { if (isDraggingVolume) { e.preventDefault(); handleVolumeInput(getTouchX(e)); } }, { passive:false });
-document.addEventListener('touchend', () => { isDraggingVolume = false; }, { passive:false });
+            /* 音量拖拽（鼠标/触摸） */
+            function handleVolumeInput(clientX) {
+                const rect = volEl.getBoundingClientRect();
+                let x = clientX - rect.left; x = Math.max(0, Math.min(x, rect.width));
+                const p = x / rect.width; volFill.style.width = `${p * 100}%`; audio.volume = p;
+                if (p === 0 || audio.muted) { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 3l7 7-1.4 1.4L16 7.8V16h-2V8.6L9.4 4 11 2.4 14 3z"/>'; }
+                else if (p < 0.5) { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 9v6c1.7-0.7 3-2.4 3-4.5S15.7 9.7 14 9z"/>'; }
+                else { volIcon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zM14 7v10c3-1 5-3.6 5-7s-2-6-5-7z"/>'; }
+            }
+            volEl.addEventListener('mousedown', stopWrap((e) => { isDraggingVolume = true; handleVolumeInput(e.clientX); }));
+            document.addEventListener('mousemove', (e) => { if (isDraggingVolume) { e.preventDefault(); handleVolumeInput(e.clientX); } });
+            document.addEventListener('mouseup', () => { isDraggingVolume = false; });
+            volEl.addEventListener('touchstart', (e) => { e.stopPropagation(); e.preventDefault(); isDraggingVolume = true; handleVolumeInput(getTouchX(e)); }, { passive: false });
+            document.addEventListener('touchmove', (e) => { if (isDraggingVolume) { e.preventDefault(); handleVolumeInput(getTouchX(e)); } }, { passive: false });
+            document.addEventListener('touchend', () => { isDraggingVolume = false; }, { passive: false });
 
-/* 简易播放列表开关（示例） */
-listBtn.addEventListener('click', stopWrap(() => {
-  playlistPanel.style.display = playlistPanel.style.display === 'block' ? 'none' : 'block';
-}));
+            /* 简易播放列表开关（示例） */
+            listBtn.addEventListener('click', stopWrap(() => {
+                playlistPanel.style.display = playlistPanel.style.display === 'block' ? 'none' : 'block';
+            }));
 
-/* 提供给 HTML 的播放列表切换 */
-window.playIndex = function(index){ currentIndex = index; loadTrack(currentIndex); playTrack(); }
+            /* 提供给 HTML 的播放列表切换 */
+            window.playIndex = function (index) { currentIndex = index; loadTrack(currentIndex); playTrack(); }
 
-/* 新增：当用户点击封面或标题时，跳转到 player.html 并携带当前 playlist 和索引信息 */
-function openPlayerPageWithData(openInNewTab = false) {
-  try {
-    const params = new URLSearchParams();
-    params.set('course', titleEl.innerText || '');
-    params.set('chapterIndex', String(currentIndex || 0));
-    const safePlaylist = playlist.map((p, i) => ({
-      id: p.id || ('p' + i),
-      title: p.title || (`Track ${i+1}`),
-      src: p.src || '',
-      duration: p.durationText || p.duration || ''
-    }));
-    params.set('chapters', encodeURIComponent(JSON.stringify(safePlaylist)));
-    const url = 'player.html?' + params.toString();
-    if (openInNewTab) window.open(url, '_blank');
-    else window.location.href = url;
-  } catch (err) {
-    try {
-      const params = new URLSearchParams();
-      params.set('course', titleEl.innerText || '');
-      params.set('chapterIndex', String(currentIndex || 0));
-      const url = 'player.html?' + params.toString();
-      if (openInNewTab) window.open(url, '_blank');
-      else window.location.href = url;
-    } catch (_) { /* ignore */ }
-  }
-}
+            /* 新增：当用户点击封面或标题时，跳转到 player.html 并携带当前 playlist 和索引信息 */
+            function openPlayerPageWithData(openInNewTab = false) {
+                try {
+                    const params = new URLSearchParams();
+                    params.set('course', titleEl.innerText || '');
+                    params.set('chapterIndex', String(currentIndex || 0));
+                    const safePlaylist = playlist.map((p, i) => ({
+                        id: p.id || ('p' + i),
+                        title: p.title || (`Track ${i + 1}`),
+                        src: p.src || '',
+                        duration: p.durationText || p.duration || ''
+                    }));
+                    params.set('chapters', encodeURIComponent(JSON.stringify(safePlaylist)));
+                    const url = 'player.html?' + params.toString();
+                    if (openInNewTab) window.open(url, '_blank');
+                    else window.location.href = url;
+                } catch (err) {
+                    try {
+                        const params = new URLSearchParams();
+                        params.set('course', titleEl.innerText || '');
+                        params.set('chapterIndex', String(currentIndex || 0));
+                        const url = 'player.html?' + params.toString();
+                        if (openInNewTab) window.open(url, '_blank');
+                        else window.location.href = url;
+                    } catch (_) { /* ignore */ }
+                }
+            }
 
-/* 给封面与标题绑定点击事件（支持键盘回车） */
-if (coverEl) {
-  coverEl.addEventListener('click', stopWrap(() => openPlayerPageWithData(false)));
-  coverEl.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openPlayerPageWithData(false); } });
-}
-if (titleEl) {
-  titleEl.addEventListener('click', stopWrap(() => openPlayerPageWithData(false)));
-  titleEl.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openPlayerPageWithData(false); } });
-}
+            /* 给封面与标题绑定点击事件（支持键盘回车） */
+            if (coverEl) {
+                coverEl.addEventListener('click', stopWrap(() => openPlayerPageWithData(false)));
+                coverEl.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openPlayerPageWithData(false); } });
+            }
+            if (titleEl) {
+                titleEl.addEventListener('click', stopWrap(() => openPlayerPageWithData(false)));
+                titleEl.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openPlayerPageWithData(false); } });
+            }
 
-/* 初始化第一首 */
-loadTrack(currentIndex);
-})();
+            /* 初始化第一首 */
+            loadTrack(currentIndex);
+        })();
     </script>
 
 
-<!-- 登录状态检查脚本 -->
-<script>
-    // 检查用户是否已登录
-    function checkLoginStatus() {
-        const authToken = localStorage.getItem('authToken');
-        const authSection = document.getElementById('auth-section');
-        
-        if (authToken) {
-            // 用户已登录，显示用户菜单
-            authSection.innerHTML = `
+    <!-- 登录状态检查脚本 -->
+    <script>
+        // 检查用户是否已登录
+        function checkLoginStatus() {
+            const authToken = localStorage.getItem('authToken');
+            const authSection = document.getElementById('auth-section');
+
+            if (authToken) {
+                // 用户已登录，显示用户菜单
+                authSection.innerHTML = `
                 <div class="user-menu">
                     <button class="submit-btn" onclick="showUserMenu()">个人中心</button>
                     <div class="dropdown-menu" id="user-dropdown" style="display: none;">
@@ -2161,83 +2905,149 @@ loadTrack(currentIndex);
                     </div>
                 </div>
             `;
-            
-            // 更新用户信息区
-            const usernameElement = document.querySelector('.username');
-            if (usernameElement) {
-                usernameElement.textContent = '已登录用户';
+
+                // 更新用户信息区
+                const usernameElement = document.querySelector('.username');
+                if (usernameElement) {
+                    usernameElement.textContent = '已登录用户';
+                }
             }
         }
-    }
-    
-    // 显示用户菜单
-    function showUserMenu() {
-        const dropdown = document.getElementById('user-dropdown');
-        dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
-    }
-    
-    // 登出功能
-    function logout() {
-        localStorage.removeItem('authToken');
-        location.reload();
-    }
-    
-    // 页面加载时检查登录状态
-    window.addEventListener('DOMContentLoaded', checkLoginStatus);
-    
-    // 点击其他区域关闭下拉菜单
-    document.addEventListener('click', function(event) {
-        const dropdown = document.getElementById('user-dropdown');
-        const userMenu = document.querySelector('.user-menu');
-        
-        if (dropdown && userMenu && !userMenu.contains(event.target)) {
-            dropdown.style.display = 'none';
+
+        // 显示用户菜单
+        function showUserMenu() {
+            const dropdown = document.getElementById('user-dropdown');
+            dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
         }
-    });
-</script>
 
-<style>
-    .user-menu {
-        position: relative;
-        display: inline-block;
-    }
-    
-    .dropdown-menu {
-        position: absolute;
-        top: 100%;
-        right: 0;
-        background-color: white;
-        min-width: 150px;
-        box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-        border-radius: 4px;
-        z-index: 1000;
-        margin-top: 5px;
-    }
-    
-    .dropdown-item {
-        display: block;
-        padding: 10px 15px;
-        color: #333;
-        text-decoration: none;
-        font-size: 14px;
-    }
-    
-    .dropdown-item:hover {
-        background-color: #f5f5f5;
-    }
-</style>
+        // 登出功能
+        function logout() {
+            localStorage.removeItem('authToken');
+            location.reload();
+        }
+
+        // 页面加载时检查登录状态
+        window.addEventListener('DOMContentLoaded', checkLoginStatus);
+
+        // 点击其他区域关闭下拉菜单
+        document.addEventListener('click', function (event) {
+            const dropdown = document.getElementById('user-dropdown');
+            const userMenu = document.querySelector('.user-menu');
+
+            if (dropdown && userMenu && !userMenu.contains(event.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+    </script>
+
+    <style>
+        .user-menu {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: white;
+            min-width: 150px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+            z-index: 1000;
+            margin-top: 5px;
+        }
+
+        .dropdown-item {
+            display: block;
+            padding: 10px 15px;
+            color: #333;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f5f5f5;
+        }
+
+        /* 表情选择器样式 */
+        .emoji-picker {
+            position: absolute;
+            bottom: 60px;
+            left: 50px;
+            background: white;
+            border: 1px solid var(--gray-border);
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            display: none;
+            width: 320px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .emoji-picker.show {
+            display: block;
+        }
+
+        .emoji-picker-header {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid var(--gray-border);
+            padding-bottom: 10px;
+        }
+
+        .emoji-category {
+            padding: 5px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        .emoji-category:hover {
+            background: var(--gray-light);
+        }
+
+        .emoji-category.active {
+            background: var(--orange-gradient);
+            color: white;
+        }
+
+        .emoji-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 8px;
+        }
+
+        .emoji-item {
+            font-size: 24px;
+            text-align: center;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .emoji-item:hover {
+            background: var(--gray-light);
+            transform: scale(1.2);
+        }
+    </style>
 
 
-<!-- 登录状态检查脚本 -->
-<script>
-    // 检查用户是否已登录
-    function checkLoginStatus() {
-        const authToken = localStorage.getItem('authToken');
-        const authSection = document.getElementById('auth-section');
-        
-        if (authToken) {
-            // 用户已登录，显示用户菜单
-            authSection.innerHTML = `
+    <!-- 登录状态检查脚本 -->
+    <script>
+        // 检查用户是否已登录
+        function checkLoginStatus() {
+            const authToken = localStorage.getItem('authToken');
+            const authSection = document.getElementById('auth-section');
+
+            if (authToken) {
+                // 用户已登录，显示用户菜单
+                authSection.innerHTML = `
                 <div class="user-menu">
                     <button class="submit-btn" onclick="showUserMenu()">个人中心</button>
                     <div class="dropdown-menu" id="user-dropdown" style="display: none;">
@@ -2246,70 +3056,528 @@ loadTrack(currentIndex);
                     </div>
                 </div>
             `;
-            
-            // 更新用户信息区
-            const usernameElement = document.querySelector('.username');
-            if (usernameElement) {
-                usernameElement.textContent = '已登录用户';
+
+                // 更新用户信息区
+                const usernameElement = document.querySelector('.username');
+                if (usernameElement) {
+                    usernameElement.textContent = '已登录用户';
+                }
             }
         }
-    }
-    
-    // 显示用户菜单
-    function showUserMenu() {
-        const dropdown = document.getElementById('user-dropdown');
-        dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
-    }
-    
-    // 登出功能
-    function logout() {
-        localStorage.removeItem('authToken');
-        location.reload();
-    }
-    
-    // 页面加载时检查登录状态
-    window.addEventListener('DOMContentLoaded', checkLoginStatus);
-    
-    // 点击其他区域关闭下拉菜单
-    document.addEventListener('click', function(event) {
-        const dropdown = document.getElementById('user-dropdown');
-        const userMenu = document.querySelector('.user-menu');
-        
-        if (dropdown && userMenu && !userMenu.contains(event.target)) {
-            dropdown.style.display = 'none';
-        }
-    });
-</script>
 
-<style>
-    .user-menu {
-        position: relative;
-        display: inline-block;
-    }
-    
-    .dropdown-menu {
-        position: absolute;
-        top: 100%;
-        right: 0;
-        background-color: white;
-        min-width: 150px;
-        box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-        border-radius: 4px;
-        z-index: 1000;
-        margin-top: 5px;
-    }
-    
-    .dropdown-item {
-        display: block;
-        padding: 10px 15px;
-        color: #333;
-        text-decoration: none;
-        font-size: 14px;
-    }
-    
-    .dropdown-item:hover {
-        background-color: #f5f5f5;
-    }
-</style>
+        // 显示用户菜单
+        function showUserMenu() {
+            const dropdown = document.getElementById('user-dropdown');
+            dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // 登出功能
+        function logout() {
+            localStorage.removeItem('authToken');
+            location.reload();
+        }
+
+        // 页面加载时检查登录状态
+        window.addEventListener('DOMContentLoaded', checkLoginStatus);
+
+        // 点击其他区域关闭下拉菜单
+        document.addEventListener('click', function (event) {
+            const dropdown = document.getElementById('user-dropdown');
+            const userMenu = document.querySelector('.user-menu');
+
+            if (dropdown && userMenu && !userMenu.contains(event.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+    </script>
+
+    <style>
+        .user-menu {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: white;
+            min-width: 150px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+            z-index: 1000;
+            margin-top: 5px;
+        }
+
+        .dropdown-item {
+            display: block;
+            padding: 10px 15px;
+            color: #333;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f5f5f5;
+        }
+    </style>
+    <script>
+        (function () {
+            // 表情数据
+            const emojiData = {
+                smile: ['😀', '😃', '😄', '😁', '😆', '😅', '🤣', '😂', '🙂', '🙃', '😉', '😊', '😇', '🥰', '😍', '🤩', '😘', '😗', '😚', '😙', '🥲', '😋', '😛', '😜', '🤪', '😝', '🤑', '🤗', '🤭', '🤫', '🤔', '🤐'],
+                people: ['👋', '🤚', '🖐', '✋', '🖖', '👌', '🤌', '🤏', '✌️', '🤞', '🤟', '🤘', '🤙', '👈', '👉', '👆', '🖕', '👇', '☝️', '👍', '👎', '✊', '👊', '🤛', '🤜', '👏', '🙌', '👐', '🤲', '🤝', '🙏', '✍️'],
+                nature: ['🌸', '💐', '🌹', '🥀', '🌺', '🌻', '🌼', '🌷', '🌱', '🌲', '🌳', '🌴', '🌵', '🌾', '🌿', '☘️', '🍀', '🍁', '🍂', '🍃', '🍄', '🌰', '🦀', '🦞', '🦐', '🦑', '🐙', '🦪', '🐠', '🐟', '🐡', '🐬'],
+                food: ['🍕', '🍔', '🍟', '🌭', '🍿', '🧈', '🥓', '🥩', '🍗', '🍖', '🦴', '🌮', '🌯', '🫔', '🥙', '🧆', '🥚', '🍳', '🥘', '🍲', '🫕', '🥣', '🥗', '🍱', '🍘', '🍙', '🍚', '🍛', '🍜', '🍝', '🍠', '🍢'],
+                activity: ['⚽', '🏀', '🏈', '⚾', '🥎', '🎾', '🏐', '🏉', '🥏', '🎱', '🪀', '🏓', '🏸', '🏒', '🏑', '🥍', '🏏', '🪃', '🥅', '⛳', '🪁', '🏹', '🎣', '🤿', '🥊', '🥋', '🎽', '🛹', '🛼', '🛷', '⛸️', '🥌']
+            };
+
+            const emojiPicker = document.getElementById('emojiPicker');
+            const emojiGrid = document.getElementById('emojiGrid');
+            const emojiBtn = document.querySelector('.emoji-btn');
+            const messageInput = document.getElementById('messageInput');
+            const categories = document.querySelectorAll('.emoji-category');
+
+            // 渲染表情
+            function renderEmojis(category) {
+                emojiGrid.innerHTML = '';
+                const emojis = emojiData[category] || emojiData.smile;
+
+                emojis.forEach(emoji => {
+                    const emojiItem = document.createElement('div');
+                    emojiItem.className = 'emoji-item';
+                    emojiItem.textContent = emoji;
+                    emojiItem.addEventListener('click', () => {
+                        insertEmoji(emoji);
+                    });
+                    emojiGrid.appendChild(emojiItem);
+                });
+            }
+
+            // 插入表情到输入框
+            function insertEmoji(emoji) {
+                const cursorPos = messageInput.selectionStart;
+                const textBefore = messageInput.value.substring(0, cursorPos);
+                const textAfter = messageInput.value.substring(cursorPos);
+
+                messageInput.value = textBefore + emoji + textAfter;
+                messageInput.focus();
+
+                // 设置光标位置到表情后面
+                const newCursorPos = cursorPos + emoji.length;
+                messageInput.setSelectionRange(newCursorPos, newCursorPos);
+            }
+
+            // 切换表情分类
+            categories.forEach(category => {
+                category.addEventListener('click', () => {
+                    categories.forEach(c => c.classList.remove('active'));
+                    category.classList.add('active');
+                    renderEmojis(category.dataset.category);
+                });
+            });
+
+            // 切换表情选择器显示
+            emojiBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                emojiPicker.classList.toggle('show');
+
+                if (emojiPicker.classList.contains('show')) {
+                    renderEmojis('smile');
+                }
+            });
+
+            // 点击其他地方关闭表情选择器
+            document.addEventListener('click', (e) => {
+                if (!emojiPicker.contains(e.target) && !emojiBtn.contains(e.target)) {
+                    emojiPicker.classList.remove('show');
+                }
+            });
+
+            // 初始化渲染
+            renderEmojis('smile');
+        })();
+    </script>
+
+    <!-- 群组成员列表模态框 -->
+    <div class="members-modal-overlay" id="membersModal" style="display: none;">
+        <div class="members-modal">
+            <div class="members-modal-header">
+                <h3><i class="fas fa-users"></i> 群组成员</h3>
+                <button class="members-close-btn" onclick="closeMembersModal()">&times;</button>
+            </div>
+            <div class="members-modal-content" id="membersModalContent">
+                <!-- 成员列表将动态加载 -->
+                <div class="members-loading">
+                    <i class="fas fa-spinner fa-spin"></i> 加载中...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加成员模态框样式 -->
+    <style>
+        .members-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .members-modal {
+            background: white;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .members-modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--gray-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(135deg, #ff6b35 0%, #ff9d6f 100%);
+            border-radius: 16px 16px 0 0;
+        }
+
+        .members-modal-header h3 {
+            margin: 0;
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .members-modal-header i {
+            margin-right: 8px;
+        }
+
+        .members-close-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            font-size: 28px;
+            color: white;
+            cursor: pointer;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+            line-height: 1;
+        }
+
+        .members-close-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .members-modal-content {
+            padding: 20px 24px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .members-loading {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-light);
+            font-size: 14px;
+        }
+
+        .members-loading i {
+            font-size: 24px;
+            display: block;
+            margin-bottom: 10px;
+            color: var(--orange-primary);
+        }
+
+        .member-list-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            transition: background 0.2s;
+        }
+
+        .member-list-item:hover {
+            background: var(--gray-light);
+        }
+
+        .member-list-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 16px;
+            color: white;
+            margin-right: 12px;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .member-list-avatar.online::after {
+            content: '';
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            width: 12px;
+            height: 12px;
+            background: #4CAF50;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+
+        .member-list-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .member-list-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .member-list-role {
+            font-size: 13px;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .role-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .role-badge.owner {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: white;
+        }
+
+        .role-badge.admin {
+            background: linear-gradient(135deg, #4CAF50, #66BB6A);
+            color: white;
+        }
+
+        .role-badge.member {
+            background: var(--gray-light);
+            color: var(--text-secondary);
+        }
+
+        .members-empty {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-light);
+        }
+
+        .members-empty i {
+            font-size: 48px;
+            color: var(--gray-border);
+            margin-bottom: 16px;
+        }
+
+        .members-empty p {
+            font-size: 14px;
+            margin: 0;
+        }
+    </style>
+
+    <script>
+        // 修改 showGroupMembers 函数
+        // 在 channel2.html 中找到 showGroupMembers 函数，修改渲染部分
+
+        async function showGroupMembers() {
+            const modal = document.getElementById('membersModal');
+            const content = document.getElementById('membersModalContent');
+
+            modal.style.display = 'flex';
+
+            content.innerHTML = `
+        <div class="members-loading">
+            <i class="fas fa-spinner fa-spin"></i> 加载成员列表...
+        </div>
+    `;
+
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const groupId = urlParams.get('groupId') || (window.userGroups && window.userGroups[0] ? window.userGroups[0].id : null);
+
+                if (!groupId) {
+                    content.innerHTML = `
+                <div class="members-empty">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <p>未找到当前群组</p>
+                </div>
+            `;
+                    return;
+                }
+
+                const token = getAuthToken();
+
+                const response = await fetch(`${API_BASE}/${groupId}/members`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('获取成员列表失败');
+                }
+
+                const result = await response.json();
+                console.log('=== 成员列表完整响应 ===');
+                console.log(JSON.stringify(result, null, 2));
+
+                if (result && result.code === 200 && Array.isArray(result.data)) {
+                    const members = result.data;
+
+                    if (members.length === 0) {
+                        content.innerHTML = `
+                    <div class="members-empty">
+                        <i class="fas fa-users-slash"></i>
+                        <p>该群组暂无成员</p>
+                    </div>
+                `;
+                        return;
+                    }
+
+                    // 渲染成员列表
+                    const avatarColors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#95A5A6', '#3498DB'];
+
+                    const membersHTML = members.map((member, index) => {
+                        console.log('=== 处理成员 ===');
+                        console.log('member 对象:', member);
+                        console.log('member.username:', member.username);
+                        console.log('member.userId:', member.userId);
+                        console.log('member.role:', member.role);
+
+                        const color = avatarColors[index % avatarColors.length];
+
+                        // 修改：优先使用 username，如果没有则显示 userId
+                        const displayName = member.username || `用户${member.userId}`;
+                        const initials = member.username ? member.username.substring(0, 2).toUpperCase() : `U${member.userId}`;
+
+                        // 角色标识
+                        let roleBadge = '';
+                        if (member.role === 2) {
+                            roleBadge = '<span class="role-badge owner">👑 群主</span>';
+                        } else if (member.role === 1) {
+                            roleBadge = '<span class="role-badge admin">⭐ 管理员</span>';
+                        } else {
+                            roleBadge = '<span class="role-badge member">👤 成员</span>';
+                        }
+
+                        const joinDate = member.joinedAt ? new Date(member.joinedAt).toLocaleDateString('zh-CN') : '未知';
+
+                        return `
+                    <div class="member-list-item">
+                        <div class="member-list-avatar online" style="background: linear-gradient(135deg, ${color}, ${color}99);">
+                            ${initials}
+                        </div>
+                        <div class="member-list-info">
+                            <div class="member-list-name">${escapeHtml(displayName)}</div>
+                            <div class="member-list-role">
+                                ${roleBadge}
+                                <span style="margin-left: 8px; color: var(--text-light);">加入时间: ${joinDate}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                    }).join('');
+
+                    content.innerHTML = `
+                <div style="margin-bottom: 12px; padding: 10px; background: var(--gray-light); border-radius: 8px; font-size: 14px; color: var(--text-secondary);">
+                    <i class="fas fa-info-circle"></i> 共 ${members.length} 名成员
+                </div>
+                ${membersHTML}
+            `;
+                } else {
+                    content.innerHTML = `
+                <div class="members-empty">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <p>加载失败，请重试</p>
+                </div>
+            `;
+                }
+            } catch (error) {
+                console.error('获取成员列表失败:', error);
+                content.innerHTML = `
+            <div class="members-empty">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>加载失败: ${error.message}</p>
+            </div>
+        `;
+            }
+        }
+
+        // 关闭成员模态框
+        function closeMembersModal() {
+            const modal = document.getElementById('membersModal');
+            modal.style.display = 'none';
+        }
+
+        // 点击模态框外部关闭
+        document.addEventListener('click', function (e) {
+            const modal = document.getElementById('membersModal');
+            if (e.target === modal) {
+                closeMembersModal();
+            }
+        });
+
+        // ESC 键关闭
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                closeMembersModal();
+            }
+        });
+    </script>
 </body>
+
 </html>

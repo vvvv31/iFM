@@ -18,7 +18,7 @@ import java.util.Map;
 public class FileUploadController {
 
     private final FileUploadService fileUploadService;
-    
+
     public FileUploadController(FileUploadService fileUploadService) {
         this.fileUploadService = fileUploadService;
     }
@@ -54,6 +54,21 @@ public class FileUploadController {
             return Result.success("封面图片上传成功", result);
         } catch (IOException e) {
             return Result.error("封面图片上传失败: " + e.getMessage());
+        }
+    }
+
+    /**
+     * 上传帖子图片
+     */
+    @PostMapping("/post-image")
+    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "上传帖子图片", description = "上传帖子图片并返回文件URL")
+    public Result<String> uploadPostImage(@RequestParam("file") MultipartFile file) {
+        try {
+            String imageUrl = fileUploadService.uploadPostImage(file);
+            return Result.success(imageUrl);
+        } catch (IOException e) {
+            return Result.error("图片上传失败: " + e.getMessage());
         }
     }
 }

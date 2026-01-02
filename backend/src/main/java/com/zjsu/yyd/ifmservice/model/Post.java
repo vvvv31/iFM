@@ -1,6 +1,9 @@
 package com.zjsu.yyd.ifmservice.model;
 
 import jakarta.persistence.*;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -20,13 +23,14 @@ public class Post {
     @Column(nullable = false)
     private String text;
 
-    @ElementCollection
-    private List<String> images;
+    @Column(name = "images", columnDefinition = "TEXT")
+    private String images;
 
     @Column(nullable = false, columnDefinition = "int default 0")
     private int likes;
 
     @ElementCollection
+    @CollectionTable(name = "post_comments", joinColumns = @JoinColumn(name = "post_id"))
     private List<Comment> comments;
 
     @Column(nullable = false, updatable = false)
@@ -36,6 +40,8 @@ public class Post {
     private Date updatedAt;
 
     @ElementCollection
+    @CollectionTable(name = "post_tags", joinColumns = @JoinColumn(name = "post_id"))
+    @Column(name = "tag")
     private List<String> tags;
 
     @PrePersist
@@ -49,6 +55,21 @@ public class Post {
         updatedAt = new Date();
     }
 
+    @Transient
+    public List<String> getImagesList() {
+        if (images == null || images.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return Arrays.asList(images.split(","));
+    }
+
+    public void setImagesList(List<String> imageList) {
+        if (imageList == null || imageList.isEmpty()) {
+            this.images = "";
+        } else {
+            this.images = String.join(",", imageList);
+        }
+    }
     // Getters and setters
     public Long getId() {
         return id;
@@ -82,11 +103,11 @@ public class Post {
         this.text = text;
     }
 
-    public List<String> getImages() {
+    public String getImages() {
         return images;
     }
 
-    public void setImages(List<String> images) {
+    public void setImages(String images) {
         this.images = images;
     }
 

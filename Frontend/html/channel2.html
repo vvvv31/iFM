@@ -1131,207 +1131,184 @@
             }
         }
 
-        /* 创建群组模态框样式 */
+        /* 创建群组模态框样式（对齐 channel 页面） */
         .modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
+            background: rgba(0, 0, 0, .5);
+            display: none;
             justify-content: center;
-            z-index: 100000;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
+            align-items: center;
+            z-index: 1000;
         }
 
-        .modal-overlay[style*="flex"] {
-            opacity: 1;
-            visibility: visible;
+        .modal-overlay.show {
+            display: flex;
         }
 
-        .modal {
+        .modal-box {
             background: #fff;
             border-radius: 16px;
             width: 90%;
             max-width: 480px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            transform: scale(0.9) translateY(20px);
-            transition: transform 0.3s ease;
-            overflow: hidden;
+            padding: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, .3);
+            animation: modalIn .25s ease;
         }
 
-        .modal-overlay[style*="flex"] .modal {
-            transform: scale(1) translateY(0);
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: scale(.9) translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
         }
 
         .modal-header {
-            padding: 20px 24px;
-            border-bottom: 1px solid #eee;
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            background: linear-gradient(135deg, #ff6b35 0%, #ff9d6f 100%);
-        }
-
-        .modal-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #fff;
-            margin: 0;
-        }
-
-        .close-btn {
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            font-size: 24px;
-            color: #fff;
-            cursor: pointer;
-            padding: 0;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            display: flex;
             align-items: center;
-            justify-content: center;
-            transition: background 0.2s;
-        }
-
-        .close-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-
-        .modal-content {
-            padding: 24px;
-        }
-
-        .form-group {
             margin-bottom: 20px;
         }
 
-        .form-group label {
-            display: block;
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #333;
+            margin: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #999;
+            cursor: pointer;
+            padding: 4px 8px;
+        }
+
+        .modal-close:hover {
+            color: #333;
+        }
+
+        .modal-body {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-label {
             font-size: 14px;
             font-weight: 600;
             color: #333;
-            margin-bottom: 8px;
         }
 
-        .form-group input,
-        .form-group textarea,
-        .form-group select {
-            width: 100%;
-            padding: 12px 16px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
+        .form-input {
+            padding: 12px 14px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
             font-size: 14px;
-            transition: all 0.2s;
-            box-sizing: border-box;
+            transition: border-color .2s;
         }
 
-        .form-group input:focus,
-        .form-group textarea:focus,
-        .form-group select:focus {
+        .form-input:focus {
             outline: none;
-            border-color: #ff6b35;
-            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+            border-color: #ff9800;
         }
 
-        .form-group textarea {
-            min-height: 100px;
+        .form-textarea {
             resize: vertical;
+            min-height: 80px;
         }
 
-        .form-group input::placeholder,
-        .form-group textarea::placeholder {
-            color: #999;
+        .form-select {
+            padding: 12px 14px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            background: #fff;
         }
 
-        /* 群组类型选择 */
-        .group-type-options {
+        .invite-code-display {
             display: flex;
-            gap: 12px;
-            margin-top: 8px;
+            align-items: center;
+            gap: 10px;
+            background: #f9f9f9;
+            border: 1px solid #eee;
+            padding: 10px 12px;
+            border-radius: 8px;
         }
 
-        .group-type-option {
-            flex: 1;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            text-align: center;
+        .invite-code-display code {
+            font-family: 'Fira Code', 'Courier New', monospace;
+            font-size: 14px;
+            letter-spacing: 1px;
+            color: #ff6d00;
+        }
+
+        .copy-code-btn {
+            padding: 8px 12px;
+            border: 1px solid #ff9800;
+            background: #fff;
+            color: #ff6d00;
+            border-radius: 6px;
             cursor: pointer;
-            transition: all 0.2s;
         }
 
-        .group-type-option:hover {
-            border-color: #ff9d6f;
-            background: #fff9f5;
+        .copy-code-btn:hover {
+            background: #fff3e0;
         }
 
-        .group-type-option.selected {
-            border-color: #ff6b35;
-            background: linear-gradient(135deg, rgba(255, 107, 53, 0.1) 0%, rgba(255, 157, 111, 0.1) 100%);
-        }
-
-        .group-type-option i {
-            font-size: 24px;
-            color: #ff6b35;
-            margin-bottom: 8px;
-        }
-
-        .group-type-option span {
-            display: block;
-            font-size: 13px;
-            color: #666;
+        .form-hint {
+            font-size: 12px;
+            color: #888;
         }
 
         .modal-footer {
-            padding: 16px 24px 24px;
             display: flex;
-            gap: 12px;
             justify-content: flex-end;
+            gap: 12px;
+            margin-top: 12px;
         }
 
         .btn-cancel,
-        .btn-create {
-            padding: 12px 28px;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 600;
+        .btn-submit {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.2s;
+            font-size: 14px;
         }
 
         .btn-cancel {
             background: #f5f5f5;
-            border: 1px solid #e0e0e0;
             color: #666;
         }
 
         .btn-cancel:hover {
-            background: #eee;
+            background: #eaeaea;
         }
 
-        .btn-create {
-            background: linear-gradient(135deg, #ff6b35 0%, #ff9d6f 100%);
-            border: none;
+        .btn-submit {
+            background: #ff6b35;
             color: #fff;
         }
 
-        .btn-create:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
-        }
-
-        .btn-create:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
+        .btn-submit:hover {
+            background: #e55a2a;
         }
 
         /* 成功提示 */
@@ -1529,9 +1506,14 @@
             }
 
             // ========== 从后端加载群组的详细数据 ==========
+            // 在 <head> 中找到 loadGroupDataFromBackend 函数，确保调用 renderOnlineMembers
+
             async function loadGroupDataFromBackend(groupId) {
                 try {
                     const token = getAuthToken();
+
+                    console.log('=== 加载群组详细数据 ===');
+                    console.log('groupId:', groupId);
 
                     // 获取群组详细信息
                     const groupResponse = await fetch(`${API_BASE}/${groupId}`, {
@@ -1543,11 +1525,13 @@
                     });
 
                     if (!groupResponse.ok) {
-                        console.error('获取群组信息失败');
+                        console.error('获取群组信息失败，状态码:', groupResponse.status);
                         return;
                     }
 
                     const groupResult = await groupResponse.json();
+                    console.log('群组信息响应:', groupResult);
+
                     if (groupResult && groupResult.code === 200 && groupResult.data) {
                         const group = groupResult.data;
 
@@ -1586,7 +1570,8 @@
                             showWelcomeMessage(group.groupName);
                         }
 
-                        // 获取群组成员列表
+                        // ✅ 获取群组成员列表
+                        console.log('正在加载群组成员列表...');
                         const membersResponse = await fetch(`${API_BASE}/${groupId}/members`, {
                             method: 'GET',
                             headers: {
@@ -1597,9 +1582,18 @@
 
                         if (membersResponse.ok) {
                             const membersResult = await membersResponse.json();
+                            console.log('成员列表响应:', membersResult);
+
                             if (membersResult && membersResult.code === 200 && Array.isArray(membersResult.data)) {
+                                // ✅ 调用渲染函数显示右侧成员列表
                                 renderOnlineMembers(membersResult.data);
+                            } else {
+                                console.warn('成员列表数据格式不正确');
+                                renderOnlineMembers([]);
                             }
+                        } else {
+                            console.error('获取成员列表失败，状态码:', membersResponse.status);
+                            renderOnlineMembers([]);
                         }
 
                         // 更新邀请码
@@ -1610,6 +1604,8 @@
                     }
                 } catch (error) {
                     console.error('加载群组数据失败:', error);
+                    // 出错时显示空成员列表
+                    renderOnlineMembers([]);
                 }
             }
 
@@ -1665,35 +1661,75 @@
             }
 
             // ========== 渲染在线成员列表 ==========
+            // 在 <head> 中找到 renderOnlineMembers 函数并替换
+
+            // ========== 渲染在线成员列表 ==========
             function renderOnlineMembers(members) {
                 const onlineMembers = document.getElementById('onlineMembers');
-                if (!onlineMembers) return;
+                if (!onlineMembers) {
+                    console.warn('未找到 onlineMembers 容器');
+                    return;
+                }
 
+                console.log('=== 渲染在线成员 ===');
+                console.log('成员数据:', members);
+
+                // 清空现有内容
                 onlineMembers.innerHTML = '';
 
+                // 更新在线人数显示
                 const onlineCountEl = document.getElementById('onlineCount');
                 if (onlineCountEl) {
                     onlineCountEl.textContent = `(${members.length})`;
                 }
 
-                members.forEach(member => {
+                if (members.length === 0) {
+                    onlineMembers.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-light); font-size: 13px;">暂无成员</div>';
+                    return;
+                }
+
+                const avatarColors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#95A5A6', '#3498DB'];
+
+                members.forEach((member, index) => {
                     const memberItem = document.createElement('div');
                     memberItem.className = 'member-item';
+                    memberItem.style.cursor = 'pointer';
 
-                    const avatarColors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD'];
-                    const randomColor = avatarColors[Math.floor(Math.random() * avatarColors.length)];
+                    const randomColor = avatarColors[index % avatarColors.length];
 
-                    const roleText = member.role === 2 ? '👑 群主' : member.role === 1 ? '⭐ 管理员' : '👤 成员';
+                    // 优先使用 username，如果没有则显示 userId
+                    const displayName = member.username || `用户${member.userId}`;
+                    const initials = member.username
+                        ? member.username.substring(0, 2).toUpperCase()
+                        : String(member.userId).substring(0, 1).toUpperCase();
+
+                    // 角色标识
+                    let roleIcon = '👤';
+                    let roleName = '成员';
+                    if (member.role === 2) {
+                        roleIcon = '👑';
+                        roleName = '群主';
+                    } else if (member.role === 1) {
+                        roleIcon = '⭐';
+                        roleName = '管理员';
+                    }
 
                     memberItem.innerHTML = `
-                    <div class="member-avatar online" style="background: ${randomColor};">
-                        ${String(member.userId).substring(0, 1).toUpperCase()}
-                    </div>
-                    <span class="member-name">${roleText} - User${member.userId}</span>
-                `;
+            <div class="member-avatar online" style="background: linear-gradient(135deg, ${randomColor}, ${randomColor}99);">
+                ${initials}
+            </div>
+            <span class="member-name">${roleIcon} ${escapeHtml(displayName)}</span>
+        `;
+
+                    // 点击跳转到用户资料页
+                    memberItem.addEventListener('click', function () {
+                        window.location.href = `user-profile.html?userId=${member.userId}`;
+                    });
 
                     onlineMembers.appendChild(memberItem);
                 });
+
+                console.log('在线成员渲染完成，共', members.length, '人');
             }
 
             // ========== 页面初始化 ==========
@@ -1844,7 +1880,7 @@
                             <input type="text" class="channel-search-input" placeholder="搜索英语群组..." id="groupSearch">
                         </div>
                     </div>
-                    <button class="create-group-btn" id="createGroupBtn">
+                    <button class="create-group-btn" id="openCreateGroupBtn">
                         <i class="fas fa-plus-circle"></i> 创建学习群组
                     </button>
 
@@ -2024,9 +2060,9 @@
                 <!-- 右侧群组信息 -->
                 <aside class="group-info-sidebar">
                     <div class="group-info-header">
-                        <button class="group-search-btn" onclick="searchInGroup()">
+                        <!-- <button class="group-search-btn" onclick="searchInGroup()">
                             <i class="fas fa-search"></i> 查找
-                        </button>
+                        </button> -->
                         <button class="group-files-btn" onclick="showGroupFiles()">
                             <i class="fas fa-file"></i> 资料
                         </button>
@@ -2075,13 +2111,55 @@
                         </div>
                         <div class="invite-code-section">
                             <div class="invite-code" onclick="copyInviteCode()">#ENGLISH789</div>
-                            <button class="delete-group-btn" onclick="deleteCurrentGroup()">删除群组</button>
+                            <button class="delete-group-btn" onclick="leaveCurrentGroup()">退出群组</button>
                         </div>
                     </div>
                 </aside>
             </div>
         </div>
     </main>
+
+    <!-- 创建群组弹窗（与 channel 页面保持一致） -->
+    <div class="modal-overlay" id="createGroupModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 class="modal-title">创建新群组</h3>
+                <button class="modal-close" id="closeCreateGroupBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">群组名称 *</label>
+                    <input type="text" class="form-input" id="newGroupName" placeholder="例如：雅思备考交流群" maxlength="20" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">群组简介</label>
+                    <textarea class="form-input form-textarea" id="newGroupDesc" placeholder="简单介绍群组的主题和目的..."
+                        maxlength="100"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">群组分类</label>
+                    <select class="form-select" id="newGroupCategory">
+                        <option value="学习">学习</option>
+                        <option value="考试">考试</option>
+                        <option value="兴趣">兴趣</option>
+                        <option value="其他">其他</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">群组邀请码</label>
+                    <div class="invite-code-display">
+                        <code id="generatedInviteCode">------</code>
+                        <button class="copy-code-btn" id="copyNewCodeBtn">复制</button>
+                    </div>
+                    <span class="form-hint">邀请码将在创建后自动生成，可分享给朋友加入</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" id="cancelCreateGroupBtn">取消</button>
+                <button class="btn-submit" id="submitCreateGroupBtn">创建群组</button>
+            </div>
+        </div>
+    </div>
 
     <!-- 移动端切换按钮 -->
     <button class="mobile-toggle" id="mobileToggle">
@@ -2228,9 +2306,10 @@
             };
 
             window.showGroupMembers = function () {
+                // 触发成员列表模态框
                 const listEl = document.getElementById('onlineMembers');
                 if (!listEl) return;
-                // 成员列表已由后端加载，无需额外处理
+                showGroupMembers(); // 调用成员列表加载函数
             };
 
             window.deleteCurrentGroup = function () {
@@ -2432,6 +2511,7 @@
             });
         }
 
+        // ...existing code...
         function setupEventListeners() {
             const groupSearch = document.getElementById('groupSearch');
             groupSearch.addEventListener('input', function (e) {
@@ -2444,43 +2524,86 @@
                 });
             });
 
+            // ✅ 移除 searchInGroup 相关代码
             window.showGroupMembers = function () {
                 const group = groupData[currentGroupId];
                 alert(`群组 ${group.name} 的所有成员：\n${group.allMembers.join(', ')}`);
             };
 
             window.openResource = function (resourceType) {
-                const resourceNames = { 'speaking': '口语练习素材', 'listening': '听力资源库', 'video': '视频教程' };
+                const resourceNames = {
+                    'speaking': '口语练习素材',
+                    'listening': '听力资源库',
+                    'video': '视频教程'
+                };
                 alert(`正在打开 ${resourceNames[resourceType]}...`);
             };
 
-            window.searchInGroup = function () {
-                const searchTerm = prompt('在群聊中搜索：');
-                if (searchTerm) alert(`正在搜索："${searchTerm}"\n功能开发中...`);
+            window.showGroupFiles = function () {
+                alert('群文件功能开发中...');
             };
-
-            window.showGroupFiles = function () { alert('群文件功能开发中...'); };
-
-            window.deleteCurrentGroup = function () {
-                if (confirm('确定要删除当前群组吗？此操作不可恢复！')) {
-                    delete groupData[currentGroupId];
-                    document.querySelectorAll('.group-items .group-item').forEach(item => {
-                        const groupId = parseInt(item.getAttribute('data-group-id'));
-                        if (groupId === currentGroupId) item.remove();
-                    });
-                    document.querySelectorAll('.group-list-mobile .group-item').forEach(item => {
-                        const groupId = parseInt(item.getAttribute('data-group-id'));
-                        if (groupId === currentGroupId) item.remove();
-                    });
-                    const remainingGroupIds = Object.keys(groupData).map(id => parseInt(id));
-                    if (remainingGroupIds.length > 0) switchGroup(remainingGroupIds[0]);
-                    else alert('所有群组已删除！');
-                }
-
-                // 添加头像点击事件
-                addAvatarClickEvents();
-            }
         }
+
+        // ========== 退出群组功能 ==========
+        // 定义在全局作用域，确保可以被 HTML onclick 调用
+        window.leaveCurrentGroup = async function () {
+            // 优先取左侧当前选中的群组，其次 URL 参数
+            const activeItem = document.querySelector('.group-item.active');
+            const urlParams = new URLSearchParams(window.location.search);
+            const groupId = activeItem?.getAttribute('data-group-id') || urlParams.get('groupId');
+
+            if (!groupId) {
+                alert('未找到当前群组');
+                return;
+            }
+            if (!confirm('确认退出该群组？')) return;
+
+            try {
+                const userId = getCurrentUserId();
+                const token = getAuthToken();
+
+                const resp = await fetch(`${API_BASE}/${groupId}/leave`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ userId })
+                });
+
+                const result = await resp.json();
+                if (resp.ok && result && result.code === 200) {
+                    // 本地移除该群并重新渲染
+                    window.userGroups = (window.userGroups || []).filter(g => String(g.id) !== String(groupId));
+                    renderGroupsToSidebar(window.userGroups || []);
+
+                    // 切到下一个群或展示空状态
+                    if (window.userGroups && window.userGroups.length > 0) {
+                        switchToGroup(window.userGroups[0].id);
+                    } else {
+                        const chatMessages = document.getElementById('chatMessages');
+                        if (chatMessages) {
+                            chatMessages.innerHTML = `
+                                <div class="system-message">
+                                    <div class="message-bubble">
+                                        <div class="message-text">
+                                            您已退出所有群组<br>
+                                            <a href="channel.html" style="color: #ff6b35; text-decoration: underline;">去创建或加入新群组</a>
+                                        </div>
+                                    </div>
+                                </div>`;
+                        }
+                        window.history.replaceState({}, '', 'channel2.html');
+                    }
+                    alert('已退出群组');
+                } else {
+                    alert('退出失败：' + (result?.message || '未知错误'));
+                }
+            } catch (e) {
+                console.error('退出群组失败:', e);
+                alert('退出群组失败，请检查网络');
+            }
+        };
 
         function copyInviteCode() {
             const inviteCodeEl = document.querySelector('.invite-code');
@@ -2522,110 +2645,69 @@
         //     }
         // }
 
-        // 创建群组模态框
-        const createGroupModal = document.createElement('div');
-        createGroupModal.className = 'modal-overlay';
-        createGroupModal.style.display = 'none';
-        createGroupModal.innerHTML = `
-    <div class="modal">
-        <div class="modal-header">
-            <h2 class="modal-title"><i class="fas fa-users"></i> 创建学习群组</h2>
-            <button class="close-btn">&times;</button>
-        </div>
-        <div class="modal-content">
-            <div class="form-group">
-                <label for="groupName"><i class="fas fa-edit"></i> 群组名称 <span style="color: #ff6b35;">*</span></label>
-                <input type="text" id="groupName" placeholder="例如：英语口语练习群" maxlength="20" required>
-            </div>
-            <div class="form-group">
-                <label><i class="fas fa-th-large"></i> 群组类型</label>
-                <div class="group-type-options">
-                    <div class="group-type-option selected" data-type="speaking">
-                        <i class="fas fa-microphone"></i>
-                        <span>口语练习</span>
-                    </div>
-                    <div class="group-type-option" data-type="reading">
-                        <i class="fas fa-book-open"></i>
-                        <span>阅读交流</span>
-                    </div>
-                    <div class="group-type-option" data-type="exam">
-                        <i class="fas fa-graduation-cap"></i>
-                        <span>考试备战</span>
-                    </div>
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="groupDescription"><i class="fas fa-align-left"></i> 群组简介</label>
-                <textarea id="groupDescription" placeholder="介绍一下这个群组的目标和规则..."></textarea>
-            </div>
-            <div class="form-group">
-                <label for="groupTopic"><i class="fas fa-comments"></i> 今日话题（可选）</label>
-                <input type="text" id="groupTopic" placeholder="例如：Travel and Transportation">
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button class="btn-cancel">取消</button>
-            <button class="btn-create"><i class="fas fa-plus"></i> 创建群组</button>
-        </div>
-    </div>
-    `;
-        document.body.appendChild(createGroupModal);
+        // 创建群组模态框（与 channel 交互一致）
+        const createGroupModal = document.getElementById('createGroupModal');
+        const openCreateGroupBtn = document.getElementById('openCreateGroupBtn');
+        const closeCreateGroupBtn = document.getElementById('closeCreateGroupBtn');
+        const cancelCreateGroupBtn = document.getElementById('cancelCreateGroupBtn');
+        const submitCreateGroupBtn = document.getElementById('submitCreateGroupBtn');
+        const generatedInviteCode = document.getElementById('generatedInviteCode');
+        const copyNewCodeBtn = document.getElementById('copyNewCodeBtn');
+        const newGroupNameInput = document.getElementById('newGroupName');
+        const newGroupDescInput = document.getElementById('newGroupDesc');
+        const newGroupCategorySelect = document.getElementById('newGroupCategory');
 
-        // 创建成功提示
         const successToast = document.createElement('div');
         successToast.className = 'create-success-toast';
         successToast.innerHTML = '<i class="fas fa-check-circle"></i> 群组创建成功！';
         document.body.appendChild(successToast);
 
-        // 群组类型选择
-        let selectedGroupType = 'speaking';
-        createGroupModal.querySelectorAll('.group-type-option').forEach(option => {
-            option.addEventListener('click', function () {
-                createGroupModal.querySelectorAll('.group-type-option').forEach(o => o.classList.remove('selected'));
-                this.classList.add('selected');
-                selectedGroupType = this.getAttribute('data-type');
+        function generateInviteCode() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let code = '';
+            for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+            return code;
+        }
+
+        function openCreateModal() {
+            generatedInviteCode.textContent = generateInviteCode();
+            newGroupNameInput.value = '';
+            newGroupDescInput.value = '';
+            newGroupCategorySelect.value = '学习';
+            createGroupModal.classList.add('show');
+        }
+
+        function closeCreateModal() {
+            createGroupModal.classList.remove('show');
+        }
+
+        openCreateGroupBtn.addEventListener('click', openCreateModal);
+        closeCreateGroupBtn.addEventListener('click', closeCreateModal);
+        cancelCreateGroupBtn.addEventListener('click', closeCreateModal);
+        createGroupModal.addEventListener('click', (e) => {
+            if (e.target === createGroupModal) closeCreateModal();
+        });
+
+        copyNewCodeBtn.addEventListener('click', () => {
+            const code = generatedInviteCode.textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                copyNewCodeBtn.textContent = '已复制';
+                setTimeout(() => { copyNewCodeBtn.textContent = '复制'; }, 1500);
             });
         });
 
-        document.getElementById('createGroupBtn').addEventListener('click', function () {
-            // 重置表单
-            createGroupModal.querySelector('#groupName').value = '';
-            createGroupModal.querySelector('#groupDescription').value = '';
-            createGroupModal.querySelector('#groupTopic').value = '';
-            createGroupModal.querySelectorAll('.group-type-option').forEach(o => o.classList.remove('selected'));
-            createGroupModal.querySelector('.group-type-option').classList.add('selected');
-            selectedGroupType = 'speaking';
-            createGroupModal.style.display = 'flex';
-        });
+        submitCreateGroupBtn.addEventListener('click', async () => {
+            const name = newGroupNameInput.value.trim();
+            const desc = newGroupDescInput.value.trim();
+            const category = newGroupCategorySelect.value;
+            const inviteCode = generatedInviteCode.textContent;
 
-        createGroupModal.querySelector('.close-btn').addEventListener('click', function () {
-            createGroupModal.style.display = 'none';
-        });
-
-        createGroupModal.querySelector('.btn-cancel').addEventListener('click', function () {
-            createGroupModal.style.display = 'none';
-        });
-
-        createGroupModal.addEventListener('click', function (e) {
-            if (e.target === createGroupModal) {
-                createGroupModal.style.display = 'none';
-            }
-        });
-
-        // ESC 键关闭
-        document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape' && createGroupModal.style.display === 'flex') {
-                createGroupModal.style.display = 'none';
-            }
-        });
-
-        // 在创建群组成功后，重新加载群组列表
-        createGroupModal.querySelector('.btn-create').addEventListener('click', async function () {
-            const groupName = createGroupModal.querySelector('#groupName').value.trim();
-            const groupDescription = createGroupModal.querySelector('#groupDescription').value.trim();
-
-            if (!groupName) {
+            if (!name) {
                 alert('请输入群组名称');
+                return;
+            }
+            if (name.length < 2) {
+                alert('群组名称至少2个字符');
                 return;
             }
 
@@ -2633,41 +2715,42 @@
                 const userId = getCurrentUserId();
                 const token = getAuthToken();
 
-                // 调用后端创建群组API
+                const requestBody = {
+                    groupName: name,
+                    description: desc || '暂无简介',
+                    ownerId: userId,
+                    inviteCode: inviteCode
+                };
+
                 const response = await fetch(`${API_BASE}/create`, {
                     method: 'POST',
                     headers: {
                         'Authorization': 'Bearer ' + token,
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({
-                        groupName: groupName,
-                        description: groupDescription,
-                        ownerId: userId
-                    })
+                    body: JSON.stringify(requestBody)
                 });
 
                 const result = await response.json();
 
-                if (result && result.code === 200) {
-                    // 关闭模态框
-                    createGroupModal.style.display = 'none';
+                if (result && result.code === 200 && result.data) {
+                    createGroupModal.classList.remove('show');
 
-                    // 显示成功提示
                     successToast.classList.add('show');
                     setTimeout(() => successToast.classList.remove('show'), 2500);
 
-                    // 重新加载群组列表
                     const groups = await loadUserGroups();
                     window.userGroups = groups;
                     renderGroupsToSidebar(groups);
 
-                    // 切换到新创建的群组
                     if (result.data && result.data.groupId) {
                         setTimeout(() => switchToGroup(result.data.groupId), 500);
                     }
+
+                    alert(`群组「${name}」创建成功！\n邀请码：${result.data.inviteCode || inviteCode}`);
                 } else {
-                    alert('创建群组失败: ' + (result.message || '未知错误'));
+                    console.error('创建失败 - 返回码不是200:', result);
+                    alert('创建失败: ' + (result.message || '未知错误'));
                 }
             } catch (error) {
                 console.error('创建群组失败:', error);

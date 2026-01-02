@@ -27,6 +27,12 @@ spring:
       max-file-size: 100MB
       max-request-size: 100MB
 
+# ✅ 文件上传配置 - 使用绝对路径
+file:
+  upload:
+    # 使用绝对路径确保文件能保存到正确位置
+    base-path: d:/SE/github/iFM-backend/iFM/backend/uploads
+
 
 
 audio:

@@ -21,35 +21,61 @@ public class PostController {
     @Operation(summary = "创建新动态")
     @PostMapping
     public Result<Post> create(@RequestBody Map<String, Object> requestBody) {
-        System.out.println("=== 接收到创建帖子请求 ===");
-        System.out.println("请求体: " + requestBody);
+        try {
+            System.out.println("=== 收到创建帖子请求 ===");
+            System.out.println("请求体: " + requestBody);
 
-        Post post = new Post();
-        post.setUserId(((Number) requestBody.get("userId")).longValue());
-        post.setText((String) requestBody.get("text"));
+            Post post = new Post();
+            post.setUserId(((Number) requestBody.get("userId")).longValue());
+            post.setText((String) requestBody.get("text"));
 
-        // 处理图片数组
-        Object imagesObj = requestBody.get("images");
-        System.out.println("images 对象类型: " + (imagesObj != null ? imagesObj.getClass().getName() : "null"));
-        System.out.println("images 值: " + imagesObj);
+            // 处理图片数组
+            Object imagesObj = requestBody.get("images");
+            System.out.println("images 原始值: " + imagesObj);
+            System.out.println("images 类型: " + (imagesObj != null ? imagesObj.getClass().getName() : "null"));
 
-        if (imagesObj instanceof List) {
-            @SuppressWarnings("unchecked")
-            List<String> imageList = (List<String>) imagesObj;
-            System.out.println("图片URL列表: " + imageList);
-            System.out.println("图片数量: " + imageList.size());
+            if (imagesObj instanceof List) {
+                @SuppressWarnings("unchecked")
+                List<String> imageList = (List<String>) imagesObj;
+                System.out.println("图片列表大小: " + imageList.size());
+                System.out.println("图片列表内容: " + imageList);
 
-            post.setImagesList(imageList); // 使用辅助方法
-        } else {
-            System.out.println("images 不是 List 类型");
+                // ✅ 转换为逗号分隔的字符串存储
+                if (!imageList.isEmpty()) {
+                    // 过滤掉空值
+                    List<String> validImages = imageList.stream()
+                            .filter(url -> url != null && !url.trim().isEmpty())
+                            .collect(java.util.stream.Collectors.toList());
+
+                    if (!validImages.isEmpty()) {
+                        String imagesString = String.join(",", validImages);
+                        System.out.println("转换后的 images 字符串: " + imagesString);
+                        post.setImages(imagesString);
+                    } else {
+                        post.setImages("");
+                    }
+                } else {
+                    post.setImages("");
+                }
+            } else if (imagesObj instanceof String) {
+                post.setImages((String) imagesObj);
+            } else {
+                post.setImages("");
+            }
+
+            post.setLikes((Integer) requestBody.getOrDefault("likes", 0));
+
+            Post savedPost = postService.create(post);
+            System.out.println("保存后的帖子数据:");
+            System.out.println("- ID: " + savedPost.getId());
+            System.out.println("- Images: " + savedPost.getImages());
+            System.out.println("- Text: " + savedPost.getText());
+
+            return Result.success(savedPost);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.error("创建帖子失败: " + e.getMessage());
         }
-
-        post.setLikes((Integer) requestBody.getOrDefault("likes", 0));
-
-        Post savedPost = postService.create(post);
-        System.out.println("保存后的图片字段: " + savedPost.getImages());
-
-        return Result.success(savedPost);
     }
 
     @Operation(summary = "获取所有动态")

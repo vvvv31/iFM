@@ -2989,46 +2989,67 @@
           const commentsArr = p.comments || [];
           const commentCount = commentsArr.length + commentsArr.reduce((sum, c) => sum + (c.replies?.length || 0), 0);
 
+          // ✅ 修改：处理 imagesList 和 images 字段
+          let imagesArray = [];
+
+          // 优先使用 imagesList（已处理好的数组）
+          if (Array.isArray(p.imagesList) && p.imagesList.length > 0) {
+            imagesArray = p.imagesList;
+          }
+          // 否则尝试使用 images（可能是字符串或数组）
+          else if (p.images) {
+            if (Array.isArray(p.images)) {
+              imagesArray = p.images.filter(img => img); // 过滤空值
+            } else if (typeof p.images === 'string' && p.images.trim()) {
+              // 如果 images 是逗号分隔的字符串，拆分为数组
+              imagesArray = p.images.split(',').map(img => img.trim()).filter(img => img);
+            }
+          }
+
+          console.log('处理帖子 ID:', p.id);
+          console.log('原始 images:', p.images);
+          console.log('原始 imagesList:', p.imagesList);
+          console.log('处理后的 imagesArray:', imagesArray);
+
           node.innerHTML = `
-        <div class="post-header">
-          <div class="avatar">${avatarLetter}</div>
-          <div class="post-author">
-            <div class="author-name">${escapeHtml(p.author)}</div>
-            <div class="post-time">${escapeHtml(p.time)}</div>
-          </div>
+      <div class="post-header">
+        <div class="avatar">${avatarLetter}</div>
+        <div class="post-author">
+          <div class="author-name">${escapeHtml(p.author)}</div>
+          <div class="post-time">${escapeHtml(p.time || new Date(p.createdAt).toLocaleString('zh-CN'))}</div>
         </div>
-        <div class="post-body">${renderTextWithTags(p.text)}</div>
-        ${p.images && p.images.length ? `
-          <div class="post-images">
-            ${p.images.map(src => `<img src="${src}" alt="image">`).join('')}
-          </div>
-        `: ''}
-        <div class="post-actions">
-          <button class="action-btn like-btn" data-id="${p.id}">
-            <i class="far fa-heart"></i> 
-            <span class="like-count">${p.likes}</span>
-          </button>
-          <button class="action-btn comment-toggle-btn" data-id="${p.id}">
-            <i class="far fa-comment"></i> 
-            <span class="comment-count">${commentCount}</span>
-          </button>
-          <button class="action-btn share-btn">
-            <i class="far fa-share-square"></i> 转发
-          </button>
+      </div>
+      <div class="post-body">${renderTextWithTags(p.text)}</div>
+      ${imagesArray && imagesArray.length > 0 ? `
+        <div class="post-images">
+          ${imagesArray.map(src => `<img src="${src}" alt="image" style="width: 100%; height: 100%; object-fit: cover;">`).join('')}
         </div>
-        <div class="comments-section" id="comments-${p.id}" style="display:none;">
-          <div class="comments-list">
-            ${commentsArr.map(c => renderComment(c, p.id)).join('')}
-          </div>
-          <div class="comment-composer">
-            <input type="text" class="comment-input" placeholder="写评论..." data-post-id="${p.id}" />
-            <button class="comment-submit-btn" data-post-id="${p.id}">发送</button>
-          </div>
+      `: ''}
+      <div class="post-actions">
+        <button class="action-btn like-btn" data-id="${p.id}">
+          <i class="far fa-heart"></i> 
+          <span class="like-count">${p.likes || 0}</span>
+        </button>
+        <button class="action-btn comment-toggle-btn" data-id="${p.id}">
+          <i class="far fa-comment"></i> 
+          <span class="comment-count">${commentCount}</span>
+        </button>
+        <button class="action-btn share-btn">
+          <i class="far fa-share-square"></i> 转发
+        </button>
+      </div>
+      <div class="comments-section" id="comments-${p.id}" style="display:none;">
+        <div class="comments-list">
+          ${commentsArr.map(c => renderComment(c, p.id)).join('')}
         </div>
-      `;
+        <div class="comment-composer">
+          <input type="text" class="comment-input" placeholder="写评论..." data-post-id="${p.id}" />
+          <button class="comment-submit-btn" data-post-id="${p.id}">发送</button>
+        </div>
+      </div>
+    `;
           postsList.appendChild(node);
         });
-
         // 绑定评论展开/收起
         document.querySelectorAll('.comment-toggle-btn').forEach(btn => {
           btn.addEventListener('click', () => {
@@ -3162,38 +3183,38 @@
       // 从后端API获取动态
       // 在 fetchPosts 函数中修改数据映射
 
+      // 获取 feed 容器
+      const feedEl = document.getElementById('postsList');
+
+      // 从后端API获取动态
       async function fetchPosts() {
         try {
           const token = getAuthToken();
           const response = await fetch('http://localhost:8080/api/posts', {
+            method: 'GET',
             headers: {
               'Authorization': 'Bearer ' + token,
               'Content-Type': 'application/json'
             }
           });
+
+          console.log('=== fetchPosts 响应 ===');
+          console.log('状态码:', response.status);
+
           const result = await response.json();
+          console.log('获取的帖子数据:', result);
+
           if (result && result.code === 200 && Array.isArray(result.data)) {
-            const posts = result.data.map(post => ({
-              id: post.id,
-              author: post.author || post.authorName || ('用户' + post.userId),  // 优先使用 author，其次 authorName
-              avatar: (post.author || post.authorName || '用户').toString().slice(0, 1).toUpperCase(),
-              text: post.text,
-              images: post.images || [],
-              likes: post.likes,
-              comments: post.comments || [],
-              time: new Date(post.createdAt).toLocaleString(),
-              tags: post.tags || []
-            }));
-            currentPosts = posts;
-            renderPosts(posts);
+            console.log('帖子数据有效，共', result.data.length, '条');
+
+            // ✅ 关键：使用 renderPosts 函数而不是 renderPost
+            renderPosts(result.data);
           } else {
-            currentPosts = [];
-            renderPosts([]);
+            console.warn('❌ 帖子数据无效或格式错误');
+            console.warn('result:', result);
           }
         } catch (error) {
-          console.error('获取动态失败:', error);
-          currentPosts = [];
-          renderPosts([]);
+          console.error('获取帖子失败:', error);
         }
       }
 
@@ -3327,82 +3348,13 @@
         }
 
         try {
-          // 上传图片到服务器
-          const imageUrls = [];
-          // 修改上传部分
-          for (const file of composerSelectedFiles) {
-            const formData = new FormData();
-            formData.append('file', file);
-
-            const uploadResponse = await fetch('http://localhost:8080/api/upload/post-image', {
-              method: 'POST',
-              headers: {
-                'Authorization': 'Bearer ' + getAuthToken()
-              },
-              body: formData
-            });
-
-            if (uploadResponse.ok) {
-              const uploadResult = await uploadResponse.json();
-              if (uploadResult && uploadResult.code === 200) {
-                imageUrls.push(uploadResult.data);
-              }
-            }
-          }
-
-          // 发布帖子，使用上传后的图片URL
-          const token = getAuthToken();
-          const userId = getCurrentUserId();
-
-          const response = await fetch('http://localhost:8080/api/posts', {
-            method: 'POST',
-            headers: {
-              'Authorization': 'Bearer ' + token,
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              text: text,
-              images: imageUrls,  // 使用服务器URL而不是Base64
-              userId: userId,
-              likes: 0,
-              comments: [],
-              tags: []
-            })
-          });
-
-          const result = await response.json();
-          if (result && result.code === 200) {
-            composerInput.value = '';
-            composerFilesEl.value = '';
-            composerSelectedFiles = [];
-            previewAreaEl.innerHTML = '';
-            fetchPosts();
-          } else {
-            alert('发布失败: ' + (result.message || '请稍后重试'));
-          }
-        } catch (error) {
-          console.error('发布动态失败:', error);
-          alert('发布失败，请检查网络连接');
-        }
-      });
-
-      // 排序功能
-      // 在 postBtn 点击事件中添加日志
-
-      postBtn.addEventListener('click', async () => {
-        const text = composerInput.value.trim();
-
-        if (!text && composerSelectedFiles.length === 0) {
-          alert('请输入内容或选择图片');
-          return;
-        }
-
-        try {
-          console.log('=== 开始上传图片 ===');
+          console.log('=== 开始发布帖子 ===');
+          console.log('文本内容:', text);
           console.log('选中的文件数量:', composerSelectedFiles.length);
 
           // 上传图片到服务器
           const imageUrls = [];
+
           for (const file of composerSelectedFiles) {
             console.log('上传文件:', file.name);
 
@@ -3421,19 +3373,39 @@
 
             if (uploadResponse.ok) {
               const uploadResult = await uploadResponse.json();
-              console.log('上传结果:', uploadResult);
+              console.log('完整上传结果:', JSON.stringify(uploadResult, null, 2));
 
+              // ✅ 关键：正确提取 URL
               if (uploadResult && uploadResult.code === 200) {
-                console.log('图片URL:', uploadResult.data);
-                imageUrls.push(uploadResult.data);
+                let imageUrl = uploadResult.data;
+
+                // 如果返回的是对象，提取 URL 字段
+                if (typeof uploadResult.data === 'object') {
+                  imageUrl = uploadResult.data.url || uploadResult.data.path || uploadResult.data.filePath;
+                }
+
+                console.log('提取的图片 URL:', imageUrl);
+
+                if (imageUrl) {
+                  imageUrls.push(imageUrl);
+                } else {
+                  console.warn('无法提取图片 URL，原始数据:', uploadResult.data);
+                }
               }
             } else {
-              console.error('上传失败:', uploadResponse.statusText);
+              console.error('上传失败，状态码:', uploadResponse.status);
+              const errorText = await uploadResponse.text();
+              console.error('错误响应:', errorText);
             }
           }
 
-          console.log('=== 所有图片上传完成 ===');
-          console.log('图片URL数组:', imageUrls);
+          console.log('=== 图片上传完成 ===');
+          console.log('最终的图片 URL 数组:', imageUrls);
+
+          if (composerSelectedFiles.length > 0 && imageUrls.length === 0) {
+            alert('图片上传失败，请重试');
+            return;
+          }
 
           // 发布帖子
           const token = getAuthToken();
@@ -3441,14 +3413,14 @@
 
           const postData = {
             text: text,
-            images: imageUrls,
+            images: imageUrls.length > 0 ? imageUrls : [],  // ✅ 确保是数组
             userId: userId,
             likes: 0,
             comments: [],
             tags: []
           };
 
-          console.log('=== 发送帖子数据 ===');
+          console.log('=== 发送帖子数据到后端 ===');
           console.log(JSON.stringify(postData, null, 2));
 
           const response = await fetch('http://localhost:8080/api/posts', {
@@ -3463,14 +3435,23 @@
           console.log('发布响应状态:', response.status);
 
           const result = await response.json();
-          console.log('发布结果:', result);
+          console.log('发布响应数据:', JSON.stringify(result, null, 2));
 
+          // 在 postBtn 事件监听器的成功分支中
           if (result && result.code === 200) {
+            console.log('✅ 发布成功！');
+            console.log('返回的帖子数据:', result.data);
+
+            // 清空输入框和图片
             composerInput.value = '';
             composerFilesEl.value = '';
             composerSelectedFiles = [];
             previewAreaEl.innerHTML = '';
+
+            // ✅ 重新加载帖子列表 - 这是关键！
+            console.log('调用 fetchPosts() 重新加载帖子列表');
             fetchPosts();
+
             alert('发布成功！');
           } else {
             alert('发布失败: ' + (result.message || '请稍后重试'));
@@ -3480,6 +3461,140 @@
           alert('发布失败，请检查网络连接');
         }
       });
+
+      // // 排序功能
+      // // 在 postBtn 点击事件中添加日志
+
+      // postBtn.addEventListener('click', async () => {
+      //   const text = composerInput.value.trim();
+
+      //   if (!text && composerSelectedFiles.length === 0) {
+      //     alert('请输入内容或选择图片');
+      //     return;
+      //   }
+
+      //   try {
+      //     console.log('=== 开始发布帖子 ===');
+      //     console.log('文本内容:', text);
+      //     console.log('选中的文件数量:', composerSelectedFiles.length);
+
+      //     // 上传图片到服务器
+      //     const imageUrls = [];
+
+      //     for (const file of composerSelectedFiles) {
+      //       console.log('开始上传文件:', file.name);
+
+      //       const formData = new FormData();
+      //       formData.append('file', file);
+
+      //       const uploadResponse = await fetch('http://localhost:8080/api/upload/post-image', {
+      //         method: 'POST',
+      //         headers: {
+      //           'Authorization': 'Bearer ' + getAuthToken()
+      //         },
+      //         body: formData
+      //       });
+
+      //       console.log('上传响应状态:', uploadResponse.status);
+
+      //       if (uploadResponse.ok) {
+      //         const uploadResult = await uploadResponse.json();
+      //         console.log('完整上传结果:', JSON.stringify(uploadResult, null, 2));
+
+      //         // ✅ 关键：正确处理后端返回的数据
+      //         if (uploadResult && uploadResult.code === 200) {
+      //           // data 是一个对象，包含 url, path, filename
+      //           const data = uploadResult.data;
+      //           console.log('data 类型:', typeof data);
+      //           console.log('data 内容:', data);
+
+      //           let imageUrl = null;
+
+      //           // 优先使用 url 字段
+      //           if (data && typeof data === 'object') {
+      //             imageUrl = data.url || data.path || data.filePath;
+      //           } else if (typeof data === 'string') {
+      //             imageUrl = data;
+      //           }
+
+      //           console.log('提取的图片 URL:', imageUrl);
+
+      //           if (imageUrl) {
+      //             imageUrls.push(imageUrl);
+      //             console.log('✅ 图片 URL 已添加到数组');
+      //           } else {
+      //             console.warn('❌ 无法提取图片 URL');
+      //             console.warn('原始 data:', data);
+      //           }
+      //         } else {
+      //           console.error('❌ 上传返回码不是 200:', uploadResult.code);
+      //           console.error('错误信息:', uploadResult.message);
+      //         }
+      //       } else {
+      //         console.error('❌ 上传失败，状态码:', uploadResponse.status);
+      //         const errorText = await uploadResponse.text();
+      //         console.error('错误响应:', errorText);
+      //       }
+      //     }
+
+      //     console.log('=== 图片上传完成 ===');
+      //     console.log('最终的图片 URL 数组:', imageUrls);
+      //     console.log('URL 数组长度:', imageUrls.length);
+
+      //     if (composerSelectedFiles.length > 0 && imageUrls.length === 0) {
+      //       alert('图片上传失败，请重试');
+      //       return;
+      //     }
+
+      //     // 发布帖子
+      //     const token = getAuthToken();
+      //     const userId = getCurrentUserId();
+
+      //     const postData = {
+      //       text: text,
+      //       images: imageUrls,  // ✅ 直接使用数组
+      //       userId: userId,
+      //       likes: 0,
+      //       comments: [],
+      //       tags: []
+      //     };
+
+      //     console.log('=== 发送帖子数据到后端 ===');
+      //     console.log(JSON.stringify(postData, null, 2));
+
+      //     const response = await fetch('http://localhost:8080/api/posts', {
+      //       method: 'POST',
+      //       headers: {
+      //         'Authorization': 'Bearer ' + token,
+      //         'Content-Type': 'application/json'
+      //       },
+      //       body: JSON.stringify(postData)
+      //     });
+
+      //     console.log('发布响应状态:', response.status);
+
+      //     const result = await response.json();
+      //     console.log('发布响应数据:', JSON.stringify(result, null, 2));
+
+      //     if (result && result.code === 200) {
+      //       console.log('✅ 发布成功！');
+      //       console.log('返回的帖子数据:', result.data);
+
+      //       composerInput.value = '';
+      //       composerFilesEl.value = '';
+      //       composerSelectedFiles = [];
+      //       previewAreaEl.innerHTML = '';
+
+      //       fetchPosts();
+      //       alert('发布成功！');
+      //     } else {
+      //       alert('发布失败: ' + (result.message || '请稍后重试'));
+      //     }
+      //   } catch (error) {
+      //     console.error('发布动态失败:', error);
+      //     alert('发布失败，请检查网络连接');
+      //   }
+      // });
 
       groupSortSelect.addEventListener('change', () => {
         const val = groupSortSelect.value;

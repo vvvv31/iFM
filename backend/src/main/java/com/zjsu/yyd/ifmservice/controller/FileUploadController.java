@@ -24,17 +24,54 @@ public class FileUploadController {
     }
 
     /**
+     * 上传帖子图片
+     */
+    @PostMapping("/post-image")
+    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "上传帖子图片")
+    public Result<Map<String, String>> uploadPostImage(@RequestParam("file") MultipartFile file) {
+        try {
+            System.out.println("=== 收到帖子图片上传请求 ===");
+            System.out.println("文件名: " + file.getOriginalFilename());
+            System.out.println("文件大小: " + file.getSize());
+
+            String imageUrl = fileUploadService.uploadPostImage(file);
+
+            System.out.println("✅ 上传完成，返回 URL: " + imageUrl);
+
+            // ✅ 返回包含 url、path、filename 的对象
+            Map<String, String> result = new HashMap<>();
+            result.put("url", imageUrl); // /uploads/posts/xxx.png
+            result.put("path", imageUrl.startsWith("/") ? imageUrl.substring(1) : imageUrl); // uploads/posts/xxx.png
+            result.put("filename", file.getOriginalFilename());
+
+            System.out.println("返回数据: " + result);
+
+            return Result.success(result);
+
+        } catch (IOException e) {
+            System.err.println("❌ 图片上传失败: " + e.getMessage());
+            e.printStackTrace();
+            return Result.error("图片上传失败: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("❌ 未知错误: " + e.getMessage());
+            e.printStackTrace();
+            return Result.error("上传失败: " + e.getMessage());
+        }
+    }
+
+    /**
      * 上传音频文件
      */
     @PostMapping("/audio")
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "上传音频文件", description = "上传音频文件并返回文件URL")
+    @Operation(summary = "上传音频文件")
     public Result<Map<String, String>> uploadAudio(@RequestParam("file") MultipartFile file) {
         try {
             String audioUrl = fileUploadService.uploadAudio(file);
             Map<String, String> result = new HashMap<>();
             result.put("audioUrl", audioUrl);
-            return Result.success("音频文件上传成功", result);
+            return Result.success(result);
         } catch (IOException e) {
             return Result.error("音频文件上传失败: " + e.getMessage());
         }
@@ -45,30 +82,15 @@ public class FileUploadController {
      */
     @PostMapping("/cover")
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "上传封面图片", description = "上传封面图片并返回文件URL")
+    @Operation(summary = "上传封面图片")
     public Result<Map<String, String>> uploadCover(@RequestParam("file") MultipartFile file) {
         try {
             String coverUrl = fileUploadService.uploadCover(file);
             Map<String, String> result = new HashMap<>();
             result.put("coverUrl", coverUrl);
-            return Result.success("封面图片上传成功", result);
+            return Result.success(result);
         } catch (IOException e) {
             return Result.error("封面图片上传失败: " + e.getMessage());
-        }
-    }
-
-    /**
-     * 上传帖子图片
-     */
-    @PostMapping("/post-image")
-    @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "上传帖子图片", description = "上传帖子图片并返回文件URL")
-    public Result<String> uploadPostImage(@RequestParam("file") MultipartFile file) {
-        try {
-            String imageUrl = fileUploadService.uploadPostImage(file);
-            return Result.success(imageUrl);
-        } catch (IOException e) {
-            return Result.error("图片上传失败: " + e.getMessage());
         }
     }
 }

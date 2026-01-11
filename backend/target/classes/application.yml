@@ -1,0 +1,33 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: ifm_service
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/ifm_service_v3_db?useSSL=false&serverTimezone=Asia/Shanghai
+    username: root
+    password: "00000712"
+  #    password: "xiesuyang888"
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+
+
+
+audio:
+  upload-path: ${user.dir}/uploads
+
+logging:
+  level:
+    org.springframework.web: DEBUG
+    org.hibernate: DEBUG

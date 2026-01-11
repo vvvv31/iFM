@@ -1,0 +1,4 @@
+com\zjsu\yyd\ifmservice\model\audio\UpdateAudioRequest.class
+com\zjsu\yyd\ifmservice\controller\CommonController.class
+com\zjsu\yyd\ifmservice\model\dailySentence\DailySentence.class
+com\zjsu\yyd\ifmservice\model\Result.class
